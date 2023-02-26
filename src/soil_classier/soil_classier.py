@@ -1,20 +1,3 @@
-import xlwings as xw
-
-
-def main():
-    wb = xw.Book.caller()
-    sheet = wb.sheets[0]
-    if sheet["A1"].value == "Hello xlwings!":
-        sheet["A1"].value = "Bye xlwings!"
-    else:
-        sheet["A1"].value = "Hello xlwings!"
-
-
-@xw.func
-def hello(name):
-    return f"Hello {name}!"
-
-
 import functools
 import math
 
@@ -144,8 +127,3 @@ def unified_classification(soil_parameters) -> str:
     soil = SoilData(*soil_parameters)
 
     return soil.get_unified_classification()
-
-
-if __name__ == "__main__":
-    xw.Book("soil_classier.xlsm").set_mock_caller()
-    main()

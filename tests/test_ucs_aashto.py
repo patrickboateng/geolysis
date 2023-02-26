@@ -1,5 +1,5 @@
 import pytest
-from src.ucs_aashto_classification import unified_classification
+from src.soil_classier.soil_classier import unified_classification
 
 
 @pytest.mark.parametrize(
