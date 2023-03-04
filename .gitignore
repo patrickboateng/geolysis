@@ -63,3 +63,7 @@ venv-*/
 test_data.csv
 *.xlsm
 *.xlam
+
+# Project Files
+.vscode
+.idea
