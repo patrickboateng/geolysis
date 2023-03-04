@@ -16,11 +16,11 @@ class SoilData:
         fines: float,
         sand: float,
         gravel: float,
+        d10,
+        d30,
+        d60,
         color: bool = False,
         odor: bool = False,
-        d10=None,
-        d30=None,
-        d60=None,
     ) -> None:
         """Soil Parameters Initializer
 
@@ -38,15 +38,25 @@ class SoilData:
         self.fines = fines
         self.sand = sand
         self.gravel = gravel
-        self.color = color
-        self.odor = odor
         self.d10 = d10
         self.d30 = d30
         self.d60 = d60
+        self.color = color
+        self.odor = odor
 
     @functools.cached_property
     def _A_line(self) -> float:
         return 0.73 * (self.liquid_limit - 20)
+
+    @property
+    def cc(self) -> float:
+        """Calculates the coefficient of curvature of the soil particles."""
+        return math.pow(self.d30, 2) / (self.d60 * self.d10)
+
+    @property
+    def cu(self) -> float:
+        """Calculates the coefficient of uniformity of the soil particles."""
+        return self.d60 / self.d10
 
     @property
     def is_above_A_line(self) -> bool:
@@ -60,7 +70,7 @@ class SoilData:
     def in_hatched_zone(self) -> bool:
         return math.isclose(self.plasticity_index, self._A_line)
 
-    def percentange_retained_on_200_sieve(self) -> float:
+    def percentage_retained_on_200_sieve(self) -> float:
         return self.fines
 
     def get_aashto_classification(self):
@@ -123,7 +133,7 @@ class SoilData:
 
 @xw.func
 @xw.arg("soil_parameters", np.array, ndim=1)
-def unified_classification(soil_parameters) -> str:
-    soil = SoilData(*soil_parameters)
+def unified_classification(soil_parameters, d10=None, d30=None, d60=None) -> str:
+    soil = SoilData(*soil_parameters, d10=d10, d30=d30, d60=d60)
 
     return soil.get_unified_classification()
