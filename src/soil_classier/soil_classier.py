@@ -77,11 +77,7 @@ class SoilData:
         pass
 
     def get_unified_classification(self):
-        """Unified Classification System
-
-        Args:
-            soil_data (SoilData): Soil Sample
-        """
+        """Unified Soil Classification System"""
         if self.fines < 50:
             # Coarse grained, Run Sieve Analysis
             if self.gravel > self.sand:
