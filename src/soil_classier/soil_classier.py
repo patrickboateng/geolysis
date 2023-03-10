@@ -113,6 +113,12 @@ class SoilData:
                     else:
                         return "MH"
 
+    def get_gravel_grading(self):
+        return "W" if (1 < self.cc < 3) and self.cu >= 4 else "P"
+
+    def get_sand_grading(self):
+        return "W" if (1 < self.cc < 3) and self.cu >= 6 else "P"
+
     def _check_fines(self, soil_type):
         if self.fines > 12:
             if self.is_above_A_line:
@@ -124,6 +130,10 @@ class SoilData:
         elif 5 <= self.fines <= 12:
             return f"{soil_type}W-{soil_type}M, {soil_type}P-{soil_type}M, {soil_type}W-{soil_type}C, {soil_type}P-{soil_type}C"
         else:
+            if self.d10 and self.d30 and self.d60:
+                if soil_type == "G":
+                    return f"{soil_type}{self.get_gravel_grading()}"
+                return f"{soil_type}{self.get_sand_grading()}"
             return f"{soil_type}W or {soil_type}P"  # Obtain Cc and Cu
 
 
