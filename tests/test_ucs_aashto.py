@@ -1,7 +1,7 @@
-from src.soil_classier.soil_classier import unified_classification
+from src.soil_classier.soil_classifier import USCS
 from .conftest import soil_infos
 
 
-def test_unified_classification():
+def test_USCS():
     for soil_parameters, classification in soil_infos():
-        assert unified_classification(soil_parameters) == classification
+        assert USCS(soil_parameters) == classification
