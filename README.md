@@ -2,7 +2,7 @@
 
 `soil_classifier` uses **Unified Classification System** (UCS) and the **American Association of State Highway and Transportation Officials** (AASHTO) system to classify soils.
 
-# Unified Classification System (UCS)
+# Unified Soil Classification System (USCS)
 
 _brief description underway_
 
