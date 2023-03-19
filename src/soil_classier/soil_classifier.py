@@ -6,7 +6,7 @@ import numpy as np
 
 
 class SoilData:
-    """Stores the soil parameters"""
+    """Stores the soil parameters."""
 
     def __init__(
         self,
@@ -22,7 +22,7 @@ class SoilData:
         color: bool = False,
         odor: bool = False,
     ) -> None:
-        """Soil Parameters Initializer
+        """Soil Parameters Initializer.
 
         Args:
             liquid_limit (float): Liquid Limit of soil (%)
@@ -50,12 +50,12 @@ class SoilData:
 
     @property
     def cc(self) -> float:
-        """Calculates the coefficient of curvature of the soil particles."""
+        """Calculates the coefficient of curvature of the soil."""
         return math.pow(self.d30, 2) / (self.d60 * self.d10)
 
     @property
     def cu(self) -> float:
-        """Calculates the coefficient of uniformity of the soil particles."""
+        """Calculates the coefficient of uniformity of the soil."""
         return self.d60 / self.d10
 
     @property
@@ -77,7 +77,7 @@ class SoilData:
         pass
 
     def get_unified_classification(self):
-        """Unified Soil Classification System"""
+        """Unified Soil Classification System."""
         if self.fines < 50:
             # Coarse grained, Run Sieve Analysis
             if self.gravel > self.sand:
@@ -138,8 +138,17 @@ class SoilData:
 
 
 @xw.func
-@xw.arg("soil_parameters", np.array, ndim=1)
-def unified_classification(soil_parameters, d10=None, d30=None, d60=None) -> str:
+@xw.arg("soil_parameters", np.array, ndim=1, doc="Contain soil parameters")
+@xw.arg("d10", doc="Specifies that 10% of soil particles is finer than this size")
+@xw.arg("d30", doc="Specifies that 30% of soil particles is finer than this size")
+@xw.arg("d60", doc="Specifies that 60% of soil particles is finer than this size")
+def USCS(soil_parameters, d10=None, d30=None, d60=None) -> str:
+    """Determines the classification of the soil based on the **Unified Soil
+    Classification System**.
+
+    Returns:
+        str: Soil Classification.
+    """
     soil = SoilData(*soil_parameters, d10=d10, d30=d30, d60=d60)
 
     return soil.get_unified_classification()
