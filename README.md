@@ -94,19 +94,19 @@ The distribution of grain sizes affects the engineering properties of the soil.
         <tr>
             <th>BS Sieve Designation</th>
             <th>ASTM Designation</th>
-            <th>Aperture (mm)</th>
+            <th>Aperture</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>1 in</td>
             <td></td>
-            <td>26.5</td>
+            <td>26.5 mm</td>
         </tr>
         <tr>
             <td>$\frac{3}{4}$ in</td>
             <td></td>
-            <td>19.0</td>
+            <td>19.0 mm</td>
         </tr>
         <tr>
             <td>$\frac{1}{2} in$</td>
