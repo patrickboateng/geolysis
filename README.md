@@ -131,12 +131,12 @@ The distribution of grain sizes affects the engineering properties of the soil.
         <tr>
             <td>No. 7</td>
             <td>No. 8</td>
-            <td>2.36</td>
+            <td>2.36 mm</td>
         </tr>
         <tr>
             <td>No. 14</td>
             <td>No. 16</td>
-            <td>1.18</td>
+            <td>1.18 mm</td>
         </tr>
         <tr>
             <td>No. 25</td>
