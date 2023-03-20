@@ -155,6 +155,6 @@ def USCS(soil_parameters, d10=None, d30=None, d60=None, color=None, odor=None) -
     Returns:
         str: Soil Classification.
     """
-    soil = SoilData(*soil_parameters, d10=d10, d30=d30, d60=d60)
+    soil = SoilData(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
 
     return soil.get_unified_classification()
