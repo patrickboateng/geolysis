@@ -106,7 +106,67 @@ The distribution of grain sizes affects the engineering properties of the soil.
         <tr>
             <td>$\frac{3}{4}$ in</td>
             <td></td>
-            <td></td>
+            <td>19.0</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{2} in$</td>
+            <td>0.53 in</td>
+            <td>13.2 mm</td>
+        </tr>
+        <tr>
+            <td>$\frac{3}{8} in$</td>
+            <td>$\frac{3}{8} in$</td>
+            <td>9.5 mm</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{4} in$</td>
+            <td>0.265 in</td>
+            <td>6.7 mm</td>
+        </tr>
+        <tr>
+            <td>$\frac{3}{16} in$</td>
+            <td>No. 4</td>
+            <td>4.75 mm</td>
+        </tr>
+        <tr>
+            <td>No. 7</td>
+            <td>No. 8</td>
+            <td>2.36</td>
+        </tr>
+        <tr>
+            <td>No. 14</td>
+            <td>No. 16</td>
+            <td>1.18</td>
+        </tr>
+        <tr>
+            <td>No. 25</td>
+            <td>No. 30</td>
+            <td>600 $\mu$m</td>
+        </tr>
+        <tr>
+            <td>No. 36</td>
+            <td>No. 40</td>
+            <td>425 $\mu$m</td>
+        </tr>
+        <tr>
+            <td>No. 52</td>
+            <td>No. 50</td>
+            <td>300 $\mu$m</td>
+        </tr>
+        <tr>
+            <td>No. 72</td>
+            <td>No. 70</td>
+            <td>212 $\mu$m</td>
+        </tr>
+        <tr>
+            <td>No. 100</td>
+            <td>No. 100</td>
+            <td>150 $\mu$m</td>
+        </tr>
+        <tr>
+            <td>No. 200</td>
+            <td>No. 200</td>
+            <td>75 $\mu$m</td>
         </tr>
     </tbody>
 </table>
