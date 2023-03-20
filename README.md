@@ -89,6 +89,28 @@ The distribution of grain sizes affects the engineering properties of the soil.
 
 # Sieves commonly used for Particle Size Distribution
 
+<table>
+    <thead>
+        <tr>
+            <th>BS Sieve Designation</th>
+            <th>ASTM Designation</th>
+            <th>Aperture (mm)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1 in</td>
+            <td></td>
+            <td>26.5</td>
+        </tr>
+        <tr>
+            <td>$\frac{3}{4}$ in</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
 # Unified Soil Classification System (USCS)
 
 _brief description underway_
