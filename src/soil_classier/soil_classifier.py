@@ -6,7 +6,21 @@ import numpy as np
 
 
 class SoilData:
-    """Stores the soil parameters."""
+    """Stores the soil parameters.
+
+    Args:
+        liquid_limit (float): Liquid Limit of soil (%)
+        plastic_limit (float): Plastic Limit of soil (%)
+        plasticity_index (float): Plasticity Index of soil (%)
+        fines (float): The amount of fines in the soil sample (%)
+        sand (float):  The amount of sand in the soil sample (%)
+        gravel (float): The amount of gravel in the soil sample (%)
+        d10 (float): diameter at which 10% of the soil by weight is finer
+        d30 (float): diameter at which 30% of the soil by weight is finer
+        d60 (float): diameter at which 60% of the soil by weight is finer
+        color (bool): Indicates if soil has color or not
+        odor (bool): Indicates if soil has odor or not
+    """
 
     def __init__(
         self,
@@ -22,16 +36,6 @@ class SoilData:
         color: bool = False,
         odor: bool = False,
     ) -> None:
-        """Soil Parameters Initializer.
-
-        Args:
-            liquid_limit (float): Liquid Limit of soil (%)
-            plastic_limit (float): Plastic Limit of soil (%)
-            plasticity_index (float): Plasticity Index of soil (%)
-            fines (float): The amount of fines in the soil sample (%)
-            sand (float):  The amount of sand in the soil sample (%)
-            gravel (float): The amount of gravel in the soil sample (%)
-        """
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
         self.plasticity_index = plasticity_index
@@ -139,10 +143,12 @@ class SoilData:
 
 @xw.func
 @xw.arg("soil_parameters", np.array, ndim=1, doc="Contain soil parameters")
-@xw.arg("d10", doc="Specifies that 10% of soil particles is finer than this size")
-@xw.arg("d30", doc="Specifies that 30% of soil particles is finer than this size")
-@xw.arg("d60", doc="Specifies that 60% of soil particles is finer than this size")
-def USCS(soil_parameters, d10=None, d30=None, d60=None) -> str:
+@xw.arg("d10", doc="diameter at which 10% of the soil by weight if finer")
+@xw.arg("d30", doc="diameter at which 30% ot he soil by weight is finer")
+@xw.arg("d60", doc="diameter at which 60% ot he soil by weight is finer")
+@xw.arg("color")
+@xw.arg("odor")
+def USCS(soil_parameters, d10=None, d30=None, d60=None, color=None, odor=None) -> str:
     """Determines the classification of the soil based on the **Unified Soil
     Classification System**.
 
