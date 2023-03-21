@@ -1,4 +1,4 @@
-from src.soil_classier.soil_classifier import USCS
+from src.soil_classifier.soil_classifier import USCS
 from .conftest import soil_infos
 
 

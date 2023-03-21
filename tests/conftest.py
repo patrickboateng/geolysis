@@ -3,11 +3,11 @@ import pathlib
 
 import pytest
 
-TEST_FILE = pathlib.Path(__file__).parent / "test_data.csv"
+TEST_DATA = pathlib.Path(__file__).parent / "test_data.csv"
 
 
 def soil_infos():
-    with open(TEST_FILE, "r") as f:
+    with open(TEST_DATA, "r") as f:
         soil_info = csv.reader(f)
         next(soil_info)
 

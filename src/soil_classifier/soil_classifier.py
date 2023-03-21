@@ -1,5 +1,6 @@
 import functools
 import math
+from typing import Sequence
 
 import xlwings as xw
 import numpy as np
@@ -142,16 +143,24 @@ class SoilData:
 
 
 @xw.func
-@xw.arg("soil_parameters", np.array, ndim=1, doc="Contain soil parameters")
+@xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
 @xw.arg("d10", doc="diameter at which 10% of the soil by weight if finer")
 @xw.arg("d30", doc="diameter at which 30% ot he soil by weight is finer")
 @xw.arg("d60", doc="diameter at which 60% ot he soil by weight is finer")
 @xw.arg("color")
 @xw.arg("odor")
-def USCS(soil_parameters, d10=None, d30=None, d60=None, color=None, odor=None) -> str:
+def USCS(
+    soil_parameters: Sequence, d10=None, d30=None, d60=None, color=None, odor=None
+) -> str:
     """Determines the classification of the soil based on the **Unified Soil
     Classification System**.
 
+    Args:
+        soil_parameters (Sequence): Soil parameters. The parameters should be arranged in the sequence
+                                    `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
+        d10 (float): Diameter at which 10% of the soil by weight is finer. Defaults to None.
+        d30 (float): Diameter at which 30% of the soil by weight is finer. Defaults to None.
+        d60 (float): Diameter at which 60% of the soil by weight is finer. Defaults to None.
     Returns:
         str: Soil Classification.
     """
