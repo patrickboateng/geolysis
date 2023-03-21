@@ -161,6 +161,8 @@ def USCS(
         d10 (float): Diameter at which 10% of the soil by weight is finer. Defaults to None.
         d30 (float): Diameter at which 30% of the soil by weight is finer. Defaults to None.
         d60 (float): Diameter at which 60% of the soil by weight is finer. Defaults to None.
+        color (bool): Indicates if soil has color or not.
+        odor (bool): Indicates if soil has color or not.
     Returns:
         str: Soil Classification.
     """
