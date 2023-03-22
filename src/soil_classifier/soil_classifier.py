@@ -6,7 +6,7 @@ import xlwings as xw
 import numpy as np
 
 
-class SoilData:
+class Soil:
     """Stores the soil parameters.
 
     Args:
@@ -166,6 +166,6 @@ def USCS(
     Returns:
         str: Soil Classification.
     """
-    soil = SoilData(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
+    soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
 
     return soil.get_unified_classification()
