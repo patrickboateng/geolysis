@@ -145,8 +145,8 @@ class Soil:
 @xw.func
 @xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
 @xw.arg("d10", doc="diameter at which 10% of the soil by weight if finer")
-@xw.arg("d30", doc="diameter at which 30% ot he soil by weight is finer")
-@xw.arg("d60", doc="diameter at which 60% ot he soil by weight is finer")
+@xw.arg("d30", doc="diameter at which 30% of the soil by weight is finer")
+@xw.arg("d60", doc="diameter at which 60% of the soil by weight is finer")
 @xw.arg("color")
 @xw.arg("odor")
 def USCS(
