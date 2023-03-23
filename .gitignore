@@ -60,7 +60,6 @@ venv_*/
 venv-*/
 
 # Test Files
-test_data.csv
 *.xlsm
 *.xlam
 
