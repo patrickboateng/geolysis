@@ -1,6 +1,6 @@
 import pytest
 
-from src.soil_classifier.soil_classifier import USCS
+from src.geolab.soil_classifier import USCS
 from .conftest import single_classification, dual_classification
 
 
