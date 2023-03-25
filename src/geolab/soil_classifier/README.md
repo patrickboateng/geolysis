@@ -2,6 +2,22 @@
 
 `soil_classifier` uses **Unified Soil Classification System (USCS)** and the **American Association of State Highway and Transportation Officials (AASHTO)** system to classify soils.
 
+# Installation
+
+1. Install `geolab`
+
+   ```sh
+   pip install geolab
+   ```
+
+1. Download excel addin [here](./soil_classifier.xlam "download") and run the following command on the command line.
+
+   ```sh
+   xlwings addin install --file ./path/to/addin
+   ```
+
+1. The function `USCS` should now be added to the Microsoft Excel functions and can be invoked like any other excel function.
+
 It is important to characterize soils to be able to assess their engineering properties such as:
 
 - Bearing capacity
