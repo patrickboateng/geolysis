@@ -1,180 +1,69 @@
-# `soil_classifier`: A Python Package and Microsoft Excel Add-In for soil classification.
+# `geolab `: A geotechnical engineering software for students and professionals.
 
-`soil_classifier` uses **Unified Soil Classification System (USCS)** and the **American Association of State Highway and Transportation Officials (AASHTO)** system to classify soils.
+<p align="center">
+    <a href="https://pypi.org/user/Pato546/">
+        <img src="https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white">
+    </a>
+    <a href="#">
+        <img src="https://img.shields.io/pypi/l/geolab?style=flat-square">
+    </a>
+    <a>
+        <img src="https://img.shields.io/pypi/dm/geolab?style=flat-square">
+    </a>
+    <a>
+        <img src="https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square">
+    </a>
+</p>
 
-It is important to characterize soils to be able to assess their engineering properties such as:
+`geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity, void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
 
-- Bearing capacity
-- Compressibility
-- Permeability
+> **&#9432;** Only Unified Soil Classification (USCS) has been implemented as of now and can also be installed as a Microsoft Excel addin. click [here](./src/geolab/soil_classifier/README.md#installation) if you want to see how.
 
-**Particle Size Distribution (PSD)** and **Atterberg Limits** are tests developed for characterizing soils quality.
+## Installation
 
-# Particle Size Distribution (PSD)
+Windows:
 
-The range of particle sizes in a sample of material is referred to as the particle size distribution. It is commonly measured using sieve analysis techniques, which entail using a stack of sieves to measure the size of the particles in a sample and graphing the results to illustrate the distribution of the particle sizes. The particle size distribution can provide important information about the materials' physical characteristics.
+```sh
+pip install geolab
+```
 
-## Soil type based on Particle Size
+## Usage example
 
-<table>
-    <thead>
-        <tr>
-            <th>Designation</th>
-            <th>Category</th>
-            <th>Particle Size (mm)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Boulders</td>
-            <td></td>
-            <td>> 200</td>
-        </tr>
-        <tr>
-            <td>Cobbles</td>
-            <td></td>
-            <td>60 - 200</td>
-        </tr>
-        <tr>
-            <td rowspan="3">Gravel</td>
-            <td>Coarse</td>
-            <td>20 - 60</td>
-        </tr>
-        <tr>
-            <td>Medium</td>
-            <td>6 - 20</td>
-        </tr>
-        <tr>
-            <td>Fine</td>
-            <td>2 - 6</td>
-        </tr>
-        <tr>
-            <td rowspan="3">Sand</td>
-            <td>Coarse</td>
-            <td>0.6 - 2</td>
-        </tr>
-        <tr>
-            <td>Medium</td>
-            <td>0.2 - 0.6</td>
-        </tr>
-        <tr>
-            <td>Fine</td>
-            <td>0.06 - 0.2</td>
-        </tr>
-        <tr>
-            <td rowspan="3">Silt</td>
-            <td>Coarse</td>
-            <td>0.02 - 0.06</td>
-        </tr>
-        <tr>
-            <td>Medium</td>
-            <td>0.006 - 0.02</td>
-        </tr>
-        <tr>
-            <td>Fine</td>
-            <td>0.002 - 0.006</td>
-        </tr>
-        <tr>
-            <td>Clay</td>
-            <td>Fine</td>
-            <td>< 0.002</td>
-        <tr>
-    </tbody>
-</table>
+```py
+from geolab.soil_classifier import USCS
 
-The distribution of grain sizes affects the engineering properties of the soil.
+# element in data should be arranged as follows
+# liquid limit, plastic limit, plasticity index, fines, sand, gravel
+data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
+clf = USCS(data)
 
-- A single grain-sized soil cannot be compacted to a high density, which results in a lesser shear strength.
-- Soils with grains spanning a wide size distribution can be compacted to a high density resulting in a high shear strength.
+print(clf)
+```
 
-# Sieves commonly used for Particle Size Distribution
+```sh
+ 'SC'
+```
 
-<table>
-    <thead>
-        <tr>
-            <th>BS Sieve Designation</th>
-            <th>ASTM Designation</th>
-            <th>Aperture</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>1 in</td>
-            <td></td>
-            <td>26.5 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{3}{4}$ in</td>
-            <td></td>
-            <td>19.0 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{1}{2} in$</td>
-            <td>0.53 in</td>
-            <td>13.2 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{3}{8} in$</td>
-            <td>$\frac{3}{8} in$</td>
-            <td>9.5 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{1}{4} in$</td>
-            <td>0.265 in</td>
-            <td>6.7 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{3}{16} in$</td>
-            <td>No. 4</td>
-            <td>4.75 mm</td>
-        </tr>
-        <tr>
-            <td>No. 7</td>
-            <td>No. 8</td>
-            <td>2.36 mm</td>
-        </tr>
-        <tr>
-            <td>No. 14</td>
-            <td>No. 16</td>
-            <td>1.18 mm</td>
-        </tr>
-        <tr>
-            <td>No. 25</td>
-            <td>No. 30</td>
-            <td>600 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 36</td>
-            <td>No. 40</td>
-            <td>425 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 52</td>
-            <td>No. 50</td>
-            <td>300 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 72</td>
-            <td>No. 70</td>
-            <td>212 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 100</td>
-            <td>No. 100</td>
-            <td>150 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 200</td>
-            <td>No. 200</td>
-            <td>75 $\mu m$</td>
-        </tr>
-    </tbody>
-</table>
+If you want to see how to install the addin for Microsoft Excel click [here](./src/geolab/soil_classifier/README.md#installation).
 
-# Unified Soil Classification System (USCS)
+<!-- ## Development setup
 
-_brief description underway_
+Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
 
-# American Association of State Highway and Transportation Officials (AASHTO)
+```sh
+make install
+npm test
+``` -->
 
-_brief description underway_
+## Release History
+
+- 0.1.0
+  - **rapid** development.
+
+## Contributing
+
+1. Fork it (<https://github.com/patrickboateng/geolab/fork>)
+2. Create your feature branch (`git checkout -b feature`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature`)
+5. Create a new Pull Request
