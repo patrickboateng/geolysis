@@ -10,7 +10,7 @@
    pip install geolab
    ```
 
-1. Download excel addin [here](../../../soil_classifier.xlam "download") and run the following command on the command line.
+1. Download the excel addin `soil_classifier_v0.1.0` [here](https://github.com/patrickboateng/geolab/releases/tag/v0.1.0) and run the following command on the command line.
 
    ```sh
    xlwings addin install --file /path/to/addin
