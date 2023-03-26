@@ -61,6 +61,7 @@ venv-*/
 
 # Test Files
 *.xlsm
+*.xlam
 
 # Project Files
 .vscode
