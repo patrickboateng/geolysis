@@ -10,10 +10,10 @@
    pip install geolab
    ```
 
-1. Download excel addin [here](./soil_classifier.xlam "download") and run the following command on the command line.
+1. Download excel addin [here](../../../soil_classifier.xlam "download") and run the following command on the command line.
 
    ```sh
-   xlwings addin install --file ./path/to/addin
+   xlwings addin install --file /path/to/addin
    ```
 
 1. The function `USCS` should now be added to the Microsoft Excel functions and can be invoked like any other excel function.
