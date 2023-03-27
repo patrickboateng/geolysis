@@ -1,6 +1,7 @@
 import pytest
 
-from src.geolab.soil_classifier import USCS, Soil
+from geolab.soil_classifier import USCS, Soil
+from geolab import PSDValueError
 from .conftest import single_classification, dual_classification
 
 
@@ -14,14 +15,15 @@ class TestSoil:
             fines=86,
             sand=8,
             gravel=6,
-            d10=None,
-            d30=None,
-            d60=None,
         )
 
     def test_group_index(self, soil: Soil):
         expected = 33.47
         assert soil.group_index() == pytest.approx(expected=expected)
+
+    def test_aggregates(self):
+        with pytest.raises(PSDValueError):
+            Soil(33, 21, 12, 30, 30, 30)
 
 
 def _get_params(soil):

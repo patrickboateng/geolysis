@@ -5,6 +5,14 @@ from typing import Sequence
 import xlwings as xw
 import numpy as np
 
+from geolab import PSDValueError
+
+
+def check_PSD(fines: float, sand: float, gravel: float):
+    total_aggregate = fines + sand + gravel
+    if not math.isclose(total_aggregate, 100):
+        raise PSDValueError("Aggregates must sum up to 100%")
+
 
 class Soil:
     """Stores the soil parameters.
@@ -31,9 +39,9 @@ class Soil:
         fines: float,
         sand: float,
         gravel: float,
-        d10,
-        d30,
-        d60,
+        d10=None,
+        d30=None,
+        d60=None,
         color: bool = False,
         odor: bool = False,
     ) -> None:
@@ -48,6 +56,8 @@ class Soil:
         self.d60 = d60
         self.color = color
         self.odor = odor
+
+        check_PSD(self.fines, self.sand, self.gravel)
 
     @functools.cached_property
     def _A_line(self) -> float:
