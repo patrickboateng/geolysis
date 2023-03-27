@@ -78,6 +78,19 @@ class Soil:
     def percentage_retained_on_200_sieve(self) -> float:
         return self.fines
 
+    def group_index(self):
+        """The `Group Index (GI)` is used to further evaluate soils with a group (subgroups).
+
+        Formula:
+            $$ GI = (F_200 - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_200 - 15)(PI - 10) $$
+        """
+
+        gi = (self.fines - 35) * (0.2 + 0.005 * (self.liquid_limit - 40)) + 0.01 * (
+            self.fines - 15
+        ) * (self.plasticity_index - 10)
+
+        return 0.0 if gi <= 0 else gi
+
     def get_aashto_classification(self):
         pass
 
@@ -169,3 +182,7 @@ def USCS(
     soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
 
     return soil.get_unified_classification()
+
+
+def AASHTO(soil_parameters: Sequence) -> str:
+    pass
