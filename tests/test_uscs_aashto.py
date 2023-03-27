@@ -1,7 +1,27 @@
 import pytest
 
-from src.geolab.soil_classifier import USCS
+from src.geolab.soil_classifier import USCS, Soil
 from .conftest import single_classification, dual_classification
+
+
+class TestSoil:
+    @pytest.fixture(scope="class")
+    def soil(self) -> Soil:
+        yield Soil(
+            liquid_limit=70,
+            plastic_limit=38,
+            plasticity_index=32,
+            fines=86,
+            sand=8,
+            gravel=6,
+            d10=None,
+            d30=None,
+            d60=None,
+        )
+
+    def test_group_index(self, soil: Soil):
+        expected = 33.47
+        assert soil.group_index() == pytest.approx(expected=expected)
 
 
 def _get_params(soil):
