@@ -1,2 +1,1 @@
-from .soil_classifier import USCS
-
+from .soil_classifier import USCS, Soil
