@@ -195,4 +195,11 @@ def USCS(
 
 
 def AASHTO(soil_parameters: Sequence) -> str:
-    pass
+    """Determines the classification of the soil based on the `AASHTO` classification system.
+
+    soil_parameters (Sequence): Soil parameters. The parameters should be arranged in the sequence
+                                    `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
+
+    Returns:
+        str: Soil Classification
+    """
