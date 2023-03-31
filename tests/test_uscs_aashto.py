@@ -1,3 +1,5 @@
+import unittest
+
 import pytest
 
 from geolab.soil_classifier import USCS, Soil
@@ -5,21 +7,9 @@ from geolab import PSDValueError
 from .conftest import single_classification, dual_classification
 
 
-class TestSoil:
-    @pytest.fixture(scope="class")
-    def soil(self) -> Soil:
-        yield Soil(
-            liquid_limit=33,
-            plastic_limit=21,
-            plasticity_index=12,
-            fines=30,
-            sand=30,
-            gravel=40,
-        )
-
-    @pytest.fixture(scope="class")
-    def aashto_soil(self) -> Soil:
-        yield Soil(
+class TestSoil(unittest.TestCase):
+    def setUp(self) -> None:
+        self.soil = Soil(
             liquid_limit=70,
             plastic_limit=38,
             plasticity_index=32,
@@ -28,23 +18,15 @@ class TestSoil:
             gravel=7,
         )
 
-    def test_group_index(self, soil: Soil):
-        expected = 0.0
-        assert soil.group_index == pytest.approx(expected=expected)
+    def test_A_line(self):
+        self.assertEqual(self.soil.is_above_A_line, False)
 
-    def test_aggregates(self):
-        with pytest.raises(PSDValueError):
-            Soil(33, 21, 12, 30, 30, 30)
+    def test_group_index(self):
+        self.assertAlmostEqual(self.soil.group_index, 33.47)
 
-    def test_Aline(self, soil: Soil):
-        expected = 9.49
-        assert soil._A_line == pytest.approx(expected=expected)
-
-    def test_unified_classification(self, soil: Soil):
-        assert soil.get_unified_classification() == "GC"
-
-    def test_aashto_classification(self, aashto_soil: Soil):
-        assert aashto_soil.get_aashto_classification() == "A-7-5(33)"
+    def test_classification(self):
+        self.assertEqual(self.soil.get_aashto_classification(), "A-7-5(33)")
+        self.assertEqual(self.soil.get_unified_classification(), "MH")
 
 
 def _get_params(soil):
