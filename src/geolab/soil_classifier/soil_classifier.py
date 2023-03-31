@@ -1,6 +1,6 @@
 import functools
 import math
-from typing import Sequence
+from typing import Sequence, Union
 
 import xlwings as xw
 import numpy as np
@@ -88,6 +88,7 @@ class Soil:
     def percentage_retained_on_200_sieve(self) -> float:
         return self.fines
 
+    @property
     def group_index(self):
         """The `Group Index (GI)` is used to further evaluate soils with a group (subgroups).
 
@@ -101,10 +102,53 @@ class Soil:
 
         return 0.0 if gi <= 0 else gi
 
-    def get_aashto_classification(self):
-        pass
+    def get_aashto_classification(self) -> str:
+        if self.fines <= 35:
+            # Gravels A1-A3
+            if self.fines <= 10:
+                return f"A-3({self.group_index})"
 
-    def get_unified_classification(self):
+            elif self.fines <= 15:
+                return f"A-1-a({self.group_index})"
+
+            elif self.fines <= 25:
+                return f"A-1-b({self.group_index})"
+
+            else:
+                if self.liquid_limit <= 40:
+                    return (
+                        f"A-2-4({self.group_index})"
+                        if self.plasticity_index <= 10
+                        else f"A-2-6({self.group_index})"
+                    )
+
+                else:
+                    return (
+                        f"A-2-5({self.group_index})"
+                        if self.plasticity_index <= 10
+                        else f"A-2-7({self.group_index})"
+                    )
+
+        else:
+            # Silts A4-A7
+            if self.liquid_limit <= 40:
+                return (
+                    f"A-4({self.group_index:.0f})"
+                    if self.plasticity_index <= 10
+                    else f"A-6({self.group_index:.0f})"
+                )
+
+            else:
+                if self.plasticity_index <= 10:
+                    return f"A-5({self.group_index:.0f})"
+                else:
+                    return (
+                        f"A-7-5({self.group_index:.0f})"
+                        if self.plasticity_index <= (self.liquid_limit - 30)
+                        else f"A-7-6({self.group_index:.0f})"
+                    )
+
+    def get_unified_classification(self) -> str:
         """Unified Soil Classification System."""
         if self.fines < 50:
             # Coarse grained, Run Sieve Analysis
@@ -173,33 +217,44 @@ class Soil:
 @xw.arg("color")
 @xw.arg("odor")
 def USCS(
-    soil_parameters: Sequence, d10=None, d30=None, d60=None, color=None, odor=None
+    soil_parameters: Sequence,
+    d10: Union[float, None] = None,
+    d30: Union[float, None] = None,
+    d60: Union[float, None] = None,
+    color: Union[bool, None] = None,
+    odor: Union[bool, None] = None,
 ) -> str:
     """Determines the classification of the soil based on the **Unified Soil
     Classification System**.
 
     Args:
-        soil_parameters (Sequence): Soil parameters. The parameters should be arranged in the sequence
+        soil_parameters: Soil parameters. The parameters should be arranged in the sequence
                                     `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
-        d10 (float): Diameter at which 10% of the soil by weight is finer. Defaults to None.
-        d30 (float): Diameter at which 30% of the soil by weight is finer. Defaults to None.
-        d60 (float): Diameter at which 60% of the soil by weight is finer. Defaults to None.
-        color (bool): Indicates if soil has color or not.
-        odor (bool): Indicates if soil has color or not.
+        d10: Diameter at which 10% of the soil by weight is finer. Defaults to None.
+        d30: Diameter at which 30% of the soil by weight is finer. Defaults to None.
+        d60: Diameter at which 60% of the soil by weight is finer. Defaults to None.
+        color: Indicates if soil has color or not.
+        odor: Indicates if soil has color or not.
     Returns:
-        str: Soil Classification.
+        A `string` representing the classification of the soil
     """
     soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
 
     return soil.get_unified_classification()
 
 
+@xw.func
+@xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
 def AASHTO(soil_parameters: Sequence) -> str:
     """Determines the classification of the soil based on the `AASHTO` classification system.
 
-    soil_parameters (Sequence): Soil parameters. The parameters should be arranged in the sequence
+    soil_parameters: Soil parameters. The parameters should be arranged in the sequence
                                     `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
 
     Returns:
-        str: Soil Classification
+        A `string` representing the `AASHTO` classification of the soil
     """
+
+    soil = Soil(*soil_parameters)
+
+    return soil.get_aashto_classification()
