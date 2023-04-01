@@ -17,7 +17,7 @@ def check_PSD(fines: float, sand: float, gravels: float):
     """
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100):
-        raise PSDValueError("fines + sand + gravels = 100%")
+        raise PSDValueError("fines + sand + gravels != 100%")
 
 
 def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
@@ -33,7 +33,7 @@ def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float)
         PIValueError: `LL - PL != PI`
     """
     if not math.isclose(liquid_limit - plastic_limit, plasticity_index):
-        raise PIValueError("Liquid limit - Plastic limit != Plasticity Index")
+        raise PIValueError("PI != LL - PL")
 
 
 class Soil:
