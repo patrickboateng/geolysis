@@ -2,9 +2,8 @@ import unittest
 
 import pytest
 
-from geolab.soil_classifier import USCS, Soil
-from geolab import PSDValueError
-from .conftest import single_classification, dual_classification
+from geolab.soil_classifier import Soil
+from geolab import PSDValueError, PIValueError
 
 
 class TestSoil(unittest.TestCase):
@@ -29,19 +28,31 @@ class TestSoil(unittest.TestCase):
         self.assertEqual(self.soil.get_unified_classification(), "MH")
 
 
-def _get_params(soil):
-    for soil_parameters in single_classification:
+def test_PSD():
+    with pytest.raises(PSDValueError):
+        Soil(30, 10, 20, 30, 30, 30)
+
+
+def test_PI():
+    with pytest.raises(PIValueError):
+        Soil(30, 10, 10, 30, 30, 40)
+
+
+def _get_params(soils):
+    for soil_parameters in soils:
         classification = soil_parameters.pop().strip()
         soil_parameters = (float(soil_data) for soil_data in soil_parameters)
     return soil_parameters, classification
 
 
-def test_single_classification(soil_infos):
-    soil_params, classification = _get_params(single_classification)
-    assert USCS(soil_parameters=soil_params) == classification
+def test_soil_single_classification(soils_: tuple[list, list]):
+    soil_single_classification, _ = soils_
+    soil_params, classification = _get_params(soil_single_classification)
+    assert Soil(*soil_params).get_unified_classification() == classification
 
 
 @pytest.mark.xfail
-def test_dual_classification(soil_infos):
-    soil_params, classification = _get_params(dual_classification)
-    assert USCS(soil_parameters=soil_params) == classification
+def test_soil_dual_classification(soils_):
+    _, soil_dual_classification = soils_
+    soil_params, classification = _get_params(soil_dual_classification)
+    assert Soil(*soil_params).get_aashto_classification() == classification
