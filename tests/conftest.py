@@ -6,22 +6,21 @@ import pytest
 TEST_DATA = pathlib.Path(__file__).parent / "test_data.csv"
 
 
-single_classification = []
-dual_classification = []
-
-
 @pytest.fixture(scope="session")
-def soil_infos():
+def soils_():
     f = open(TEST_DATA, "r")
-    soil_info = csv.reader(f)
-    next(soil_info)
+    soils = csv.reader(f)
+    next(soils)
 
-    for soil_data in soil_info:
+    soil_single_classification = []
+    soil_dual_classification = []
+
+    for soil_data in soils:
         if len(soil_data[-1].strip()) == 2:  # check classification type
-            single_classification.append(soil_data)
+            soil_single_classification.append(soil_data)
         else:
-            dual_classification.append(soil_data)
+            soil_dual_classification.append(soil_data)
 
-    yield
+    yield soil_single_classification, soil_dual_classification
 
     f.close()
