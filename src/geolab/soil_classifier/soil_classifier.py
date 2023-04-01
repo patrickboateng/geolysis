@@ -1,34 +1,62 @@
 import functools
 import math
-from typing import Sequence, Union
 
-import xlwings as xw
-import numpy as np
-
-from geolab import PSDValueError
+from geolab import PSDValueError, PIValueError
 
 
-def check_PSD(fines: float, sand: float, gravel: float):
-    total_aggregate = fines + sand + gravel
+def check_PSD(fines: float, sand: float, gravels: float):
+    """Checks if `fines + sand + gravels = 100%`.
+
+    Args:
+        fines (float): Percentage of fines in  soil sample.
+        sand (float): Percentage of sand in soil sample.
+        gravel (float): Percentage of gravels in soil sample.
+
+    Raises:
+        PSDValueError: `fines + sand + gravels != 100%`.
+    """
+    total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100):
-        raise PSDValueError("Aggregates must sum up to 100%")
+        raise PSDValueError("fines + sand + gravels = 100%")
+
+
+def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
+    """Checks if `PI = LL - PL`
+
+    Args:
+        liquid_limit (float): Water content beyond which soils flows under their own weight.
+        plastic_limit (float): Water content at which plastic deformation can be initiated.
+        plasticity_index (float): Range of water content over which soil remains in plastic
+                                  condition `PI = LL - PL`
+
+    Raises:
+        PIValueError: `LL - PL != PI`
+    """
+    if not math.isclose(liquid_limit - plastic_limit, plasticity_index):
+        raise PIValueError("Liquid limit - Plastic limit != Plasticity Index")
 
 
 class Soil:
     """Stores the soil parameters.
 
     Args:
-        liquid_limit (float): Liquid Limit of soil (%)
-        plastic_limit (float): Plastic Limit of soil (%)
-        plasticity_index (float): Plasticity Index of soil (%)
-        fines (float): The amount of fines in the soil sample (%)
-        sand (float):  The amount of sand in the soil sample (%)
-        gravel (float): The amount of gravel in the soil sample (%)
-        d10 (float): diameter at which 10% of the soil by weight is finer
-        d30 (float): diameter at which 30% of the soil by weight is finer
-        d60 (float): diameter at which 60% of the soil by weight is finer
-        color (bool): Indicates if soil has color or not
-        odor (bool): Indicates if soil has odor or not
+        liquid_limit (float): Water content beyond which soils flows under their own weight. (%)
+        plastic_limit (float): Water content at which plastic deformation can be initiated. (%)
+        plasticity_index (float): Range of water content over which soil remains in plastic
+                                  condition `PI = LL - PL` (%)
+        fines (float): Percentage of fines in soil sample.
+        sand (float):  Percentage of sand in soil sample.
+        gravel (float): Percentage of gravels in soil sample.
+        d10 (float): diameter at which 10% of the soil by weight is finer.
+        d30 (float): diameter at which 30% of the soil by weight is finer.
+        d60 (float): diameter at which 60% of the soil by weight is finer.
+        color (bool): Indicates if soil has color or not.
+        odor (bool): Indicates if soil has odor or not.
+
+    Raises:
+        PSDValueError: `fines + sand + gravels != 100%`.
+        PIValueError: `LL - PL != PI`
+
     """
 
     def __init__(
@@ -57,6 +85,7 @@ class Soil:
         self.color = color
         self.odor = odor
 
+        check_PI(self.liquid_limit, self.plastic_limit, self.plasticity_index)
         check_PSD(self.fines, self.sand, self.gravel)
 
     @functools.cached_property
@@ -207,54 +236,3 @@ class Soil:
                     return f"{soil_type}{self.get_gravel_grading()}"
                 return f"{soil_type}{self.get_sand_grading()}"
             return f"{soil_type}W or {soil_type}P"  # Obtain Cc and Cu
-
-
-@xw.func
-@xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
-@xw.arg("d10", doc="diameter at which 10% of the soil by weight if finer")
-@xw.arg("d30", doc="diameter at which 30% of the soil by weight is finer")
-@xw.arg("d60", doc="diameter at which 60% of the soil by weight is finer")
-@xw.arg("color")
-@xw.arg("odor")
-def USCS(
-    soil_parameters: Sequence,
-    d10: Union[float, None] = None,
-    d30: Union[float, None] = None,
-    d60: Union[float, None] = None,
-    color: Union[bool, None] = None,
-    odor: Union[bool, None] = None,
-) -> str:
-    """Determines the classification of the soil based on the **Unified Soil
-    Classification System**.
-
-    Args:
-        soil_parameters: Soil parameters. The parameters should be arranged in the sequence
-                                    `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
-        d10: Diameter at which 10% of the soil by weight is finer. Defaults to None.
-        d30: Diameter at which 30% of the soil by weight is finer. Defaults to None.
-        d60: Diameter at which 60% of the soil by weight is finer. Defaults to None.
-        color: Indicates if soil has color or not.
-        odor: Indicates if soil has color or not.
-    Returns:
-        A `string` representing the classification of the soil
-    """
-    soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
-
-    return soil.get_unified_classification()
-
-
-@xw.func
-@xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
-def AASHTO(soil_parameters: Sequence) -> str:
-    """Determines the classification of the soil based on the `AASHTO` classification system.
-
-    soil_parameters: Soil parameters. The parameters should be arranged in the sequence
-                                    `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
-
-    Returns:
-        A `string` representing the `AASHTO` classification of the soil
-    """
-
-    soil = Soil(*soil_parameters)
-
-    return soil.get_aashto_classification()
