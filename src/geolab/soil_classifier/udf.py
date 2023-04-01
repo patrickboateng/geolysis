@@ -3,7 +3,7 @@ from typing import Sequence, Union
 import numpy as np
 import xlwings as xw
 
-from geolab.soil_classifier import Soil
+from .soil_classifier import Soil
 
 
 @xw.func
