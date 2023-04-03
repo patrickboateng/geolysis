@@ -1,5 +1,8 @@
 import functools
 import math
+from typing import Union
+
+from attrs import define, field
 
 from geolab import exceptions
 
@@ -36,6 +39,7 @@ def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float)
         raise exceptions.PIValueError("PI != LL - PL")
 
 
+@define(frozen=True, slots=False)
 class Soil:
     """Stores the soil parameters.
 
@@ -46,7 +50,7 @@ class Soil:
                                   condition `PI = LL - PL` (%)
         fines (float): Percentage of fines in soil sample.
         sand (float):  Percentage of sand in soil sample.
-        gravel (float): Percentage of gravels in soil sample.
+        gravels (float): Percentage of gravels in soil sample.
         d10 (float): diameter at which 10% of the soil by weight is finer.
         d30 (float): diameter at which 30% of the soil by weight is finer.
         d60 (float): diameter at which 60% of the soil by weight is finer.
@@ -56,37 +60,23 @@ class Soil:
     Raises:
         exceptions.PSDValueError: `fines + sand + gravels != 100%`.
         exceptions.PIValueError: `LL - PL != PI`
-
     """
 
-    def __init__(
-        self,
-        liquid_limit: float,
-        plastic_limit: float,
-        plasticity_index: float,
-        fines: float,
-        sand: float,
-        gravel: float,
-        d10=None,
-        d30=None,
-        d60=None,
-        color: bool = False,
-        odor: bool = False,
-    ) -> None:
-        self.liquid_limit = liquid_limit
-        self.plastic_limit = plastic_limit
-        self.plasticity_index = plasticity_index
-        self.fines = fines
-        self.sand = sand
-        self.gravel = gravel
-        self.d10 = d10
-        self.d30 = d30
-        self.d60 = d60
-        self.color = color
-        self.odor = odor
+    liquid_limit: float
+    plastic_limit: float
+    plasticity_index: float
+    fines: float
+    sand: float
+    gravels: float
+    d10: Union[float, None] = field(default=None)
+    d30: Union[float, None] = field(default=None)
+    d60: Union[float, None] = field(default=None)
+    color: bool = field(default=False)
+    odor: bool = field(default=False)
 
+    def __attrs_post_init__(self):
         check_PI(self.liquid_limit, self.plastic_limit, self.plasticity_index)
-        check_PSD(self.fines, self.sand, self.gravel)
+        check_PSD(self.fines, self.sand, self.gravels)
 
     @functools.cached_property
     def _A_line(self) -> float:
@@ -131,6 +121,7 @@ class Soil:
 
         return 0.0 if gi <= 0 else gi
 
+    @functools.cache
     def get_aashto_classification(self) -> str:
         if self.fines <= 35:
             # Gravels A1-A3
@@ -177,11 +168,12 @@ class Soil:
                         else f"A-7-6({self.group_index:.0f})"
                     )
 
+    @functools.cache
     def get_unified_classification(self) -> str:
         """Unified Soil Classification System."""
         if self.fines < 50:
             # Coarse grained, Run Sieve Analysis
-            if self.gravel > self.sand:
+            if self.gravels > self.sand:
                 # Gravel
                 soil_type = "G"
                 return self._check_fines(soil_type)
