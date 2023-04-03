@@ -14,7 +14,7 @@ class TestSoil(unittest.TestCase):
             plasticity_index=32,
             fines=86,
             sand=7,
-            gravel=7,
+            gravels=7,
         )
 
     def test_A_line(self):
