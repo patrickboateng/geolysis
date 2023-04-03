@@ -3,7 +3,7 @@ from typing import Sequence, Union
 import numpy as np
 import xlwings as xw
 
-from .soil_classifier import Soil
+from geolab.soil_classifier import soil_classifier
 
 
 @xw.func
@@ -35,7 +35,9 @@ def USCS(
     Returns:
         A `string` representing the classification of the soil
     """
-    soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
+    soil = soil_classifier.Soil(
+        *soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor
+    )
 
     return soil.get_unified_classification()
 
@@ -52,6 +54,6 @@ def AASHTO(soil_parameters: Sequence) -> str:
         A `string` representing the `AASHTO` classification of the soil
     """
 
-    soil = Soil(*soil_parameters)
+    soil = soil_classifier.Soil(*soil_parameters)
 
     return soil.get_aashto_classification()

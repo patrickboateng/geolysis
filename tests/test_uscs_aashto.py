@@ -2,13 +2,13 @@ import unittest
 
 import pytest
 
-from geolab.soil_classifier import Soil
+from geolab import soil_classifier
 from geolab import PSDValueError, PIValueError
 
 
 class TestSoil(unittest.TestCase):
     def setUp(self) -> None:
-        self.soil = Soil(
+        self.soil = soil_classifier.Soil(
             liquid_limit=70,
             plastic_limit=38,
             plasticity_index=32,
@@ -30,12 +30,12 @@ class TestSoil(unittest.TestCase):
 
 def test_PSD():
     with pytest.raises(PSDValueError):
-        Soil(30, 10, 20, 30, 30, 30)
+        soil_classifier.Soil(30, 10, 20, 30, 30, 30)
 
 
 def test_PI():
     with pytest.raises(PIValueError):
-        Soil(30, 10, 10, 30, 30, 40)
+        soil_classifier.Soil(30, 10, 10, 30, 30, 40)
 
 
 def _get_params(soils):
@@ -48,11 +48,16 @@ def _get_params(soils):
 def test_soil_single_classification(soils_: tuple[list, list]):
     soil_single_classification, _ = soils_
     soil_params, classification = _get_params(soil_single_classification)
-    assert Soil(*soil_params).get_unified_classification() == classification
+    assert (
+        soil_classifier.Soil(*soil_params).get_unified_classification()
+        == classification
+    )
 
 
 @pytest.mark.xfail
 def test_soil_dual_classification(soils_):
     _, soil_dual_classification = soils_
     soil_params, classification = _get_params(soil_dual_classification)
-    assert Soil(*soil_params).get_aashto_classification() == classification
+    assert (
+        soil_classifier.Soil(*soil_params).get_aashto_classification() == classification
+    )

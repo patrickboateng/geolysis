@@ -1,7 +1,7 @@
 import functools
 import math
 
-from geolab import PSDValueError, PIValueError
+from geolab import exceptions
 
 
 def check_PSD(fines: float, sand: float, gravels: float):
@@ -13,11 +13,11 @@ def check_PSD(fines: float, sand: float, gravels: float):
         gravel (float): Percentage of gravels in soil sample.
 
     Raises:
-        PSDValueError: `fines + sand + gravels != 100%`.
+        exceptions.PSDValueError: `fines + sand + gravels != 100%`.
     """
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100):
-        raise PSDValueError("fines + sand + gravels != 100%")
+        raise exceptions.PSDValueError("fines + sand + gravels != 100%")
 
 
 def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
@@ -30,10 +30,10 @@ def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float)
                                   condition `PI = LL - PL`
 
     Raises:
-        PIValueError: `LL - PL != PI`
+        exceptions.PIValueError: `LL - PL != PI`
     """
     if not math.isclose(liquid_limit - plastic_limit, plasticity_index):
-        raise PIValueError("PI != LL - PL")
+        raise exceptions.PIValueError("PI != LL - PL")
 
 
 class Soil:
@@ -54,8 +54,8 @@ class Soil:
         odor (bool): Indicates if soil has odor or not.
 
     Raises:
-        PSDValueError: `fines + sand + gravels != 100%`.
-        PIValueError: `LL - PL != PI`
+        exceptions.PSDValueError: `fines + sand + gravels != 100%`.
+        exceptions.PIValueError: `LL - PL != PI`
 
     """
 
