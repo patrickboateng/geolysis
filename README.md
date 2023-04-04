@@ -67,3 +67,11 @@ npm test
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature`)
 5. Create a new Pull Request
+
+## Todo
+
+- [x] Soil Classifier
+- [ ] Estimating Soil Engineering Parameters
+- [ ] Bearing Capacity Analysis
+- [ ] Settlement Analysis
+- [ ] Modelling the behavior of Soils under loads using `FEM`
