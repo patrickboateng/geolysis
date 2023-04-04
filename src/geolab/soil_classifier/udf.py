@@ -39,8 +39,8 @@ def USCS(
     color: Union[bool, None] = None,
     odor: Union[bool, None] = None,
 ) -> str:
-    """Determines the classification of the soil based on the **Unified Soil
-    Classification System**.
+    """Determines the classification of the soil based on the `Unified Soil
+    Classification System`.
 
     Args:
         soil_parameters: Parameters of the Soil.
