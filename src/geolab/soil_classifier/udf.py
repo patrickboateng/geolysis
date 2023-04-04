@@ -1,20 +1,38 @@
 from typing import Sequence, Union
+from typing import NamedTuple
 
 import numpy as np
 import xlwings as xw
+from xlwings import conversion
 
 from geolab.soil_classifier import soil_classifier
 
 
+class SoilParameters(NamedTuple):
+    liquid_limit: float
+    plastic_limit: float
+    plasticity_index: float
+    fines: float
+    sand: float
+    gravels: float
+
+
+class SoilConverter(conversion.Converter):
+    @staticmethod
+    def read_value(value, options):
+        soil_parameters: SoilParameters = SoilParameters(*value)
+        return soil_parameters
+
+
 @xw.func
-@xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
+@xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
 @xw.arg("d10", doc="diameter at which 10% of the soil by weight if finer")
 @xw.arg("d30", doc="diameter at which 30% of the soil by weight is finer")
 @xw.arg("d60", doc="diameter at which 60% of the soil by weight is finer")
 @xw.arg("color")
 @xw.arg("odor")
 def USCS(
-    soil_parameters: Sequence,
+    soil_parameters: SoilParameters,
     d10: Union[float, None] = None,
     d30: Union[float, None] = None,
     d60: Union[float, None] = None,
@@ -25,8 +43,7 @@ def USCS(
     Classification System**.
 
     Args:
-        soil_parameters: Soil parameters. The parameters should be arranged in the sequence
-                                    `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
+        soil_parameters: Parameters of the Soil.
         d10: Diameter at which 10% of the soil by weight is finer. Defaults to None.
         d30: Diameter at which 30% of the soil by weight is finer. Defaults to None.
         d60: Diameter at which 60% of the soil by weight is finer. Defaults to None.
@@ -36,24 +53,39 @@ def USCS(
         A `string` representing the classification of the soil
     """
     soil = soil_classifier.Soil(
-        *soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor
+        liquid_limit=soil_parameters.liquid_limit,
+        plastic_limit=soil_parameters.plastic_limit,
+        plasticity_index=soil_parameters.plasticity_index,
+        fines=soil_parameters.fines,
+        sand=soil_parameters.sand,
+        gravels=soil_parameters.gravels,
+        d10=d10,
+        d30=d30,
+        d60=d60,
+        color=color,
+        odor=odor,
     )
 
     return soil.get_unified_classification()
 
 
 @xw.func
-@xw.arg("soil_parameters", np.array, ndim=1, doc="Soil parameters")
-def AASHTO(soil_parameters: Sequence) -> str:
+@xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
+def AASHTO(soil_parameters: SoilParameters) -> str:
     """Determines the classification of the soil based on the `AASHTO` classification system.
 
-    soil_parameters: Soil parameters. The parameters should be arranged in the sequence
-                                    `liquid limit`, `plastic limit`, `plasticity index`, `fines`, `sand`, `gravel`
+    soil_parameters: Parameters of the soil.
 
     Returns:
         A `string` representing the `AASHTO` classification of the soil
     """
-
-    soil = soil_classifier.Soil(*soil_parameters)
+    soil = soil_classifier.Soil(
+        liquid_limit=soil_parameters.liquid_limit,
+        plastic_limit=soil_parameters.plastic_limit,
+        plasticity_index=soil_parameters.plasticity_index,
+        fines=soil_parameters.fines,
+        sand=soil_parameters.sand,
+        gravels=soil_parameters.gravels,
+    )
 
     return soil.get_aashto_classification()
