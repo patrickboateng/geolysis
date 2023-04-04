@@ -7,7 +7,7 @@ plugins:
   - mkdocstrings
 
 nav:
-  - Introduction: index.md
+  - Getting Started with GeoLab: index.md
   - tutorials.md
   - how-to-guides.md
   - reference.md
