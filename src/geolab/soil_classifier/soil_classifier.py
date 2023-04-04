@@ -11,9 +11,9 @@ def check_PSD(fines: float, sand: float, gravels: float):
     """Checks if `fines + sand + gravels = 100%`.
 
     Args:
-        fines (float): Percentage of fines in  soil sample.
-        sand (float): Percentage of sand in soil sample.
-        gravel (float): Percentage of gravels in soil sample.
+        fines: Percentage of fines in  soil sample.
+        sand: Percentage of sand in soil sample.
+        gravels: Percentage of gravels in soil sample.
 
     Raises:
         exceptions.PSDValueError: `fines + sand + gravels != 100%`.
@@ -24,16 +24,16 @@ def check_PSD(fines: float, sand: float, gravels: float):
 
 
 def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
-    """Checks if `PI = LL - PL`
+    """Checks if `PI = LL - PL`.
 
     Args:
-        liquid_limit (float): Water content beyond which soils flows under their own weight.
-        plastic_limit (float): Water content at which plastic deformation can be initiated.
-        plasticity_index (float): Range of water content over which soil remains in plastic
-                                  condition `PI = LL - PL`
+        liquid_limit: Water content beyond which soils flows under their own weight.
+        plastic_limit: Water content at which plastic deformation can be initiated.
+        plasticity_index: Range of water content over which soil remains in plastic
+                                  condition `PI = LL - PL`.
 
     Raises:
-        exceptions.PIValueError: `LL - PL != PI`
+        exceptions.PIValueError: `LL - PL != PI`.
     """
     if not math.isclose(liquid_limit - plastic_limit, plasticity_index):
         raise exceptions.PIValueError("PI != LL - PL")
@@ -43,19 +43,19 @@ def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float)
 class Soil:
     """Stores the soil parameters.
 
-    Args:
-        liquid_limit (float): Water content beyond which soils flows under their own weight. (%)
-        plastic_limit (float): Water content at which plastic deformation can be initiated. (%)
-        plasticity_index (float): Range of water content over which soil remains in plastic
+    Attributes:
+        liquid_limit: Water content beyond which soils flows under their own weight. (%)
+        plastic_limit: Water content at which plastic deformation can be initiated. (%)
+        plasticity_index: Range of water content over which soil remains in plastic
                                   condition `PI = LL - PL` (%)
-        fines (float): Percentage of fines in soil sample.
-        sand (float):  Percentage of sand in soil sample.
-        gravels (float): Percentage of gravels in soil sample.
-        d10 (float): diameter at which 10% of the soil by weight is finer.
-        d30 (float): diameter at which 30% of the soil by weight is finer.
-        d60 (float): diameter at which 60% of the soil by weight is finer.
-        color (bool): Indicates if soil has color or not.
-        odor (bool): Indicates if soil has odor or not.
+        fines: Percentage of fines in soil sample.
+        sand:  Percentage of sand in soil sample.
+        gravels: Percentage of gravels in soil sample.
+        d10: diameter at which 10% of the soil by weight is finer. Defaults to None.
+        d30: diameter at which 30% of the soil by weight is finer. Defaults to None.
+        d60: diameter at which 60% of the soil by weight is finer. Defaults to None.
+        color: Indicates if soil has color or not. Defaults to False.
+        odor: Indicates if soil has odor or not. Defaults to False.
 
     Raises:
         exceptions.PSDValueError: `fines + sand + gravels != 100%`.
@@ -77,10 +77,6 @@ class Soil:
     def __attrs_post_init__(self):
         check_PI(self.liquid_limit, self.plastic_limit, self.plasticity_index)
         check_PSD(self.fines, self.sand, self.gravels)
-
-    @functools.cached_property
-    def _A_line(self) -> float:
-        return 0.73 * (self.liquid_limit - 20)
 
     @property
     def cc(self) -> float:
@@ -104,9 +100,6 @@ class Soil:
     def in_hatched_zone(self) -> bool:
         return math.isclose(self.plasticity_index, self._A_line)
 
-    def percentage_retained_on_200_sieve(self) -> float:
-        return self.fines
-
     @property
     def group_index(self):
         """The `Group Index (GI)` is used to further evaluate soils with a group (subgroups).
@@ -120,6 +113,10 @@ class Soil:
         ) * (self.plasticity_index - 10)
 
         return 0.0 if gi <= 0 else gi
+
+    @functools.cached_property
+    def _A_line(self) -> float:
+        return 0.73 * (self.liquid_limit - 20)
 
     @functools.cache
     def get_aashto_classification(self) -> str:
@@ -189,10 +186,8 @@ class Soil:
                     return "CL"
 
                 elif not self.is_above_A_line or self.plasticity_index < 4:
-                    if self.is_organic:
-                        return "OL"
-                    else:
-                        return "ML"
+                    return "OL" if self.is_organic else "ML"
+
                 else:
                     return "ML-CL"
 
@@ -200,17 +195,9 @@ class Soil:
                 # High LL
                 if self.is_above_A_line:
                     return "CH"
+
                 else:
-                    if self.is_organic:
-                        return "OH"
-                    else:
-                        return "MH"
-
-    def get_gravel_grading(self):
-        return "W" if (1 < self.cc < 3) and self.cu >= 4 else "P"
-
-    def get_sand_grading(self):
-        return "W" if (1 < self.cc < 3) and self.cu >= 6 else "P"
+                    return "OH" if self.is_organic else "MH"
 
     def _check_fines(self, soil_type):
         if self.fines > 12:
@@ -223,8 +210,17 @@ class Soil:
         elif 5 <= self.fines <= 12:
             return f"{soil_type}W-{soil_type}M, {soil_type}P-{soil_type}M, {soil_type}W-{soil_type}C, {soil_type}P-{soil_type}C"
         else:
+            # Obtain Cc and Cu
             if self.d10 and self.d30 and self.d60:
-                if soil_type == "G":
-                    return f"{soil_type}{self.get_gravel_grading()}"
-                return f"{soil_type}{self.get_sand_grading()}"
-            return f"{soil_type}W or {soil_type}P"  # Obtain Cc and Cu
+                return (
+                    f"{soil_type}{self.get_gravel_grading()}"
+                    if soil_type == "G"
+                    else f"{soil_type}{self.get_sand_grading()}"
+                )
+            return f"{soil_type}W or {soil_type}P"
+
+    def get_gravel_grading(self):
+        return "W" if (1 < self.cc < 3) and self.cu >= 4 else "P"
+
+    def get_sand_grading(self):
+        return "W" if (1 < self.cc < 3) and self.cu >= 6 else "P"
