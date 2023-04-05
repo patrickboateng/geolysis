@@ -1,4 +1,4 @@
-# `geolab `: A geotechnical engineering software for students and professionals.
+# `geolab `: geotechnical engineering software for students and professionals.
 
 <p align="center">
     <a href="https://pypi.org/user/Pato546/">
