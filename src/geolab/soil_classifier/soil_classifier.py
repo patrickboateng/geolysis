@@ -104,8 +104,7 @@ class Soil:
     def group_index(self):
         """The `Group Index (GI)` is used to further evaluate soils with a group (subgroups).
 
-        Formula:
-            $$ GI = (F_200 - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_200 - 15)(PI - 10) $$
+        $$ GI = (F_200 - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_200 - 15)(PI - 10) $$
         """
 
         gi = (self.fines - 35) * (0.2 + 0.005 * (self.liquid_limit - 40)) + 0.01 * (
@@ -113,6 +112,10 @@ class Soil:
         ) * (self.plasticity_index - 10)
 
         return 0.0 if gi <= 0 else gi
+
+    @property
+    def remarks(self):
+        pass
 
     @functools.cached_property
     def _A_line(self) -> float:
