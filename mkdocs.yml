@@ -1,10 +1,24 @@
 site_name: Geolab
+site_description: Geotechnical engineering software for students and professionals.
+site_url:
+site_author: Patrick Boateng
+repo_url: https://github.com/patrickboateng/geolab
+repo_name: patrickboateng/geolab
 
 theme:
   name: "material"
+  features:
+    - search
+    - search.highlight
+    - search.suggest
 
 plugins:
   - mkdocstrings
+
+markdown_extensions:
+  - markdown_include.include:
+      base_path: docs
+      throwException: true
 
 nav:
   - Getting Started with GeoLab: index.md
