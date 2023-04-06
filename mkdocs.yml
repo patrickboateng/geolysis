@@ -13,7 +13,8 @@ theme:
     - search.suggest
 
 plugins:
-  - search
+  - search:
+      lang: en
   - mkdocstrings
 
 markdown_extensions:
