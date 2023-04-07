@@ -22,6 +22,14 @@ markdown_extensions:
       base_path: docs
       throwException: true
 
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 nav:
   - Getting Started with GeoLab: index.md
   - tutorials.md
