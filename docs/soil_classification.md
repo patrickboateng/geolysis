@@ -1,5 +1,3 @@
-# SOIL CLASSIFICATION
-
 It is important to characterize soils to be able to assess their engineering properties such as:
 
 - Bearing capacity
@@ -169,10 +167,10 @@ The distribution of grain sizes affects the engineering properties of the soil.
     </tbody>
 </table>
 
-# Unified Soil Classification System (USCS)
+## Unified Soil Classification System (USCS)
 
 _brief description underway_
 
-# American Association of State Highway and Transportation Officials (AASHTO)
+## American Association of State Highway and Transportation Officials (AASHTO)
 
 _brief description underway_
