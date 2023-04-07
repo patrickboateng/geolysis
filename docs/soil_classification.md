@@ -1,10 +1,4 @@
-1. Download the excel addin `soil_classifier_v0.1.0` [here](https://github.com/patrickboateng/geolab/releases/tag/v0.1.0) and run the following command on the command line.
-
-   ```sh
-   xlwings addin install --file /path/to/addin
-   ```
-
-1. The function `USCS` should now be added to the Microsoft Excel functions and can be invoked like any other excel function.
+# SOIL CLASSIFICATION
 
 It is important to characterize soils to be able to assess their engineering properties such as:
 
@@ -14,11 +8,11 @@ It is important to characterize soils to be able to assess their engineering pro
 
 **Particle Size Distribution (PSD)** and **Atterberg Limits** are tests developed for characterizing soils quality.
 
-# Particle Size Distribution (PSD)
+## Particle Size Distribution (PSD)
 
 The range of particle sizes in a sample of material is referred to as the particle size distribution. It is commonly measured using sieve analysis techniques, which entail using a stack of sieves to measure the size of the particles in a sample and graphing the results to illustrate the distribution of the particle sizes. The particle size distribution can provide important information about the materials' physical characteristics.
 
-## Soil type based on Particle Size
+### Soil type based on Particle Size
 
 <table>
     <thead>
@@ -91,7 +85,7 @@ The distribution of grain sizes affects the engineering properties of the soil.
 - A single grain-sized soil cannot be compacted to a high density, which results in a lesser shear strength.
 - Soils with grains spanning a wide size distribution can be compacted to a high density resulting in a high shear strength.
 
-# Sieves commonly used for Particle Size Distribution
+## Sieves commonly used for Particle Size Distribution
 
 <table>
     <thead>
