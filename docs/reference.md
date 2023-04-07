@@ -1,1 +1,1 @@
-::: geolab.soil_classifier.soil_classifier
+::: geolab.soil_classifier
