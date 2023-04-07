@@ -60,7 +60,7 @@ npm test
 
 ## Contributing
 
-1. Fork it (<https://github.com/patrickboateng/geolab/fork>)
+1. [Fork it](https://github.com/patrickboateng/geolab/fork)
 2. Create your feature branch (`git checkout -b feature`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature`)
