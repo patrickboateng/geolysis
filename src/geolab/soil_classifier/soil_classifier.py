@@ -7,7 +7,7 @@ from attrs import define, field
 from geolab import exceptions
 
 
-def check_PSD(fines: float, sand: float, gravels: float):
+def _check_PSD(fines: float, sand: float, gravels: float):
     """Checks if `fines + sand + gravels = 100%`.
 
     Args:
@@ -23,7 +23,7 @@ def check_PSD(fines: float, sand: float, gravels: float):
         raise exceptions.PSDValueError("fines + sand + gravels != 100%")
 
 
-def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
+def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
     """Checks if `PI = LL - PL`.
 
     Args:
@@ -75,8 +75,8 @@ class Soil:
     odor: bool = field(default=False)
 
     def __attrs_post_init__(self):
-        check_PI(self.liquid_limit, self.plastic_limit, self.plasticity_index)
-        check_PSD(self.fines, self.sand, self.gravels)
+        _check_PI(self.liquid_limit, self.plastic_limit, self.plasticity_index)
+        _check_PSD(self.fines, self.sand, self.gravels)
 
     @property
     def cc(self) -> float:
@@ -106,7 +106,7 @@ class Soil:
 
         $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10) $$
 
-            $F_{200}$: Percentage of fines passing No. 200 sieve.
+            F_200: Percentage of fines passing No. 200 sieve.
             LL: Liquid Limit.
             PI: Plasticity Index.
         """
