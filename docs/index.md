@@ -1,3 +1,3 @@
 # Welcome to GeoLab
 
-{!../README.md!}
+{!../README.md!lines=1-70}
