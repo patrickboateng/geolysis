@@ -30,7 +30,7 @@ def check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float)
         liquid_limit: Water content beyond which soils flows under their own weight.
         plastic_limit: Water content at which plastic deformation can be initiated.
         plasticity_index: Range of water content over which soil remains in plastic
-                                  condition `PI = LL - PL`.
+                          condition `PI = LL - PL`.
 
     Raises:
         exceptions.PIValueError: `LL - PL != PI`.
@@ -104,7 +104,11 @@ class Soil:
     def group_index(self):
         """The `Group Index (GI)` is used to further evaluate soils with a group (subgroups).
 
-        $$ GI = (F_200 - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_200 - 15)(PI - 10) $$
+        $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10) $$
+
+            $F_{200}$: Percentage of fines passing No. 200 sieve.
+            LL: Liquid Limit.
+            PI: Plasticity Index.
         """
 
         gi = (self.fines - 35) * (0.2 + 0.005 * (self.liquid_limit - 40)) + 0.01 * (
@@ -115,7 +119,7 @@ class Soil:
 
     @property
     def remarks(self):
-        pass
+        ...
 
     @functools.cached_property
     def _A_line(self) -> float:
