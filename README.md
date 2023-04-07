@@ -29,7 +29,7 @@ pip install geolab
 
 ## Usage example
 
-```py
+<!-- ```py
 from geolab.soil_classifier import USCS
 
 # element in data should be arranged as follows
@@ -42,9 +42,7 @@ print(clf)
 
 ```sh
  'SC'
-```
-
-If you want to see how to install the addin for Microsoft Excel click [here](./src/geolab/soil_classifier/README.md#installation).
+``` -->
 
 <!-- ## Development setup
 
