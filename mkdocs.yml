@@ -37,6 +37,16 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
 
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+
 extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
@@ -48,3 +58,4 @@ nav:
   - how-to-guides.md
   - reference.md
   - explanation.md
+  - Soil Classification: soil_classification.md
