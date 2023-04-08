@@ -167,10 +167,56 @@ The distribution of grain sizes affects the engineering properties of the soil.
     </tbody>
 </table>
 
+## Atterberg Limit
+
 ## Unified Soil Classification System (USCS)
 
-_brief description underway_
+The Unified Soil Classification System was first developed by Casagrande in 1948, and later in 1952, was modified by the Bureau of Reclamation and the Corps of Engineers of the United States of America. The system has also been adopted by American Society of Testing Materials (ASTM). The system is the most popular system for use in all types of engineering problems involving soils.
+
+- It is similar to the Cassagrande's Classification System.
+- It uses **Particle Size Distribution** and **Atterberg Limits** for classification.
+- It is commonly used for engineering projects.
+- Soils are group into:
+
+  - Coarse grained
+  - Fine grained
+  - Highly Organic Soils
+
+- Soil symbols:
+
+  - G: Gravel
+  - S: Sand
+  - M: Silt
+  - C: Clay
+  - O: Organic Clay
+  - Pt: Peat
+
+- Liquid limit symbols:
+
+  - H: High Plasticity (LL > 50)
+  - L: Low Plasticity (LL < 50)
+
+- Gradation symbols:
+  - W: Well-graded
+  - P: Poorly-graded
 
 ## American Association of State Highway and Transportation Officials (AASHTO)
 
 _brief description underway_
+
+## Approximate Equivalence Between AASHTO and USC sytem
+
+| AASHTO System | USCS (most probable) |
+| ------------- | :------------------: |
+| A-1-a         |        GW, GP        |
+| A-1-b         |    SW, SM, GM, SP    |
+| A-2-4         |        GM, SM        |
+| A-2-5         |        GM, SM        |
+| A-2-6         |        GC, SC        |
+| A-2-7         |    GM, GC, SM, SC    |
+| A-3           |          SP          |
+| A-4           |    ML, OL, MH, OH    |
+| A-5           |    MH, OH, ML, OH    |
+| A-6           |          CL          |
+| A-7-5         |    OH, MH, CL, OL    |
+| A-7-6         |      CH, CL, OH      |
