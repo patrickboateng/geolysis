@@ -58,4 +58,5 @@ nav:
   - how-to-guides.md
   - reference.md
   - explanation.md
-  - Soil Classification: soil_classification.md
+  - Topics:
+      - Soil Classification: soil_classification.md
