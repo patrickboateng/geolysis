@@ -30,6 +30,9 @@ plugins:
   - mkdocstrings
 
 markdown_extensions:
+  - toc:
+      toc_depth: 6
+
   - markdown_include.include:
       base_path: docs
       throwException: true
