@@ -172,11 +172,11 @@ AASHTO Classification system is useful for classifying soils for highways. The *
 
 Fine grained soils are further rated for their suitability for highways by the group index (GI), determined as folows:
 
-    $$GI = (F_{200} - 35)[0.2 + 0.005(LL - 400)] + 0.01(F_{200} -15)(PI - 10)$$
+$$GI = (F_{200} - 35)[0.2 + 0.005(LL - 400)] + 0.01(F_{200} -15)(PI - 10)$$
 
-    $F_{200}$: Percentage by mass passing American Sieve No. 200.
-    LL: Liquid Limit (%), expressed as a whole number.
-    PI: Plasticity Index (%), expressed as a whole number.
+$F_{200}$: Percentage by mass passing American Sieve No. 200.
+LL: Liquid Limit (%), expressed as a whole number.
+PI: Plasticity Index (%), expressed as a whole number.
 
 The smaller the value of the group index, the better is the soil in that category. A group index of zero indicates a good subgrade, whereas a group index of 20 or greater shows a very poor subgrade.
 
