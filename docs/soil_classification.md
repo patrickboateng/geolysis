@@ -1,3 +1,5 @@
+## Introduction
+
 It is important to characterize soils to be able to assess their engineering properties such as:
 
 - Bearing capacity
@@ -83,91 +85,46 @@ The distribution of grain sizes affects the engineering properties of the soil.
 - A single grain-sized soil cannot be compacted to a high density, which results in a lesser shear strength.
 - Soils with grains spanning a wide size distribution can be compacted to a high density resulting in a high shear strength.
 
-## Sieves commonly used for Particle Size Distribution
+### Sieves commonly used for Particle Size Distribution
 
-<table>
-    <thead>
-        <tr>
-            <th>BS Sieve Designation</th>
-            <th>ASTM Designation</th>
-            <th>Aperture</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>1 in</td>
-            <td></td>
-            <td>26.5 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{3}{4}$ in</td>
-            <td></td>
-            <td>19.0 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{1}{2} in$</td>
-            <td>0.53 in</td>
-            <td>13.2 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{3}{8} in$</td>
-            <td>$\frac{3}{8} in$</td>
-            <td>9.5 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{1}{4} in$</td>
-            <td>0.265 in</td>
-            <td>6.7 mm</td>
-        </tr>
-        <tr>
-            <td>$\frac{3}{16} in$</td>
-            <td>No. 4</td>
-            <td>4.75 mm</td>
-        </tr>
-        <tr>
-            <td>No. 7</td>
-            <td>No. 8</td>
-            <td>2.36 mm</td>
-        </tr>
-        <tr>
-            <td>No. 14</td>
-            <td>No. 16</td>
-            <td>1.18 mm</td>
-        </tr>
-        <tr>
-            <td>No. 25</td>
-            <td>No. 30</td>
-            <td>600 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 36</td>
-            <td>No. 40</td>
-            <td>425 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 52</td>
-            <td>No. 50</td>
-            <td>300 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 72</td>
-            <td>No. 70</td>
-            <td>212 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 100</td>
-            <td>No. 100</td>
-            <td>150 $\mu m$</td>
-        </tr>
-        <tr>
-            <td>No. 200</td>
-            <td>No. 200</td>
-            <td>75 $\mu m$</td>
-        </tr>
-    </tbody>
-</table>
+| BS Sieve Designation |  ASTM Designation  |   Aperture    |
+| :------------------: | :----------------: | :-----------: |
+|         1 in         |                    |    26.5 mm    |
+|  $ \frac{3}{4} in $  |                    |    19.0 mm    |
+|  $ \frac{1}{2} in $  |      0.53 in       |    13.2mm     |
+|  $ \frac{3}{8} in $  | $ \frac{3}{8} in $ |    9.5 mm     |
+|  $ \frac{1}{4} in $  |      0.265 in      |    6.7 mm     |
+| $ \frac{3}{16} in $  |       No. 4        |    4.75 mm    |
+|         No.7         |       No. 8        |    2.36 mm    |
+|        No. 14        |       No. 16       |    1.18 mm    |
+|        No. 25        |       No. 30       | $ 600 \mu m $ |
+|        No. 36        |       No. 40       | $ 425 \mu m $ |
+|        No. 52        |       No. 50       | $ 300 \mu m $ |
+|        No. 72        |       No. 70       | $ 212 \mu m $ |
+|       No. 100        |      No. 100       | $ 150 \mu m $ |
+|       No. 200        |      No. 200       | $ 75 \mu m $  |
 
-## Atterberg Limit
+### Features of PSD Curve
+
+- **Median Size $(D_{50})$**: diameter at which 50% of the soil by weight is finer.
+- **Effective Size $(D_{10})$**: diameter at which 10% of the soil by weight is finer.
+- **Coefficient of Uniformity $(C_u)$**:
+
+        $$ C_u = \frac{D_{60}}{D_{10}} $$
+
+- **Coefficient of Curvature $(C_c)$**:
+
+        $$ C_c = \frac{D^2_{30}}{D_{60} \times D_{10}} $$
+
+## Atterberg Limits
+
+- **Shrinkage Limit (SL)**: Water content **below** which no further volumetric change takes place as soil is dried.
+
+- **Liquid Limit (LL)**: Water content **beyond** which soil flows under their own weight (or a specified small force).
+
+- **Plastic Limit (PL)**: Water content **at** which plastic derformation can be initiated. Minimum water content at which soil can be rolled into a thread 3mm thick (molded without breaking).
+
+- **Plasticity Index (PI)**: Range of water content over which soil remains in the plastic condition. `PI = LL - PL`
 
 ## Unified Soil Classification System (USCS)
 
@@ -176,7 +133,7 @@ The Unified Soil Classification System was first developed by Casagrande in 1948
 - It is similar to the Cassagrande's Classification System.
 - It uses **Particle Size Distribution** and **Atterberg Limits** for classification.
 - It is commonly used for engineering projects.
-- Soils are group into:
+- Soils are grouped into:
 
   - Coarse grained
   - Fine grained
@@ -197,12 +154,35 @@ The Unified Soil Classification System was first developed by Casagrande in 1948
   - L: Low Plasticity (LL < 50)
 
 - Gradation symbols:
+
   - W: Well-graded
   - P: Poorly-graded
 
+- Well-graded soil:
+  - $ 1 \lt C_c \lt 3 $ and $ C_u \ge 4 $ (for gravels)
+  - $ 1 \lt C_c \lt 3 $ and $ C_u \ge 6 $ (for sands)
+
 ## American Association of State Highway and Transportation Officials (AASHTO)
 
-_brief description underway_
+AASHTO Classification system is useful for classifying soils for highways. The **Particle Size Distribution** and the plasticity characteristics are required to classify a soil. The classification system is a complete system which classifies both coarse-grained and fine-grained soils. Soils are divided into 8 major groups: `A1 ~ A7` (with several subgroups) and organic soils `A8`.
+
+`A1 ~ A3` (Granular Materials) $ \le 35\% pass No. 200 sieve $
+
+`A4 ~ A7` (Silt-clay Materials) $ \ge 36\% pass No. 200 sieve $
+
+Fine grained soils are further rated for their suitability for highways by the group index (GI), determined as folows:
+
+    $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 400)] + 0.01(F_{200} -15)(PI - 10) $$
+
+    $ F_{200} $: Percentage by mass passing American Sieve No. 200.
+    LL: Liquid Limit (%), expressed as a whole number.
+    PI: Plasticity Index (%), expressed as a whole number.
+
+The smaller the value of the group index, the better is the soil in that category. A group index of zero indicates a good subgrade, whereas a group index of 20 or greater shows a very poor subgrade.
+
+!!! note
+
+    The group index must be mentioned even when it is zero to indicate that the soil has been classified as per **AASHTO** system.
 
 ## Approximate Equivalence Between AASHTO and USC sytem
 
