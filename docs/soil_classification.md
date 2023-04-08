@@ -166,9 +166,9 @@ The Unified Soil Classification System was first developed by Casagrande in 1948
 
 AASHTO Classification system is useful for classifying soils for highways. The **Particle Size Distribution** and the plasticity characteristics are required to classify a soil. The classification system is a complete system which classifies both coarse-grained and fine-grained soils. Soils are divided into 8 major groups: `A1 ~ A7` (with several subgroups) and organic soils `A8`.
 
-`A1 ~ A3` (Granular Materials) $ \le 35\% pass No. 200 sieve $
+`A1 ~ A3` (Granular Materials) $\le 35\% pass No. 200 sieve$
 
-`A4 ~ A7` (Silt-clay Materials) $ \ge 36\% pass No. 200 sieve $
+`A4 ~ A7` (Silt-clay Materials) $\ge 36\% pass No. 200 sieve$
 
 Fine grained soils are further rated for their suitability for highways by the group index (GI), determined as folows:
 
