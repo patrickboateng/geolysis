@@ -87,22 +87,22 @@ The distribution of grain sizes affects the engineering properties of the soil.
 
 ### Sieves commonly used for Particle Size Distribution
 
-| BS Sieve Designation |  ASTM Designation  |   Aperture    |
-| :------------------: | :----------------: | :-----------: |
-|         1 in         |                    |    26.5 mm    |
-|  $ \frac{3}{4} in $  |                    |    19.0 mm    |
-|  $ \frac{1}{2} in $  |      0.53 in       |    13.2mm     |
-|  $ \frac{3}{8} in $  | $ \frac{3}{8} in $ |    9.5 mm     |
-|  $ \frac{1}{4} in $  |      0.265 in      |    6.7 mm     |
-| $ \frac{3}{16} in $  |       No. 4        |    4.75 mm    |
-|         No.7         |       No. 8        |    2.36 mm    |
-|        No. 14        |       No. 16       |    1.18 mm    |
-|        No. 25        |       No. 30       | $ 600 \mu m $ |
-|        No. 36        |       No. 40       | $ 425 \mu m $ |
-|        No. 52        |       No. 50       | $ 300 \mu m $ |
-|        No. 72        |       No. 70       | $ 212 \mu m $ |
-|       No. 100        |      No. 100       | $ 150 \mu m $ |
-|       No. 200        |      No. 200       | $ 75 \mu m $  |
+| BS Sieve Designation | ASTM Designation |  Aperture   |
+| :------------------: | :--------------: | :---------: |
+|         1 in         |                  |   26.5 mm   |
+|   $\frac{3}{4} in$   |                  |   19.0 mm   |
+|   $\frac{1}{2} in$   |     0.53 in      |   13.2mm    |
+|   $\frac{3}{8} in$   | $\frac{3}{8} in$ |   9.5 mm    |
+|   $\frac{1}{4} in$   |     0.265 in     |   6.7 mm    |
+|  $\frac{3}{16} in$   |      No. 4       |   4.75 mm   |
+|         No.7         |      No. 8       |   2.36 mm   |
+|        No. 14        |      No. 16      |   1.18 mm   |
+|        No. 25        |      No. 30      | $600 \mu m$ |
+|        No. 36        |      No. 40      | $425 \mu m$ |
+|        No. 52        |      No. 50      | $300 \mu m$ |
+|        No. 72        |      No. 70      | $212 \mu m$ |
+|       No. 100        |     No. 100      | $150 \mu m$ |
+|       No. 200        |     No. 200      | $75 \mu m$  |
 
 ### Features of PSD Curve
 
@@ -110,11 +110,11 @@ The distribution of grain sizes affects the engineering properties of the soil.
 - **Effective Size $(D_{10})$**: diameter at which 10% of the soil by weight is finer.
 - **Coefficient of Uniformity $(C_u)$**:
 
-        $$ C_u = \frac{D_{60}}{D_{10}} $$
+        $$C_u = \frac{D_{60}}{D_{10}}$$
 
 - **Coefficient of Curvature $(C_c)$**:
 
-        $$ C_c = \frac{D^2_{30}}{D_{60} \times D_{10}} $$
+        $$C_c = \frac{D^2_{30}}{D_{60} \times D_{10}}$$
 
 ## Atterberg Limits
 
@@ -159,8 +159,8 @@ The Unified Soil Classification System was first developed by Casagrande in 1948
   - P: Poorly-graded
 
 - Well-graded soil:
-  - $ 1 \lt C_c \lt 3 $ and $ C_u \ge 4 $ (for gravels)
-  - $ 1 \lt C_c \lt 3 $ and $ C_u \ge 6 $ (for sands)
+  - $1 \lt C_c \lt 3 $ and $ C_u \ge 4$ (for gravels)
+  - $1 \lt C_c \lt 3 $ and $ C_u \ge 6$ (for sands)
 
 ## American Association of State Highway and Transportation Officials (AASHTO)
 
@@ -172,9 +172,9 @@ AASHTO Classification system is useful for classifying soils for highways. The *
 
 Fine grained soils are further rated for their suitability for highways by the group index (GI), determined as folows:
 
-    $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 400)] + 0.01(F_{200} -15)(PI - 10) $$
+    $$GI = (F_{200} - 35)[0.2 + 0.005(LL - 400)] + 0.01(F_{200} -15)(PI - 10)$$
 
-    $ F_{200} $: Percentage by mass passing American Sieve No. 200.
+    $F_{200}$: Percentage by mass passing American Sieve No. 200.
     LL: Liquid Limit (%), expressed as a whole number.
     PI: Plasticity Index (%), expressed as a whole number.
 
