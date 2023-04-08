@@ -157,8 +157,8 @@ The Unified Soil Classification System was first developed by Casagrande in 1948
   - P: Poorly-graded
 
 - Well-graded soil:
-  $1 \lt C_c \lt 3 $ and $ C_u \ge 4$ (for gravels)
-  $1 \lt C_c \lt 3 $ and $ C_u \ge 6$ (for sands)
+- $1 \lt C_c \lt 3$ and $C_u \ge 4$ (for gravels)
+- $1 \lt C_c \lt 3$ and $C_u \ge 6$ (for sands)
 
 ## American Association of State Highway and Transportation Officials (AASHTO)
 
