@@ -1,7 +1,5 @@
-from typing import Sequence, Union
-from typing import NamedTuple
+from typing import Union, NamedTuple
 
-import numpy as np
 import xlwings as xw
 from xlwings import conversion
 
