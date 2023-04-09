@@ -180,7 +180,7 @@ The smaller the value of the group index, the better is the soil in that categor
 
 !!! note
 
-    The group index must be mentioned even when it is zero to indicate that the soil has been classified as per **AASHTO** system.
+    The group index must be mentioned even when it is zero to indicate that the soil has been classified as per **AASHTO** classification system.
 
 ## Approximate Equivalence Between AASHTO and USC sytem
 
