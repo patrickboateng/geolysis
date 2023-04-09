@@ -2,9 +2,9 @@
 
 It is important to characterize soils to be able to assess their engineering properties such as:
 
-- Bearing capacity
-- Compressibility
-- Permeability
+-   Bearing capacity
+-   Compressibility
+-   Permeability
 
 **Particle Size Distribution (PSD)** and **Atterberg Limits** are tests developed for characterizing soils quality.
 
@@ -82,8 +82,8 @@ The range of particle sizes in a sample of material is referred to as the partic
 
 The distribution of grain sizes affects the engineering properties of the soil.
 
-- A single grain-sized soil cannot be compacted to a high density, which results in a lesser shear strength.
-- Soils with grains spanning a wide size distribution can be compacted to a high density resulting in a high shear strength.
+-   A single grain-sized soil cannot be compacted to a high density, which results in a lesser shear strength.
+-   Soils with grains spanning a wide size distribution can be compacted to a high density resulting in a high shear strength.
 
 ### Sieves commonly used for Particle Size Distribution
 
@@ -106,59 +106,59 @@ The distribution of grain sizes affects the engineering properties of the soil.
 
 ### Features of PSD Curve
 
-- **Median Size $(D_{50})$**: diameter at which 50% of the soil by weight is finer.
-- **Effective Size $(D_{10})$**: diameter at which 10% of the soil by weight is finer.
-- **Coefficient of Uniformity $(C_u)$**:
-  $$C_u = \frac{D_{60}}{D_{10}}$$
+-   **Median Size $(D_{50})$**: diameter at which 50% of the soil by weight is finer.
+-   **Effective Size $(D_{10})$**: diameter at which 10% of the soil by weight is finer.
+-   **Coefficient of Uniformity $(C_u)$**:
+    $$C_u = \frac{D_{60}}{D_{10}}$$
 
-- **Coefficient of Curvature $(C_c)$**:
-  $$C_c = \frac{D^2_{30}}{D_{60} \times D_{10}}$$
+-   **Coefficient of Curvature $(C_c)$**:
+    $$C_c = \frac{D^2_{30}}{D_{60} \times D_{10}}$$
 
 ## Atterberg Limits
 
-- **Shrinkage Limit (SL)**: Water content **below** which no further volumetric change takes place as soil is dried.
+-   **Shrinkage Limit (SL)**: Water content **below** which no further volumetric change takes place as soil is dried.
 
-- **Liquid Limit (LL)**: Water content **beyond** which soil flows under their own weight (or a specified small force).
+-   **Liquid Limit (LL)**: Water content **beyond** which soil flows under their own weight (or a specified small force).
 
-- **Plastic Limit (PL)**: Water content **at** which plastic derformation can be initiated. Minimum water content at which soil can be rolled into a thread 3mm thick (molded without breaking).
+-   **Plastic Limit (PL)**: Water content **at** which plastic derformation can be initiated. Minimum water content at which soil can be rolled into a thread 3mm thick (molded without breaking).
 
-- **Plasticity Index (PI)**: Range of water content over which soil remains in the plastic condition. `PI = LL - PL`
+-   **Plasticity Index (PI)**: Range of water content over which soil remains in the plastic condition. `PI = LL - PL`
 
 ## Unified Soil Classification System (USCS)
 
 The Unified Soil Classification System was first developed by Casagrande in 1948, and later in 1952, was modified by the Bureau of Reclamation and the Corps of Engineers of the United States of America. The system has also been adopted by American Society of Testing Materials (ASTM). The system is the most popular system for use in all types of engineering problems involving soils.
 
-- It is similar to the Cassagrande's Classification System.
-- It uses **Particle Size Distribution** and **Atterberg Limits** for classification.
-- It is commonly used for engineering projects.
-- Soils are grouped into:
+-   It is similar to the Cassagrande's Classification System.
+-   It uses **Particle Size Distribution** and **Atterberg Limits** for classification.
+-   It is commonly used for engineering projects.
+-   Soils are grouped into:
 
-  - Coarse grained
-  - Fine grained
-  - Highly Organic Soils
+    -   Coarse grained
+    -   Fine grained
+    -   Highly Organic Soils
 
-- Soil symbols:
+-   Soil symbols:
 
-  - G: Gravel
-  - S: Sand
-  - M: Silt
-  - C: Clay
-  - O: Organic Clay
-  - Pt: Peat
+    -   G: Gravel
+    -   S: Sand
+    -   M: Silt
+    -   C: Clay
+    -   O: Organic Clay
+    -   Pt: Peat
 
-- Liquid limit symbols:
+-   Liquid limit symbols:
 
-  - H: High Plasticity (LL > 50)
-  - L: Low Plasticity (LL < 50)
+    -   H: High Plasticity (LL > 50)
+    -   L: Low Plasticity (LL < 50)
 
-- Gradation symbols:
+-   Gradation symbols:
 
-  - W: Well-graded
-  - P: Poorly-graded
+    -   W: Well-graded
+    -   P: Poorly-graded
 
-- Well-graded soil:
-  - $1 \lt C_c \lt 3$ and $C_u \ge 4$ (for gravels)
-  - $1 \lt C_c \lt 3$ and $C_u \ge 6$ (for sands)
+-   Well-graded soil:
+    -   $1 \lt C_c \lt 3$ and $C_u \ge 4$ (for gravels)
+    -   $1 \lt C_c \lt 3$ and $C_u \ge 6$ (for sands)
 
 ## American Association of State Highway and Transportation Officials (AASHTO)
 
@@ -172,9 +172,9 @@ Fine grained soils are further rated for their suitability for highways by the g
 
 $$GI = (F_{200} - 35)[0.2 + 0.005(LL - 400)] + 0.01(F_{200} -15)(PI - 10)$$
 
-- $F_{200}$: Percentage by mass passing American Sieve No. 200.
-- LL: Liquid Limit (%), expressed as a whole number.
-- PI: Plasticity Index (%), expressed as a whole number.
+-   $F_{200}$: Percentage by mass passing American Sieve No. 200.
+-   LL: Liquid Limit (%), expressed as a whole number.
+-   PI: Plasticity Index (%), expressed as a whole number.
 
 The smaller the value of the group index, the better is the soil in that category. A group index of zero indicates a good subgrade, whereas a group index of 20 or greater shows a very poor subgrade.
 
