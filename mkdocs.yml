@@ -7,6 +7,9 @@ repo_name: patrickboateng/geolab
 
 theme:
     name: "material"
+    font:
+        text: Alegreya
+        code: Fira Code
     icon:
         repo: fontawesome/brands/github
     features:
