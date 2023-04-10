@@ -1,6 +1,6 @@
 site_name: Geolab
 site_description: Geotechnical engineering software for students and professionals.
-site_url: geolab.github.io
+site_url: https://geolab.github.io
 site_author: Patrick Boateng
 repo_url: https://github.com/patrickboateng/geolab
 repo_name: patrickboateng/geolab
@@ -56,6 +56,13 @@ extra_javascript:
     - https://polyfill.io/v3/polyfill.min.js?features=es6
     - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
+extra:
+    social:
+        - icon: fontawesome/brands/github
+          link: https://github.com/patrickboateng/geolab
+
+        - icon: fontawesome/brands/linkedin
+          link: https://linkedin.com/in/patrickboateng
 nav:
     - Getting Started with GeoLab: index.md
     - tutorials.md
