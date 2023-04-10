@@ -7,6 +7,8 @@ repo_name: patrickboateng/geolab
 
 theme:
     name: "material"
+    icon:
+        repo: fontawesome/brands/github
     features:
         - search
         - search.highlight
