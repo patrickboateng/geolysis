@@ -11,6 +11,7 @@ theme:
         - search
         - search.highlight
         - search.suggest
+        - navigation.footer
     palette:
         # Palette toggle for light mode
         - scheme: default
