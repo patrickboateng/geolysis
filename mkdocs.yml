@@ -1,6 +1,6 @@
 site_name: Geolab
 site_description: Geotechnical engineering software for students and professionals.
-site_url:
+site_url: geolab.github.io
 site_author: Patrick Boateng
 repo_url: https://github.com/patrickboateng/geolab
 repo_name: patrickboateng/geolab
