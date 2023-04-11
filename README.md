@@ -15,7 +15,7 @@
     </a>
 </p>
 
-`geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity, void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
+`geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity ($q_{ult}$), void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
 
 > **&#9432;** Only Unified Soil Classification (USCS) has been implemented as of now and can also be installed as a Microsoft Excel addin.
 
@@ -59,8 +59,8 @@ npm test
 
 ## Release History
 
-- 0.1.0
-  - **rapid** development.
+-   0.1.0
+    -   **rapid** development.
 
 ## Contributing
 
@@ -72,8 +72,8 @@ npm test
 
 ## Todo
 
-- [x] Soil Classifier
-- [ ] Estimating Soil Engineering Parameters
-- [ ] Bearing Capacity Analysis
-- [ ] Settlement Analysis
-- [ ] Modelling the behavior of Soils under loads using `FEM`
+-   [x] Soil Classifier
+-   [ ] Estimating Soil Engineering Parameters
+-   [ ] Bearing Capacity Analysis
+-   [ ] Settlement Analysis
+-   [ ] Modelling the behavior of Soils under loads using `FEM`
