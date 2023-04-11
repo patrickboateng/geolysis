@@ -17,7 +17,7 @@
     </a>
 </p>
 
-`geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity, void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
+`geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity ($q_{ult}$), void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
 
 !!! note
 
