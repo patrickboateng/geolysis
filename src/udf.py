@@ -49,17 +49,7 @@ def USCS(
         A `string` representing the classification of the soil
     """
     soil = soil_classifier.Soil(
-        liquid_limit=soil_parameters.liquid_limit,
-        plastic_limit=soil_parameters.plastic_limit,
-        plasticity_index=soil_parameters.plasticity_index,
-        fines=soil_parameters.fines,
-        sand=soil_parameters.sand,
-        gravels=soil_parameters.gravels,
-        d10=d10,
-        d30=d30,
-        d60=d60,
-        color=color,
-        odor=odor,
+        *soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor
     )
 
     return soil.get_unified_classification()
@@ -75,13 +65,6 @@ def AASHTO(soil_parameters: SoilParams) -> str:
     Returns:
         A `string` representing the `AASHTO` classification of the soil
     """
-    soil = soil_classifier.Soil(
-        liquid_limit=soil_parameters.liquid_limit,
-        plastic_limit=soil_parameters.plastic_limit,
-        plasticity_index=soil_parameters.plasticity_index,
-        fines=soil_parameters.fines,
-        sand=soil_parameters.sand,
-        gravels=soil_parameters.gravels,
-    )
+    soil = soil_classifier.Soil(*soil_parameters)
 
     return soil.get_aashto_classification()
