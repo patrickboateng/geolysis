@@ -33,7 +33,11 @@ theme:
 plugins:
     - search:
           lang: en
-    - mkdocstrings
+    - mkdocstrings:
+          handlers:
+              python:
+                  options:
+                      show_source: false
 
 markdown_extensions:
     - toc:
