@@ -1,4 +1,5 @@
-from typing import Union, NamedTuple
+from typing import Union
+from collections import namedtuple
 
 import xlwings as xw
 from xlwings import conversion
@@ -6,19 +7,16 @@ from xlwings import conversion
 from geolab.soil_classifier import soil_classifier
 
 
-class SoilParameters(NamedTuple):
-    liquid_limit: float
-    plastic_limit: float
-    plasticity_index: float
-    fines: float
-    sand: float
-    gravels: float
+SoilParams = namedtuple(
+    typename="SoilParams",
+    field_names="liquid_limit plastic_limit plasticity_index fines sand gravels",
+)
 
 
 class SoilConverter(conversion.Converter):
     @staticmethod
     def read_value(value, options):
-        soil_parameters: SoilParameters = SoilParameters(*value)
+        soil_parameters = SoilParams(*value)
         return soil_parameters
 
 
@@ -30,7 +28,7 @@ class SoilConverter(conversion.Converter):
 @xw.arg("color")
 @xw.arg("odor")
 def USCS(
-    soil_parameters: SoilParameters,
+    soil_parameters: SoilParams,
     d10: Union[float, None] = None,
     d30: Union[float, None] = None,
     d60: Union[float, None] = None,
@@ -69,7 +67,7 @@ def USCS(
 
 @xw.func
 @xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
-def AASHTO(soil_parameters: SoilParameters) -> str:
+def AASHTO(soil_parameters: SoilParams) -> str:
     """Determines the classification of the soil based on the `AASHTO` classification system.
 
     soil_parameters: Parameters of the soil.
