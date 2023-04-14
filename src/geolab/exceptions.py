@@ -4,3 +4,7 @@ class PSDValueError(ValueError):
 
 class PIValueError(ValueError):
     """`PI != LL - PL`."""
+
+
+class FoundationTypeError(TypeError):
+    ...
