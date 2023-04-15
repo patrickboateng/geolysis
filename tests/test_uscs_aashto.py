@@ -24,8 +24,8 @@ class TestSoil(unittest.TestCase):
         self.assertAlmostEqual(self.soil.group_index, 33.47)
 
     def test_classification(self):
-        self.assertEqual(self.soil.get_aashto_classification(), "A-7-5(33)")
-        self.assertEqual(self.soil.get_unified_classification(), "MH")
+        self.assertEqual(self.soil.aashto_classification, "A-7-5(33)")
+        self.assertEqual(self.soil.unified_classification, "MH")
 
 
 def test_PSD():
@@ -48,16 +48,11 @@ def _get_params(soils):
 def test_soil_single_classification(soils_: tuple[list, list]):
     soil_single_classification, _ = soils_
     soil_params, classification = _get_params(soil_single_classification)
-    assert (
-        Soil(*soil_params).get_unified_classification()
-        == classification
-    )
+    assert Soil(*soil_params).unified_classification == classification
 
 
 @pytest.mark.xfail
 def test_soil_dual_classification(soils_):
     _, soil_dual_classification = soils_
     soil_params, classification = _get_params(soil_dual_classification)
-    assert (
-        Soil(*soil_params).get_aashto_classification() == classification
-    )
+    assert Soil(*soil_params).aashto_classification == classification
