@@ -36,9 +36,9 @@ pip install geolab
 # liquid limit, plastic limit, plasticity index, fines, sand, gravel
 >>> data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
 >>> soil = soil_classifier.Soil(*data)
->>> soil.get_unified_classification()
+>>> soil.unified_classification
 'SC'
->>> soil.get_aashto_classification()
+>>> soil.aashto_classification
 'A-6(3)'
 
 ```
