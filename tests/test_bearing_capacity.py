@@ -1,6 +1,15 @@
 import pytest
 
-from geolab.bearing_capacity import Nq, Ngamma, Nc, Kp
+from geolab import FoundationTypeError
+from geolab.bearing_capacity import (
+    # Nq,
+    # Ngamma,
+    # T.Nc,
+    Kp,
+    T,
+    # terzaghi_qult_4_strip_footing,
+    terzaghi_qult,
+)
 
 
 def test_Kp():
@@ -8,21 +17,35 @@ def test_Kp():
 
 
 def test_Nq():
-    assert Nq(0) == pytest.approx(1.00)
-    assert Nq(1) == pytest.approx(1.10)
-    assert Nq(15) == pytest.approx(4.45)
-    assert Nq(25) == pytest.approx(12.72)
-
-
-def test_Ngamma():
-    assert Ngamma(0) == pytest.approx(0.00)
-    # assert Ngamma(1) == pytest.approx(0.01)
-    assert Ngamma(15) == pytest.approx(1.52)
-    assert Ngamma(25) == pytest.approx(8.34)
+    assert T.Nq(0) == pytest.approx(1.00)
+    assert T.Nq(1) == pytest.approx(1.10)
+    assert T.Nq(15) == pytest.approx(4.45)
+    assert T.Nq(25) == pytest.approx(12.72)
+    assert T.Nq(27) == pytest.approx(15.9)
 
 
 def test_Nc():
-    assert Nc(0) == pytest.approx(5.70)
-    # assert Nc(1) == pytest.approx(6.00)
-    # assert Nc(15) == pytest.approx(12.86)
-    assert Nc(25) == pytest.approx(25.13)
+    assert T.Nc(0) == pytest.approx(5.70)
+    assert T.Nc(1) == pytest.approx(6.00)
+    assert T.Nc(15) == pytest.approx(12.86)
+    assert T.Nc(25) == pytest.approx(25.13)
+    assert T.Nc(27) == pytest.approx(29.24)
+
+
+def test_Ngamma():
+    assert T.Ngamma(0) == pytest.approx(0.00)
+    assert T.Ngamma(1) == pytest.approx(0.01)
+    assert T.Ngamma(15) == pytest.approx(1.52)
+    assert T.Ngamma(25) == pytest.approx(8.34)
+    assert T.Ngamma(27) == pytest.approx(11.6)
+
+
+def test_terzaghi_qult():
+    with pytest.raises(FoundationTypeError):
+        terzaghi_qult(27, 28, 18, 1.2, 4, "rectangular")
+
+    assert terzaghi_qult(16, 27, 18.5, 1.2, 1.715) == pytest.approx(1200)
+
+
+def test_terzaghi_qult_4_strip_footing():
+    ...
