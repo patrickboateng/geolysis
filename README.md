@@ -73,7 +73,7 @@ npm test
 ## Todo
 
 -   [x] Soil Classifier
--   [ ] Estimating Soil Engineering Parameters
 -   [ ] Bearing Capacity Analysis
+-   [ ] Estimating Soil Engineering Parameters
 -   [ ] Settlement Analysis
 -   [ ] Modelling the behavior of Soils under loads using `FEM`
