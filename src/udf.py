@@ -4,7 +4,8 @@ from collections import namedtuple
 import xlwings as xw
 from xlwings import conversion
 
-from geolab.soil_classifier import soil_classifier
+from geolab.soil_classifier import Soil
+from geolab import PIValueError, PSDValueError
 
 
 SoilParams = namedtuple(
@@ -22,9 +23,9 @@ class SoilConverter(conversion.Converter):
 
 @xw.func
 @xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
-@xw.arg("d10", doc="diameter at which 10% of the soil by weight if finer")
-@xw.arg("d30", doc="diameter at which 30% of the soil by weight is finer")
-@xw.arg("d60", doc="diameter at which 60% of the soil by weight is finer")
+@xw.arg("d10", doc=r"diameter at which 10% of the soil by weight is finer")
+@xw.arg("d30", doc=r"diameter at which 30% of the soil by weight is finer")
+@xw.arg("d60", doc=r"diameter at which 60% of the soil by weight is finer")
 @xw.arg("color")
 @xw.arg("odor")
 def USCS(
@@ -32,39 +33,37 @@ def USCS(
     d10: Union[float, None] = None,
     d30: Union[float, None] = None,
     d60: Union[float, None] = None,
-    color: Union[bool, None] = None,
-    odor: Union[bool, None] = None,
+    color: bool = False,
+    odor: bool = False,
 ) -> str:
-    """Determines the classification of the soil based on the `Unified Soil
-    Classification System`.
+    """Determines the classification of the soil based on USCS.
 
-    Args:
-        soil_parameters: Parameters of the Soil.
-        d10: Diameter at which 10% of the soil by weight is finer. Defaults to None.
-        d30: Diameter at which 30% of the soil by weight is finer. Defaults to None.
-        d60: Diameter at which 60% of the soil by weight is finer. Defaults to None.
-        color: Indicates if soil has color or not.
-        odor: Indicates if soil has color or not.
     Returns:
-        A `string` representing the classification of the soil
+         A string representing the classification of the soil.
     """
-    soil = soil_classifier.Soil(
-        *soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor
-    )
+    try:
+        soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
+    except PIValueError as e:
+        return str(e)
+    except PSDValueError as e:
+        return str(e)
 
-    return soil.get_unified_classification()
+    return soil.unified_classification
 
 
 @xw.func
 @xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
 def AASHTO(soil_parameters: SoilParams) -> str:
-    """Determines the classification of the soil based on the `AASHTO` classification system.
-
-    soil_parameters: Parameters of the soil.
+    """Determines the classification of the soil based on the AASHTO.
 
     Returns:
-        A `string` representing the `AASHTO` classification of the soil
+        A string representing the classification of a model.
     """
-    soil = soil_classifier.Soil(*soil_parameters)
+    try:
+        soil = Soil(*soil_parameters)
+    except PIValueError as e:
+        return str(e)
+    except PSDValueError as e:
+        return str(e)
 
-    return soil.get_aashto_classification()
+    return soil.aashto_classification
