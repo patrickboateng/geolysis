@@ -19,7 +19,7 @@ def _check_PSD(fines: float, sand: float, gravels: float):
         exceptions.PSDValueError: `fines + sand + gravels != 100%`.
     """
     total_aggregate = fines + sand + gravels
-    if not math.isclose(total_aggregate, 100):
+    if not math.isclose(total_aggregate, 100, rel_tol=0.01):
         raise exceptions.PSDValueError("fines + sand + gravels != 100%")
 
 
@@ -35,7 +35,7 @@ def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float
     Raises:
         exceptions.PIValueError: `LL - PL != PI`.
     """
-    if not math.isclose(liquid_limit - plastic_limit, plasticity_index):
+    if not math.isclose(liquid_limit - plastic_limit, plasticity_index, rel_tol=0.01):
         raise exceptions.PIValueError("PI != LL - PL")
 
 
@@ -80,12 +80,20 @@ class Soil:
 
     @property
     def cc(self) -> float:
-        """Calculates the coefficient of curvature of the soil."""
-        return math.pow(self.d30, 2) / (self.d60 * self.d10)
+        r"""Calculates the coefficient of curvature of the soil.
+
+        $$\dfrac{d_{30}^2}{d_{60} \times d_{10}}$$
+
+        """
+        return (self.d30**2) / (self.d60 * self.d10)
 
     @property
     def cu(self) -> float:
-        """Calculates the coefficient of uniformity of the soil."""
+        r"""Calculates the coefficient of uniformity of the soil.
+
+        $$\dfrac{d_{60}}{d_{10}}$$
+
+        """
         return self.d60 / self.d10
 
     @property
@@ -125,33 +133,33 @@ class Soil:
     def _A_line(self) -> float:
         return 0.73 * (self.liquid_limit - 20)
 
-    @functools.cache
-    def get_aashto_classification(self) -> str:
+    @functools.cached_property
+    def aashto_classification(self) -> str:
+        # if self.fines <= 35:
+        #     # Gravels A1-A3
+        #     if self.fines <= 10:
+        #         return f"A-3({self.group_index})"
+
+        #     elif self.fines <= 15:
+        #         return f"A-1-a({self.group_index})"
+
+        #     elif self.fines <= 25:
+        #         return f"A-1-b({self.group_index})"
+
         if self.fines <= 35:
-            # Gravels A1-A3
-            if self.fines <= 10:
-                return f"A-3({self.group_index})"
-
-            elif self.fines <= 15:
-                return f"A-1-a({self.group_index})"
-
-            elif self.fines <= 25:
-                return f"A-1-b({self.group_index})"
+            if self.liquid_limit <= 40:
+                return (
+                    f"A-2-4({self.group_index})"
+                    if self.plasticity_index <= 10
+                    else f"A-2-6({self.group_index})"
+                )
 
             else:
-                if self.liquid_limit <= 40:
-                    return (
-                        f"A-2-4({self.group_index})"
-                        if self.plasticity_index <= 10
-                        else f"A-2-6({self.group_index})"
-                    )
-
-                else:
-                    return (
-                        f"A-2-5({self.group_index})"
-                        if self.plasticity_index <= 10
-                        else f"A-2-7({self.group_index})"
-                    )
+                return (
+                    f"A-2-5({self.group_index})"
+                    if self.plasticity_index <= 10
+                    else f"A-2-7({self.group_index})"
+                )
 
         else:
             # Silts A4-A7
@@ -172,8 +180,8 @@ class Soil:
                         else f"A-7-6({self.group_index:.0f})"
                     )
 
-    @functools.cache
-    def get_unified_classification(self) -> str:
+    @functools.cached_property
+    def unified_classification(self) -> str:
         """Unified Soil Classification System."""
         if self.fines < 50:
             # Coarse grained, Run Sieve Analysis
