@@ -1,3 +1,4 @@
+import functools
 from typing import Union
 from collections import namedtuple
 
@@ -21,6 +22,7 @@ class SoilConverter(conversion.Converter):
         return soil_parameters
 
 
+@functools.lru_cache
 @xw.func
 @xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
 @xw.arg("d10", doc=r"diameter at which 10% of the soil by weight is finer")
@@ -51,6 +53,7 @@ def USCS(
     return soil.unified_classification
 
 
+@functools.lru_cache
 @xw.func
 @xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
 def AASHTO(soil_parameters: SoilParams) -> str:
