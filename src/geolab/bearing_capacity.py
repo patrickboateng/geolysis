@@ -13,6 +13,15 @@ def _phi_to_radians(func):
     return wrapper
 
 
+def _Nq(phi: float) -> float:
+    num = np.exp(((3 * np.pi) / 2 - phi) * np.tan(phi))  # The numerator of the formula
+    den = 2 * (
+        np.cos(np.deg2rad(45) + (phi / 2)) ** 2
+    )  # The denominator of the formula
+
+    return num / den
+
+
 @_phi_to_radians
 def Kp(phi: float) -> float:
     r"""Coeffiecient of passive earth pressure ($K_p$).
@@ -26,15 +35,6 @@ def Kp(phi: float) -> float:
         Passive earth pressure coefficient.
     """
     return (1 + np.sin(phi)) / (1 - np.sin(phi))
-
-
-def _Nq(phi: float) -> float:
-    num = np.exp(((3 * np.pi) / 2 - phi) * np.tan(phi))  # The numerator of the formula
-    den = 2 * (
-        np.cos(np.deg2rad(45) + (phi / 2)) ** 2
-    )  # The denominator of the formula
-
-    return num / den
 
 
 class T:
