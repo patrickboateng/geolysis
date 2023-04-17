@@ -1,22 +1,13 @@
 # `geolab `: geotechnical engineering software for students and professionals.
 
-<p align="center">
-    <a href="https://pypi.org/user/Pato546/">
-        <img src="https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white">
-    </a>
-    <a href="#">
-        <img src="https://img.shields.io/pypi/l/geolab?style=flat-square">
-    </a>
-    <a>
-        <img src="https://img.shields.io/pypi/dm/geolab?style=flat-square">
-    </a>
-    <a>
-        <img src="https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square">
-    </a>
-</p>
-
+[![](https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/user/Pato546/)
+![](https://img.shields.io/pypi/l/geolab?style=flat-square)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+[![](https://img.shields.io/badge/code%20formatter-docformatter-fedcba.svg?style=flat-square)](https://github.com/PyCQA/docformatter)
+[![](https://img.shields.io/badge/%20style-google-3666d6.svg?style=flat-square)](https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings)
 ![](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
+![](https://img.shields.io/pypi/dm/geolab?style=flat-square)
 
 `geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity ($q_{ult}$), void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
 
