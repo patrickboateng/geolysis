@@ -1,4 +1,10 @@
-.PHONY: test release
+.PHONY: format test release
+
+format:
+	@isort src
+	@isort tests
+	@black src
+	@black tests
 
 test:
 	@echo "Running pytest..."

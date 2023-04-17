@@ -6,3 +6,6 @@ build-backend = "setuptools.build_meta"
 addopts = "-ra --verbose --color=auto --code-highlight=yes --strict-markers"
 minversion = "6.0"
 testpaths = ["tests"]
+
+[tool.isort]
+profile = "black"

@@ -2,8 +2,8 @@ import unittest
 
 import pytest
 
+from geolab import PIValueError, PSDValueError
 from geolab.soil_classifier import Soil
-from geolab import PSDValueError, PIValueError
 
 
 class TestSoil(unittest.TestCase):

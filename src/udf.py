@@ -1,13 +1,12 @@
 import functools
-from typing import Union
 from collections import namedtuple
+from typing import Union
 
 import xlwings as xw
 from xlwings import conversion
 
-from geolab.soil_classifier import Soil
 from geolab import PIValueError, PSDValueError
-
+from geolab.soil_classifier import Soil
 
 SoilParams = namedtuple(
     typename="SoilParams",

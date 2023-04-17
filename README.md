@@ -15,6 +15,9 @@
     </a>
 </p>
 
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
+![](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
+
 `geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity ($q_{ult}$), void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
 
 > **&#9432;** Only Unified Soil Classification (USCS) has been implemented as of now and can also be installed as a Microsoft Excel addin.
