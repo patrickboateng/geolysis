@@ -5,6 +5,7 @@ format:
 	@isort tests
 	@black src
 	@black tests
+	# @docformatter -i src
 
 test:
 	@echo "Running pytest..."
