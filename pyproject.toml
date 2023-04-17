@@ -9,3 +9,9 @@ testpaths = ["tests"]
 
 [tool.isort]
 profile = "black"
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 82
+wrap-descriptions = 81
+blank = true
