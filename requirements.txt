@@ -13,7 +13,6 @@ docformatter==1.6.0
 docutils==0.19
 exceptiongroup==1.1.1
 filelock==3.10.4
--e git+https://github.com/patrickboateng/geolab@7df6eb7d55178b481e497214db2704718818a12a#egg=geolab
 ghp-import==2.1.0
 griffe==0.25.5
 idna==3.4
