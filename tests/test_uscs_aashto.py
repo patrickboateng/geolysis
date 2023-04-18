@@ -38,6 +38,11 @@ def test_PI():
         Soil(30, 10, 10, 30, 30, 40)
 
 
+def test_dual_classification():
+    soil = Soil(30.8, 20.7, 10.1, 10.29, 81.89, 7.83, 0.07, 0.3, 0.8)
+    assert soil.unified_classification == "SW-SC"
+
+
 def _get_params(soils):
     for soil_parameters in soils:
         classification = soil_parameters.pop().strip()
