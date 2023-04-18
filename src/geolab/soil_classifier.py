@@ -133,7 +133,7 @@ class Soil:
     def _A_line(self) -> float:
         return 0.73 * (self.liquid_limit - 20)
 
-    @functools.cached_property
+    @property
     def aashto_classification(self) -> str:
         # if self.fines <= 35:
         #     # Gravels A1-A3
@@ -180,7 +180,7 @@ class Soil:
                         else f"A-7-6({self.group_index:.0f})"
                     )
 
-    @functools.cached_property
+    @property
     def unified_classification(self) -> str:
         """Unified Soil Classification System."""
         if self.fines < 50:
@@ -214,7 +214,7 @@ class Soil:
                 else:
                     return "OH" if self.is_organic else "MH"
 
-    def _check_fines(self, soil_type):
+    def _check_fines(self, soil_type: str):
         if self.fines > 12:
             if self.is_above_A_line:
                 return f"{soil_type}C"
@@ -223,19 +223,27 @@ class Soil:
             else:
                 return f"{soil_type}M"
         elif 5 <= self.fines <= 12:
+            if self.d10 and self.d30 and self.d60:
+                return self._dual_symbol(soil_type)
             return f"{soil_type}W-{soil_type}M, {soil_type}P-{soil_type}M, {soil_type}W-{soil_type}C, {soil_type}P-{soil_type}C"
         else:
             # Obtain Cc and Cu
             if self.d10 and self.d30 and self.d60:
                 return (
-                    f"{soil_type}{self.get_gravel_grading()}"
+                    f"{soil_type}{self.gravel_grading()}"
                     if soil_type == "G"
-                    else f"{soil_type}{self.get_sand_grading()}"
+                    else f"{soil_type}{self.sand_grading()}"
                 )
             return f"{soil_type}W or {soil_type}P"
 
-    def get_gravel_grading(self):
+    def _dual_symbol(self, soil_type: str) -> str:
+        grading = self.gravel_grading() if soil_type == "G" else self.sand_grading()
+        type_of_fines = "C" if self.is_above_A_line else "M"
+
+        return f"{soil_type}{grading}-{soil_type}{type_of_fines}"
+
+    def gravel_grading(self):
         return "W" if (1 < self.cc < 3) and self.cu >= 4 else "P"
 
-    def get_sand_grading(self):
+    def sand_grading(self):
         return "W" if (1 < self.cc < 3) and self.cu >= 6 else "P"
