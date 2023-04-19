@@ -216,10 +216,10 @@ class Soil:
 
     def _check_fines(self, soil_type: str):
         if self.fines > 12:
-            if self.is_above_A_line:
-                return f"{soil_type}C"
-            elif self.in_hatched_zone:
+            if self.in_hatched_zone:
                 return f"{soil_type}M-{soil_type}C"
+            elif self.is_above_A_line:
+                return f"{soil_type}C"
             else:
                 return f"{soil_type}M"
         elif 5 <= self.fines <= 12:
