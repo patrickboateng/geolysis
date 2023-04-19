@@ -42,6 +42,9 @@ def test_dual_classification():
     soil = Soil(30.8, 20.7, 10.1, 10.29, 81.89, 7.83, 0.07, 0.3, 0.8)
     assert soil.unified_classification == "SW-SC"
 
+    soil = Soil(24.4, 14.7, 9.7, 9.77, 44.82, 45.41, 0.06, 0.6, 7)
+    assert soil.unified_classification == "GP-GC"
+
 
 def _get_params(soils):
     for soil_parameters in soils:
