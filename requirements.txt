@@ -50,7 +50,7 @@ pyproject_hooks==1.0.0
 pytest==7.2.2
 python-dateutil==2.8.2
 pytz==2022.7.1
-pywin32==305
+pywin32
 pywin32-ctypes==0.2.0
 PyYAML==6.0
 pyyaml_env_tag==0.1
