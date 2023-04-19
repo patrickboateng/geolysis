@@ -11,7 +11,7 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         strategy:
             fail-fast: false
             matrix:
@@ -27,8 +27,7 @@ jobs:
               run: |
                   python -m pip install --upgrade pip
                   python -m pip install pytest flake8
-                  python -m pip install numpy
-              #   if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+                  if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
               # run: |
               # stop the build if there are Python syntax errors or undefined names
               # flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -37,4 +36,5 @@ jobs:
             # - name: Lint with flake8
             - name: Test with pytest
               run: |
+                  python -m build  
                   pytest
