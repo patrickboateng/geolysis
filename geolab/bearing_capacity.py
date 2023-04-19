@@ -22,23 +22,8 @@ def _Nq(phi: float) -> float:
     return num / den
 
 
-@_phi_to_radians
-def Kp(phi: float) -> float:
-    r"""Coeffiecient of passive earth pressure ($K_p$).
-
-    $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
-
-    Args:
-        phi: Internal angle of friction (degrees).
-
-    Returns:
-        Passive earth pressure coefficient.
-    """
-    return (1 + np.sin(phi)) / (1 - np.sin(phi))
-
-
 class T:
-    """Terzaghi Bearing Capacity Factors $N_c$, $N_q$, $N_\gamma$"""
+    r"""Terzaghi Bearing Capacity Factors $N_c$, $N_q$, $N_\gamma$"""
 
     @staticmethod
     @_phi_to_radians
@@ -89,6 +74,21 @@ class T:
             A `float` representing the bearing capacity factor $N_\gamma$.
         """
         return 0.5 * ((Kp(np.rad2deg(phi)) / (np.cos(phi) ** 2)) - 1) * np.tan(phi)
+
+
+@_phi_to_radians
+def Kp(phi: float) -> float:
+    r"""Coeffiecient of passive earth pressure ($K_p$).
+
+    $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
+
+    Args:
+        phi: Internal angle of friction (degrees).
+
+    Returns:
+        Passive earth pressure coefficient.
+    """
+    return (1 + np.sin(phi)) / (1 - np.sin(phi))
 
 
 def terzaghi_qult_4_strip_footing(
