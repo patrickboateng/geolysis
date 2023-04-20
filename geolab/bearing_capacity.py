@@ -22,8 +22,23 @@ def _Nq(phi: float) -> float:
     return num / den
 
 
+@_phi_to_radians
+def Kp(phi: float) -> float:
+    r"""Coeffiecient of passive earth pressure ($K_p$).
+
+    $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
+
+    Args:
+        phi: Internal angle of friction (degrees).
+
+    Returns:
+        Passive earth pressure coefficient.
+    """
+    return (1 + np.sin(phi)) / (1 - np.sin(phi))
+
+
 class T:
-    r"""Terzaghi Bearing Capacity Factors $N_c$, $N_q$, $N_\gamma$"""
+    """Terzaghi Bearing Capacity"""
 
     @staticmethod
     @_phi_to_radians
@@ -75,82 +90,67 @@ class T:
         """
         return 0.5 * ((Kp(np.rad2deg(phi)) / (np.cos(phi) ** 2)) - 1) * np.tan(phi)
 
+    @staticmethod
+    def qult_4_strip_footing(
+        cohesion: float,
+        phi: float,
+        gamma: float,
+        depth_of_foundation: float,
+        width_of_foundation: float,
+    ) -> float:
+        r"""Ultimate bearing capacity according to `Terzaghi` for `strip footing`.
 
-@_phi_to_radians
-def Kp(phi: float) -> float:
-    r"""Coeffiecient of passive earth pressure ($K_p$).
+        Args:
+            cohesion: cohesion of foundation soil ($kN/m^2$).
+            phi: Internal angle of friction ($\phi$)
+            gamma: Unit weight of soil ($kN/m^3$).
+            depth_of_foundation: Foundation depth $D_f$ (m).
+            width_of_foundation: Foundation width (**B**) (m)
 
-    $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
-
-    Args:
-        phi: Internal angle of friction (degrees).
-
-    Returns:
-        Passive earth pressure coefficient.
-    """
-    return (1 + np.sin(phi)) / (1 - np.sin(phi))
-
-
-def terzaghi_qult_4_strip_footing(
-    cohesion: float,
-    phi: float,
-    gamma: float,
-    depth_of_foundation: float,
-    width_of_foundation: float,
-) -> float:
-    r"""Ultimate bearing capacity according to `Terzaghi` for `strip footing`.
-
-    Args:
-        cohesion: cohesion of foundation soil ($kN/m^2$).
-        phi: Internal angle of friction ($\phi$)
-        gamma: Unit weight of soil ($kN/m^3$).
-        depth_of_foundation: Foundation depth $D_f$ (m).
-        width_of_foundation: Foundation width (**B**) (m)
-
-    Returns:
-        Ultimate bearing capacity ($q_{ult}$)
-    """
-    qult = (
-        cohesion * T.Nc(phi)
-        + gamma * depth_of_foundation * T.Nq(phi)
-        + 0.5 * gamma * width_of_foundation * T.Ngamma(phi)
-    )
-
-    return np.round(qult, 2)
-
-
-def terzaghi_qult(
-    cohesion: float,
-    phi: float,
-    gamma: float,
-    depth_of_foundation: float,
-    width_of_foundation: float,
-    type_of_foundation: str = "s",
-) -> float:
-    r"""Ultimate bearing capacity according to `Terzaghi` for `strip footing`.
-
-    Args:
-        cohesion: cohesion of foundation soil ($kN/m^2$).
-        phi: Internal angle of friction ($\phi$)
-        gamma: Unit weight of soil ($kN/m^3$).
-        depth_of_foundation: Foundation depth $D_f$ (m).
-        width_of_foundation: Foundation width (**B**) (m)
-        type_of_foundation: Determines the type of foundation. `s` or `square` for square foundation
-                            and `c` or `circular` for circular foundation. Defaults to `s`.
-    Returns:
-        Ultimate bearing capacity ($q_{ult}$)
-    """
-    if type_of_foundation not in {"s", "c", "square", "circular"}:
-        raise FoundationTypeError(
-            f"Foundation type must be s or c not {type_of_foundation}"
+        Returns:
+            Ultimate bearing capacity ($q_{ult}$)
+        """
+        qult = (
+            cohesion * T.Nc(phi)
+            + gamma * depth_of_foundation * T.Nq(phi)
+            + 0.5 * gamma * width_of_foundation * T.Ngamma(phi)
         )
 
-    i = 0.4 if type_of_foundation in {"s", "square"} else 0.3
+        return np.round(qult, 2)
 
-    qult = (
-        1.2 * cohesion * T.Nc(phi)
-        + gamma * depth_of_foundation * T.Nq(phi)
-        + i * gamma * width_of_foundation * T.Ngamma(phi)
-    )
+    @staticmethod
+    def qult(
+        cohesion: float,
+        phi: float,
+        gamma: float,
+        depth_of_foundation: float,
+        width_of_foundation: float,
+        type_of_foundation: str = "s",
+    ) -> float:
+        r"""Ultimate bearing capacity according to `Terzaghi` for `square` and `circular` footing.
 
-    return np.round(qult, 2)
+        Args:
+            cohesion: cohesion of foundation soil ($kN/m^2$).
+            phi: Internal angle of friction ($\phi$)
+            gamma: Unit weight of soil ($kN/m^3$).
+            depth_of_foundation: Foundation depth $D_f$ (m).
+            width_of_foundation: Foundation width (**B**) (m)
+            type_of_foundation: Determines the type of foundation. `s` or `square` for square foundation
+                                and `c` or `circular` for circular foundation. Defaults to `s`.
+        Returns:
+            Ultimate bearing capacity ($q_{ult}$)
+        """
+        if type_of_foundation not in {"s", "c", "square", "circular"}:
+            raise FoundationTypeError(
+                f"Foundation type must be s or c not {type_of_foundation}"
+            )
+
+        i = 0.4 if type_of_foundation in {"s", "square"} else 0.3
+
+        qult = (
+            1.2 * cohesion * T.Nc(phi)
+            + gamma * depth_of_foundation * T.Nq(phi)
+            + i * gamma * width_of_foundation * T.Ngamma(phi)
+        )
+
+        return np.round(qult, 2)
