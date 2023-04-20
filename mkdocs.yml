@@ -6,79 +6,84 @@ repo_url: https://github.com/patrickboateng/geolab
 repo_name: patrickboateng/geolab
 
 theme:
-    name: "material"
-    font:
-        text: Alegreya
-        code: Fira Code
-    icon:
-        repo: fontawesome/brands/github
-    features:
-        - search
-        - search.highlight
-        - search.suggest
-        - navigation.footer
-    palette:
-        # Palette toggle for light mode
-        - scheme: default
-          toggle:
-              icon: material/brightness-7
-              name: Switch to dark mode
+  name: "material"
+  font:
+    text: Alegreya
+    code: Fira Code
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - search
+    - search.highlight
+    - search.suggest
+    - navigation.footer
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
 
-        # Palette toggle for dark mode
-        - scheme: slate
-          toggle:
-              icon: material/brightness-4
-              name: Switch to light mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
 
 plugins:
-    - search:
-          lang: en
-    - mkdocstrings:
-          handlers:
-              python:
-                  options:
-                      show_source: false
+  - search:
+      lang: en
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
 
 markdown_extensions:
-    - toc:
-          toc_depth: 6
+  - toc:
+      toc_depth: 6
 
-    - markdown_include.include:
-          base_path: docs
-          throwException: true
+  - markdown_include.include:
+      base_path: docs
+      throwException: true
 
-    - pymdownx.arithmatex:
-          generic: true
+  - pymdownx.arithmatex:
+      generic: true
 
-    - pymdownx.highlight:
-          anchor_linenums: true
-          line_spans: __span
-          pygments_lang_class: true
-    - pymdownx.inlinehilite
-    - pymdownx.snippets
-    - pymdownx.superfences
-    - admonition
-    - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+  - admonition
+  - pymdownx.details
 
 extra_javascript:
-    - javascripts/mathjax.js
-    - https://polyfill.io/v3/polyfill.min.js?features=es6
-    - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
-    social:
-        - icon: fontawesome/brands/github
-          link: https://github.com/patrickboateng/geolab
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/patrickboateng/geolab
 
-        - icon: fontawesome/brands/linkedin
-          link: https://linkedin.com/in/patrickboateng
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/patrickboateng
 nav:
-    - Getting Started with GeoLab: index.md
-    - tutorials.md
-    - how-to-guides.md
-    - reference.md
-    - explanation.md
-    - Topics:
-          - Soil Classification: soil_classification.md
+  - Getting Started with GeoLab: index.md
+  - tutorials.md
+  - how-to-guides.md
+  - reference.md
+  - explanation.md
+  - Topics:
+      - Soil Classification: soil_classification.md
 
 copyright: Copyright &copy; 2023 geolab
