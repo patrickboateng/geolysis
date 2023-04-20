@@ -13,15 +13,6 @@ def _phi_to_radians(func):
     return wrapper
 
 
-def _Nq(phi: float) -> float:
-    num = np.exp(((3 * np.pi) / 2 - phi) * np.tan(phi))  # The numerator of the formula
-    den = 2 * (
-        np.cos(np.deg2rad(45) + (phi / 2)) ** 2
-    )  # The denominator of the formula
-
-    return num / den
-
-
 @_phi_to_radians
 def Kp(phi: float) -> float:
     r"""Coeffiecient of passive earth pressure ($K_p$).
@@ -41,6 +32,17 @@ class T:
     """Terzaghi Bearing Capacity"""
 
     @staticmethod
+    def _Nq(phi: float) -> float:
+        num = np.exp(
+            ((3 * np.pi) / 2 - phi) * np.tan(phi)
+        )  # The numerator of the formula
+        den = 2 * (
+            np.cos(np.deg2rad(45) + (phi / 2)) ** 2
+        )  # The denominator of the formula
+
+        return num / den
+
+    @staticmethod
     @_phi_to_radians
     def Nq(phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_q$.
@@ -53,7 +55,7 @@ class T:
         Returns:
             A `float` representing the bearing capacity factor ($N_q$).
         """
-        return np.round(_Nq(phi), 2)
+        return np.round(T._Nq(phi), 2)
 
     @staticmethod
     @_phi_to_radians
@@ -71,7 +73,7 @@ class T:
         if np.isclose(phi, 0.0):
             return 5.70
 
-        return np.round((1 / np.tan(phi)) * (_Nq(phi) - 1), 2)
+        return np.round((1 / np.tan(phi)) * (T._Nq(phi) - 1), 2)
 
     @staticmethod
     @_phi_to_radians
@@ -154,3 +156,36 @@ class T:
         )
 
         return np.round(qult, 2)
+
+
+class M:
+    """Meyerhoff Bearing Capacity."""
+
+    @staticmethod
+    def _Nq(phi: float) -> float:
+        return np.tan(np.deg2rad(45) + phi / 2) * np.exp(np.pi * np.tan(phi))
+
+    @staticmethod
+    @_phi_to_radians
+    def Nq(phi: float) -> float:
+        r"""Vesic Bearing Capacity factor $N_q$.
+
+        $$\tan^2 \left(45^{\circ} + \frac{\phi}{2} \right)e^{\pi \tan \phi}$$
+
+        Args:
+            phi: Internal angle of friction (degrees).
+
+        Returns:
+            A `float` representing the bearing capacity factor ($N_q$).
+        """
+        return np.round(M._Nq(phi), 2)
+
+    @staticmethod
+    @_phi_to_radians
+    def Nc(phi: float) -> float:
+        return np.round((1 / np.tan(phi)) * (M._Nq(phi) - 1), 2)
+
+    @staticmethod
+    @_phi_to_radians
+    def Ngamma(phi: float) -> float:
+        return np.round(2 * (M._Nq(phi) + 1) * np.tan(phi), 2)
