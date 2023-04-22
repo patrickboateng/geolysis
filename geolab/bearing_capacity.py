@@ -5,7 +5,7 @@ import numpy as np
 from geolab.exceptions import FoundationTypeError
 
 
-def _phi_to_radians(func):
+def deg2rad(func):
     @functools.wraps(func)
     def wrapper(phi):
         return func(np.deg2rad(phi))
@@ -13,7 +13,7 @@ def _phi_to_radians(func):
     return wrapper
 
 
-@_phi_to_radians
+@deg2rad
 def Kp(phi: float) -> float:
     r"""Coeffiecient of passive earth pressure ($K_p$).
 
@@ -43,7 +43,7 @@ class T:
         return num / den
 
     @staticmethod
-    @_phi_to_radians
+    @deg2rad
     def Nq(phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_q$.
 
@@ -58,7 +58,7 @@ class T:
         return np.round(T._Nq(phi), 2)
 
     @staticmethod
-    @_phi_to_radians
+    @deg2rad
     def Nc(phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_c$.
 
@@ -76,7 +76,7 @@ class T:
         return np.round((1 / np.tan(phi)) * (T._Nq(phi) - 1), 2)
 
     @staticmethod
-    @_phi_to_radians
+    @deg2rad
     def Ngamma(phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_\gamma$.
 
@@ -166,7 +166,7 @@ class M:
         return np.tan(np.deg2rad(45) + phi / 2) * np.exp(np.pi * np.tan(phi))
 
     @staticmethod
-    @_phi_to_radians
+    @deg2rad
     def Nq(phi: float) -> float:
         r"""Vesic Bearing Capacity factor $N_q$.
 
@@ -181,11 +181,11 @@ class M:
         return np.round(M._Nq(phi), 2)
 
     @staticmethod
-    @_phi_to_radians
+    @deg2rad
     def Nc(phi: float) -> float:
         return np.round((1 / np.tan(phi)) * (M._Nq(phi) - 1), 2)
 
     @staticmethod
-    @_phi_to_radians
+    @deg2rad
     def Ngamma(phi: float) -> float:
         return np.round(2 * (M._Nq(phi) + 1) * np.tan(phi), 2)
