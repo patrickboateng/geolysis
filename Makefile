@@ -1,11 +1,11 @@
 .PHONY: format test release
 
 format:
-	@isort src
-	@isort tests
-	@black src
-	@black tests
-	# @docformatter -i src
+	@isort ./geolab
+	@isort ./tests
+	@black ./geolab
+	@black ./tests
+	@docformatter -i ./geolab
 
 test:
 	@echo "Running pytest..."
