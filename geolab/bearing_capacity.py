@@ -1,16 +1,20 @@
 import functools
+from typing import Any, Callable, TypeVar, cast
 
 import numpy as np
 
 from geolab.exceptions import FoundationTypeError
 
 
-def deg2rad(func):
+F = TypeVar("F", bound=Callable[[float], float])
+
+
+def deg2rad(func: F) -> F:
     @functools.wraps(func)
     def wrapper(phi):
         return func(np.deg2rad(phi))
 
-    return wrapper
+    return cast(F, wrapper)
 
 
 @deg2rad
@@ -24,12 +28,13 @@ def Kp(phi: float) -> float:
 
     Returns:
         Passive earth pressure coefficient.
+
     """
     return (1 + np.sin(phi)) / (1 - np.sin(phi))
 
 
 class T:
-    """Terzaghi Bearing Capacity"""
+    """Terzaghi Bearing Capacity."""
 
     @staticmethod
     def _Nq(phi: float) -> float:
@@ -54,6 +59,7 @@ class T:
 
         Returns:
             A `float` representing the bearing capacity factor ($N_q$).
+
         """
         return np.round(T._Nq(phi), 2)
 
@@ -69,6 +75,7 @@ class T:
 
         Returns:
             A `float` representing the bearing capacity factor $N_c$.
+
         """
         if np.isclose(phi, 0.0):
             return 5.70
@@ -89,6 +96,7 @@ class T:
 
         Returns:
             A `float` representing the bearing capacity factor $N_\gamma$.
+
         """
         return 0.5 * ((Kp(np.rad2deg(phi)) / (np.cos(phi) ** 2)) - 1) * np.tan(phi)
 
@@ -111,6 +119,7 @@ class T:
 
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
+
         """
         qult = (
             cohesion * T.Nc(phi)
@@ -129,7 +138,8 @@ class T:
         width_of_foundation: float,
         type_of_foundation: str = "s",
     ) -> float:
-        r"""Ultimate bearing capacity according to `Terzaghi` for `square` and `circular` footing.
+        r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
+        `circular` footing.
 
         Args:
             cohesion: cohesion of foundation soil ($kN/m^2$).
@@ -141,6 +151,7 @@ class T:
                                 and `c` or `circular` for circular foundation. Defaults to `s`.
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
+
         """
         if type_of_foundation not in {"s", "c", "square", "circular"}:
             raise FoundationTypeError(
@@ -177,6 +188,7 @@ class M:
 
         Returns:
             A `float` representing the bearing capacity factor ($N_q$).
+
         """
         return np.round(M._Nq(phi), 2)
 
