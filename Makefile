@@ -1,4 +1,8 @@
-.PHONY: format test release
+.PHONY: format test release check
+
+check:
+	@mypy geolab
+	@pycodestyle --statistics geolab
 
 format:
 	@isort ./geolab
