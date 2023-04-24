@@ -60,6 +60,7 @@ class Soil:
     Raises:
         exceptions.PSDValueError: `fines + sand + gravels != 100%`.
         exceptions.PIValueError: `LL - PL != PI`
+
     """
 
     liquid_limit: float
@@ -110,13 +111,15 @@ class Soil:
 
     @property
     def group_index(self):
-        """The `Group Index (GI)` is used to further evaluate soils with a group (subgroups).
+        """The `Group Index (GI)` is used to further evaluate soils with a group
+        (subgroups).
 
         $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10) $$
 
         - $F_{200}$: Percentage by mass passing American Sieve No. 200.
         - LL: Liquid Limit (%), expressed as a whole number.
         - PI: Plasticity Index (%), expressed as a whole number.
+
         """
 
         gi = (self.fines - 35) * (0.2 + 0.005 * (self.liquid_limit - 40)) + 0.01 * (
