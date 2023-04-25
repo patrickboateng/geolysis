@@ -1,10 +1,9 @@
 import functools
-from typing import Any, Callable, TypeVar, cast
+from typing import Callable, TypeVar, cast
 
 import numpy as np
 
 from geolab.exceptions import FoundationTypeError
-
 
 F = TypeVar("F", bound=Callable[[float], float])
 
@@ -19,7 +18,7 @@ def deg2rad(func: F) -> F:
 
 @deg2rad
 def Kp(phi: float) -> float:
-    r"""Coeffiecient of passive earth pressure ($K_p$).
+    r"""Coefficient of passive earth pressure ($K_p$).
 
     $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
 
@@ -105,8 +104,8 @@ class T:
         cohesion: float,
         phi: float,
         gamma: float,
-        depth_of_foundation: float,
-        width_of_foundation: float,
+        foundation_depth: float,
+        foundation_width: float,
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `strip footing`.
 
@@ -114,8 +113,8 @@ class T:
             cohesion: cohesion of foundation soil ($kN/m^2$).
             phi: Internal angle of friction ($\phi$)
             gamma: Unit weight of soil ($kN/m^3$).
-            depth_of_foundation: Foundation depth $D_f$ (m).
-            width_of_foundation: Foundation width (**B**) (m)
+            foundation_depth: Foundation depth $D_f$ (m).
+            foundation_width: Foundation width (**B**) (m)
 
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
@@ -123,8 +122,8 @@ class T:
         """
         qult = (
             cohesion * T.Nc(phi)
-            + gamma * depth_of_foundation * T.Nq(phi)
-            + 0.5 * gamma * width_of_foundation * T.Ngamma(phi)
+            + gamma * foundation_depth * T.Nq(phi)
+            + 0.5 * gamma * foundation_width * T.Ngamma(phi)
         )
 
         return np.round(qult, 2)
@@ -134,8 +133,8 @@ class T:
         cohesion: float,
         phi: float,
         gamma: float,
-        depth_of_foundation: float,
-        width_of_foundation: float,
+        foundation_depth: float,
+        foundation_width: float,
         type_of_foundation: str = "s",
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
@@ -145,8 +144,8 @@ class T:
             cohesion: cohesion of foundation soil ($kN/m^2$).
             phi: Internal angle of friction ($\phi$)
             gamma: Unit weight of soil ($kN/m^3$).
-            depth_of_foundation: Foundation depth $D_f$ (m).
-            width_of_foundation: Foundation width (**B**) (m)
+            foundation_depth: Foundation depth $D_f$ (m).
+            foundation_width: Foundation width (**B**) (m)
             type_of_foundation: Determines the type of foundation. `s` or `square` for square foundation
                                 and `c` or `circular` for circular foundation. Defaults to `s`.
         Returns:
@@ -155,15 +154,15 @@ class T:
         """
         if type_of_foundation not in {"s", "c", "square", "circular"}:
             raise FoundationTypeError(
-                f"Foundation type must be s or c not {type_of_foundation}"
+                f"Foundation type must be square or circular not {type_of_foundation}"
             )
 
         i = 0.4 if type_of_foundation in {"s", "square"} else 0.3
 
         qult = (
             1.2 * cohesion * T.Nc(phi)
-            + gamma * depth_of_foundation * T.Nq(phi)
-            + i * gamma * width_of_foundation * T.Ngamma(phi)
+            + gamma * foundation_depth * T.Nq(phi)
+            + i * gamma * foundation_width * T.Ngamma(phi)
         )
 
         return np.round(qult, 2)
@@ -195,9 +194,172 @@ class M:
     @staticmethod
     @deg2rad
     def Nc(phi: float) -> float:
+        """Vesic Bearing Capacity factor $N_c$.
+
+        Args:
+            phi: Internal angle of friction (degrees).
+
+        Returns:
+            A `float` representing the bearing capacity factor ($N_c$).
+
+        """
         return np.round((1 / np.tan(phi)) * (M._Nq(phi) - 1), 2)
 
     @staticmethod
     @deg2rad
     def Ngamma(phi: float) -> float:
+        r"""Vesic Bearing Capacity factor $N_{\gamma}$.
+
+        Args:
+            phi: Internal angle of friction (degrees).
+
+        Returns:
+            A `float` representing the bearing capacity factor ($N_{\gamma}$).
+
+        """
         return np.round(2 * (M._Nq(phi) + 1) * np.tan(phi), 2)
+
+    @staticmethod
+    def Sc(foundation_width: float, foundation_length: float, phi: float) -> float:
+        """Shape factor ($S_c$).
+
+        Args:
+            foundation_width: foundation_width of foundation.
+            foundation_length: foundation_length of foundation.
+            phi: Internal angle of friction (degrees).
+
+        Returns:
+            A `float` representing the shape factor ($S_c$).
+
+        """
+        return 1 + ((foundation_width * M.Nq(phi)) / (foundation_length * M.Nc(phi)))
+
+    @staticmethod
+    def Sq(foundation_width: float, foundation_length: float, phi: float) -> float:
+        """Shape factor ($S_q$).
+
+        Args:
+            foundation_width: foundation_width of foundation.
+            foundation_length: foundation_length of foundation.
+            phi: Internal angle of friction (degrees).
+
+        Returns:
+            A `float` representing the shape factor ($S_q$).
+
+        """
+        return 1 + ((foundation_width / foundation_length) * np.tan(np.deg2rad(phi)))
+
+    @staticmethod
+    def Sgamma(foundation_width: float, foundation_length: float) -> float:
+        r"""Shape factor ($S_{\gamma}$).
+
+        Args:
+            foundation_width: foundation_width of foundation.
+            foundation_length: foundation_length of foundation.
+
+        Returns:
+            A `float` representing the shape factor ($S_{\gamma}$).
+
+        """
+        return 1 - 0.4 * (foundation_width / foundation_length)
+
+    @staticmethod
+    def _ic(beta: float) -> float:
+        return (1 - beta / 90) ** 2
+
+    @staticmethod
+    @deg2rad
+    def ic(beta: float) -> float:
+        """Inclination factor ($i_c$).
+
+        Args:
+            beta: inclination of the load on the foundation with respect to the vertical (degrees).
+
+        Returns:
+            A `float` representing the inclination factor ($i_c$).
+
+        """
+        return M._ic(beta)
+
+    @staticmethod
+    def iq(beta: float) -> float:
+        """Inclination factor ($i_q$).
+
+        Args:
+            beta: inclination of the load on the foundation with respect to the vertical (degrees).
+
+        Returns:
+            A `float` representing the inclination factor ($i_q$).
+
+        """
+        return M._ic(beta)
+
+    @staticmethod
+    def igamma(beta: float, phi: float) -> float:
+        r"""Inclination factor ($i_{\gamma}$).
+
+        Args:
+            beta: inclination of the load on the foundation with respect to the vertical (degrees).
+            phi: internal angle of friction.
+
+        Returns:
+            A `float` representing the inclination factor ($i_{\gamma}$).
+
+        """
+        return (1 - beta / phi) ** 2
+
+    @staticmethod
+    def dc(foundation_width: float, foundation_depth: float) -> float:
+        r"""Depth factor ($d_c$).
+
+        Args:
+            foundation_width: width of foundation.
+            foundation_depth: depth of foundation.
+
+        Returns:
+            A `float` representing the depth factor ($d_c$).
+
+        """
+        if foundation_depth / foundation_width <= 1:
+            return 1 + 0.4 * (foundation_depth / foundation_width)
+
+        return 1 + 0.4 * np.arctan(foundation_depth / foundation_width) * (np.pi / 180)
+
+    @staticmethod
+    def dq(foundation_width: float, foundation_depth: float, phi: float) -> float:
+        r"""Depth factor ($d_q$).
+
+        Args:
+            foundation_width: width of foundation.
+            foundation_depth: depth of foundation
+            phi: internal angle of friction (degrees).
+
+        Returns:
+            A `float` representing the depth factor ($d_q$).
+
+        """
+        phi = np.deg2rad(phi)
+
+        if foundation_depth / foundation_width <= 1:
+            return (
+                1
+                + 2
+                * np.tan(phi)
+                * ((1 - np.sin(phi)) ** 2)
+                * foundation_depth
+                / foundation_width
+            )
+
+        return 1 + 2 * np.tan(phi) * ((1 - np.sin(phi)) ** 2) * np.arctan(
+            foundation_depth / foundation_width
+        ) * (np.pi / 180)
+
+    @staticmethod
+    def dgamma() -> float:
+        r"""Depth factor ($d_{\gamma}$)
+
+        Returns:
+            A `float` representing the depth factor ($d_{\gamma}$).
+
+        """
+        return 1.0
