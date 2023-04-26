@@ -135,7 +135,7 @@ class T:
         gamma: float,
         foundation_depth: float,
         foundation_width: float,
-        type_of_foundation: str = "s",
+        foundation_type: str = "s",
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
         `circular` footing.
@@ -146,18 +146,18 @@ class T:
             gamma: Unit weight of soil ($kN/m^3$).
             foundation_depth: Foundation depth $D_f$ (m).
             foundation_width: Foundation width (**B**) (m)
-            type_of_foundation: Determines the type of foundation. `s` or `square` for square foundation
-                                and `c` or `circular` for circular foundation. Defaults to `s`.
+            foundation_type: Determines the type of foundation. `s` or `square` for square foundation
+                                and `c` or `circular` for circular foundation. Defaults to `square`.
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
 
         """
-        if type_of_foundation not in {"s", "c", "square", "circular"}:
+        if foundation_type not in {"s", "c", "square", "circular"}:
             raise FoundationTypeError(
-                f"Foundation type must be square or circular not {type_of_foundation}"
+                f"Foundation type must be square or circular not {foundation_type}"
             )
 
-        i = 0.4 if type_of_foundation in {"s", "square"} else 0.3
+        i = 0.4 if foundation_type in {"s", "square"} else 0.3
 
         qult = (
             1.2 * cohesion * T.Nc(phi)
