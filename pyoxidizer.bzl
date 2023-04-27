@@ -202,7 +202,7 @@ def make_exe():
     # resources, and other options. The returned object represents the
     # standalone executable that will be built.
     exe = dist.to_python_executable(
-        name="excel_udf",
+        name="soil_classifier",
 
         # If no argument passed, the default `PythonPackagingPolicy` for the
         # distribution is used.
