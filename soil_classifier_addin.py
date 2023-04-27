@@ -5,8 +5,8 @@ from typing import Union
 import xlwings as xw
 from xlwings import conversion
 
-from excel_udf import PIValueError, PSDValueError
-from excel_udf import Soil
+from geolab.exceptions import PIValueError, PSDValueError
+from geolab.soil_classifier import Soil
 
 SoilParams = namedtuple(
     typename="SoilParams",
