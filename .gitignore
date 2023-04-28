@@ -58,6 +58,7 @@ env.bak/
 venv.bak/
 venv_*/
 venv-*/
+*.mypy_cache
 
 # Test Files
 *.xlsm
