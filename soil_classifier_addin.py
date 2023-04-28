@@ -1,29 +1,35 @@
-import functools
-from collections import namedtuple
-from typing import Union
+"""Soil Classifier addin for `Microsoft Excel`."""
+
+from functools import lru_cache
+from typing import NamedTuple
 
 import xlwings as xw
-from xlwings import conversion
+from xlwings.conversion import Converter
 
 from geolab.exceptions import PIValueError, PSDValueError
 from geolab.soil_classifier import Soil
 
-SoilParams = namedtuple(
-    typename="SoilParams",
-    field_names="liquid_limit plastic_limit plasticity_index fines sand gravels",
-)
+
+class SoilParams(NamedTuple):
+    liquid_limit: float
+    plastic_limit: float
+    plasticity_index: float
+    fines: float
+    sand: float
+    gravels: float
 
 
-class SoilConverter(conversion.Converter):
+class ParamConverter(Converter):
+    """Converts Soil Parameters into a namedtuple."""
+
     @staticmethod
     def read_value(value, options):
-        soil_parameters = SoilParams(*value)
-        return soil_parameters
+        return SoilParams(*value)
 
 
-@functools.lru_cache
+@lru_cache
 @xw.func
-@xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
+@xw.arg("soil_parameters", convert=ParamConverter, doc="Soil parameters")
 @xw.arg("d10", doc=r"diameter at which 10% of the soil by weight is finer")
 @xw.arg("d30", doc=r"diameter at which 30% of the soil by weight is finer")
 @xw.arg("d60", doc=r"diameter at which 60% of the soil by weight is finer")
@@ -31,43 +37,62 @@ class SoilConverter(conversion.Converter):
 @xw.arg("odor")
 def USCS(
     soil_parameters: SoilParams,
-    d10: Union[float, None] = None,
-    d30: Union[float, None] = None,
-    d60: Union[float, None] = None,
-    color: bool = False,
-    odor: bool = False,
+    d10=None,
+    d30=None,
+    d60=None,
+    color=False,
+    odor=False,
 ) -> str:
-    """Determines the classification of the soil based on USCS.
+    """Determine the classification of the soil based on USCS.
 
     Returns:
-         A string representing the classification of the soil.
+          The unified classification of the soil.
 
     """
     try:
-        soil = Soil(*soil_parameters, d10=d10, d30=d30, d60=d60, color=color, odor=odor)
-    except PIValueError as e:
-        return str(e)
-    except PSDValueError as e:
-        return str(e)
+        soil = Soil(
+            soil_parameters.liquid_limit,
+            soil_parameters.plastic_limit,
+            soil_parameters.plasticity_index,
+            soil_parameters.fines,
+            soil_parameters.sand,
+            soil_parameters.gravels,
+            d10=d10,
+            d30=d30,
+            d60=d60,
+            color=color,
+            odor=odor,
+        )
+    except PIValueError as error:
+        return str(error)
+    except PSDValueError as error:
+        return str(error)
 
     return soil.unified_classification
 
 
-@functools.lru_cache
+@lru_cache
 @xw.func
-@xw.arg("soil_parameters", SoilConverter, doc="Soil parameters")
+@xw.arg("soil_parameters", convert=ParamConverter, doc="Soil parameters")
 def AASHTO(soil_parameters: SoilParams) -> str:
-    """Determines the classification of the soil based on the AASHTO.
+    """Determine the classification of the soil based on the AASHTO.
 
     Returns:
-        A string representing the classification of a model.
+        The AASHTO classification of the soil.
 
     """
     try:
-        soil = Soil(*soil_parameters)
-    except PIValueError as e:
-        return str(e)
-    except PSDValueError as e:
-        return str(e)
+        soil = Soil(
+            soil_parameters.liquid_limit,
+            soil_parameters.plastic_limit,
+            soil_parameters.plasticity_index,
+            soil_parameters.fines,
+            soil_parameters.sand,
+            soil_parameters.gravels,
+        )
+    except PIValueError as error:
+        return str(error)
+    except PSDValueError as error:
+        return str(error)
 
     return soil.aashto_classification
