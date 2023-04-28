@@ -1,10 +1,15 @@
-class PSDValueError(ValueError):
-    """Fines, Sand, and Gravels does not approximately sum up to 100%."""
+class PSDValueError(ArithmeticError):
+    """Exception raised when soil aggregates does not approximately sum to 100%."""
 
 
-class PIValueError(ValueError):
-    """`PI != LL - PL`."""
+class PIValueError(ArithmeticError):
+    """Exception raised when `PI != LL - PL`.
+
+    - PI: Plasticity Index
+    - LL: Liquid Limit
+    - PL: Plastic Limit
+    """
 
 
 class FoundationTypeError(TypeError):
-    ...
+    """Exception raised when an invalid foundation type is provided."""
