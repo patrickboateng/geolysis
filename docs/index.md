@@ -11,7 +11,14 @@
 ![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
 ![downloads](https://img.shields.io/pypi/dm/geolab?style=flat-square)
 
-`geolab` implements various geotechnical methods such as soil classification (USCS, AASHTO). Also, `geolab` implements methods for estimating soil engineering properties such as bearing capacity ($q_{ult}$), void ratio ($e_o$), undrained shear strength($C_u$), internal angle of friction ($\phi$) etc.
+`geolab` is a computer program that implements technical and professional software for geotechnical engineering.
+Some of the features of `geolab` are as follows:
+
+- Soil Classification (`USCS` & `AASHTO`)
+- Bearing Capacity Analysis (`Lab` & `Field`)
+- Estimating Soil Engineering Properties (`void ratio`($e_o$), `modulus of elasticity`($E_s$), `internal angle of friction`($\phi$) etc)
+- Settlement Analysis
+- Finite Element Modelling (`FEM`) of soils under loads
 
 !!! note
 
@@ -34,8 +41,8 @@ pip install geolab
 ```py
 >>> from geolab import soil_classifier
 
-# element in data should be arranged as follows
-# liquid limit, plastic limit, plasticity index, fines, sand, gravel
+>>> # element in data should be arranged as follows
+>>> # liquid limit, plastic limit, plasticity index, fines, sand, gravel
 >>> data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
 >>> soil = soil_classifier.Soil(*data)
 >>> soil.unified_classification
