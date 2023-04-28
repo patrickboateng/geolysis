@@ -10,7 +10,7 @@
 ![downloads](https://img.shields.io/pypi/dm/geolab?style=flat-square)
 
 `geolab` is a computer program that implements technical and professional software for geotechnical engineering.
-Some of the features of `geolab` are as follow:
+Some of the features of `geolab` are as follows:
 
 - Soil Classification (`USCS` & `AASHTO`)
 - Bearing Capacity Analysis (`Lab` & `Field`)
