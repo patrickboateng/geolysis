@@ -6,6 +6,7 @@ check:
 
 format:
 	@isort ./geolab
+	@isort ./soil_classifier_addin.py
 	@isort ./tests
 	@black ./geolab
 	@black ./tests
