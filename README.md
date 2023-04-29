@@ -14,11 +14,9 @@ Some of the features of `geolab` are as follows:
 
 - Soil Classification (`USCS` & `AASHTO`)
 - Bearing Capacity Analysis (`Lab` & `Field`)
-- Estimating Soil Engineering Properties (`void ratio`($e_o$), `modulus of elasticity`($E_s$), `internal angle of friction`($\phi$) etc)
+- Estimating Soil Engineering Properties (`void ratio`$\left(e_o\right)$, `modulus of elasticity`$\left(E_s\right)$, `internal angle of friction`$\left(\phi\right)$ etc)
 - Settlement Analysis
 - Finite Element Modelling (`FEM`) of soils under loads
-
-> **&#9432;** Only Unified Soil Classification (USCS) has been implemented as of now and can also be installed as a Microsoft Excel addin.
 
 ## Installation
 
