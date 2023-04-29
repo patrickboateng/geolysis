@@ -6,7 +6,7 @@ It is important to characterize soils to be able to assess their engineering pro
 - Compressibility
 - Permeability
 
-**Particle Size Distribution (PSD)** and **Atterberg Limits** are tests developed for characterizing soils quality.
+**Particle Size Distribution (PSD)** and **Atterberg Limits** are tests developed for characterizing soil quality.
 
 ## Particle Size Distribution (PSD)
 
@@ -182,7 +182,7 @@ The smaller the value of the group index, the better is the soil in that categor
 
     The group index must be mentioned even when it is zero to indicate that the soil has been classified as per **AASHTO** classification system.
 
-## Approximate Equivalence Between AASHTO and USC sytem
+## Approximate Equivalence Between AASHTO and USC system
 
 | AASHTO System | USCS (most probable) |
 | ------------- | :------------------: |
