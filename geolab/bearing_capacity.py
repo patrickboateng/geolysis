@@ -1,9 +1,27 @@
+""" This module provides functions for bearing capacity analysis.
+
+Dependencies:
+    - numpy 1.24.2 or later
+
+Usage:
+    ...
+
+
+Public Functions:
+    - `deg2rad(func)` -> `func`: A decorator that convert `func` parameter from degrees to radians.
+    - `Kp(phi: float)` -> `float`: Returns the coefficient of passive earth pressure.
+
+Public Classes:
+...
+
+"""
+
 import functools
 from typing import Callable, TypeVar, cast
 
 import numpy as np
 
-from geolab.exceptions import FoundationTypeError
+from geolab import exceptions
 
 F = TypeVar("F", bound=Callable[[float], float])
 
@@ -22,6 +40,8 @@ def Kp(phi: float) -> float:
 
     $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
 
+    $$$$
+
     Args:
         phi: Internal angle of friction (degrees).
 
@@ -30,6 +50,53 @@ def Kp(phi: float) -> float:
 
     """
     return (1 + np.sin(phi)) / (1 - np.sin(phi))
+
+
+def Ncor_Skempton(Nr: int, gamma: float) -> float:
+    """SPT N-value correction according to `Skempton`.
+
+    Args:
+        Nr: Recorded SPT N-value.
+        gamma: Effective overburden pressure ($kN/m^2$).
+
+    Returns:
+        Corrected SPT N-value.
+    """
+    return (2 / (1 + 0.01044 * gamma)) * Nr
+
+
+def Ncor_Bazaraa(Nr: int, gamma: float) -> float:
+    """SPT N-value correction according to `Bazaraa (1957)` and also by `Peck and Bazaraa (1957)`.
+
+    Args:
+        Nr: Recorded SPT N-value.
+        gamma: Effective overburden pressure ($kN/m^2$).
+
+    Returns:
+        Corrected SPT N-value.
+    """
+
+    if gamma < 71.8:
+        return 4 * Nr / (1 + 0.0418 * gamma)
+    if gamma > 71.8:
+        return 4 * Nr / (3.25 + 0.0104 * gamma)
+
+    return Nr
+
+
+def Es(N60: float) -> float:
+    r"""Elastic modulus of soil ($kN/m^2$).
+
+    $$E_s = 320\left(N_{60} + 15 \right)$$
+
+    Args:
+        N60: ...
+
+    Returns:
+        Elastic modulus
+    """
+
+    return 320 * (N60 + 15)
 
 
 class T:
@@ -135,7 +202,7 @@ class T:
         gamma: float,
         foundation_depth: float,
         foundation_width: float,
-        foundation_type: str = "s",
+        foundation_type: str = "square",
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
         `circular` footing.
@@ -146,14 +213,13 @@ class T:
             gamma: Unit weight of soil ($kN/m^3$).
             foundation_depth: Foundation depth $D_f$ (m).
             foundation_width: Foundation width (**B**) (m)
-            foundation_type: Determines the type of foundation. `s` or `square` for square foundation
-                                and `c` or `circular` for circular foundation. Defaults to `square`.
+            foundation_type: Determines the type of foundation. Defaults to `square`.
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
 
         """
-        if foundation_type not in {"s", "c", "square", "circular"}:
-            raise FoundationTypeError(
+        if foundation_type not in {"square", "circular"}:
+            raise exceptions.FoundationTypeError(
                 f"Foundation type must be square or circular not {foundation_type}"
             )
 
@@ -170,6 +236,49 @@ class T:
 
 class M:
     """Meyerhoff Bearing Capacity."""
+
+    ALLOWABLE_SETTLEMENT: float = 25.4
+
+    def Fd(foundation_depth: float, foundation_width: float) -> float:
+        """Depth Factor"""
+        depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
+
+        return depth_factor if depth_factor <= 1.33 else 1.33
+
+    def Qa(
+        Ndes: float, foundation_depth: float, foundation_width: float, Se: float
+    ) -> float:
+        r"""Allowable bearing capacity ($q_{a(net)}$) for a given tolerable settlement proposed by Meyerhoff.
+
+        Args:
+            Ndes: Average corrected number of blows from `SPT N-value`.
+            foundation_depth: Depth of foundation (m).
+            foundation_width: width of foundation (m).
+            Se: tolerable settlement (mm).
+
+        Returns:
+            Allowable bearing capacity.
+
+        Raises:
+            exceptions.AllowableSettlementError: Raised when $S_e$ is greater than `25.4mm`.
+
+        """
+
+        if Se > M.ALLOWABLE_SETTLEMENT:
+            raise exceptions.AllowableSettlementError(
+                f"Se: {Se} cannot be greater than 25.4mm"
+            )
+
+        if foundation_width <= 1.22:
+            return 19.16 * Ndes * M.Fd(foundation_depth, foundation_width) * (Se / 25.4)
+
+        return (
+            11.98
+            * Ndes
+            * np.power((3.28 * foundation_width + 1) / (3.28 * foundation_width), 2)
+            * M.Fd(foundation_depth, foundation_width)
+            * (Se / 25.4)
+        )
 
     @staticmethod
     def _Nq(phi: float) -> float:
