@@ -1,3 +1,16 @@
+""" This module provides the implementations for `USCS` and `AASHTO` classification.
+
+Dependencies:
+    - Python 3.9 or later
+    - attrs 22.2.0 or later
+
+Usage:
+    ...
+
+Public Classes:
+    ...
+"""
+
 import functools
 import math
 from typing import Union
@@ -15,8 +28,11 @@ def _check_PSD(fines: float, sand: float, gravels: float):
         sand: Percentage of sand in soil sample.
         gravels: Percentage of gravels in soil sample.
 
+    Public Methods:
+    ...
+
     Raises:
-        exceptions.PSDValueError: `fines + sand + gravels != 100%`.
+        exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
     """
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100, rel_tol=0.01):
@@ -33,7 +49,7 @@ def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float
                           condition `PI = LL - PL`.
 
     Raises:
-        exceptions.PIValueError: `LL - PL != PI`.
+        exceptions.PIValueError: Raised when PI != LL - PL.
     """
     if not math.isclose(liquid_limit - plastic_limit, plasticity_index, rel_tol=0.01):
         raise exceptions.PIValueError("PI != LL - PL")
@@ -58,8 +74,8 @@ class Soil:
         odor: Indicates if soil has odor or not. Defaults to False.
 
     Raises:
-        exceptions.PSDValueError: `fines + sand + gravels != 100%`.
-        exceptions.PIValueError: `LL - PL != PI`
+        exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
+        exceptions.PIValueError: Raised when PI != LL - PL.
 
     """
 
@@ -69,11 +85,11 @@ class Soil:
     fines: float
     sand: float
     gravels: float
-    d10: Union[float, None] = field(default=None)
-    d30: Union[float, None] = field(default=None)
-    d60: Union[float, None] = field(default=None)
-    color: bool = field(default=False)
-    odor: bool = field(default=False)
+    d10: Union[float, None] = field(default=None, kw_only=True)
+    d30: Union[float, None] = field(default=None, kw_only=True)
+    d60: Union[float, None] = field(default=None, kw_only=True)
+    color: bool = field(default=False, kw_only=True)
+    odor: bool = field(default=False, kw_only=True)
 
     def __attrs_post_init__(self):
         _check_PI(self.liquid_limit, self.plastic_limit, self.plasticity_index)
