@@ -13,3 +13,7 @@ class PIValueError(ArithmeticError):
 
 class FoundationTypeError(TypeError):
     """Exception raised when an invalid foundation type is provided."""
+
+
+class AllowableSettlementError(ValueError):
+    """Exception raised when allowable settlement is greater than `25.4mm`"""
