@@ -239,12 +239,14 @@ class M:
 
     ALLOWABLE_SETTLEMENT: float = 25.4
 
+    @staticmethod
     def Fd(foundation_depth: float, foundation_width: float) -> float:
         """Depth Factor"""
         depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
 
         return depth_factor if depth_factor <= 1.33 else 1.33
 
+    @staticmethod
     def Qa(
         Ndes: float, foundation_depth: float, foundation_width: float, Se: float
     ) -> float:
