@@ -8,7 +8,7 @@ Usage:
     ...
 
 Public Classes:
-    ...
+    `Soil` -> 
 """
 
 import functools
