@@ -15,7 +15,7 @@ import functools
 import math
 from typing import Union
 
-from attrs import define, field
+from attrs import define, field, validators
 
 from geolab import exceptions
 
@@ -45,8 +45,7 @@ def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight.
         plastic_limit: Water content at which plastic deformation can be initiated.
-        plasticity_index: Range of water content over which soil remains in plastic
-                          condition `PI = LL - PL`.
+        plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL`.
 
     Raises:
         exceptions.PIValueError: Raised when PI != LL - PL.
@@ -62,8 +61,7 @@ class Soil:
     Attributes:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
         plastic_limit: Water content at which plastic deformation can be initiated. (%)
-        plasticity_index: Range of water content over which soil remains in plastic
-                                  condition `PI = LL - PL` (%)
+        plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
         fines: Percentage of fines in soil sample.
         sand:  Percentage of sand in soil sample.
         gravels: Percentage of gravels in soil sample.
@@ -79,12 +77,24 @@ class Soil:
 
     """
 
-    liquid_limit: float
-    plastic_limit: float
-    plasticity_index: float
-    fines: float
-    sand: float
-    gravels: float
+    liquid_limit: float = field(
+        validator=[validators.instance_of((int, float)), validators.ge(0)]
+    )
+    plastic_limit: float = field(
+        validator=[validators.instance_of((int, float)), validators.ge(0)]
+    )
+    plasticity_index: float = field(
+        validator=[validators.instance_of((int, float)), validators.ge(0)]
+    )
+    fines: float = field(
+        validator=[validators.instance_of((int, float)), validators.ge(0)]
+    )
+    sand: float = field(
+        validator=[validators.instance_of((int, float)), validators.ge(0)]
+    )
+    gravels: float = field(
+        validator=[validators.instance_of((int, float)), validators.ge(0)]
+    )
     d10: Union[float, None] = field(default=None, kw_only=True)
     d30: Union[float, None] = field(default=None, kw_only=True)
     d60: Union[float, None] = field(default=None, kw_only=True)
