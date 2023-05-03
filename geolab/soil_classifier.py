@@ -1,15 +1,4 @@
-""" This module provides the implementations for `USCS` and `AASHTO` classification.
-
-Dependencies:
-    - Python 3.9 or later
-    - attrs 22.2.0 or later
-
-Usage:
-    ...
-
-Public Classes:
-    `Soil` -> 
-"""
+""" This module provides the implementations for `USCS` and `AASHTO` classification."""
 
 import functools
 import math
@@ -17,7 +6,7 @@ from typing import Union
 
 from attrs import define, field, validators
 
-from geolab import exceptions
+import exceptions
 
 
 def _check_PSD(fines: float, sand: float, gravels: float):
@@ -154,16 +143,12 @@ class Soil:
 
         return 0.0 if gi <= 0 else gi
 
-    @property
-    def remarks(self):
-        ...
-
     @functools.cached_property
     def _A_line(self) -> float:
         return 0.73 * (self.liquid_limit - 20)
 
     @property
-    def aashto_classification(self) -> str:
+    def aashto(self) -> str:
         # if self.fines <= 35:
         #     # Gravels A1-A3
         #     if self.fines <= 10:
@@ -210,7 +195,7 @@ class Soil:
                     )
 
     @property
-    def unified_classification(self) -> str:
+    def uscs(self) -> str:
         """Unified Soil Classification System."""
         if self.fines < 50:
             # Coarse grained, Run Sieve Analysis
