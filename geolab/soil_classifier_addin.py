@@ -6,8 +6,8 @@ from typing import NamedTuple
 import xlwings as xw
 from xlwings.conversion import Converter
 
-from geolab.exceptions import PIValueError, PSDValueError
-from geolab.soil_classifier import Soil
+from exceptions import PIValueError, PSDValueError
+from soil_classifier import Soil
 
 
 class SoilParams(NamedTuple):
@@ -68,7 +68,7 @@ def USCS(
     except PSDValueError as error:
         return str(error)
 
-    return soil.unified_classification
+    return soil.uscs
 
 
 @lru_cache
@@ -95,4 +95,4 @@ def AASHTO(soil_parameters: SoilParams) -> str:
     except PSDValueError as error:
         return str(error)
 
-    return soil.aashto_classification
+    return soil.aashto
