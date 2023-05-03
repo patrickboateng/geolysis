@@ -52,8 +52,8 @@ class TestSoil(unittest.TestCase):
         self.assertAlmostEqual(self.soil.group_index, 33.47)
 
     def test_classification(self):
-        self.assertEqual(self.soil.aashto_classification, "A-7-5(33)")
-        self.assertEqual(self.soil.unified_classification, "MH")
+        self.assertEqual(self.soil.aashto, "A-7-5(33)")
+        self.assertEqual(self.soil.uscs, "MH")
 
 
 def test_PSD():
@@ -68,13 +68,13 @@ def test_PI():
 
 def test_soil_in_hatched_zone():
     soil = Soil(26.4, 19.4, 7, 54.76, 45.24, 0)
-    assert soil.unified_classification == "ML-CL"
+    assert soil.uscs == "ML-CL"
 
 
 @pytest.mark.parametrize("soil_params,size_coef,results", dual_class_test_data)
 def test_dual_classification(soil_params: tuple, size_coef: dict, results: dict):
     soil = Soil(*soil_params, **size_coef)
-    assert soil.unified_classification == results.classification
+    assert soil.uscs == results.classification
     assert soil.cu == pytest.approx(results.cu, 0.01)
     assert soil.cc == pytest.approx(results.cc, 0.01)
 
@@ -82,4 +82,4 @@ def test_dual_classification(soil_params: tuple, size_coef: dict, results: dict)
 @pytest.mark.parametrize("soil_params,classification", single_class_test_data)
 def test_single_classification(soil_params: tuple, classification: str):
     soil = Soil(*soil_params)
-    assert soil.unified_classification == classification
+    assert soil.uscs == classification
