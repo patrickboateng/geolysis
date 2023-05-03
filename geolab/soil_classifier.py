@@ -6,7 +6,11 @@ from typing import Union
 
 from attrs import define, field, validators
 
-import exceptions
+# Using try/except block because of soil_classifier_addin.
+try:
+    from geolab import exceptions
+except ModuleNotFoundError:
+    import exceptions
 
 
 def _check_PSD(fines: float, sand: float, gravels: float):
