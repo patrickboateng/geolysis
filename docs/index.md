@@ -39,15 +39,15 @@ pip install geolab
 ## Usage example
 
 ```py
->>> from geolab import soil_classifier
+>> > from geolab import soil_classifier
 
->>> # element in data should be arranged as follows
->>> # liquid limit, plastic limit, plasticity index, fines, sand, gravel
->>> data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
->>> soil = soil_classifier.Soil(*data)
->>> soil.unified_classification
+>> >  # element in data should be arranged as follows
+>> >  # liquid limit, plastic limit, plasticity index, fines, sand, gravel
+>> > data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
+>> > soil = soil_classifier.Soil(*data)
+>> > soil.uscs
 'SC'
->>> soil.aashto_classification
+>> > soil.aashto
 'A-6(3)'
 
 ```
