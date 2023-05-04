@@ -21,9 +21,6 @@ def _check_PSD(fines: float, sand: float, gravels: float):
         sand: Percentage of sand in soil sample.
         gravels: Percentage of gravels in soil sample.
 
-    Public Methods:
-    ...
-
     Raises:
         exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
     """
