@@ -1,5 +1,7 @@
 class PSDValueError(ArithmeticError):
-    """Exception raised when soil aggregates does not approximately sum to 100%."""
+    """Exception raised when soil aggregates does not approximately sum to
+    100%.
+    """
 
 
 class PIValueError(ArithmeticError):
