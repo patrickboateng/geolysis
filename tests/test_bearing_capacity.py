@@ -1,7 +1,8 @@
 import pytest
 
-from geolab import FoundationTypeError
-from geolab.bearing_capacity import Kp, M, T
+from geolab import Kp
+from geolab.bearing_capacity import M, T
+from geolab.exceptions import FoundationTypeError
 
 
 def test_Kp():
