@@ -1,87 +1,38 @@
-""" This module provides functions for bearing capacity analysis.
+"""This module provides functions for bearing capacity analysis."""
 
-Dependencies:
-    - numpy 1.24.2 or later
-
-Usage:
-    ...
-
-
-Public Functions:
-    - `deg2rad(func)` -> `func`: A decorator that convert `func` parameter from degrees to radians.
-    - `Kp(phi: float)` -> `float`: Returns the coefficient of passive earth pressure.
-
-Public Classes:
-...
-
-"""
-
-import functools
-from typing import Callable, TypeVar, cast
 
 import numpy as np
 
-from geolab import exceptions
-
-F = TypeVar("F", bound=Callable[[float], float])
+from geolab import Kp, deg2rad, exceptions
 
 
-def deg2rad(func: F) -> F:
-    @functools.wraps(func)
-    def wrapper(phi):
-        return func(np.deg2rad(phi))
-
-    return cast(F, wrapper)
-
-
-@deg2rad
-def Kp(phi: float) -> float:
-    r"""Coefficient of passive earth pressure ($K_p$).
-
-    $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
-
-    $$$$
-
-    Args:
-        phi: Internal angle of friction (degrees).
-
-    Returns:
-        Passive earth pressure coefficient.
-
-    """
-    return (1 + np.sin(phi)) / (1 - np.sin(phi))
-
-
-def Ncor_Skempton(Nr: int, gamma: float) -> float:
-    """SPT N-value correction according to `Skempton`.
+def Ncor(Nr: int, gamma: float, spt_correction: str = "Skempton") -> float:
+    """SPT N-value correction.
 
     Args:
         Nr: Recorded SPT N-value.
         gamma: Effective overburden pressure ($kN/m^2$).
+        spt_correction: The type of spt correction. `Skempton` or `Bazaraa`. Defaults to `Skempton`.
 
     Returns:
         Corrected SPT N-value.
     """
-    return (2 / (1 + 0.01044 * gamma)) * Nr
+    spt_correction = spt_correction.casefold()
+    if spt_correction not in {"skempton", "bazaraa"}:
+        raise exceptions.SPTCorrectionTypeError(
+            f"SPT Correction should be skempton or bazaraa not {spt_correction}"
+        )
 
+    if spt_correction == "skempton":
+        return (2 / (1 + 0.01044 * gamma)) * Nr
 
-def Ncor_Bazaraa(Nr: int, gamma: float) -> float:
-    """SPT N-value correction according to `Bazaraa (1957)` and also by `Peck and Bazaraa (1957)`.
+    if spt_correction == "bazaraa":
+        if gamma < 71.8:
+            return 4 * Nr / (1 + 0.0418 * gamma)
+        if gamma > 71.8:
+            return 4 * Nr / (3.25 + 0.0104 * gamma)
 
-    Args:
-        Nr: Recorded SPT N-value.
-        gamma: Effective overburden pressure ($kN/m^2$).
-
-    Returns:
-        Corrected SPT N-value.
-    """
-
-    if gamma < 71.8:
-        return 4 * Nr / (1 + 0.0418 * gamma)
-    if gamma > 71.8:
-        return 4 * Nr / (3.25 + 0.0104 * gamma)
-
-    return Nr
+        return Nr
 
 
 def Es(N60: float) -> float:
@@ -90,7 +41,7 @@ def Es(N60: float) -> float:
     $$E_s = 320\left(N_{60} + 15 \right)$$
 
     Args:
-        N60: ...
+        N60: The SPT N-value corrected for 60% hammer efficiency.
 
     Returns:
         Elastic modulus
@@ -241,7 +192,7 @@ class M:
 
     @staticmethod
     def Fd(foundation_depth: float, foundation_width: float) -> float:
-        """Depth Factor"""
+        """Depth Factor."""
         depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
 
         return depth_factor if depth_factor <= 1.33 else 1.33
@@ -250,7 +201,8 @@ class M:
     def Qa(
         Ndes: float, foundation_depth: float, foundation_width: float, Se: float
     ) -> float:
-        r"""Allowable bearing capacity ($q_{a(net)}$) for a given tolerable settlement proposed by Meyerhoff.
+        r"""Allowable bearing capacity ($q_{a(net)}$) for a given tolerable
+        settlement proposed by Meyerhoff.
 
         Args:
             Ndes: Average corrected number of blows from `SPT N-value`.
