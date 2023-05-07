@@ -17,15 +17,20 @@ LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
-def _check_PSD(fines: float, sand: float, gravels: float):
+def _check_PSD(fines, sand, gravels):
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100, rel_tol=0.01):
-        raise exceptions.PSDValueError("fines + sand + gravels != 100%")
+        raise exceptions.PSDValueError(
+            f"fines + sand + gravels = 100% not {total_aggregate}"
+        )
 
 
-def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
-    if not math.isclose(liquid_limit - plastic_limit, plasticity_index, rel_tol=0.01):
-        raise exceptions.PIValueError("PI != LL - PL")
+def _check_PI(liquid_limit, plastic_limit, plasticity_index):
+    pi = liquid_limit - plastic_limit
+    if not math.isclose(pi, plasticity_index, rel_tol=0.01):
+        raise exceptions.PIValueError(
+            f"PI should be equal to {pi} not {plasticity_index}"
+        )
 
 
 def Cc(d10: float, d30: float, d60: float) -> float:
@@ -40,7 +45,6 @@ def Cc(d10: float, d30: float, d60: float) -> float:
 
     Returns:
         The coefficient of curvature of the soil.
-
     """
     return (d30**2) / (d60 * d10)
 
@@ -48,7 +52,7 @@ def Cc(d10: float, d30: float, d60: float) -> float:
 def Cu(d10: float, d60: float) -> float:
     r"""Calculates the coefficient of uniformity of the soil.
 
-        $$\dfrac{d_{60}}{d_{10}}$$
+    $$\dfrac{d_{60}}{d_{10}}$$
 
     Args:
         d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
@@ -66,7 +70,7 @@ def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
     Args:
         Cc: Coefficient of curvature.
         Cu: Coefficient of uniformity.
-        soil_type: Type of soil. (`G` or `S`). `G` for Gravel and `S` for Sand. Defaults to G.
+        soil_type: Type of soil. (`G` or `S`). `G` for Gravel and `S` for Sand. Defaults to `G`.
 
     Returns:
         The grading of the soil. (W or P)
@@ -80,8 +84,8 @@ def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
         )
 
     if soil_type == GRAVEL:
-        return WELL_GRADED if (1 < Cc < 3) and Cu >= 4 else POORLY_GRADED
-    return WELL_GRADED if (1 < Cc < 3) and Cu >= 6 else POORLY_GRADED
+        return WELL_GRADED if (1 < Cc < 3) and (Cu >= 4) else POORLY_GRADED
+    return WELL_GRADED if (1 < Cc < 3) and (Cu >= 6) else POORLY_GRADED
 
 
 def A_line(liquid_limit: float) -> float:
@@ -95,11 +99,10 @@ def A_line(liquid_limit: float) -> float:
     Returns:
         The `A-line` of the soil.
     """
-
     return 0.73 * (liquid_limit - 20)
 
 
-def _dual_symbol(liquid_limit, plasticity_index, d10, d30, d60, soil_type: str) -> str:
+def _dual_symbol(liquid_limit, plasticity_index, d10, d30, d60, soil_type) -> str:
     cc = Cc(d10, d30, d60)
     cu = Cu(d10, d60)
     grad = grading(cc, cu, soil_type)
@@ -131,7 +134,10 @@ def _classify(
             return _dual_symbol(
                 liquid_limit, plasticity_index, d10, d30, d60, soil_type
             )
-        return f"{soil_type}{WELL_GRADED}-{soil_type}{SILT}, {soil_type}{POORLY_GRADED}-{soil_type}{SILT}, {soil_type}{WELL_GRADED}-{soil_type}{CLAY}, {soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
+        return f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},\
+                {soil_type}{POORLY_GRADED}-{soil_type}{SILT},\
+                {soil_type}{WELL_GRADED}-{soil_type}{CLAY},\
+                {soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
 
     else:
         # Obtain Cc and Cu
@@ -162,9 +168,9 @@ def uscs(
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
         plastic_limit: Water content at which plastic deformation can be initiated. (%)
         plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
-        fines: Percentage of fines in soil sample.
-        sand:  Percentage of sand in soil sample.
-        gravels: Percentage of gravels in soil sample.
+        fines: Percentage of fines in soil sample. (%)
+        sand:  Percentage of sand in soil sample. (%)
+        gravels: Percentage of gravels in soil sample. (%)
         d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
         d30: diameter at which 30% of the soil by weight is finer. Defaults to 0.
         d60: diameter at which 60% of the soil by weight is finer. Defaults to 0.
@@ -177,7 +183,6 @@ def uscs(
     Raises:
         exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
         exceptions.PIValueError: Raised when PI != LL - PL.
-
     """
 
     _check_PI(liquid_limit, plastic_limit, plasticity_index)
@@ -188,21 +193,19 @@ def uscs(
         soil_info = (liquid_limit, plasticity_index, fines, d10, d30, d60)
         if gravels > sand:
             # Gravel
-            soil_type = GRAVEL
-            return _classify(*soil_info, soil_type)
+            return _classify(*soil_info, soil_type=GRAVEL)
         else:
             # Sand
-            soil_type = SAND
-            return _classify(*soil_info, soil_type)
+            return _classify(*soil_info, soil_type=SAND)
     else:
         # Fine grained, Run Atterberg
         Aline = A_line(liquid_limit)
         if liquid_limit < 50:
             # Low LL
-            if (plasticity_index > Aline) and plasticity_index > 7:
+            if (plasticity_index > Aline) and (plasticity_index > 7):
                 return f"{CLAY}{LOW_PLASTICITY}"
 
-            elif (plasticity_index < Aline) or plasticity_index < 4:
+            elif (plasticity_index < Aline) or (plasticity_index < 4):
                 return (
                     f"{ORGANIC}{LOW_PLASTICITY}"
                     if (color or odor)
@@ -229,10 +232,10 @@ def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> f
     """The `Group Index (GI)` is used to further evaluate soils with a group
     (subgroups).
 
-    $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10) $$
+    $$GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)$$
 
     Args:
-        fines: Percentage of fines in the soil sample.
+        fines: Percentage of fines in the soil sample. (%)
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
         plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
 
@@ -248,7 +251,7 @@ def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> f
 
 
 def aashto(
-    liquid_limit, plastic_limit, plasticity_index, fines, sand=0.0, gravels=0.0
+    liquid_limit: float, plastic_limit: float, plasticity_index: float, fines: float
 ) -> str:
     """`AASHTO` classification system.
 
@@ -256,9 +259,7 @@ def aashto(
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
         plastic_limit: Water content at which plastic deformation can be initiated. (%)
         plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
-        fines: Percentage of fines in soil sample.
-        sand:  Percentage of sand in soil sample. Defaults to 0.0.
-        gravels: Percentage of gravels in soil sample. Defaults to 0.0.
+        fines: Percentage of fines in soil sample. (%)
 
     Returns:
         The `aashto` classification of the soil.
@@ -273,7 +274,6 @@ def aashto(
     if fines <= 35:
         if liquid_limit <= 40:
             return f"A-2-4({gi})" if plasticity_index <= 10 else f"A-2-6({gi})"
-
         else:
             return f"A-2-5({gi})" if plasticity_index <= 10 else f"A-2-7({gi})"
 
@@ -281,7 +281,6 @@ def aashto(
         # Silts A4-A7
         if liquid_limit <= 40:
             return f"A-4({gi:.0f})" if plasticity_index <= 10 else f"A-6({gi:.0f})"
-
         else:
             if plasticity_index <= 10:
                 return f"A-5({gi:.0f})"
