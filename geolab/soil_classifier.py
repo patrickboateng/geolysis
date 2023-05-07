@@ -18,22 +18,12 @@ HIGH_PLASTICITY = "H"
 
 
 def _check_PSD(fines: float, sand: float, gravels: float):
-    """Checks if fines + sand + gravels = 100%.
-
-    Raises:
-        exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
-    """
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100, rel_tol=0.01):
         raise exceptions.PSDValueError("fines + sand + gravels != 100%")
 
 
 def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float):
-    """Checks if PI = LL - PL.
-
-    Raises:
-        exceptions.PIValueError: Raised when PI != LL - PL.
-    """
     if not math.isclose(liquid_limit - plastic_limit, plasticity_index, rel_tol=0.01):
         raise exceptions.PIValueError("PI != LL - PL")
 
@@ -56,11 +46,27 @@ def Cu(d10: float, d60: float) -> float:
     return d60 / d10
 
 
-def gravel_grading(Cc: float, Cu: float) -> str:
-    return WELL_GRADED if (1 < Cc < 3) and Cu >= 4 else POORLY_GRADED
+def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
+    """Determines the grading of the soil.
 
+    Args:
+        Cc: Coefficient of curvature.
+        Cu: Coefficient of uniformity.
+        soil_type: Type of soil. (Gravel or Sand). Defaults to Gravel.
 
-def sand_grading(Cc: float, Cu: float) -> str:
+    Returns:
+        The grading of the soil. (W or P)
+
+    Raises:
+        exceptions.SoilTypeError
+    """
+    if soil_type not in {GRAVEL, SAND}:
+        raise exceptions.SoilTypeError(
+            f"Soil type should be {GRAVEL} or {SAND} not {soil_type}"
+        )
+
+    if soil_type == GRAVEL:
+        return WELL_GRADED if (1 < Cc < 3) and Cu >= 4 else POORLY_GRADED
     return WELL_GRADED if (1 < Cc < 3) and Cu >= 6 else POORLY_GRADED
 
 
@@ -71,10 +77,10 @@ def A_line(liquid_limit: float) -> float:
 def _dual_symbol(liquid_limit, plasticity_index, d10, d30, d60, soil_type: str) -> str:
     cc = Cc(d10, d30, d60)
     cu = Cu(d10, d60)
-    grading = gravel_grading(cc, cu) if soil_type == GRAVEL else sand_grading(cc, cu)
+    grad = grading(cc, cu, soil_type)
     type_of_fines = CLAY if plasticity_index > A_line(liquid_limit) else SILT
 
-    return f"{soil_type}{grading}-{soil_type}{type_of_fines}"
+    return f"{soil_type}{grad}-{soil_type}{type_of_fines}"
 
 
 def _classify(
@@ -107,11 +113,8 @@ def _classify(
         if d10 and d30 and d60:
             cc = Cc(d10, d30, d60)
             cu = Cu(d10, d60)
-            return (
-                f"{soil_type}{gravel_grading(cc, cu)}"
-                if soil_type == GRAVEL
-                else f"{soil_type}{sand_grading(cc, cu)}"
-            )
+            grad = grading(cc, cu, soil_type)
+            return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
         return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
 
 
@@ -154,7 +157,7 @@ def uscs(
 
     if fines < 50:
         # Coarse grained, Run Sieve Analysis
-        data = [liquid_limit, plasticity_index, fines, d10, d30, d60]
+        data = (liquid_limit, plasticity_index, fines, d10, d30, d60)
         if gravels > sand:
             # Gravel
             soil_type = GRAVEL
