@@ -4,12 +4,16 @@ class PSDValueError(ArithmeticError):
 
 
 class PIValueError(ArithmeticError):
-    """Exception raised when `PI != LL - PL`.
+    """Exception raised when `PI` is not equal to `LL - PL`.
 
     - PI: Plasticity Index
     - LL: Liquid Limit
     - PL: Plastic Limit
     """
+
+
+class SoilTypeError(TypeError):
+    """Exception raised when an invalid soil type is provided"""
 
 
 class FoundationTypeError(TypeError):
