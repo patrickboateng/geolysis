@@ -32,21 +32,29 @@ single_class_test_data = [
     ((33, 21, 12, 30, 30, 40), "GC"),
 ]
 
+aashto_class_test_data = [
+    ((17.9, 14.5, 3.4, 24.01), "A-2-4(0.0)"),
+    ((37.7, 23.8, 13.9, 47.44), "A-6(4)"),
+    ((30.1, 16.4, 13.7, 18.38), "A-2-6(0.0)"),
+    ((61.7, 32.3, 29.4, 52.09), "A-7-5(12)"),
+    ((52.6, 27.6, 25, 45.8), "A-7-6(7)"),
+    ((30.2, 23.9, 6.3, 11.18), "A-2-4(0.0)"),
+    ((70, 38, 32, 86), "A-7-5(33)"),
+]
+
 
 def test_group_index():
     assert group_index(86, 70, 32) == pytest.approx(33.47, 0.01)
 
 
-@pytest.mark.xfail
 def test_PSD():
     with pytest.raises(PSDValueError):
-        aashto(30, 10, 20, 30, 30, 30)
         uscs(30, 10, 20, 30, 30, 30)
 
 
 def test_PI():
     with pytest.raises(PIValueError):
-        aashto(30, 10, 10, 30, 30, 40)
+        aashto(30, 10, 10, 30)
         uscs(30, 10, 10, 30, 30, 40)
 
 
@@ -62,7 +70,8 @@ def test_Cu():
     assert Cu(0.153, 1.2) == pytest.approx(7.84, 0.01)
 
 
-def test_aashto():
+@pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
+def test_aashto(soil_params, classification):
     assert aashto(70, 38, 32, 86) == "A-7-5(33)"
 
 
