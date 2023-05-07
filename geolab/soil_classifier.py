@@ -29,9 +29,17 @@ def _check_PI(liquid_limit: float, plastic_limit: float, plasticity_index: float
 
 
 def Cc(d10: float, d30: float, d60: float) -> float:
-    r"""Calculates the coefficient of Curvature of the soil.
+    r"""Calculates the coefficient of curvature of the soil.
 
     $$\dfrac{d_{30}^2}{d_{60} \times d_{10}}$$
+
+    Args:
+        d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
+        d30: diameter at which 30% of the soil by weight is finer. Defaults to 0.
+        d60: diameter at which 60% of the soil by weight is finer. Defaults to 0.
+
+    Returns:
+        The coefficient of curvature of the soil.
 
     """
     return (d30**2) / (d60 * d10)
@@ -40,8 +48,14 @@ def Cc(d10: float, d30: float, d60: float) -> float:
 def Cu(d10: float, d60: float) -> float:
     r"""Calculates the coefficient of uniformity of the soil.
 
-    $$\dfrac{d_{60}}{d_{10}}$$
+        $$\dfrac{d_{60}}{d_{10}}$$
 
+    Args:
+        d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
+        d60: diameter at which 60% of the soil by weight is finer. Defaults to 0.
+
+    Returns:
+        The coefficient of uniformity of the soil sample.
     """
     return d60 / d10
 
@@ -52,7 +66,7 @@ def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
     Args:
         Cc: Coefficient of curvature.
         Cu: Coefficient of uniformity.
-        soil_type: Type of soil. (Gravel or Sand). Defaults to Gravel.
+        soil_type: Type of soil. (`G` or `S`). `G` for Gravel and `S` for Sand. Defaults to G.
 
     Returns:
         The grading of the soil. (W or P)
@@ -71,6 +85,17 @@ def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
 
 
 def A_line(liquid_limit: float) -> float:
+    r"""Calculates the `A-line`.
+
+    $$0.73 \times \left(LL - 20 \right)$$
+
+    Args:
+        liquid_limit: Water content beyond which soils flows under their own weight. (%)
+
+    Returns:
+        The `A-line` of the soil.
+    """
+
     return 0.73 * (liquid_limit - 20)
 
 
@@ -146,6 +171,9 @@ def uscs(
         color: Indicates if soil has color or not. Defaults to False.
         odor: Indicates if soil has odor or not. Defaults to False.
 
+    Returns:
+        The unified classification of the soil.
+
     Raises:
         exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
         exceptions.PIValueError: Raised when PI != LL - PL.
@@ -157,15 +185,15 @@ def uscs(
 
     if fines < 50:
         # Coarse grained, Run Sieve Analysis
-        data = (liquid_limit, plasticity_index, fines, d10, d30, d60)
+        soil_info = (liquid_limit, plasticity_index, fines, d10, d30, d60)
         if gravels > sand:
             # Gravel
             soil_type = GRAVEL
-            return _classify(*data, soil_type)
+            return _classify(*soil_info, soil_type)
         else:
             # Sand
             soil_type = SAND
-            return _classify(*data, soil_type)
+            return _classify(*soil_info, soil_type)
     else:
         # Fine grained, Run Atterberg
         Aline = A_line(liquid_limit)
@@ -197,16 +225,19 @@ def uscs(
                 )
 
 
-def group_index(fines, liquid_limit, plasticity_index):
+def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> float:
     """The `Group Index (GI)` is used to further evaluate soils with a group
     (subgroups).
 
     $$ GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10) $$
 
-    - $F_{200}$: Percentage by mass passing American Sieve No. 200.
-    - LL: Liquid Limit (%), expressed as a whole number.
-    - PI: Plasticity Index (%), expressed as a whole number.
+    Args:
+        fines: Percentage of fines in the soil sample.
+        liquid_limit: Water content beyond which soils flows under their own weight. (%)
+        plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
 
+    Returns:
+        The group index of the soil sample.
     """
 
     gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (fines - 15) * (
@@ -228,6 +259,9 @@ def aashto(
         fines: Percentage of fines in soil sample.
         sand:  Percentage of sand in soil sample. Defaults to 0.0.
         gravels: Percentage of gravels in soil sample. Defaults to 0.0.
+
+    Returns:
+        The `aashto` classification of the soil.
 
     Raises:
         exceptions.PIValueError: Raised when PI != LL - PL.
