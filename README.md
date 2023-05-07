@@ -34,9 +34,9 @@ pip install geolab
 >>>  # element in data should be arranged as follows
 >>>  # liquid limit, plastic limit, plasticity index, fines, sand, gravel
 >>> data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
->>> uscs(*data)
+>>> uscs(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88, sand=37.84, gravels=14.28)
 'SC'
->>> aashto(*data)
+>>> aashto(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88)
 'A-6(3)'
 
 ```
