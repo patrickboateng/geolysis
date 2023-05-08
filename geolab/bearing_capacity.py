@@ -6,13 +6,13 @@ import numpy as np
 from geolab import Kp, deg2rad, exceptions
 
 
-def Ncor(Nr: int, gamma: float, spt_correction: str = "Skempton") -> float:
+def Ncor(Nr: int, gamma: float, spt_correction: str = "skempton") -> float:
     """SPT N-value correction.
 
     Args:
         Nr: Recorded SPT N-value.
         gamma: Effective overburden pressure ($kN/m^2$).
-        spt_correction: The type of spt correction. `Skempton` or `Bazaraa`. Defaults to `Skempton`.
+        spt_correction: The type of spt correction. `skempton` or `bazaraa`. Defaults to `skempton`.
 
     Returns:
         Corrected SPT N-value.
