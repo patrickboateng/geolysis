@@ -9,7 +9,6 @@ format:
 	@isort ./tests
 	@black ./geolab
 	@black ./tests
-	@docformatter -i ./geolab
 
 test:
 	@echo "Running pytest..."
