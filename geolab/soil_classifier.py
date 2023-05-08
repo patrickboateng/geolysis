@@ -76,7 +76,7 @@ def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
         The grading of the soil. (W or P)
 
     Raises:
-        exceptions.SoilTypeError
+        exceptions.SoilTypeError: Raised when invalid soil type is specified.
     """
     if soil_type not in {GRAVEL, SAND}:
         raise exceptions.SoilTypeError(
@@ -150,17 +150,17 @@ def _classify(
 
 
 def uscs(
-    liquid_limit,
-    plastic_limit,
-    plasticity_index,
-    fines,
-    sand,
-    gravels,
-    d10=0,
-    d30=0,
-    d60=0,
-    color=False,
-    odor=False,
+    liquid_limit: float,
+    plastic_limit: float,
+    plasticity_index: float,
+    fines: float,
+    sand: float,
+    gravels: float,
+    d10: float = 0,
+    d30: float = 0,
+    d60: float = 0,
+    color: bool = False,
+    odor: bool = False,
 ) -> str:
     """Unified Soil Classification System.
 
@@ -182,7 +182,7 @@ def uscs(
 
     Raises:
         exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
-        exceptions.PIValueError: Raised when PI != LL - PL.
+        exceptions.PIValueError: Raised when `PI` is not equal to `LL - PL`.
     """
 
     _check_PI(liquid_limit, plastic_limit, plasticity_index)
