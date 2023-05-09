@@ -18,7 +18,6 @@ def deg2rad(func: F) -> F:
         kwargs["phi"] = np.deg2rad(phi)
 
         return func(*args, **kwargs)
-        # return func(np.deg2rad(phi))
 
     return cast(F, wrapper)
 
