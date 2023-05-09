@@ -6,6 +6,23 @@ import numpy as np
 from geolab import Kp, deg2rad, exceptions
 
 
+@deg2rad
+def foundation_depth(Qa: float, gamma: float, *, phi: float) -> float:
+    r"""Depth of foundation estimated using Rankine's formula.
+
+    $$D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2$$
+
+    Args:
+        Qa: Allowable bearing capacity.
+        gamma: Unit weight of soil.
+        phi: Internal angle of friction.
+
+    Returns:
+        foundation depth.
+    """
+    return (Qa / gamma) * ((1 - np.sin(phi)) / (1 + np.sin(phi))) ** 2
+
+
 def Ncor(Nr: int, gamma: float, spt_correction: str = "skempton") -> float:
     """SPT N-value correction.
 
@@ -35,6 +52,26 @@ def Ncor(Nr: int, gamma: float, spt_correction: str = "skempton") -> float:
         return Nr
 
 
+def N60(
+    Nr: float, Em: float = 0.575, Cb: float = 1, Cs: float = 1, Cr: float = 0.75
+) -> float:
+    r"""SPT N-value corrected for field procedures.
+
+    $$N_{60} = \dfrac{E_m \times C_B \times C_s \times C_R \times N_r}{0.6}$$
+
+    Args:
+        Nr: Recorded SPT N-value.
+        Em: Hammer Efficiency. Defaults to 0.575.
+        Cb: Borehole Diameter Correction. Defaults to 1.
+        Cs: Sampler Correction. Defaults to 1.
+        Cr: Rod Length Correction. Defaults to 0.75.
+
+    Returns:
+        SPT N-value corrected for 60% hammer efficiency.
+    """
+    return (Em * Cb * Cs * Cr * Nr) / 0.6
+
+
 def Es(N60: float) -> float:
     r"""Elastic modulus of soil ($kN/m^2$).
 
@@ -46,8 +83,21 @@ def Es(N60: float) -> float:
     Returns:
         Elastic modulus
     """
-
     return 320 * (N60 + 15)
+
+
+def phi(N60: float) -> float:
+    r"""Internal angle of friction.
+
+    $$\phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2$$
+
+    Args:
+        N60 (float): _description_
+
+    Returns:
+        The internal angle of friction.
+    """
+    return 27.1 + 0.3 * N60 - 0.00054 * (N60**2)
 
 
 class T:
@@ -66,7 +116,7 @@ class T:
 
     @staticmethod
     @deg2rad
-    def Nq(phi: float) -> float:
+    def Nq(*, phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_q$.
 
         $$\frac{e^{(\frac{3\pi}{2} - \phi)\tan \phi}}{2 \cos^2 \left(45^{\circ} + \frac{\phi}{2} \right)}$$
@@ -82,7 +132,7 @@ class T:
 
     @staticmethod
     @deg2rad
-    def Nc(phi: float) -> float:
+    def Nc(*, phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_c$.
 
         $$\cot \phi \left(N_q - 1 \right)$$
@@ -101,12 +151,10 @@ class T:
 
     @staticmethod
     @deg2rad
-    def Ngamma(phi: float) -> float:
+    def Ngamma(*, phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_\gamma$.
 
         $$\frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi$$
-
-        - $K_p$ : coefficient of passive earth pressure.
 
         Args:
             phi: Internal angle of friction (degrees).
@@ -140,8 +188,8 @@ class T:
         """
         qult = (
             cohesion * T.Nc(phi)
-            + gamma * foundation_depth * T.Nq(phi)
-            + 0.5 * gamma * foundation_width * T.Ngamma(phi)
+            + gamma * foundation_depth * T.Nq(phi=phi)
+            + 0.5 * gamma * foundation_width * T.Ngamma(phi=phi)
         )
 
         return np.round(qult, 2)
@@ -164,7 +212,7 @@ class T:
             gamma: Unit weight of soil ($kN/m^3$).
             foundation_depth: Foundation depth $D_f$ (m).
             foundation_width: Foundation width (**B**) (m)
-            foundation_type: Determines the type of foundation. Defaults to `square`.
+            foundation_type: Determines the type of foundation. `square` or `circular`. Defaults to `square`.
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
 
@@ -174,12 +222,12 @@ class T:
                 f"Foundation type must be square or circular not {foundation_type}"
             )
 
-        i = 0.4 if foundation_type in {"s", "square"} else 0.3
+        i = 0.4 if foundation_type == "square" else 0.3
 
         qult = (
-            1.2 * cohesion * T.Nc(phi)
-            + gamma * foundation_depth * T.Nq(phi)
-            + i * gamma * foundation_width * T.Ngamma(phi)
+            1.2 * cohesion * T.Nc(phi=phi)
+            + gamma * foundation_depth * T.Nq(phi=phi)
+            + i * gamma * foundation_width * T.Ngamma(phi=phi)
         )
 
         return np.round(qult, 2)
@@ -191,11 +239,11 @@ class M:
     ALLOWABLE_SETTLEMENT: float = 25.4
 
     @staticmethod
-    def Fd(foundation_depth: float, foundation_width: float) -> float:
+    def depth_factor(foundation_depth: float, foundation_width: float) -> float:
         """Depth Factor."""
-        depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
+        fd = 1 + 0.33 * (foundation_depth / foundation_width)
 
-        return depth_factor if depth_factor <= 1.33 else 1.33
+        return fd if fd >= 1.33 else 1.33
 
     @staticmethod
     def Qa(
@@ -215,9 +263,7 @@ class M:
 
         Raises:
             exceptions.AllowableSettlementError: Raised when $S_e$ is greater than `25.4mm`.
-
         """
-
         if Se > M.ALLOWABLE_SETTLEMENT:
             raise exceptions.AllowableSettlementError(
                 f"Se: {Se} cannot be greater than 25.4mm"
@@ -230,7 +276,7 @@ class M:
             11.98
             * Ndes
             * np.power((3.28 * foundation_width + 1) / (3.28 * foundation_width), 2)
-            * M.Fd(foundation_depth, foundation_width)
+            * M.depth_factor(foundation_depth, foundation_width)
             * (Se / 25.4)
         )
 
