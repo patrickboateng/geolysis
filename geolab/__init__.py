@@ -13,14 +13,18 @@ F = TypeVar("F", bound=Callable[[float], float])
 
 def deg2rad(func: F) -> F:
     @functools.wraps(func)
-    def wrapper(phi):
-        return func(np.deg2rad(phi))
+    def wrapper(*args, **kwargs):
+        phi = kwargs["phi"]
+        kwargs["phi"] = np.deg2rad(phi)
+
+        return func(*args, **kwargs)
+        # return func(np.deg2rad(phi))
 
     return cast(F, wrapper)
 
 
 @deg2rad
-def Kp(phi: float) -> float:
+def Kp(*, phi: float) -> float:
     r"""Coefficient of passive earth pressure ($K_p$).
 
     $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
