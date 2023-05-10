@@ -6,7 +6,7 @@ import numpy as np
 from geolab import Kp, deg2rad, exceptions
 
 
-@deg2rad
+@deg2rad("phi")
 def foundation_depth(Qa: float, gamma: float, *, phi: float) -> float:
     r"""Depth of foundation estimated using Rankine's formula.
 
@@ -53,7 +53,7 @@ def Ncor(Nr: int, gamma: float, spt_correction: str = "skempton") -> float:
 
 
 def N60(
-    Nr: float, Em: float = 0.575, Cb: float = 1, Cs: float = 1, Cr: float = 0.75
+    Nr: int, Em: float = 0.575, Cb: float = 1, Cs: float = 1, Cr: float = 0.75
 ) -> float:
     r"""SPT N-value corrected for field procedures.
 
@@ -100,22 +100,30 @@ def phi(N60: float) -> float:
     return 27.1 + 0.3 * N60 - 0.00054 * (N60**2)
 
 
+def depth_factor(foundation_depth: float, foundation_width: float) -> float:
+    """Depth Factor.
+
+    Args:
+        foundation_depth: Depth of foundation. (m)
+        foundation_width: Width of foundation. (m)
+    """
+    fd = 1 + 0.33 * (foundation_depth / foundation_width)
+
+    return fd if fd <= 1.33 else 1.33
+
+
 class T:
     """Terzaghi Bearing Capacity."""
 
     @staticmethod
     def _Nq(phi: float) -> float:
-        num = np.exp(
-            ((3 * np.pi) / 2 - phi) * np.tan(phi)
-        )  # The numerator of the formula
-        den = 2 * (
-            np.cos(np.deg2rad(45) + (phi / 2)) ** 2
-        )  # The denominator of the formula
+        num = np.exp(((3 * np.pi) / 2 - phi) * np.tan(phi))
+        den = 2 * (np.cos(np.deg2rad(45) + (phi / 2)) ** 2)
 
         return num / den
 
     @staticmethod
-    @deg2rad
+    @deg2rad("phi")
     def Nq(*, phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_q$.
 
@@ -131,7 +139,7 @@ class T:
         return np.round(T._Nq(phi), 2)
 
     @staticmethod
-    @deg2rad
+    @deg2rad("phi")
     def Nc(*, phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_c$.
 
@@ -150,7 +158,7 @@ class T:
         return np.round((1 / np.tan(phi)) * (T._Nq(phi) - 1), 2)
 
     @staticmethod
-    @deg2rad
+    @deg2rad("phi")
     def Ngamma(*, phi: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_\gamma$.
 
@@ -239,13 +247,6 @@ class M:
     ALLOWABLE_SETTLEMENT: float = 25.4
 
     @staticmethod
-    def depth_factor(foundation_depth: float, foundation_width: float) -> float:
-        """Depth Factor."""
-        fd = 1 + 0.33 * (foundation_depth / foundation_width)
-
-        return fd if fd >= 1.33 else 1.33
-
-    @staticmethod
     def Qa(
         Ndes: float, foundation_depth: float, foundation_width: float, Se: float
     ) -> float:
@@ -270,13 +271,18 @@ class M:
             )
 
         if foundation_width <= 1.22:
-            return 19.16 * Ndes * M.Fd(foundation_depth, foundation_width) * (Se / 25.4)
+            return (
+                19.16
+                * Ndes
+                * depth_factor(foundation_depth, foundation_width)
+                * (Se / 25.4)
+            )
 
         return (
             11.98
             * Ndes
             * np.power((3.28 * foundation_width + 1) / (3.28 * foundation_width), 2)
-            * M.depth_factor(foundation_depth, foundation_width)
+            * depth_factor(foundation_depth, foundation_width)
             * (Se / 25.4)
         )
 
@@ -285,8 +291,8 @@ class M:
         return np.tan(np.deg2rad(45) + phi / 2) * np.exp(np.pi * np.tan(phi))
 
     @staticmethod
-    @deg2rad
-    def Nq(phi: float) -> float:
+    @deg2rad("phi")
+    def Nq(*, phi: float) -> float:
         r"""Vesic Bearing Capacity factor $N_q$.
 
         $$\tan^2 \left(45^{\circ} + \frac{\phi}{2} \right)e^{\pi \tan \phi}$$
@@ -301,8 +307,8 @@ class M:
         return np.round(M._Nq(phi), 2)
 
     @staticmethod
-    @deg2rad
-    def Nc(phi: float) -> float:
+    @deg2rad("phi")
+    def Nc(*, phi: float) -> float:
         """Vesic Bearing Capacity factor $N_c$.
 
         Args:
@@ -315,8 +321,8 @@ class M:
         return np.round((1 / np.tan(phi)) * (M._Nq(phi) - 1), 2)
 
     @staticmethod
-    @deg2rad
-    def Ngamma(phi: float) -> float:
+    @deg2rad("phi")
+    def Ngamma(*, phi: float) -> float:
         r"""Vesic Bearing Capacity factor $N_{\gamma}$.
 
         Args:
@@ -344,7 +350,8 @@ class M:
         return 1 + ((foundation_width * M.Nq(phi)) / (foundation_length * M.Nc(phi)))
 
     @staticmethod
-    def Sq(foundation_width: float, foundation_length: float, phi: float) -> float:
+    @deg2rad("phi")
+    def Sq(foundation_width: float, foundation_length: float, *, phi: float) -> float:
         """Shape factor ($S_q$).
 
         Args:
@@ -356,7 +363,7 @@ class M:
             A `float` representing the shape factor ($S_q$).
 
         """
-        return 1 + ((foundation_width / foundation_length) * np.tan(np.deg2rad(phi)))
+        return 1 + ((foundation_width / foundation_length) * np.tan(phi))
 
     @staticmethod
     def Sgamma(foundation_width: float, foundation_length: float) -> float:
@@ -377,8 +384,8 @@ class M:
         return (1 - beta / 90) ** 2
 
     @staticmethod
-    @deg2rad
-    def ic(beta: float) -> float:
+    @deg2rad("beta")
+    def ic(*, beta: float) -> float:
         """Inclination factor ($i_c$).
 
         Args:
@@ -391,6 +398,7 @@ class M:
         return M._ic(beta)
 
     @staticmethod
+    @deg2rad("beta")
     def iq(beta: float) -> float:
         """Inclination factor ($i_q$).
 
@@ -409,7 +417,7 @@ class M:
 
         Args:
             beta: inclination of the load on the foundation with respect to the vertical (degrees).
-            phi: internal angle of friction.
+            phi: internal angle of friction. (degrees)
 
         Returns:
             A `float` representing the inclination factor ($i_{\gamma}$).
@@ -435,7 +443,8 @@ class M:
         return 1 + 0.4 * np.arctan(foundation_depth / foundation_width) * (np.pi / 180)
 
     @staticmethod
-    def dq(foundation_width: float, foundation_depth: float, phi: float) -> float:
+    @deg2rad("phi")
+    def dq(foundation_width: float, foundation_depth: float, *, phi: float) -> float:
         r"""Depth factor ($d_q$).
 
         Args:
@@ -447,7 +456,6 @@ class M:
             A `float` representing the depth factor ($d_q$).
 
         """
-        phi = np.deg2rad(phi)
 
         if foundation_depth / foundation_width <= 1:
             return (
