@@ -47,12 +47,11 @@ def _classify(
         Aline = A_line(liquid_limit)
         if math.isclose(plasticity_index, Aline):
             return f"{soil_type}{SILT}-{soil_type}{CLAY}"
-        elif plasticity_index > Aline:
+        if plasticity_index > Aline:
             return f"{soil_type}{CLAY}"
-        else:
-            return f"{soil_type}{SILT}"
+        return f"{soil_type}{SILT}"
 
-    elif 5 <= fines <= 12:
+    if 5 <= fines <= 12:
         if d10 and d30 and d60:
             return _dual_symbol(
                 liquid_limit, plasticity_index, d10, d30, d60, soil_type
@@ -62,12 +61,11 @@ def _classify(
                 {soil_type}{WELL_GRADED}-{soil_type}{CLAY},\
                 {soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
 
-    else:
-        # Obtain Cc and Cu
-        if d10 and d30 and d60:
-            grad = grading(Cc(d10, d30, d60), Cu(d10, d60), soil_type)
-            return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
-        return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
+    # Obtain Cc and Cu
+    if d10 and d30 and d60:
+        grad = grading(Cc(d10, d30, d60), Cu(d10, d60), soil_type)
+        return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
+    return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
 
 
 def Cc(d10: float, d30: float, d60: float) -> float:
@@ -128,7 +126,7 @@ def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
 def A_line(liquid_limit: float) -> float:
     r"""Calculates the `A-line`.
 
-    $$0.73 \times \left(LL - 20 \right)$$
+    $$0.73 \left(LL - 20 \right)$$
 
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
@@ -148,7 +146,8 @@ def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> f
     Args:
         fines: Percentage of fines in the soil sample. (%)
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
-        plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
+        plasticity_index: Range of water content over which soil remains in plastic
+                          condition `PI = LL - PL` (%)
 
     Returns:
         The group index of the soil sample.
@@ -206,9 +205,8 @@ def uscs(
         if gravels > sand:
             # Gravel
             return _classify(*soil_info, soil_type=GRAVEL)
-        else:
-            # Sand
-            return _classify(*soil_info, soil_type=SAND)
+        # Sand
+        return _classify(*soil_info, soil_type=SAND)
     else:
         # Fine grained, Run Atterberg
         Aline = A_line(liquid_limit)
@@ -232,12 +230,11 @@ def uscs(
             if plasticity_index > A_line(liquid_limit):
                 return f"{CLAY}{HIGH_PLASTICITY}"
 
-            else:
-                return (
-                    f"{ORGANIC}{HIGH_PLASTICITY}"
-                    if (color or odor)
-                    else f"{SILT}{HIGH_PLASTICITY}"
-                )
+            return (
+                f"{ORGANIC}{HIGH_PLASTICITY}"
+                if (color or odor)
+                else f"{SILT}{HIGH_PLASTICITY}"
+            )
 
 
 def aashto(
@@ -264,19 +261,17 @@ def aashto(
     if fines <= 35:
         if liquid_limit <= 40:
             return f"A-2-4({gi})" if plasticity_index <= 10 else f"A-2-6({gi})"
-        else:
-            return f"A-2-5({gi})" if plasticity_index <= 10 else f"A-2-7({gi})"
+        return f"A-2-5({gi})" if plasticity_index <= 10 else f"A-2-7({gi})"
 
     else:
         # Silts A4-A7
         if liquid_limit <= 40:
             return f"A-4({gi:.0f})" if plasticity_index <= 10 else f"A-6({gi:.0f})"
-        else:
-            if plasticity_index <= 10:
-                return f"A-5({gi:.0f})"
-            else:
-                return (
-                    f"A-7-5({gi:.0f})"
-                    if plasticity_index <= (liquid_limit - 30)
-                    else f"A-7-6({gi:.0f})"
-                )
+
+        if plasticity_index <= 10:
+            return f"A-5({gi:.0f})"
+        return (
+            f"A-7-5({gi:.0f})"
+            if plasticity_index <= (liquid_limit - 30)
+            else f"A-7-6({gi:.0f})"
+        )
