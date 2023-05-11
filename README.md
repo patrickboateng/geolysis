@@ -69,9 +69,7 @@ npm test
 ## Contact
 
 Patrick Boateng - <boatengpato.pb@gmail.com>, [LinkedIn](https://linkedin.com/in/patrickboateng/)
-
-Distributed under the MIT license. See [`LICENSE`](./LICENSE.txt) for more information.
-
+Distributed under the `MIT license`. See [`LICENSE`](./LICENSE.txt) for more information.
 For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>
 
 ## Todo
