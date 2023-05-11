@@ -1,7 +1,5 @@
 # Welcome to GeoLab
 
-## `geolab`: geotechnical engineering software for students and professionals
-
 [![pypi](https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/user/Pato546/)
 ![license](https://img.shields.io/pypi/l/geolab?style=flat-square)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
@@ -11,18 +9,21 @@
 ![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
 ![downloads](https://img.shields.io/pypi/dm/geolab?style=flat-square)
 
-`geolab` is a computer program that implements technical and professional software for geotechnical engineering.
-Some of the features of `geolab` are as follows:
+## `geolab`
 
-- Soil Classification (`USCS` & `AASHTO`)
-- Bearing Capacity Analysis (`Lab` & `Field`)
-- Estimating Soil Engineering Properties (`void ratio`$\left(e_o\right)$, `modulus of elasticity`$\left(E_s\right)$, `internal angle of friction`$\left(\phi\right)$ etc)
-- Settlement Analysis
-- Finite Element Modelling (`FEM`) of soils under loads
+`geolab` is an open-source software for geotechnical engineering that provides a range of powerful tools and features, including soil classification, bearing capacity analysis, estimation of soil engineering properties, settlement analysis, and finite element modelling.
 
-!!! note
+`geolab` is a software designed to assist geotechnical engineers in their day-to-day work by providing a suite of powerful tools and features for soil analysis and modelling. With `geolab`, users can perform a wide range of geotechnical engineering tasks with ease, from soil classification to finite element modelling.
 
-    Only Unified Soil Classification (USCS) has been implemented as of now and can also be installed as a Microsoft Excel addin.
+One of the key features of `geolab` is its ability to classify soils based on both `USCS` and `AASHTO` standards, enabling users to quickly and accurately assess the characteristics of different soil types. Additionally, `geolab` offers tools for bearing capacity analysis, which can be performed in both laboratory and field settings, allowing engineers to better understand the load-bearing capacity of the soil.
+
+Another useful feature of `geolab` is its ability to estimate important soil engineering properties, such as void ratio, modulus of elasticity, and internal angle of friction. With this information, engineers can make more informed decisions about design and construction, ensuring that their projects are both safe and efficient.
+
+For settlement analysis, `geolab` provides powerful tools for predicting and modeling soil settlement under various loads and conditions. This can help engineers better understand the behavior of soil under different conditions and avoid potential problems down the line.
+
+Finally, `geolab` also supports finite element modelling (`FEM`) of soils under loads, allowing engineers to create detailed models of soil behavior under various conditions. This can be a valuable tool for both design and analysis, enabling engineers to optimize their designs and ensure that their projects are both safe and effective.
+
+Overall, `geolab` is a powerful and flexible software tool for geotechnical engineers, providing a range of useful features and capabilities for soil analysis and modelling. With `geolab`, engineers can work more efficiently and effectively, enabling them to design and build better projects with greater confidence.
 
 ## Installation
 
@@ -40,10 +41,6 @@ pip install geolab
 
 ```py
 >>> from geolab.soil_classifier import aashto, uscs
-
->>>  # element in data should be arranged as follows
->>>  # liquid limit, plastic limit, plasticity index, fines, sand, gravel
->>> data = [34.1, 21.1, 13, 47.88, 37.84, 14.28]
 >>> uscs(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88, sand=37.84, gravels=14.28)
 'SC'
 >>> aashto(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88)
