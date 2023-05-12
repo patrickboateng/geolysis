@@ -2,7 +2,7 @@ import functools
 
 import numpy as np
 
-from .exceptions import FoundationTypeError, PIValueError, PSDValueError
+from .exceptions import PIValueError, PSDValueError
 
 VERSION = "0.1.0"
 ERROR_TOLERANCE = 0.01
@@ -22,8 +22,8 @@ def deg2rad(*deg):
     return dec
 
 
-@deg2rad("phi")
-def Kp(*, phi: float) -> float:
+@deg2rad("internal_angle_of_friction")
+def Kp(*, internal_angle_of_friction: float) -> float:
     r"""Coefficient of passive earth pressure ($K_p$).
 
     $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
@@ -35,4 +35,6 @@ def Kp(*, phi: float) -> float:
         Passive earth pressure coefficient.
 
     """
-    return (1 + np.sin(phi)) / (1 - np.sin(phi))
+    return (1 + np.sin(internal_angle_of_friction)) / (
+        1 - np.sin(internal_angle_of_friction)
+    )
