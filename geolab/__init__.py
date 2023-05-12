@@ -5,6 +5,7 @@ import numpy as np
 from .exceptions import FoundationTypeError, PIValueError, PSDValueError
 
 VERSION = "0.1.0"
+ERROR_TOLERANCE = 0.01
 
 
 def deg2rad(*deg):
