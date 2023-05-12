@@ -4,7 +4,7 @@ classification.
 
 import math
 
-from geolab import exceptions
+from geolab import exceptions, ERROR_TOLERANCE
 
 GRAVEL = "G"
 WELL_GRADED = "W"
@@ -19,7 +19,7 @@ HIGH_PLASTICITY = "H"
 
 def _check_PSD(fines, sand, gravels):
     total_aggregate = fines + sand + gravels
-    if not math.isclose(total_aggregate, 100, rel_tol=0.01):
+    if not math.isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
         raise exceptions.PSDValueError(
             f"fines + sand + gravels = 100% not {total_aggregate}"
         )
@@ -27,7 +27,7 @@ def _check_PSD(fines, sand, gravels):
 
 def _check_PI(liquid_limit, plastic_limit, plasticity_index):
     pi = liquid_limit - plastic_limit
-    if not math.isclose(pi, plasticity_index, rel_tol=0.01):
+    if not math.isclose(pi, plasticity_index, rel_tol=ERROR_TOLERANCE):
         raise exceptions.PIValueError(
             f"PI should be equal to {pi} not {plasticity_index}"
         )
@@ -56,10 +56,12 @@ def _classify(
             return _dual_symbol(
                 liquid_limit, plasticity_index, d10, d30, d60, soil_type
             )
-        return f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},\
-                {soil_type}{POORLY_GRADED}-{soil_type}{SILT},\
-                {soil_type}{WELL_GRADED}-{soil_type}{CLAY},\
-                {soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
+        return (
+            f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},"
+            f"{soil_type}{POORLY_GRADED}-{soil_type}{SILT},"
+            f"{soil_type}{WELL_GRADED}-{soil_type}{CLAY},"
+            f"{soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
+        )
 
     # Obtain Cc and Cu
     if d10 and d30 and d60:
