@@ -22,8 +22,8 @@ def deg2rad(*deg):
     return dec
 
 
-@deg2rad("internal_angle_of_friction")
-def Kp(*, internal_angle_of_friction: float) -> float:
+@deg2rad("angle_of_friction")
+def passive_earth_pressure_coefficient(*, angle_of_friction: float) -> float:
     r"""Coefficient of passive earth pressure ($K_p$).
 
     $$\dfrac{1 + \sin \phi}{1 - \sin \phi}$$
@@ -35,6 +35,4 @@ def Kp(*, internal_angle_of_friction: float) -> float:
         Passive earth pressure coefficient.
 
     """
-    return (1 + np.sin(internal_angle_of_friction)) / (
-        1 - np.sin(internal_angle_of_friction)
-    )
+    return (1 + np.sin(angle_of_friction)) / (1 - np.sin(angle_of_friction))
