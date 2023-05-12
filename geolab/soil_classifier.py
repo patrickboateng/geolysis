@@ -4,7 +4,7 @@ classification.
 
 import math
 
-from geolab import exceptions, ERROR_TOLERANCE
+from geolab import ERROR_TOLERANCE, exceptions
 
 GRAVEL = "G"
 WELL_GRADED = "W"
