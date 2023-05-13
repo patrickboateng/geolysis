@@ -1,7 +1,7 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE, foundation_depth, passive_earth_pressure_coef
-from geolab.bearing_capacity import Terzaghi
+from geolab.bearing_capacity import dilatancy_spt_correction, Terzaghi
 
 T_nq = [(0, 1.00), (1, 1.10), (15, 4.45), (25, 12.72), (27, 15.9), (18.76, 6.54)]
 T_nc = [(0, 5.70), (1, 6.00), (15, 12.86), (25, 25.13), (27, 29.24), (18.76, 16.21)]
@@ -13,6 +13,13 @@ def test_Kp():
     assert passive_earth_pressure_coef(friction_angle=30) == pytest.approx(3)
 
 
+@pytest.mark.parametrize(
+    "n_value,exp", [(30, 22.5), (20, 17.5), (15, 15), (10, 10), (5, 5)]
+)
+def test_dilatancy_spt_correction(n_value, exp):
+    assert dilatancy_spt_correction(n_value) == pytest.approx(exp, ERROR_TOLERANCE)
+
+
 def test_foundation_depth():
     assert foundation_depth(350, 18, friction_angle=35) == pytest.approx(
         1.429, ERROR_TOLERANCE
@@ -20,8 +27,6 @@ def test_foundation_depth():
 
 
 class TestTerzaghi:
-    """Tests for Terzaghi Bearing Capacity Theory."""
-
     @pytest.mark.parametrize("phi,exp", T_nq)
     def test_nq(self, phi, exp):
         assert Terzaghi.nq(friction_angle=phi) == pytest.approx(exp)
