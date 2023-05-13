@@ -12,16 +12,12 @@ class PIValueError(ArithmeticError):
     """
 
 
-class SoilTypeError(TypeError):
-    """Exception raised when an invalid soil type is specified."""
-
-
 class FoundationTypeError(TypeError):
     """Exception raised when an invalid foundation type is specified."""
 
 
-class SPTCorrectionTypeError(TypeError):
-    """Exception raised when an invalid spt correction type is specified."""
+class SoilTypeError(TypeError):
+    """Exception raised when an invalid soil type is specified."""
 
 
 class AllowableSettlementError(ValueError):
