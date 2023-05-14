@@ -1,7 +1,14 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE, PIValueError, PSDValueError
-from geolab.soil_classifier import Cc, Cu, aashto, grading, group_index, uscs
+from geolab.soil_classifier import (
+    aashto,
+    curvature_coefficient,
+    grading,
+    group_index,
+    uniformity_coefficient,
+    uscs,
+)
 
 dual_class_test_data = [
     (
@@ -78,12 +85,12 @@ def test_PI():
 
 @pytest.mark.parametrize("psd,cc", coefficient_of_curvature_test_data)
 def test_Cc(psd, cc):
-    assert Cc(*psd) == pytest.approx(cc, ERROR_TOLERANCE)
+    assert curvature_coefficient(*psd) == pytest.approx(cc, ERROR_TOLERANCE)
 
 
 @pytest.mark.parametrize("psd,cu", coefficient_of_uniformity_test_data)
 def test_Cu(psd, cu):
-    assert Cu(*psd) == pytest.approx(cu, ERROR_TOLERANCE)
+    assert uniformity_coefficient(*psd) == pytest.approx(cu, ERROR_TOLERANCE)
 
 
 @pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
