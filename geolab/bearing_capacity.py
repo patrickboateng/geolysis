@@ -1,192 +1,260 @@
 """This module provides functions for bearing capacity analysis."""
 
-
 import numpy as np
 
-from geolab import Kp, deg2rad, exceptions
+from geolab import ERROR_TOLERANCE, deg2rad, exceptions, passive_earth_pressure_coef
 
 
-@deg2rad("phi")
-def foundation_depth(Qa: float, gamma: float, *, phi: float) -> float:
-    r"""Depth of foundation estimated using Rankine's formula.
+def dilatancy_spt_correction(recorded_spt_nvalue: int) -> float:
+    r"""SPT N-value Dilatancy Correction.
 
-    $$D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2$$
+    **Dilatancy Correction** is a correction for silty fine sands and fine sands
+    below the water table that develop pore pressure which is not easily
+    dissipated. The pore pressure increases the resistance of the soil hence the
+    penetration number (N).
+
+    Correction of silty fine sands recommended by `Terzaghi and Peck (1967)` if
+    $N_R$ exceeds 15.
+
+    $N_c = 15 + \frac{1}{2}\left(N_R - 15\right)$ if $N_R \gt 15$
+
+    $N_c = N_R$ if $N_R \le 15$
 
     Args:
-        Qa: Allowable bearing capacity.
-        gamma: Unit weight of soil.
-        phi: Internal angle of friction.
+        recorded_spt_nvalue: Recorded SPT N-value.
 
     Returns:
-        foundation depth.
+        Corrected SPT N-value.
+
+    References:
+        Arora, K 2003, _Soil Mechanics and Foundation Engineering_, 6 Edition,
+        Standard Publishers Distributors, Delhi.
     """
-    return (Qa / gamma) * ((1 - np.sin(phi)) / (1 + np.sin(phi))) ** 2
+    if recorded_spt_nvalue <= 15:
+        corrected_spt_nvalue = recorded_spt_nvalue
+        return corrected_spt_nvalue
+
+    corrected_spt_nvalue = 15 + 0.5 * (recorded_spt_nvalue - 15)
+
+    return np.round(corrected_spt_nvalue, 2)
 
 
-def Ncor(Nr: int, gamma: float, spt_correction: str = "skempton") -> float:
-    """SPT N-value correction.
+def overburden_pressure_spt_correction(
+    recorded_spt_nvalue: int, effective_overburden_pressure: float
+):
+    r"""SPT N-value Overburden Pressure Correction.
+
+    In granular soils, the overburden pressure affects the penetration resistance.
+    If two soils having same relative density but different confining pressures are tested,
+    the one with a higher confining pressure gives a higher penetration number. As the
+    confining pressure in cohesionless soils increases with the depth, the penetration number
+    for soils at shallow depths is underestimated and that at greater depths is overestimated.
+    For uniformity, the N-values obtained from field tests under different effective overburden pressures
+    are corrected to a standard effective overburden pressure.
+    `Gibbs and Holtz (1957)` recommend the use of the following equation for dry or moist clean sand.
+    (Arora 2003, p. 428)
+
+    $N = \dfrac{350}{\sigma_o + 70} \times N_R$ if $\sigma_o \le 280kN/m^2$
+
+    !!! Note
+        $\frac{N_c}{N_R}$ should lie between 0.45 and 2.0, if $\frac{N_c}{N_R}$ is greater than 2.0,
+        $N_c$ should be divided by 2.0 to obtain the design value used in finding the bearing
+        capacity of the soil. (Arora 2003, p. 428)
 
     Args:
-        Nr: Recorded SPT N-value.
-        gamma: Effective overburden pressure ($kN/m^2$).
-        spt_correction: The type of spt correction. `skempton` or `bazaraa`. Defaults to `skempton`.
+        recorded_spt_nvalue: Recorded SPT N-value.
+        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
+
+    Returns:
+        Corrected SPT N-value.
+
+    References:
+        Arora, K 2003, _Soil Mechanics and Foundation Engineering_, 6 edn,
+        Standard Publishers Distributors, Delhi.
+    """
+
+    if effective_overburden_pressure > 280:
+        raise ValueError(
+            f"{effective_overburden_pressure} should be less than or equal to 280"
+        )
+
+    corrected_spt = recorded_spt_nvalue * (350 / (effective_overburden_pressure + 70))
+    spt_ratio = corrected_spt / recorded_spt_nvalue
+
+    if 0.45 < spt_ratio < 2.0:
+        return corrected_spt
+
+    if spt_ratio > 2.0:
+        return corrected_spt / 2
+
+    return corrected_spt
+
+
+def skempton_spt_correction(
+    recorded_spt_nvalue: int, effective_overburden_pressure: float
+) -> float:
+    r"""SPT N-value correction.
+
+    $$N = \dfrac{2}{1 + 0.01044\sigma_o} \times N_R$$
+
+    Args:
+        recorded_spt_nvalue: Recorded SPT N-value.
+        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
 
     Returns:
         Corrected SPT N-value.
     """
-    spt_correction = spt_correction.casefold()
-    if spt_correction not in {"skempton", "bazaraa"}:
-        raise exceptions.SPTCorrectionTypeError(
-            f"SPT Correction should be skempton or bazaraa not {spt_correction}"
-        )
+    first_expr = 2 / (1 + 0.01044 * effective_overburden_pressure)
+    corrected_spt = first_expr * recorded_spt_nvalue
 
-    if spt_correction == "skempton":
-        return (2 / (1 + 0.01044 * gamma)) * Nr
-
-    if spt_correction == "bazaraa":
-        if gamma < 71.8:
-            return 4 * Nr / (1 + 0.0418 * gamma)
-        if gamma > 71.8:
-            return 4 * Nr / (3.25 + 0.0104 * gamma)
-
-        return Nr
+    return np.round(corrected_spt, 2)
 
 
-def N60(
-    Nr: int, Em: float = 0.575, Cb: float = 1, Cs: float = 1, Cr: float = 0.75
+def bazaraa_spt_correction(
+    recorded_spt_nvalue: int, effective_overburden_pressure: float
 ) -> float:
-    r"""SPT N-value corrected for field procedures.
+    r"""SPT N-value correction.
 
-    $$N_{60} = \dfrac{E_m \times C_B \times C_s \times C_R \times N_r}{0.6}$$
+    This is a correction given by `Bazaraa (1967)` and also by
+    `Peck and Bazaraa (1969)` and it is one of the commonly used corrections.
+    According to them:
 
-    Args:
-        Nr: Recorded SPT N-value.
-        Em: Hammer Efficiency. Defaults to 0.575.
-        Cb: Borehole Diameter Correction. Defaults to 1.
-        Cs: Sampler Correction. Defaults to 1.
-        Cr: Rod Length Correction. Defaults to 0.75.
+    $N = \dfrac{4N_R}{1 + 0.0418\sigma_o}$ if $\sigma_o \lt 71.8kN/m^2$
 
-    Returns:
-        SPT N-value corrected for 60% hammer efficiency.
-    """
-    return (Em * Cb * Cs * Cr * Nr) / 0.6
+    $N = \dfrac{4N_R}{3.25 + 0.0104\sigma_o}$ if $\sigma_o \gt 71.8kN/m^2$
 
-
-def Es(N60: float) -> float:
-    r"""Elastic modulus of soil ($kN/m^2$).
-
-    $$E_s = 320\left(N_{60} + 15 \right)$$
+    $N = N_R$ if $\sigma_o = 71.8kN/m^2$
 
     Args:
-        N60: The SPT N-value corrected for 60% hammer efficiency.
+        recorded_spt_nvalue: Recorded SPT N-value.
+        effective_overburden_pressure: Effective overburden pressure ($kN/m^2$).
 
     Returns:
-        Elastic modulus
+        Corrected SPT N-value.
     """
-    return 320 * (N60 + 15)
+    overburden_pressure = 71.8
 
+    if np.isclose(
+        effective_overburden_pressure, overburden_pressure, rtol=ERROR_TOLERANCE
+    ):
+        return recorded_spt_nvalue
 
-def phi(N60: float) -> float:
-    r"""Internal angle of friction.
+    if effective_overburden_pressure < overburden_pressure:
+        spt_correction = (
+            4 * recorded_spt_nvalue / (1 + 0.0418 * effective_overburden_pressure)
+        )
+        return np.round(spt_correction, 2)
 
-    $$\phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2$$
+    spt_correction = (
+        4 * recorded_spt_nvalue / (3.25 + 0.0104 * effective_overburden_pressure)
+    )
 
-    Args:
-        N60 (float): _description_
-
-    Returns:
-        The internal angle of friction.
-    """
-    return 27.1 + 0.3 * N60 - 0.00054 * (N60**2)
+    return np.round(spt_correction, 2)
 
 
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
-    """Depth Factor.
+    r"""Depth Factor.
+
+    $$k = 1 + 0.33 \frac{D_f}{B}$$
 
     Args:
         foundation_depth: Depth of foundation. (m)
         foundation_width: Width of foundation. (m)
+
+    Returns:
+        Depth factor.
     """
-    fd = 1 + 0.33 * (foundation_depth / foundation_width)
+    _depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
 
-    return fd if fd <= 1.33 else 1.33
+    return _depth_factor if _depth_factor <= 1.33 else 1.33
 
 
-class T:
+class Terzaghi:
     """Terzaghi Bearing Capacity."""
 
     @staticmethod
-    def _Nq(phi: float) -> float:
-        num = np.exp(((3 * np.pi) / 2 - phi) * np.tan(phi))
-        den = 2 * (np.cos(np.deg2rad(45) + (phi / 2)) ** 2)
+    def _nq(friction_angle: float) -> float:
+        num = np.exp(((3 * np.pi) / 2 - friction_angle) * np.tan(friction_angle))
+        den = 2 * (np.cos(np.deg2rad(45) + (friction_angle / 2)) ** 2)
 
         return num / den
 
     @staticmethod
-    @deg2rad("phi")
-    def Nq(*, phi: float) -> float:
+    @deg2rad("friction_angle")
+    def nq(*, friction_angle: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_q$.
 
         $$\frac{e^{(\frac{3\pi}{2} - \phi)\tan \phi}}{2 \cos^2 \left(45^{\circ} + \frac{\phi}{2} \right)}$$
 
         Args:
-            phi: Internal angle of friction (degrees).
+            friction_angle: Internal angle of friction (degrees).
 
         Returns:
             A `float` representing the bearing capacity factor ($N_q$).
 
         """
-        return np.round(T._Nq(phi), 2)
+        return np.round(Terzaghi._nq(friction_angle), 2)
 
     @staticmethod
-    @deg2rad("phi")
-    def Nc(*, phi: float) -> float:
+    @deg2rad("friction_angle")
+    def nc(*, friction_angle: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_c$.
 
         $$\cot \phi \left(N_q - 1 \right)$$
 
         Args:
-            phi: Internal angle of friction (degrees).
+            friction_angle: Internal angle of friction (degrees).
 
         Returns:
             A `float` representing the bearing capacity factor $N_c$.
 
         """
-        if np.isclose(phi, 0.0):
+        if np.isclose(friction_angle, 0.0):
             return 5.70
 
-        return np.round((1 / np.tan(phi)) * (T._Nq(phi) - 1), 2)
+        _nc = (1 / np.tan(friction_angle)) * (Terzaghi._nq(friction_angle) - 1)
+
+        return np.round(_nc, 2)
 
     @staticmethod
-    @deg2rad("phi")
-    def Ngamma(*, phi: float) -> float:
+    @deg2rad("friction_angle")
+    def ngamma(*, friction_angle: float) -> float:
         r"""Terzaghi Bearing Capacity factor $N_\gamma$.
 
         $$\frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi$$
 
         Args:
-            phi: Internal angle of friction (degrees).
+            friction_angle: Internal angle of friction (degrees).
 
         Returns:
             A `float` representing the bearing capacity factor $N_\gamma$.
 
         """
-        return 0.5 * ((Kp(np.rad2deg(phi)) / (np.cos(phi) ** 2)) - 1) * np.tan(phi)
+        phi = np.rad2deg(friction_angle)
+        num = passive_earth_pressure_coef(friction_angle=phi)
+        den = np.cos(friction_angle) ** 2
+        mid_expr = (num / den) - 1
+
+        _ngamma = 0.5 * (mid_expr) * np.tan(friction_angle)
+
+        return np.round(_ngamma, 2)
 
     @staticmethod
     def qult_4_strip_footing(
         cohesion: float,
-        phi: float,
-        gamma: float,
+        friction_angle: float,
+        unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `strip footing`.
 
+        $$q_u = cN_c + \gamma D_f N_q + 0.5 \gamma B N_{\gamma}$$
+
         Args:
             cohesion: cohesion of foundation soil ($kN/m^2$).
-            phi: Internal angle of friction ($\phi$)
-            gamma: Unit weight of soil ($kN/m^3$).
+            friction_angle: Internal angle of friction ($\phi$)
+            unit_weight_of_soil: Unit weight of soil ($kN/m^3$).
             foundation_depth: Foundation depth $D_f$ (m).
             foundation_width: Foundation width (**B**) (m)
 
@@ -194,289 +262,314 @@ class T:
             Ultimate bearing capacity ($q_{ult}$)
 
         """
-        qult = (
-            cohesion * T.Nc(phi)
-            + gamma * foundation_depth * T.Nq(phi=phi)
-            + 0.5 * gamma * foundation_width * T.Ngamma(phi=phi)
+        overburden_pressure = unit_weight_of_soil * foundation_depth
+        first_expr = cohesion * Terzaghi.nc(friction_angle=friction_angle)
+        mid_expr = overburden_pressure * Terzaghi.nq(friction_angle=friction_angle)
+        last_expr = (
+            0.5
+            * unit_weight_of_soil
+            * foundation_width
+            * Terzaghi.ngamma(friction_angle=friction_angle)
         )
+
+        qult = first_expr + mid_expr + last_expr
 
         return np.round(qult, 2)
 
     @staticmethod
-    def qult(
+    def qult_4_foundation(
         cohesion: float,
-        phi: float,
-        gamma: float,
+        friction_angle: float,
+        unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
-        foundation_type: str = "square",
+        shape: str = "square",
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
-        `circular` footing.
+            `circular` footing.
+
+        `square` $\rightarrow q_u = 1.2cN_c + \gamma D_f N_q + 0.4 \gamma B N_{\gamma}$
+
+        `circular` $\rightarrow q_u = 1.2cN_c + \gamma D_f N_q + 0.3 \gamma B N_{\gamma}$
 
         Args:
-            cohesion: cohesion of foundation soil ($kN/m^2$).
-            phi: Internal angle of friction ($\phi$)
-            gamma: Unit weight of soil ($kN/m^3$).
-            foundation_depth: Foundation depth $D_f$ (m).
-            foundation_width: Foundation width (**B**) (m)
-            foundation_type: Determines the type of foundation. `square` or `circular`. Defaults to `square`.
+            cohesion: cohesion of foundation soil. ($kN/m^2$)
+            friction_angle: Internal angle of friction. ($\phi$)
+            unit_weight_of_soil: Unit weight of soil. ($kN/m^3$)
+            foundation_depth: Foundation depth $D_f$. (m)
+            foundation_width: Foundation width (**B**). (m)
+            shape: Determines the shape of the foundation. `square` or `circular`.
+                   Defaults to `square`.
         Returns:
             Ultimate bearing capacity ($q_{ult}$)
 
+        Raises:
+            exceptions.FoundationTypeError: Exception raised when an invalid foundation shape
+                                            is specified.
         """
-        if foundation_type not in {"square", "circular"}:
+        if shape == "square":
+            i = 0.4
+        elif shape == "circular":
+            i = 0.3
+        else:
             raise exceptions.FoundationTypeError(
-                f"Foundation type must be square or circular not {foundation_type}"
+                f"Foundation type must be square or circular not {shape}"
             )
 
-        i = 0.4 if foundation_type == "square" else 0.3
-
-        qult = (
-            1.2 * cohesion * T.Nc(phi=phi)
-            + gamma * foundation_depth * T.Nq(phi=phi)
-            + i * gamma * foundation_width * T.Ngamma(phi=phi)
+        overburden_pressure = unit_weight_of_soil * foundation_depth
+        first_expr = 1.2 * cohesion * Terzaghi.nc(friction_angle=friction_angle)
+        mid_expr = overburden_pressure * Terzaghi.nq(friction_angle=friction_angle)
+        last_expr = (
+            i
+            * unit_weight_of_soil
+            * foundation_width
+            * Terzaghi.ngamma(friction_angle=friction_angle)
         )
+
+        qult = first_expr + mid_expr + last_expr
 
         return np.round(qult, 2)
 
 
-class M:
-    """Meyerhoff Bearing Capacity."""
+# class M:
+#     """Meyerhoff Bearing Capacity."""
 
-    ALLOWABLE_SETTLEMENT: float = 25.4
+#     ALLOWABLE_SETTLEMENT: float = 25.4
 
-    @staticmethod
-    def Qa(
-        Ndes: float, foundation_depth: float, foundation_width: float, Se: float
-    ) -> float:
-        r"""Allowable bearing capacity ($q_{a(net)}$) for a given tolerable
-        settlement proposed by Meyerhoff.
+#     @staticmethod
+#     def Qa(
+#         Ndes: float, foundation_depth: float, foundation_width: float, Se: float
+#     ) -> float:
+#         r"""Allowable bearing capacity ($q_{a(net)}$) for a given tolerable
+#         settlement proposed by Meyerhoff.
 
-        Args:
-            Ndes: Average corrected number of blows from `SPT N-value`.
-            foundation_depth: Depth of foundation (m).
-            foundation_width: width of foundation (m).
-            Se: tolerable settlement (mm).
+#         Args:
+#             Ndes: Average corrected number of blows from `SPT N-value`.
+#             foundation_depth: Depth of foundation (m).
+#             foundation_width: width of foundation (m).
+#             Se: tolerable settlement (mm).
 
-        Returns:
-            Allowable bearing capacity.
+#         Returns:
+#             Allowable bearing capacity.
 
-        Raises:
-            exceptions.AllowableSettlementError: Raised when $S_e$ is greater than `25.4mm`.
-        """
-        if Se > M.ALLOWABLE_SETTLEMENT:
-            raise exceptions.AllowableSettlementError(
-                f"Se: {Se} cannot be greater than 25.4mm"
-            )
+#         Raises:
+#             exceptions.AllowableSettlementError: Raised when $S_e$ is greater than `25.4mm`.
+#         """
+#         if Se > M.ALLOWABLE_SETTLEMENT:
+#             raise exceptions.AllowableSettlementError(
+#                 f"Se: {Se} cannot be greater than 25.4mm"
+#             )
 
-        if foundation_width <= 1.22:
-            return (
-                19.16
-                * Ndes
-                * depth_factor(foundation_depth, foundation_width)
-                * (Se / 25.4)
-            )
+#         if foundation_width <= 1.22:
+#             return (
+#                 19.16
+#                 * Ndes
+#                 * depth_factor(foundation_depth, foundation_width)
+#                 * (Se / 25.4)
+#             )
 
-        return (
-            11.98
-            * Ndes
-            * np.power((3.28 * foundation_width + 1) / (3.28 * foundation_width), 2)
-            * depth_factor(foundation_depth, foundation_width)
-            * (Se / 25.4)
-        )
+#         return (
+#             11.98
+#             * Ndes
+#             * np.power((3.28 * foundation_width + 1) / (3.28 * foundation_width), 2)
+#             * depth_factor(foundation_depth, foundation_width)
+#             * (Se / 25.4)
+#         )
 
-    @staticmethod
-    def _Nq(phi: float) -> float:
-        return np.tan(np.deg2rad(45) + phi / 2) * np.exp(np.pi * np.tan(phi))
+#     @staticmethod
+#     def _Nq(phi: float) -> float:
+#         return np.tan(np.deg2rad(45) + phi / 2) * np.exp(np.pi * np.tan(phi))
 
-    @staticmethod
-    @deg2rad("phi")
-    def Nq(*, phi: float) -> float:
-        r"""Vesic Bearing Capacity factor $N_q$.
+#     @staticmethod
+#     @deg2rad("phi")
+#     def Nq(*, phi: float) -> float:
+#         r"""Vesic Bearing Capacity factor $N_q$.
 
-        $$\tan^2 \left(45^{\circ} + \frac{\phi}{2} \right)e^{\pi \tan \phi}$$
+#         $$\tan^2 \left(45^{\circ} + \frac{\phi}{2} \right)e^{\pi \tan \phi}$$
 
-        Args:
-            phi: Internal angle of friction (degrees).
+#         Args:
+#             phi: Internal angle of friction (degrees).
 
-        Returns:
-            A `float` representing the bearing capacity factor ($N_q$).
+#         Returns:
+#             A `float` representing the bearing capacity factor ($N_q$).
 
-        """
-        return np.round(M._Nq(phi), 2)
+#         """
+#         return np.round(M._Nq(phi), 2)
 
-    @staticmethod
-    @deg2rad("phi")
-    def Nc(*, phi: float) -> float:
-        """Vesic Bearing Capacity factor $N_c$.
+#     @staticmethod
+#     @deg2rad("phi")
+#     def Nc(*, phi: float) -> float:
+#         """Vesic Bearing Capacity factor $N_c$.
 
-        Args:
-            phi: Internal angle of friction (degrees).
+#         Args:
+#             phi: Internal angle of friction (degrees).
 
-        Returns:
-            A `float` representing the bearing capacity factor ($N_c$).
+#         Returns:
+#             A `float` representing the bearing capacity factor ($N_c$).
 
-        """
-        return np.round((1 / np.tan(phi)) * (M._Nq(phi) - 1), 2)
+#         """
+#         return np.round((1 / np.tan(phi)) * (M._Nq(phi) - 1), 2)
 
-    @staticmethod
-    @deg2rad("phi")
-    def Ngamma(*, phi: float) -> float:
-        r"""Vesic Bearing Capacity factor $N_{\gamma}$.
+#     @staticmethod
+#     @deg2rad("phi")
+#     def Ngamma(*, phi: float) -> float:
+#         r"""Vesic Bearing Capacity factor $N_{\gamma}$.
 
-        Args:
-            phi: Internal angle of friction (degrees).
+#         Args:
+#             phi: Internal angle of friction (degrees).
 
-        Returns:
-            A `float` representing the bearing capacity factor ($N_{\gamma}$).
+#         Returns:
+#             A `float` representing the bearing capacity factor ($N_{\gamma}$).
 
-        """
-        return np.round(2 * (M._Nq(phi) + 1) * np.tan(phi), 2)
+#         """
+#         return np.round(2 * (M._Nq(phi) + 1) * np.tan(phi), 2)
 
-    @staticmethod
-    def Sc(foundation_width: float, foundation_length: float, phi: float) -> float:
-        """Shape factor ($S_c$).
+#     @staticmethod
+#     def Sc(foundation_width: float, foundation_length: float, phi: float) -> float:
+#         """Shape factor ($S_c$).
 
-        Args:
-            foundation_width: foundation_width of foundation.
-            foundation_length: foundation_length of foundation.
-            phi: Internal angle of friction (degrees).
+#         Args:
+#             foundation_width: foundation_width of foundation.
+#             foundation_length: foundation_length of foundation.
+#             phi: Internal angle of friction (degrees).
 
-        Returns:
-            A `float` representing the shape factor ($S_c$).
+#         Returns:
+#             A `float` representing the shape factor ($S_c$).
 
-        """
-        return 1 + ((foundation_width * M.Nq(phi)) / (foundation_length * M.Nc(phi)))
+#         """
+#         return 1 + ((foundation_width * M.Nq(phi)) / (foundation_length * M.Nc(phi)))
 
-    @staticmethod
-    @deg2rad("phi")
-    def Sq(foundation_width: float, foundation_length: float, *, phi: float) -> float:
-        """Shape factor ($S_q$).
+#     @staticmethod
+#     @deg2rad("phi")
+#     def Sq(foundation_width: float, foundation_length: float, *, phi: float) -> float:
+#         """Shape factor ($S_q$).
 
-        Args:
-            foundation_width: foundation_width of foundation.
-            foundation_length: foundation_length of foundation.
-            phi: Internal angle of friction (degrees).
+#         Args:
+#             foundation_width: foundation_width of foundation.
+#             foundation_length: foundation_length of foundation.
+#             phi: Internal angle of friction (degrees).
 
-        Returns:
-            A `float` representing the shape factor ($S_q$).
+#         Returns:
+#             A `float` representing the shape factor ($S_q$).
 
-        """
-        return 1 + ((foundation_width / foundation_length) * np.tan(phi))
+#         """
+#         return 1 + ((foundation_width / foundation_length) * np.tan(phi))
 
-    @staticmethod
-    def Sgamma(foundation_width: float, foundation_length: float) -> float:
-        r"""Shape factor ($S_{\gamma}$).
+#     @staticmethod
+#     def Sgamma(foundation_width: float, foundation_length: float) -> float:
+#         r"""Shape factor ($S_{\gamma}$).
 
-        Args:
-            foundation_width: foundation_width of foundation.
-            foundation_length: foundation_length of foundation.
+#         Args:
+#             foundation_width: foundation_width of foundation.
+#             foundation_length: foundation_length of foundation.
 
-        Returns:
-            A `float` representing the shape factor ($S_{\gamma}$).
+#         Returns:
+#             A `float` representing the shape factor ($S_{\gamma}$).
 
-        """
-        return 1 - 0.4 * (foundation_width / foundation_length)
+#         """
+#         return 1 - 0.4 * (foundation_width / foundation_length)
 
-    @staticmethod
-    def _ic(beta: float) -> float:
-        return (1 - beta / 90) ** 2
+#     @staticmethod
+#     def _ic(beta: float) -> float:
+#         return (1 - beta / 90) ** 2
 
-    @staticmethod
-    @deg2rad("beta")
-    def ic(*, beta: float) -> float:
-        """Inclination factor ($i_c$).
+#     @staticmethod
+#     @deg2rad("beta")
+#     def ic(*, beta: float) -> float:
+#         """Inclination factor ($i_c$).
 
-        Args:
-            beta: inclination of the load on the foundation with respect to the vertical (degrees).
+#         Args:
+#             beta: inclination of the load on the foundation with
+#                   respect to the vertical (degrees).
 
-        Returns:
-            A `float` representing the inclination factor ($i_c$).
+#         Returns:
+#             A `float` representing the inclination factor ($i_c$).
 
-        """
-        return M._ic(beta)
+#         """
+#         return M._ic(beta)
 
-    @staticmethod
-    @deg2rad("beta")
-    def iq(beta: float) -> float:
-        """Inclination factor ($i_q$).
+#     @staticmethod
+#     @deg2rad("beta")
+#     def iq(beta: float) -> float:
+#         """Inclination factor ($i_q$).
 
-        Args:
-            beta: inclination of the load on the foundation with respect to the vertical (degrees).
+#         Args:
+#             beta: inclination of the load on the foundation with
+#                   respect to the vertical (degrees).
 
-        Returns:
-            A `float` representing the inclination factor ($i_q$).
+#         Returns:
+#             A `float` representing the inclination factor ($i_q$).
 
-        """
-        return M._ic(beta)
+#         """
+#         return M._ic(beta)
 
-    @staticmethod
-    def igamma(beta: float, phi: float) -> float:
-        r"""Inclination factor ($i_{\gamma}$).
+#     @staticmethod
+#     def igamma(beta: float, phi: float) -> float:
+#         r"""Inclination factor ($i_{\gamma}$).
 
-        Args:
-            beta: inclination of the load on the foundation with respect to the vertical (degrees).
-            phi: internal angle of friction. (degrees)
+#         Args:
+#             beta: inclination of the load on the foundation with
+#                   respect to the vertical (degrees).
+#             phi: internal angle of friction. (degrees)
 
-        Returns:
-            A `float` representing the inclination factor ($i_{\gamma}$).
+#         Returns:
+#             A `float` representing the inclination factor ($i_{\gamma}$).
 
-        """
-        return (1 - beta / phi) ** 2
+#         """
+#         return (1 - beta / phi) ** 2
 
-    @staticmethod
-    def dc(foundation_width: float, foundation_depth: float) -> float:
-        r"""Depth factor ($d_c$).
+#     @staticmethod
+#     def dc(foundation_width: float, foundation_depth: float) -> float:
+#         r"""Depth factor ($d_c$).
 
-        Args:
-            foundation_width: width of foundation.
-            foundation_depth: depth of foundation.
+#         Args:
+#             foundation_width: width of foundation.
+#             foundation_depth: depth of foundation.
 
-        Returns:
-            A `float` representing the depth factor ($d_c$).
+#         Returns:
+#             A `float` representing the depth factor ($d_c$).
 
-        """
-        if foundation_depth / foundation_width <= 1:
-            return 1 + 0.4 * (foundation_depth / foundation_width)
+#         """
+#         if foundation_depth / foundation_width <= 1:
+#             return 1 + 0.4 * (foundation_depth / foundation_width)
 
-        return 1 + 0.4 * np.arctan(foundation_depth / foundation_width) * (np.pi / 180)
+#         return 1 + 0.4 * np.arctan(foundation_depth / foundation_width) * (np.pi / 180)
 
-    @staticmethod
-    @deg2rad("phi")
-    def dq(foundation_width: float, foundation_depth: float, *, phi: float) -> float:
-        r"""Depth factor ($d_q$).
+#     @staticmethod
+#     @deg2rad("phi")
+#     def dq(foundation_width: float, foundation_depth: float, *, phi: float) -> float:
+#         r"""Depth factor ($d_q$).
 
-        Args:
-            foundation_width: width of foundation.
-            foundation_depth: depth of foundation
-            phi: internal angle of friction (degrees).
+#         Args:
+#             foundation_width: width of foundation.
+#             foundation_depth: depth of foundation
+#             phi: internal angle of friction (degrees).
 
-        Returns:
-            A `float` representing the depth factor ($d_q$).
+#         Returns:
+#             A `float` representing the depth factor ($d_q$).
 
-        """
+#         """
 
-        if foundation_depth / foundation_width <= 1:
-            return (
-                1
-                + 2
-                * np.tan(phi)
-                * ((1 - np.sin(phi)) ** 2)
-                * foundation_depth
-                / foundation_width
-            )
+#         if foundation_depth / foundation_width <= 1:
+#             return (
+#                 1
+#                 + 2
+#                 * np.tan(phi)
+#                 * ((1 - np.sin(phi)) ** 2)
+#                 * foundation_depth
+#                 / foundation_width
+#             )
 
-        return 1 + 2 * np.tan(phi) * ((1 - np.sin(phi)) ** 2) * np.arctan(
-            foundation_depth / foundation_width
-        ) * (np.pi / 180)
+#         return 1 + 2 * np.tan(phi) * ((1 - np.sin(phi)) ** 2) * np.arctan(
+#             foundation_depth / foundation_width
+#         ) * (np.pi / 180)
 
-    @staticmethod
-    def dgamma() -> float:
-        r"""Depth factor ($d_{\gamma}$)
+#     @staticmethod
+#     def dgamma() -> float:
+#         r"""Depth factor ($d_{\gamma}$)
 
-        Returns:
-            A `float` representing the depth factor ($d_{\gamma}$).
+#         Returns:
+#             A `float` representing the depth factor ($d_{\gamma}$).
 
-        """
-        return 1.0
+#         """
+#         return 1.0
