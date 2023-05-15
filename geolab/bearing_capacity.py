@@ -1,11 +1,13 @@
 """This module provides functions for bearing capacity analysis."""
 
+from typing import Optional, Union
+
 import numpy as np
 
 from geolab import ERROR_TOLERANCE, deg2rad, exceptions, passive_earth_pressure_coef
 
 
-def dilatancy_spt_correction(recorded_spt_nvalue: int) -> float:
+def dilatancy_spt_correction(recorded_spt_nvalue: int) -> Union[float, int]:
     r"""SPT N-value Dilatancy Correction.
 
     **Dilatancy Correction** is a correction for silty fine sands and fine sands
@@ -41,7 +43,7 @@ def dilatancy_spt_correction(recorded_spt_nvalue: int) -> float:
 
 def overburden_pressure_spt_correction(
     recorded_spt_nvalue: int, effective_overburden_pressure: float
-):
+) -> float:
     r"""SPT N-value Overburden Pressure Correction.
 
     In granular soils, the overburden pressure affects the penetration resistance.
@@ -283,7 +285,7 @@ class Terzaghi:
         unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
-        shape: str = "square",
+        shape: Optional[str] = "square",
     ) -> float:
         r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
             `circular` footing.
