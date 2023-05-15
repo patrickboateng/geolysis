@@ -1,5 +1,16 @@
-"""This module provides the implementations for `USCS` and `AASHTO`
+r"""This module provides the implementations for `USCS` and `AASHTO`
 classification.
+
+This module contains the following functions:
+
+- `curvature_coefficient` $\rightarrow$ Returns the coefficient of curvature of the soil.
+- `uniformity_coefficient` $\rightarrow$ Returns the coefficient of uniformity of the soil.
+- `grading` $\rightarrow$ Returns the grading of the soil. (W or P)
+- `A_line` $\rightarrow$ Returns the A line.
+- `group_index` $\rightarrow$ Returns the group index used to further evaluate the soil.
+- `uscs` $\rightarrow$ Returns the classification of the soil according to `USCS` standard.
+- `aashto` $\rightarrow$ Returns the classification of the soil according to `AASHTO` standard.
+
 """
 
 import math
