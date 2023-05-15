@@ -3,6 +3,7 @@ classification.
 """
 
 import math
+from typing import Optional
 
 from geolab import ERROR_TOLERANCE, exceptions
 
@@ -17,7 +18,7 @@ LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
-def _check_PSD(fines, sand, gravels):
+def _check_psd(fines, sand, gravels):
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
         raise exceptions.PSDValueError(
@@ -25,7 +26,7 @@ def _check_PSD(fines, sand, gravels):
         )
 
 
-def _check_PI(liquid_limit, plastic_limit, plasticity_index):
+def _check_pi(liquid_limit, plastic_limit, plasticity_index):
     pi = liquid_limit - plastic_limit
     if not math.isclose(pi, plasticity_index, rel_tol=ERROR_TOLERANCE):
         raise exceptions.PIValueError(
@@ -34,7 +35,9 @@ def _check_PI(liquid_limit, plastic_limit, plasticity_index):
 
 
 def _dual_symbol(liquid_limit, plasticity_index, d10, d30, d60, soil_type) -> str:
-    grad = grading(Cc(d10, d30, d60), Cu(d10, d60), soil_type)
+    curvature_coeff = curvature_coefficient(d10, d30, d60)
+    uniformity_coeff = uniformity_coefficient(d10, d60)
+    grad = grading(curvature_coeff, uniformity_coeff, soil_type)
     type_of_fines = CLAY if plasticity_index > A_line(liquid_limit) else SILT
 
     return f"{soil_type}{grad}-{soil_type}{type_of_fines}"
@@ -52,7 +55,7 @@ def _classify(
         return f"{soil_type}{SILT}"
 
     if 5 <= fines <= 12:
-        if d10 and d30 and d60:
+        if (d10 is not None) and (d30 is not None) and (d60 is not None):
             return _dual_symbol(
                 liquid_limit, plasticity_index, d10, d30, d60, soil_type
             )
@@ -65,12 +68,14 @@ def _classify(
 
     # Obtain Cc and Cu
     if d10 and d30 and d60:
-        grad = grading(Cc(d10, d30, d60), Cu(d10, d60), soil_type)
+        curvature_coeff = curvature_coefficient(d10, d30, d60)
+        uniformity_coeff = uniformity_coefficient(d10, d60)
+        grad = grading(curvature_coeff, uniformity_coeff(d10, d60), soil_type)
         return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
     return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
 
 
-def Cc(d10: float, d30: float, d60: float) -> float:
+def curvature_coefficient(d10: float, d30: float, d60: float) -> float:
     r"""Calculates the coefficient of curvature of the soil.
 
     $$\dfrac{d_{30}^2}{d_{60} \times d_{10}}$$
@@ -86,7 +91,7 @@ def Cc(d10: float, d30: float, d60: float) -> float:
     return (d30**2) / (d60 * d10)
 
 
-def Cu(d10: float, d60: float) -> float:
+def uniformity_coefficient(d10: float, d60: float) -> float:
     r"""Calculates the coefficient of uniformity of the soil.
 
     $$\dfrac{d_{60}}{d_{10}}$$
@@ -101,7 +106,7 @@ def Cu(d10: float, d60: float) -> float:
     return d60 / d10
 
 
-def grading(Cc: float, Cu: float, soil_type: str = GRAVEL) -> str:
+def grading(Cc: float, Cu: float, soil_type: Optional[str] = GRAVEL) -> str:
     """Determines the grading of the soil.
 
     Args:
@@ -169,26 +174,27 @@ def uscs(
     fines: float,
     sand: float,
     gravels: float,
-    d10: float = 0,
-    d30: float = 0,
-    d60: float = 0,
-    color: bool = False,
-    odor: bool = False,
+    d10: Optional[float] = None,
+    d30: Optional[float] = None,
+    d60: Optional[float] = None,
+    color: Optional[bool] = False,
+    odor: Optional[bool] = False,
 ) -> str:
     """Unified Soil Classification System (`USCS`).
 
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
         plastic_limit: Water content at which plastic deformation can be initiated. (%)
-        plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
+        plasticity_index: Range of water content over which soil remains in plastic condition
+                          `PI = LL - PL`. (%)
         fines: Percentage of fines in soil sample. (%)
         sand:  Percentage of sand in soil sample. (%)
         gravels: Percentage of gravels in soil sample. (%)
-        d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
-        d30: diameter at which 30% of the soil by weight is finer. Defaults to 0.
-        d60: diameter at which 60% of the soil by weight is finer. Defaults to 0.
-        color: Indicates if soil has color or not. Defaults to False.
-        odor: Indicates if soil has odor or not. Defaults to False.
+        d10: diameter at which 10% of the soil by weight is finer.
+        d30: diameter at which 30% of the soil by weight is finer.
+        d60: diameter at which 60% of the soil by weight is finer.
+        color: Indicates if soil has color or not.
+        odor: Indicates if soil has odor or not.
 
     Returns:
         The unified classification of the soil.
@@ -198,8 +204,8 @@ def uscs(
         exceptions.PIValueError: Raised when `PI` is not equal to `LL - PL`.
     """
 
-    _check_PI(liquid_limit, plastic_limit, plasticity_index)
-    _check_PSD(fines, sand, gravels)
+    _check_pi(liquid_limit, plastic_limit, plasticity_index)
+    _check_psd(fines, sand, gravels)
 
     if fines < 50:
         # Coarse grained, Run Sieve Analysis
@@ -217,37 +223,37 @@ def uscs(
             if (plasticity_index > Aline) and (plasticity_index > 7):
                 return f"{CLAY}{LOW_PLASTICITY}"
 
-            elif (plasticity_index < Aline) or (plasticity_index < 4):
+            if (plasticity_index < Aline) or (plasticity_index < 4):
                 return (
                     f"{ORGANIC}{LOW_PLASTICITY}"
                     if (color or odor)
                     else f"{SILT}{LOW_PLASTICITY}"
                 )
 
-            else:
-                return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+            return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
 
-        else:
-            # High LL
-            if plasticity_index > A_line(liquid_limit):
-                return f"{CLAY}{HIGH_PLASTICITY}"
+        # High LL
+        if plasticity_index > A_line(liquid_limit):
+            return f"{CLAY}{HIGH_PLASTICITY}"
 
-            return (
-                f"{ORGANIC}{HIGH_PLASTICITY}"
-                if (color or odor)
-                else f"{SILT}{HIGH_PLASTICITY}"
-            )
+        return (
+            f"{ORGANIC}{HIGH_PLASTICITY}"
+            if (color or odor)
+            else f"{SILT}{HIGH_PLASTICITY}"
+        )
 
 
 def aashto(
     liquid_limit: float, plastic_limit: float, plasticity_index: float, fines: float
 ) -> str:
-    """American Association of State Highway and Transportation Officials (`AASHTO`) classification system.
+    """American Association of State Highway and Transportation Officials (`AASHTO`)
+       classification system.
 
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
         plastic_limit: Water content at which plastic deformation can be initiated. (%)
-        plasticity_index: Range of water content over which soil remains in plastic condition `PI = LL - PL` (%)
+        plasticity_index: Range of water content over which soil remains in plastic
+                          condition `PI = LL - PL`. (%)
         fines: Percentage of fines in soil sample. (%)
 
     Returns:
@@ -257,7 +263,7 @@ def aashto(
         exceptions.PIValueError: Raised when PI != LL - PL.
     """
 
-    _check_PI(liquid_limit, plastic_limit, plasticity_index)
+    _check_pi(liquid_limit, plastic_limit, plasticity_index)
     gi = group_index(fines, liquid_limit, plasticity_index)
 
     if fines <= 35:
@@ -265,15 +271,14 @@ def aashto(
             return f"A-2-4({gi})" if plasticity_index <= 10 else f"A-2-6({gi})"
         return f"A-2-5({gi})" if plasticity_index <= 10 else f"A-2-7({gi})"
 
-    else:
-        # Silts A4-A7
-        if liquid_limit <= 40:
-            return f"A-4({gi:.0f})" if plasticity_index <= 10 else f"A-6({gi:.0f})"
+    # Silts A4-A7
+    if liquid_limit <= 40:
+        return f"A-4({gi:.0f})" if plasticity_index <= 10 else f"A-6({gi:.0f})"
 
-        if plasticity_index <= 10:
-            return f"A-5({gi:.0f})"
-        return (
-            f"A-7-5({gi:.0f})"
-            if plasticity_index <= (liquid_limit - 30)
-            else f"A-7-6({gi:.0f})"
-        )
+    if plasticity_index <= 10:
+        return f"A-5({gi:.0f})"
+    return (
+        f"A-7-5({gi:.0f})"
+        if plasticity_index <= (liquid_limit - 30)
+        else f"A-7-6({gi:.0f})"
+    )
