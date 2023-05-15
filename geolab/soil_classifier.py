@@ -34,18 +34,16 @@ def _check_pi(liquid_limit, plastic_limit, plasticity_index):
         )
 
 
-def _dual_symbol(liquid_limit, plasticity_index, d10, d30, d60, soil_type) -> str:
-    curvature_coeff = curvature_coefficient(d10, d30, d60)
-    uniformity_coeff = uniformity_coefficient(d10, d60)
+def _dual_symbol(liquid_limit, plasticity_index, psd, soil_type) -> str:
+    curvature_coeff = curvature_coefficient(**psd)
+    uniformity_coeff = uniformity_coefficient(psd["d10"], psd["d60"])
     grad = grading(curvature_coeff, uniformity_coeff, soil_type)
     type_of_fines = CLAY if plasticity_index > A_line(liquid_limit) else SILT
 
     return f"{soil_type}{grad}-{soil_type}{type_of_fines}"
 
 
-def _classify(
-    liquid_limit, plasticity_index, fines, d10, d30, d60, soil_type: str
-) -> str:
+def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str:
     if fines > 12:
         Aline = A_line(liquid_limit)
         if math.isclose(plasticity_index, Aline):
@@ -55,10 +53,8 @@ def _classify(
         return f"{soil_type}{SILT}"
 
     if 5 <= fines <= 12:
-        if (d10 is not None) and (d30 is not None) and (d60 is not None):
-            return _dual_symbol(
-                liquid_limit, plasticity_index, d10, d30, d60, soil_type
-            )
+        if psd is not None:
+            return _dual_symbol(liquid_limit, plasticity_index, psd, soil_type)
         return (
             f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},"
             f"{soil_type}{POORLY_GRADED}-{soil_type}{SILT},"
@@ -67,10 +63,10 @@ def _classify(
         )
 
     # Obtain Cc and Cu
-    if d10 and d30 and d60:
-        curvature_coeff = curvature_coefficient(d10, d30, d60)
-        uniformity_coeff = uniformity_coefficient(d10, d60)
-        grad = grading(curvature_coeff, uniformity_coeff(d10, d60), soil_type)
+    if psd is not None:
+        curvature_coeff = curvature_coefficient(**psd)
+        uniformity_coeff = uniformity_coefficient(psd["d10"], psd["d60"])
+        grad = grading(curvature_coeff, uniformity_coeff, soil_type)
         return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
     return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
 
@@ -106,12 +102,14 @@ def uniformity_coefficient(d10: float, d60: float) -> float:
     return d60 / d10
 
 
-def grading(Cc: float, Cu: float, soil_type: Optional[str] = GRAVEL) -> str:
+def grading(
+    curvature_coeff: float, uniformity_coeff: float, soil_type: Optional[str] = GRAVEL
+) -> str:
     """Determines the grading of the soil.
 
     Args:
-        Cc: Coefficient of curvature.
-        Cu: Coefficient of uniformity.
+        curvature_coeff: Coefficient of curvature.
+        uniformity_coeff: Coefficient of uniformity.
         soil_type: Type of soil. (`G` or `S`). `G` for Gravel and `S` for Sand. Defaults to `G`.
 
     Returns:
@@ -126,8 +124,16 @@ def grading(Cc: float, Cu: float, soil_type: Optional[str] = GRAVEL) -> str:
         )
 
     if soil_type == GRAVEL:
-        return WELL_GRADED if (1 < Cc < 3) and (Cu >= 4) else POORLY_GRADED
-    return WELL_GRADED if (1 < Cc < 3) and (Cu >= 6) else POORLY_GRADED
+        return (
+            WELL_GRADED
+            if (1 < curvature_coeff < 3) and (uniformity_coeff >= 4)
+            else POORLY_GRADED
+        )
+    return (
+        WELL_GRADED
+        if (1 < curvature_coeff < 3) and (uniformity_coeff >= 6)
+        else POORLY_GRADED
+    )
 
 
 def A_line(liquid_limit: float) -> float:
@@ -174,13 +180,20 @@ def uscs(
     fines: float,
     sand: float,
     gravels: float,
-    d10: Optional[float] = None,
-    d30: Optional[float] = None,
-    d60: Optional[float] = None,
+    *,
+    psd: Optional[dict] = None,
     color: Optional[bool] = False,
     odor: Optional[bool] = False,
 ) -> str:
     """Unified Soil Classification System (`USCS`).
+
+    The `Unified Soil Classification System`, initially developed by Casagrande in 1948
+    and later modified in 1952, is widely utilized in engineering projects involving soils.
+    It is the most popular system for soil classification and is similar to Casagrande's
+    Classification System. The system relies on Particle Size Distribution and Atterberg Limits
+    for classification. Soils are categorized into three main groups: coarse-grained, fine-grained,
+    and highly organic soils. Additionally, the system has been adopted by the American Society for
+    Testing and Materials (`ASTM`).
 
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
@@ -190,9 +203,7 @@ def uscs(
         fines: Percentage of fines in soil sample. (%)
         sand:  Percentage of sand in soil sample. (%)
         gravels: Percentage of gravels in soil sample. (%)
-        d10: diameter at which 10% of the soil by weight is finer.
-        d30: diameter at which 30% of the soil by weight is finer.
-        d60: diameter at which 60% of the soil by weight is finer.
+        psd: Particle Size Distribution of the soil sample.
         color: Indicates if soil has color or not.
         odor: Indicates if soil has odor or not.
 
@@ -209,38 +220,36 @@ def uscs(
 
     if fines < 50:
         # Coarse grained, Run Sieve Analysis
-        soil_info = (liquid_limit, plasticity_index, fines, d10, d30, d60)
+        soil_info = (liquid_limit, plasticity_index, fines, psd)
         if gravels > sand:
             # Gravel
             return _classify(*soil_info, soil_type=GRAVEL)
         # Sand
         return _classify(*soil_info, soil_type=SAND)
-    else:
-        # Fine grained, Run Atterberg
-        Aline = A_line(liquid_limit)
-        if liquid_limit < 50:
-            # Low LL
-            if (plasticity_index > Aline) and (plasticity_index > 7):
-                return f"{CLAY}{LOW_PLASTICITY}"
 
-            if (plasticity_index < Aline) or (plasticity_index < 4):
-                return (
-                    f"{ORGANIC}{LOW_PLASTICITY}"
-                    if (color or odor)
-                    else f"{SILT}{LOW_PLASTICITY}"
-                )
+    # Fine grained, Run Atterberg
+    Aline = A_line(liquid_limit)
+    if liquid_limit < 50:
+        # Low LL
+        if (plasticity_index > Aline) and (plasticity_index > 7):
+            return f"{CLAY}{LOW_PLASTICITY}"
 
-            return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+        if (plasticity_index < Aline) or (plasticity_index < 4):
+            return (
+                f"{ORGANIC}{LOW_PLASTICITY}"
+                if (color or odor)
+                else f"{SILT}{LOW_PLASTICITY}"
+            )
 
-        # High LL
-        if plasticity_index > A_line(liquid_limit):
-            return f"{CLAY}{HIGH_PLASTICITY}"
+        return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
 
-        return (
-            f"{ORGANIC}{HIGH_PLASTICITY}"
-            if (color or odor)
-            else f"{SILT}{HIGH_PLASTICITY}"
-        )
+    # High LL
+    if plasticity_index > A_line(liquid_limit):
+        return f"{CLAY}{HIGH_PLASTICITY}"
+
+    return (
+        f"{ORGANIC}{HIGH_PLASTICITY}" if (color or odor) else f"{SILT}{HIGH_PLASTICITY}"
+    )
 
 
 def aashto(
@@ -248,6 +257,11 @@ def aashto(
 ) -> str:
     """American Association of State Highway and Transportation Officials (`AASHTO`)
        classification system.
+
+    The AASHTO Classification system categorizes soils for highways based on
+    Particle Size Distribution and plasticity characteristics. It classifies
+    both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
+    with subgroups, along with a separate category (A8) for organic soils
 
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
