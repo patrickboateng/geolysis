@@ -1,6 +1,7 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE, foundation_depth, passive_earth_pressure_coef
+from geolab import ERROR_TOLERANCE, passive_earth_pressure_coef
+from geolab.estimators import foundation_depth
 from geolab.bearing_capacity import dilatancy_spt_correction, Terzaghi
 
 T_nq = [(0, 1.00), (1, 1.10), (15, 4.45), (25, 12.72), (27, 15.9), (18.76, 6.54)]
