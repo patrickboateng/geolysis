@@ -25,6 +25,16 @@ Finally, `geolab` also supports finite element modelling (`FEM`) of soils under 
 
 Overall, `geolab` is a powerful and flexible software tool for geotechnical engineers, providing a range of useful features and capabilities for soil analysis and modelling. With `geolab`, engineers can work more efficiently and effectively, enabling them to design and build better projects with greater confidence.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage Example](#usage-example)
+- [Release History](#release-history)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact Information](#contact-information)
+- [Todo](#todo)
+
 ## Installation
 
 > **&#9432;** This install does not work yet.
@@ -66,10 +76,14 @@ npm test
 4. Push to the branch (`git push origin feature`)
 5. Create a new Pull Request
 
-## Contact
+## License
+
+Distributed under the `MIT license`. See [`LICENSE`](./LICENSE.txt) for more information.
+
+## Contact Information
 
 Patrick Boateng - <boatengpato.pb@gmail.com>, [LinkedIn](https://linkedin.com/in/patrickboateng/)
-Distributed under the `MIT license`. See [`LICENSE`](./LICENSE.txt) for more information.
+
 For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>
 
 ## Todo
