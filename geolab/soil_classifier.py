@@ -272,7 +272,7 @@ def aashto(
     The AASHTO Classification system categorizes soils for highways based on
     Particle Size Distribution and plasticity characteristics. It classifies
     both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
-    with subgroups, along with a separate category (A8) for organic soils
+    with subgroups, along with a separate category (A8) for organic soils.
 
     Args:
         liquid_limit: Water content beyond which soils flows under their own weight. (%)
