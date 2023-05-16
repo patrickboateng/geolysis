@@ -25,6 +25,7 @@ from .exceptions import PIValueError, PSDValueError
 
 VERSION = "0.1.0"
 ERROR_TOLERANCE = 0.01
+DECIMAL_PLACES = 2
 REFERENCES = {
     "book": {
         "arora": {
@@ -63,31 +64,6 @@ def deg2rad(*deg: Iterable):
         return wrapper
 
     return dec
-
-
-@deg2rad("friction_angle")
-def foundation_depth(
-    allowable_bearing_capacity: float,
-    unit_weight_of_soil: float,
-    *,
-    friction_angle: float,
-) -> float:
-    r"""Depth of foundation estimated using Rankine's formula.
-
-    $$D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2$$
-
-    Args:
-        allowable_bearing_capacity: Allowable bearing capacity.
-        unit_weight_of_soil: Unit weight of soil. ($kN/m^3$)
-        friction_angle: Internal angle of friction. (degrees)
-
-    Returns:
-        foundation depth.
-    """
-    first_expr = allowable_bearing_capacity / unit_weight_of_soil
-    second_expr = (1 - np.sin(friction_angle)) / (1 + np.sin(friction_angle))
-
-    return first_expr * (second_expr**2)
 
 
 @deg2rad("friction_angle")
