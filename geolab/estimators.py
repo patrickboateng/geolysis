@@ -4,24 +4,132 @@ from typing import Optional
 
 import numpy as np
 
+from geolab import DECIMAL_PLACES, deg2rad
 
-def elastic_modulus_of_soil(spt_n60: float) -> float:
-    r"""Elastic modulus of soil ($kN/m^2$).
+
+def skempton_compression_index(liquid_limit: float) -> float:
+    """The compression index of the soil estimated from `Skempton` (1994)
+       relation.
+
+    $$C_c = 0.007 \left(LL - 10)$$
+
+    Examples:
+        >>> skempton_compression_index(30)
+        0.14
+        >>> skempton_compression_index(50)
+        0.28
+        >>> skempton_compression_index(20)
+        0.07
+
+    Args:
+        liquid_limit: Water content beyond which soils flows under their own weight. (%)
+
+    Returns:
+        compression index of soil. (unitless)
+    """
+    compression_index = 0.007 * (liquid_limit - 10)
+
+    return np.round(compression_index, DECIMAL_PLACES)
+
+
+def terzaghi_compression_index(liquid_limit: float) -> float:
+    r"""The compression index of the soil estimated from `Terzagi` and
+       `Peck` (1967) relation.
+
+    $$C_c = 0.009 \left(LL - 10 \right)$$
+
+    Examples:
+        >>> terzaghi_compression_index(30)
+        0.18
+        >>> terzaghi_compression_index(50)
+        0.36
+        >>> terzaghi_compression_index(20)
+        0.09
+
+    Args:
+        liquid_limit: Water content beyond which soils flows under their own weight. (%)
+
+    Returns:
+        compression index of soil. (unitless)
+    """
+    compression_index = 0.009 * (liquid_limit - 10)
+
+    return np.round(compression_index, DECIMAL_PLACES)
+
+
+def hough_compression_index(void_ratio: float) -> float:
+    r"""The compression index of the soil estimated from `Hough` (1957)
+    relation.
+
+    $$C_c = 0.29 \left(e_o - 0.27 \right)$$
+
+    Examples:
+        >>> hough_compression_index(0.3)
+        0.01
+        >>> hough_compression_index(0.5)
+        0.07
+        >>> hough_compression_index(0.27)
+        0.0
+
+    Args:
+        void_ratio: Volume of voids divided by volume of solids. (unitless)
+
+    Returns:
+        compression index of soil. (unitless)
+    """
+    compression_index = 0.29 * (void_ratio - 0.27)
+
+    return np.round(compression_index, DECIMAL_PLACES)
+
+
+def elastic_modulus(spt_n60: float) -> float:
+    r"""Elastic modulus of soil estimated from `Joseph Bowles` correlation.
 
     $$E_s = 320\left(N_{60} + 15 \right)$$
+
+    Examples:
+        >>> elastic_modulus(20)
+        11200
+        >>> elastic_modulus(30)
+        14400
+        >>> elastic_modulus(10)
+        8000
 
     Args:
         spt_n60: The SPT N-value corrected for 60% hammer efficiency.
 
     Returns:
-        Elastic modulus
-
-    References:
-
+        Elastic modulus of the soil ($kN/m^2$)
     """
-    elastic_modulus = 320 * (spt_n60 + 15)
+    _elastic_modulus = 320 * (spt_n60 + 15)
 
-    return np.round(elastic_modulus, 2)
+    return np.round(_elastic_modulus, DECIMAL_PLACES)
+
+
+@deg2rad("friction_angle")
+def foundation_depth(
+    allowable_bearing_capacity: float,
+    unit_weight_of_soil: float,
+    *,
+    friction_angle: float,
+) -> float:
+    r"""Depth of foundation estimated using `Rankine's` formula.
+
+    $$D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2$$
+
+    Args:
+        allowable_bearing_capacity: Allowable bearing capacity.
+        unit_weight_of_soil: Unit weight of soil. ($kN/m^3$)
+        friction_angle: Internal angle of friction. (degrees)
+
+    Returns:
+        foundation depth.
+    """
+    first_expr = allowable_bearing_capacity / unit_weight_of_soil
+    second_expr = (1 - np.sin(friction_angle)) / (1 + np.sin(friction_angle))
+    _foundation_depth = first_expr * (second_expr**2)
+
+    return np.round(_foundation_depth, DECIMAL_PLACES)
 
 
 def friction_angle(
@@ -29,11 +137,11 @@ def friction_angle(
     effective_overburden_pressure: Optional[float] = None,
     atmospheric_pressure: Optional[float] = None,
 ) -> float:
-    r"""Internal angle of friction.
+    r"""Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction ($\phi$) was
     determined from the minimum value from `Peck, Hanson and Thornburn (1974)`
-    and `Kullhawy and Mayne (1990)`. The correlations are shown below.
+    and `Kullhawy and Mayne (1990)` respectively. The correlations are shown below.
 
     $$\phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2$$
 
@@ -44,13 +152,18 @@ def friction_angle(
         32.88
         >>> friction_angle(30)
         35.61
-
+        >>> friction_angle(30, 18, 40)
+        0.98
+        >>> friction_angle(20, 18, 20)
+        0.83
+        >>> friction_angle(40, 10, 30)
+        1.04
 
     Args:
         spt_n60: The SPT N-value corrected for 60% hammer efficiency. (blows/300 mm)
-        effective_overburden_pressure (float): Effective overburden pressure. Defaults to None.
-                                               ($kN/m^2$)
-        atmospheric_pressure (float): Atmospheric pressure. ($kN/m^2$)
+        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
+        atmospheric_pressure: Atmospheric pressure in the same unit as
+                              `effective_overburden_pressure`.
 
     Returns:
         The internal angle of friction in degrees.
@@ -64,10 +177,36 @@ def friction_angle(
 
     phi = 27.1 + (0.3 * spt_n60) - (0.00054 * (spt_n60**2))
 
-    return np.round(phi, 2)  # rounded to 2 d.p for consistency with eng. practices
+    # rounded to 2 d.p for consistency with eng. practices
+    return np.round(phi, DECIMAL_PLACES)
 
 
-if __name__ == "__main__":
-    import doctest
+def undrained_shear_strength(spt_n60: float, k: Optional[float] = 3.5) -> float:
+    r"""Undrained shear strength estimated from the correlation developed by `Stroud`
+        in 1974.
 
-    doctest.testmod()
+    $$C_u = K \times N_{60}$$
+
+    Examples:
+        >>> undrained_shear_strength(20)
+        70.0
+        >>> undrained_shear_strength(30, 4)
+        120
+        >>> undrained_shear_strength(40, 2.5)
+        Traceback (most recent call last):
+        ...
+        ValueError: k should be 3.5 <= k <= 6.5 not 2.5
+
+    Args:
+        spt_n60: The SPT N-value corrected for 60% hammer efficiency. (blows/300 mm)
+        k: Stroud Parameter. ($kN/m^2$)
+
+    Returns:
+        undrained shear strength of the soil. ($kN/m^2$)
+    """
+    if not (3.5 <= k <= 6.5):
+        raise ValueError(f"k should be 3.5 <= k <= 6.5 not {k}")
+
+    strength = k * spt_n60
+
+    return np.round(strength, DECIMAL_PLACES)
