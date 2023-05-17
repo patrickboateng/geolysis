@@ -9,7 +9,7 @@ from geolab import DECIMAL_PLACES, deg2rad
 
 def skempton_compression_index(liquid_limit: float) -> float:
     """The compression index of the soil estimated from `Skempton` (1994)
-       relation.
+    relation.
 
     $$C_c = 0.007 \left(LL - 10)$$
 
@@ -34,7 +34,7 @@ def skempton_compression_index(liquid_limit: float) -> float:
 
 def terzaghi_compression_index(liquid_limit: float) -> float:
     r"""The compression index of the soil estimated from `Terzagi` and
-       `Peck` (1967) relation.
+    `Peck` (1967) relation.
 
     $$C_c = 0.009 \left(LL - 10 \right)$$
 
@@ -181,21 +181,25 @@ def friction_angle(
     return np.round(phi, DECIMAL_PLACES)
 
 
-def undrained_shear_strength(spt_n60: float, k: Optional[float] = 3.5) -> float:
+def stroud_undrained_shear_strength(spt_n60: float, k: float = 3.5) -> float:
     r"""Undrained shear strength estimated from the correlation developed by `Stroud`
-        in 1974.
+    in 1974.
 
     $$C_u = K \times N_{60}$$
 
     Examples:
-        >>> undrained_shear_strength(20)
+        >>> stroud_undrained_shear_strength(20)
         70.0
-        >>> undrained_shear_strength(30, 4)
+        >>> stroud_undrained_shear_strength(30, 4)
         120
-        >>> undrained_shear_strength(40, 2.5)
+        >>> stroud_undrained_shear_strength(40, 2.5)
         Traceback (most recent call last):
         ...
         ValueError: k should be 3.5 <= k <= 6.5 not 2.5
+        >>> stroud_undrained_shear_strength(40, 7.5)
+        Traceback (most recent call last):
+        ...
+        ValueError: k should be 3.5 <= k <= 6.5 not 7.5
 
     Args:
         spt_n60: The SPT N-value corrected for 60% hammer efficiency. (blows/300 mm)
@@ -207,6 +211,42 @@ def undrained_shear_strength(spt_n60: float, k: Optional[float] = 3.5) -> float:
     if not (3.5 <= k <= 6.5):
         raise ValueError(f"k should be 3.5 <= k <= 6.5 not {k}")
 
-    strength = k * spt_n60
+    shear_strength = k * spt_n60
 
-    return np.round(strength, DECIMAL_PLACES)
+    return np.round(shear_strength, DECIMAL_PLACES)
+
+
+def skempton_undrained_shear_strength(
+    effective_overburden_pressure: float, plasticity_index: float
+):
+    r"""Undrained shear strength estimated from the correlation developed by `Skempton`
+    in 1957.
+
+    The ratio $\frac{C_u}{\sigma_o}$ is a constant for a given clay.
+    `Skempton` suggested that a similar constant ratio exists between the undrained shear
+    strength of normally consolidated natural deposits and the effective overburden pressure.
+    It has been established that the ratio ($\frac{C_u}{\sigma_o}$) is constant provided the
+    plasticity index (PI) of the soil remains constant.
+
+    The relationship is expressed as:
+
+    $$\dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \times PI$$
+
+    The value of the ratio ($\frac{C_u}{\sigma_o}$) determined in a consolidated-undrained test on
+    undisturbed samples is generally greater than actual value because of anisotropic consolidation
+    in the field. The actual value is best determined by `in-situ shear vane test`. (Arora, p. 330)
+
+    Args:
+        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
+        plasticity_index: Range of water content over which soil remains in plastic condition
+                          `PI = LL - PL`. (%)
+    Returns:
+        undrained shear strength of the soil. ($kN/m^2$)
+
+    References:
+        Arora, K 2003, _Soil Mechanics and Foundation Engineering_, 6 Edition,
+        Standard Publishers Distributors, Delhi.
+    """
+    shear_strength = effective_overburden_pressure * (0.11 + 0.0037 * plasticity_index)
+
+    return np.round(shear_strength, DECIMAL_PLACES)
