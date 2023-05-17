@@ -11,19 +11,15 @@
 ![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
 ![downloads](https://img.shields.io/pypi/dm/geolab?style=flat-square)
 
-`geolab` is an open-source software for geotechnical engineering that provides a range of powerful tools and features, including soil classification, bearing capacity analysis, estimation of soil engineering properties, settlement analysis, and finite element modelling.
+`geolab` is an open-source software for geotechnical engineering that offers a suite of powerful tools and features for soil analysis and modeling. It provides soil classification based on both USCS and AASHTO standards, bearing capacity analysis, estimation of soil engineering properties, settlement analysis, and finite element modeling. The software assists geotechnical engineers in their day-to-day work, enabling them to perform a wide range of tasks with ease and make informed decisions about design and construction. `geolab` enhances efficiency and effectiveness, allowing engineers to design and build better projects with confidence.
 
-`geolab` is a software designed to assist geotechnical engineers in their day-to-day work by providing a suite of powerful tools and features for soil analysis and modelling. With `geolab`, users can perform a wide range of geotechnical engineering tasks with ease, from soil classification to finite element modelling.
+The key features of `geolab` are stated below:
 
-One of the key features of `geolab` is its ability to classify soils based on both `USCS` and `AASHTO` standards, enabling users to quickly and accurately assess the characteristics of different soil types. Additionally, `geolab` offers tools for bearing capacity analysis, which can be performed in both laboratory and field settings, allowing engineers to better understand the load-bearing capacity of the soil.
-
-Another useful feature of `geolab` is its ability to estimate important soil engineering properties, such as void ratio, modulus of elasticity, and internal angle of friction. With this information, engineers can make more informed decisions about design and construction, ensuring that their projects are both safe and efficient.
-
-For settlement analysis, `geolab` provides powerful tools for predicting and modeling soil settlement under various loads and conditions. This can help engineers better understand the behavior of soil under different conditions and avoid potential problems down the line.
-
-Finally, `geolab` also supports finite element modelling (`FEM`) of soils under loads, allowing engineers to create detailed models of soil behavior under various conditions. This can be a valuable tool for both design and analysis, enabling engineers to optimize their designs and ensure that their projects are both safe and effective.
-
-Overall, `geolab` is a powerful and flexible software tool for geotechnical engineers, providing a range of useful features and capabilities for soil analysis and modelling. With `geolab`, engineers can work more efficiently and effectively, enabling them to design and build better projects with greater confidence.
+- Provides soil classification based on `USCS` and `AASHTO` standards.
+- Bearing capacity analysis can be performed in both from results obtained from laboratory or field tests.
+- Estimates important soil engineering properties, aiding in decision-making.
+- Settlement analysis tools predict and model soil settlements under various loads and conditions.
+- Supports finite element modelling of soil behaviour under different conditions.
 
 ## Table of Contents
 
@@ -90,6 +86,6 @@ For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.c
 
 - [x] Soil Classifier
 - [x] Bearing Capacity Analysis
-- [ ] Estimating Soil Engineering Parameters
+- [x] Estimating Soil Engineering Parameters
 - [ ] Settlement Analysis
 - [ ] Modelling the behavior of Soils under loads using `FEM`
