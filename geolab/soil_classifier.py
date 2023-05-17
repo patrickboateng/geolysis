@@ -177,11 +177,11 @@ def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> f
         The group index of the soil sample.
     """
 
-    gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (fines - 15) * (
+    _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (fines - 15) * (
         plasticity_index - 10
     )
 
-    return 0.0 if gi <= 0 else gi
+    return 0.0 if _gi <= 0 else _gi
 
 
 def uscs(
