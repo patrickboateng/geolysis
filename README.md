@@ -29,6 +29,7 @@ The key features of `geolab` are stated below:
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
+- [Links](#links)
 - [Todo](#todo)
 
 ## Installation
@@ -81,6 +82,14 @@ Distributed under the `MIT license`. See [`LICENSE`](./LICENSE.txt) for more inf
 Patrick Boateng - <boatengpato.pb@gmail.com>, [LinkedIn](https://linkedin.com/in/patrickboateng/)
 
 For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>
+
+## Links
+
+- Documentation: <>
+- PyPi: <>
+- Source Code: <https://github.com/patrickboateng/geolab/>
+- Issue Tracker: <>
+- Website: <>
 
 ## Todo
 
