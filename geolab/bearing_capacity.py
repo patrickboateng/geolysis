@@ -6,13 +6,10 @@ import numpy as np
 
 from geolab import (
     DECIMAL_PLACES,
-    ERROR_TOLERANCE,
     deg2rad,
     exceptions,
     passive_earth_pressure_coef,
 )
-
-
 
 
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
