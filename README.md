@@ -13,7 +13,7 @@
 
 `geolab` is an open-source software for geotechnical engineering that offers a suite of powerful tools and features for soil analysis and modeling. It provides soil classification based on both USCS and AASHTO standards, bearing capacity analysis, estimation of soil engineering properties, settlement analysis, and finite element modeling. The software assists geotechnical engineers in their day-to-day work, enabling them to perform a wide range of tasks with ease and make informed decisions about design and construction. `geolab` enhances efficiency and effectiveness, allowing engineers to design and build better projects with confidence.
 
-The key features of `geolab` are stated below:
+## Features
 
 - Provides soil classification based on `USCS` and `AASHTO` standards.
 - Bearing capacity analysis can be performed in both from results obtained from laboratory or field tests.
@@ -34,7 +34,7 @@ The key features of `geolab` are stated below:
 
 ## Installation
 
-> **&#9432;** This install does not work yet.
+> **&#9432;** This install does not work yet. Project is still under **rapid** development.
 
 ```sh
 pip install geolab
