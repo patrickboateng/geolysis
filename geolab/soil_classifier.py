@@ -57,13 +57,18 @@ def _dual_symbol(liquid_limit, plasticity_index, psd, soil_type) -> str:
 def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str:
     if fines > 12:
         Aline = A_line(liquid_limit)
+        # Limit plot in hatched zone on plasticity chart
         if math.isclose(plasticity_index, Aline):
             return f"{soil_type}{SILT}-{soil_type}{CLAY}"
+
         if plasticity_index > Aline:
             return f"{soil_type}{CLAY}"
+
+        # Below A-Line
         return f"{soil_type}{SILT}"
 
     if 5 <= fines <= 12:
+        # Requires dual symbol based on graduation and plasticity chart
         if psd is not None:
             return _dual_symbol(liquid_limit, plasticity_index, psd, soil_type)
         return (
@@ -73,7 +78,8 @@ def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str
             f"{soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
         )
 
-    # Obtain Cc and Cu
+    # Less than 5% pass No. 200 sieve
+    # Obtain Cc and Cu from grain size graph
     if psd is not None:
         curvature_coeff = curvature_coefficient(**psd)
         uniformity_coeff = uniformity_coefficient(psd["d10"], psd["d60"])
@@ -85,7 +91,7 @@ def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str
 def curvature_coefficient(d10: float, d30: float, d60: float) -> float:
     r"""Calculates the coefficient of curvature of the soil.
 
-    $$\dfrac{d_{30}^2}{d_{60} \times d_{10}}$$
+    $$C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}$$
 
     Args:
         d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
@@ -101,7 +107,7 @@ def curvature_coefficient(d10: float, d30: float, d60: float) -> float:
 def uniformity_coefficient(d10: float, d60: float) -> float:
     r"""Calculates the coefficient of uniformity of the soil.
 
-    $$\dfrac{d_{60}}{d_{10}}$$
+    $$C_u = \dfrac{d_{60}}{d_{10}}$$
 
     Args:
         d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
@@ -252,12 +258,14 @@ def uscs(
                 else f"{SILT}{LOW_PLASTICITY}"
             )
 
+        # Limits plot in hatched area on plasticity chart
         return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
 
     # High LL
-    if plasticity_index > A_line(liquid_limit):
+    if plasticity_index > Aline:
         return f"{CLAY}{HIGH_PLASTICITY}"
 
+    # Below A-Line
     return (
         f"{ORGANIC}{HIGH_PLASTICITY}" if (color or odor) else f"{SILT}{HIGH_PLASTICITY}"
     )
@@ -267,7 +275,7 @@ def aashto(
     liquid_limit: float, plastic_limit: float, plasticity_index: float, fines: float
 ) -> str:
     """American Association of State Highway and Transportation Officials (`AASHTO`)
-       classification system.
+    classification system.
 
     The AASHTO Classification system categorizes soils for highways based on
     Particle Size Distribution and plasticity characteristics. It classifies
@@ -302,6 +310,7 @@ def aashto(
 
     if plasticity_index <= 10:
         return f"A-5({gi:.0f})"
+
     return (
         f"A-7-5({gi:.0f})"
         if plasticity_index <= (liquid_limit - 30)
