@@ -8,7 +8,7 @@ from geolab import DECIMAL_PLACES, deg2rad
 
 
 def skempton_compression_index(liquid_limit: float) -> float:
-    """The compression index of the soil estimated from `Skempton` (1994)
+    r"""The compression index of the soil estimated from `Skempton` (1994)
     relation.
 
     $$C_c = 0.007 \left(LL - 10)$$
