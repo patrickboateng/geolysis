@@ -1,6 +1,6 @@
 """This module provides functions for bearing capacity analysis."""
 
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 
