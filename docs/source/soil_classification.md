@@ -126,7 +126,7 @@ The distribution of grain sizes affects the engineering properties of the soil.
 
 ## Unified Soil Classification System (USCS)
 
-The Unified Soil Classification System was first developed by Casagrande in 1948, and later in 1952, was modified by the Bureau of Reclamation and the Corps of Engineers of the United States of America. The system has also been adopted by American Society of Testing Materials (ASTM). The system is the most popular system for use in all types of engineering problems involving soils.
+The Unified Soil Classification System was first developed by Casagrande in 1948, and later in 1952, was modified by the Bureau of Reclamation and the Corps of Engineers of the United States of America. The system has also been adopted by American Society for Testing and Materials (ASTM). The system is the most popular system for use in all types of engineering problems involving soils.
 
 - It is similar to the Cassagrande's Classification System.
 - It uses **Particle Size Distribution** and **Atterberg Limits** for classification.
