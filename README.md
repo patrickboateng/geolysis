@@ -51,15 +51,6 @@ pip install geolab
 
 ```
 
-<!-- ## Development setup
-
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
-
-```sh
-make install
-npm test
-``` -->
-
 ## Release History
 
 - 0.1.0
@@ -68,10 +59,10 @@ npm test
 ## Contributing
 
 1. [Fork it](https://github.com/patrickboateng/geolab/fork)
-2. Create your feature branch (`git checkout -b feature`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature`)
-5. Create a new Pull Request
+1. Create your feature branch (`git checkout -b feature`)
+1. Commit your changes (`git commit -am 'Add some fooBar'`)
+1. Push to the branch (`git push origin feature`)
+1. Create a new Pull Request
 
 ## License
 
@@ -85,11 +76,11 @@ For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.c
 
 ## Links
 
-- Documentation: <>
-- PyPi: <>
-- Source Code: <https://github.com/patrickboateng/geolab/>
-- Issue Tracker: <>
-- Website: <>
+- [Documentation]()
+- [PyPi]()
+- [Source Code](https://github.com/patrickboateng/geolab/)
+- [Issue Tracker]()
+- [Website]()
 
 ## Todo
 
