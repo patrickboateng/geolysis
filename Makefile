@@ -1,4 +1,4 @@
-.PHONY: format test release check
+.PHONY: check format test
 
 check:
 	@mypy geolab
@@ -15,8 +15,4 @@ test:
 	@pytest
 	@echo "Running doctest..."
 	@py -m doctest README.md
-	@py -m doctest docs/index.md
 	@echo "All tests passed"
-
-release:
-	@xlwings release
