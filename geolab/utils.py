@@ -1,4 +1,5 @@
 import functools
+import math
 from typing import Callable, Iterable, TypeVar, cast
 
 import numpy as np
@@ -27,3 +28,12 @@ def deg2rad(*deg: Iterable) -> Callable[[F], F]:
         return cast(F, wrapper)
 
     return dec
+
+
+def product(*args) -> float:
+    """Calculate the product of all the elements in the input iterable.
+
+    :return: The products of all elements in `args`
+    :rtype: float
+    """
+    return math.prod(args)
