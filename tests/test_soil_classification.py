@@ -2,8 +2,7 @@ import pytest
 
 from geolab import ERROR_TOLERANCE, PIValueError, PSDValueError
 from geolab.soil_classifier import (
-    curvature_coefficient,
-    uniformity_coefficient,
+    PSDCoefficient,
     aashto,
     grading,
     group_index,
@@ -50,17 +49,10 @@ aashto_class_test_data = [
 ]
 
 coefficient_of_curvature_test_data = [
-    ((0.07, 0.3, 0.8), 1.61),
-    ((0.06, 0.6, 7.0), 0.86),
-    ((0.153, 0.4, 1.2), 0.87),
-    ((2, 3.9, 8), 0.95),
-]
-
-coefficient_of_uniformity_test_data = [
-    ((0.07, 0.8), 11.43),
-    ((0.06, 7.0), 116.67),
-    ((0.153, 1.2), 7.84),
-    ((2, 8), 4),
+    ((0.07, 0.3, 0.8), {"cc": 1.61, "cu": 11.43}),
+    ((0.06, 0.6, 7.0), {"cc": 0.86, "cu": 116.67}),
+    ((0.153, 0.4, 1.2), {"cc": 0.87, "cu": 7.84}),
+    ((2, 3.9, 8), {"cc": 0.95, "cu": 4}),
 ]
 
 
@@ -83,14 +75,11 @@ def test_PI():
         uscs(30, 10, 10, 30, 30, 40)
 
 
-@pytest.mark.parametrize("psd,cc", coefficient_of_curvature_test_data)
-def test_Cc(psd, cc):
-    assert curvature_coefficient(*psd) == pytest.approx(cc, ERROR_TOLERANCE)
-
-
-@pytest.mark.parametrize("psd,cu", coefficient_of_uniformity_test_data)
-def test_Cu(psd, cu):
-    assert uniformity_coefficient(*psd) == pytest.approx(cu, ERROR_TOLERANCE)
+@pytest.mark.parametrize("psd,exp", coefficient_of_curvature_test_data)
+def test_PSDCoeffiecient(psd, exp):
+    psd_coeff = PSDCoefficient(*psd)
+    assert psd_coeff.curvature_coefficient == pytest.approx(exp["cc"], ERROR_TOLERANCE)
+    assert psd_coeff.uniformity_coefficient == pytest.approx(exp["cu"], ERROR_TOLERANCE)
 
 
 @pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
