@@ -14,11 +14,14 @@ release = "0.1.0"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.doctest"]
+extensions = ["sphinx.ext.doctest", "sphinxcontrib.bibtex"]
 
 templates_path = ["_templates"]
 exclude_patterns = []
 
+# -- References ------------------------------
+# https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html
+bibtex_bibfiles = ["refs.bib"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
