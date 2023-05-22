@@ -29,19 +29,6 @@ from .exceptions import PIValueError, PSDValueError
 __version__ = "0.1.0"
 ERROR_TOLERANCE = 0.01
 DECIMAL_PLACES = 2
-REFERENCES = {
-    "book": {
-        "arora": {
-            "author_surname": "Arora",
-            "author_first_ini": "K",
-            "year": 2003,
-            "title": "Soil Mechanics and Foundation Engineering",
-            "edition": 6,
-            "publisher": "Standard Publishers Distributors",
-            "place_of_publication": "Delhi",
-        }
-    }
-}
 
 
 @deg2rad("friction_angle")
