@@ -1,13 +1,7 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE, PIValueError, PSDValueError
-from geolab.soil_classifier import (
-    PSDCoefficient,
-    aashto,
-    grading,
-    group_index,
-    uscs,
-)
+from geolab.soil_classifier import PSDCoefficient, aashto, grading, group_index, uscs
 
 dual_class_test_data = [
     (
