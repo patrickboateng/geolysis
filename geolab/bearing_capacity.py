@@ -1,31 +1,26 @@
 """This module provides functions for bearing capacity analysis."""
 
-from typing import Optional
-
 import numpy as np
 
-from geolab import (
-    DECIMAL_PLACES,
-    deg2rad,
-    exceptions,
-    passive_earth_pressure_coef,
-)
+from geolab import DECIMAL_PLACES, deg2rad, passive_earth_pressure_coef
+from geolab.utils import product
 
 
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
-    r"""Depth Factor.
+    """Depth factor used in estimating the allowable bearing capacity of a soil.
 
-    $$k = 1 + 0.33 \frac{D_f}{B}$$
+    .. math::
 
-    Args:
-        foundation_depth: Depth of foundation. (m)
-        foundation_width: Width of foundation. (m)
+        $$k = 1 + 0.33 \\frac{D_f}{B}$$
 
-    Returns:
-        Depth factor.
+    :param foundation_depth: Depth of foundation (m)
+    :type foundation_depth: float
+    :param foundation_width: Width of foundation (m)
+    :type foundation_width: float
+    :return: Depth factor
+    :rtype: float
     """
     _depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
-
     return np.round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
 
 
@@ -42,32 +37,32 @@ class Terzaghi:
     @staticmethod
     @deg2rad("friction_angle")
     def nq(*, friction_angle: float) -> float:
-        r"""Terzaghi Bearing Capacity factor $N_q$.
+        r"""Terzaghi Bearing Capacity factor :math:`N_q`.
 
-        $$\frac{e^{(\frac{3\pi}{2} - \phi)\tan \phi}}{2 \cos^2 \left(45^{\circ} + \frac{\phi}{2} \right)}$$
+        .. math::
 
-        Args:
-            friction_angle: Internal angle of friction (degrees).
+            \frac{e^{(\frac{3\pi}{2} - \phi)\tan \phi}}{2 \cos^2 \left(45^{\circ} + \frac{\phi}{2} \right)}$$
 
-        Returns:
-            A `float` representing the bearing capacity factor ($N_q$).
-
+        :param friction_angle: Internal angle of friction (degrees)
+        :type friction_angle: float
+        :return: The bearing capacity factor :math:`N_q`
+        :rtype: float
         """
         return np.round(Terzaghi._nq(friction_angle), DECIMAL_PLACES)
 
     @staticmethod
     @deg2rad("friction_angle")
     def nc(*, friction_angle: float) -> float:
-        r"""Terzaghi Bearing Capacity factor $N_c$.
+        r"""Terzaghi Bearing Capacity factor :math:`N_c`.
 
-        $$\cot \phi \left(N_q - 1 \right)$$
+        .. math::
 
-        Args:
-            friction_angle: Internal angle of friction (degrees).
+            \cot \phi \left(N_q - 1 \right)
 
-        Returns:
-            A `float` representing the bearing capacity factor $N_c$.
-
+        :param friction_angle: Internal angle of friction (degrees)
+        :type friction_angle: float
+        :return: The bearing capacity factor :math:`N_c`
+        :rtype: float
         """
         if np.isclose(friction_angle, 0.0):
             return 5.70
@@ -79,16 +74,16 @@ class Terzaghi:
     @staticmethod
     @deg2rad("friction_angle")
     def ngamma(*, friction_angle: float) -> float:
-        r"""Terzaghi Bearing Capacity factor $N_\gamma$.
+        r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`.
 
-        $$\frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi$$
+        .. math::
 
-        Args:
-            friction_angle: Internal angle of friction (degrees).
+            \frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi
 
-        Returns:
-            A `float` representing the bearing capacity factor $N_\gamma$.
-
+        :param friction_angle: Internal angle of friction (degrees)
+        :type friction_angle: float
+        :return: The bearing capacity factor :math:`N_\gamma`
+        :rtype: float
         """
         phi = np.rad2deg(friction_angle)
         num = passive_earth_pressure_coef(friction_angle=phi)
@@ -107,86 +102,127 @@ class Terzaghi:
         foundation_depth: float,
         foundation_width: float,
     ) -> float:
-        r"""Ultimate bearing capacity according to `Terzaghi` for `strip footing`.
+        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
 
-        $$q_u = cN_c + \gamma D_f N_q + 0.5 \gamma B N_{\gamma}$$
+        .. math::
 
-        Args:
-            cohesion: cohesion of foundation soil ($kN/m^2$).
-            friction_angle: Internal angle of friction ($\phi$)
-            unit_weight_of_soil: Unit weight of soil ($kN/m^3$).
-            foundation_depth: Foundation depth $D_f$ (m).
-            foundation_width: Foundation width (**B**) (m)
+            q_u = cN_c + \gamma D_f N_q + 0.5 \gamma B N_\gamma
 
-        Returns:
-            Ultimate bearing capacity ($q_{ult}$)
-
+        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
+        :type cohesion: float
+        :param friction_angle: internal angle of friction :math:`(\phi)`
+        :type friction_angle: float
+        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
+        :type unit_weight_of_soil: float
+        :param foundation_depth: depth of foundation :math:`d_f` (m)
+        :type foundation_depth: float
+        :param foundation_width: width of foundation (**b**) (m)
+        :type foundation_width: float
+        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
+        :rtype: float
         """
-        overburden_pressure = unit_weight_of_soil * foundation_depth
-        first_expr = cohesion * Terzaghi.nc(friction_angle=friction_angle)
-        mid_expr = overburden_pressure * Terzaghi.nq(friction_angle=friction_angle)
-        last_expr = (
-            0.5
-            * unit_weight_of_soil
-            * foundation_width
-            * Terzaghi.ngamma(friction_angle=friction_angle)
+        qult = (
+            product(cohesion, Terzaghi.nc(friction_angle=friction_angle))
+            + product(
+                unit_weight_of_soil,
+                foundation_depth,
+                Terzaghi.nq(friction_angle=friction_angle),
+            )
+            + product(
+                0.5,
+                unit_weight_of_soil,
+                foundation_width,
+                Terzaghi.ngamma(friction_angle=friction_angle),
+            )
         )
-
-        qult = first_expr + mid_expr + last_expr
 
         return np.round(qult, DECIMAL_PLACES)
 
     @staticmethod
-    def qult_4_foundation(
+    def qult_4_square_foundation(
         cohesion: float,
         friction_angle: float,
         unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
-        shape: Optional[str] = "square",
-    ) -> float:
-        r"""Ultimate bearing capacity according to `Terzaghi` for `square` and
-        `circular` footing.
+    ):
+        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``square footing``.
 
-        `square` $\rightarrow q_u = 1.2cN_c + \gamma D_f N_q + 0.4 \gamma B N_{\gamma}$
+        .. math::
 
-        `circular` $\rightarrow q_u = 1.2cN_c + \gamma D_f N_q + 0.3 \gamma B N_{\gamma}$
+            q_u = 1.2cN_c + \gamma D_f N_q + 0.4 \gamma B N_\gamma
 
-        Args:
-            cohesion: cohesion of foundation soil. ($kN/m^2$)
-            friction_angle: Internal angle of friction. ($\phi$)
-            unit_weight_of_soil: Unit weight of soil. ($kN/m^3$)
-            foundation_depth: Foundation depth $D_f$. (m)
-            foundation_width: Foundation width (**B**). (m)
-            shape: Determines the shape of the foundation. `square` or `circular`.
-                   Defaults to `square`.
-        Returns:
-            Ultimate bearing capacity ($q_{ult}$)
-
-        Raises:
-            exceptions.FoundationTypeError: Exception raised when an invalid foundation shape
-                                            is specified.
+        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
+        :type cohesion: float
+        :param friction_angle: internal angle of friction :math:`(\phi)`
+        :type friction_angle: float
+        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
+        :type unit_weight_of_soil: float
+        :param foundation_depth: depth of foundation :math:`d_f` (m)
+        :type foundation_depth: float
+        :param foundation_width: width of foundation (**b**) (m)
+        :type foundation_width: float
+        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
+        :rtype: float
         """
-        if shape == "square":
-            i = 0.4
-        elif shape == "circular":
-            i = 0.3
-        else:
-            raise exceptions.FoundationTypeError(
-                f"Foundation type must be square or circular not {shape}"
+        qult = (
+            product(1.2, cohesion, Terzaghi.nc(friction_angle=friction_angle))
+            + product(
+                unit_weight_of_soil,
+                foundation_depth,
+                Terzaghi.nq(friction_angle=friction_angle),
             )
-
-        overburden_pressure = unit_weight_of_soil * foundation_depth
-        first_expr = 1.2 * cohesion * Terzaghi.nc(friction_angle=friction_angle)
-        mid_expr = overburden_pressure * Terzaghi.nq(friction_angle=friction_angle)
-        last_expr = (
-            i
-            * unit_weight_of_soil
-            * foundation_width
-            * Terzaghi.ngamma(friction_angle=friction_angle)
+            + product(
+                0.4,
+                unit_weight_of_soil,
+                foundation_width,
+                Terzaghi.ngamma(friction_angle=friction_angle),
+            )
         )
 
-        qult = first_expr + mid_expr + last_expr
+        return np.round(qult, DECIMAL_PLACES)
+
+    @staticmethod
+    def qult_4_circular_foundation(
+        cohesion: float,
+        friction_angle: float,
+        unit_weight_of_soil: float,
+        foundation_depth: float,
+        foundation_width: float,
+    ):
+        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``circular footing``.
+
+        .. math::
+
+            q_u = 1.2cN_c + \gamma D_f N_q + 0.3 \gamma B N_{\gamma}
+
+        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
+        :type cohesion: float
+        :param friction_angle: internal angle of friction :math:`(\phi)`
+        :type friction_angle: float
+        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
+        :type unit_weight_of_soil: float
+        :param foundation_depth: depth of foundation :math:`d_f` (m)
+        :type foundation_depth: float
+        :param foundation_width: width of foundation (**b**) (m)
+        :type foundation_width: float
+        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
+        :rtype: float
+        """
+        qult = (
+            product(1.2, cohesion, Terzaghi.nc(friction_angle=friction_angle))
+            + product(
+                unit_weight_of_soil,
+                foundation_depth,
+                Terzaghi.nq(friction_angle=friction_angle),
+            )
+            + product(
+                0.3,
+                unit_weight_of_soil,
+                foundation_width,
+                Terzaghi.ngamma(friction_angle=friction_angle),
+            )
+        )
 
         return np.round(qult, DECIMAL_PLACES)
 
