@@ -8,12 +8,15 @@ from geolab import DECIMAL_PLACES, deg2rad
 
 
 def skempton_compression_index(liquid_limit: float) -> float:
-    r"""The compression index of the soil estimated from `Skempton` (1994)
+    r"""The compression index of the soil estimated from ``Skempton`` (1994)
     relation.
 
-    $$C_c = 0.007 \left(LL - 10)$$
+    .. math::
 
-    Examples:
+        C_c = 0.007 \left(LL - 10 \right)
+
+    :Example:
+
         >>> skempton_compression_index(30)
         0.14
         >>> skempton_compression_index(50)
@@ -21,24 +24,25 @@ def skempton_compression_index(liquid_limit: float) -> float:
         >>> skempton_compression_index(20)
         0.07
 
-    Args:
-        liquid_limit: Water content beyond which soils flows under their own weight. (%)
-
-    Returns:
-        compression index of soil. (unitless)
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :return: compression index of soil (unitless)
+    :rtype: float
     """
     compression_index = 0.007 * (liquid_limit - 10)
-
     return np.round(compression_index, DECIMAL_PLACES)
 
 
 def terzaghi_compression_index(liquid_limit: float) -> float:
-    r"""The compression index of the soil estimated from `Terzagi` and
-    `Peck` (1967) relation.
+    r"""The compression index of the soil estimated from ``Terzagi`` and
+    ``Peck`` (1967) relation.
 
-    $$C_c = 0.009 \left(LL - 10 \right)$$
+    .. math::
 
-    Examples:
+        C_c = 0.009 \left(LL - 10 \right)
+
+    :Example:
+
         >>> terzaghi_compression_index(30)
         0.18
         >>> terzaghi_compression_index(50)
@@ -46,24 +50,24 @@ def terzaghi_compression_index(liquid_limit: float) -> float:
         >>> terzaghi_compression_index(20)
         0.09
 
-    Args:
-        liquid_limit: Water content beyond which soils flows under their own weight. (%)
-
-    Returns:
-        compression index of soil. (unitless)
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :return: compression index of soil (unitless)
+    :rtype: float
     """
     compression_index = 0.009 * (liquid_limit - 10)
-
     return np.round(compression_index, DECIMAL_PLACES)
 
 
 def hough_compression_index(void_ratio: float) -> float:
-    r"""The compression index of the soil estimated from `Hough` (1957)
-    relation.
+    r"""The compression index of the soil estimated from ``Hough`` (1957) relation.
 
-    $$C_c = 0.29 \left(e_o - 0.27 \right)$$
+    .. math::
 
-    Examples:
+        C_c = 0.29 \left(e_o - 0.27 \right)
+
+    :Example:
+
         >>> hough_compression_index(0.3)
         0.01
         >>> hough_compression_index(0.5)
@@ -71,23 +75,23 @@ def hough_compression_index(void_ratio: float) -> float:
         >>> hough_compression_index(0.27)
         0.0
 
-    Args:
-        void_ratio: Volume of voids divided by volume of solids. (unitless)
-
-    Returns:
-        compression index of soil. (unitless)
+    :param void_ratio: Volume of voids divided by volume of solids (unitless)
+    :type void_ratio: float
+    :return: compression index of soil (unitless)
+    :rtype: float
     """
     compression_index = 0.29 * (void_ratio - 0.27)
-
     return np.round(compression_index, DECIMAL_PLACES)
 
 
 def elastic_modulus(spt_n60: float) -> float:
-    r"""Elastic modulus of soil estimated from `Joseph Bowles` correlation.
+    r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
 
-    $$E_s = 320\left(N_{60} + 15 \right)$$
+    .. math::
 
-    Examples:
+        E_s = 320\left(N_{60} + 15 \right)
+
+    :Example:
         >>> elastic_modulus(20)
         11200
         >>> elastic_modulus(30)
@@ -95,14 +99,12 @@ def elastic_modulus(spt_n60: float) -> float:
         >>> elastic_modulus(10)
         8000
 
-    Args:
-        spt_n60: The SPT N-value corrected for 60% hammer efficiency.
-
-    Returns:
-        Elastic modulus of the soil ($kN/m^2$)
+    :param spt_n60: The SPT N-value corrected for 60% hammer efficiency
+    :type spt_n60: float
+    :return: Elastic modulus of the soil :math:`kN/m^2`
+    :rtype: float
     """
     _elastic_modulus = 320 * (spt_n60 + 15)
-
     return np.round(_elastic_modulus, DECIMAL_PLACES)
 
 
@@ -113,17 +115,20 @@ def foundation_depth(
     *,
     friction_angle: float,
 ) -> float:
-    r"""Depth of foundation estimated using `Rankine's` formula.
+    r"""Depth of foundation estimated using ``Rankine's`` formula.
 
-    $$D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2$$
+    .. math::
 
-    Args:
-        allowable_bearing_capacity: Allowable bearing capacity.
-        unit_weight_of_soil: Unit weight of soil. ($kN/m^3$)
-        friction_angle: Internal angle of friction. (degrees)
+        D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
 
-    Returns:
-        foundation depth.
+    :param allowable_bearing_capacity: Allowable bearing capacity
+    :type allowable_bearing_capaciy: float
+    :param unit_weight_of_soil: Unit weight of soil :math:`kN/m^3`
+    :type unit_weight_of_soil: float
+    :param friction_angle: Internal angle of friction (degrees)
+    :type friction_angle: float
+    :return: Depth of foundation
+    :rtype: float
     """
     first_expr = allowable_bearing_capacity / unit_weight_of_soil
     second_expr = (1 - np.sin(friction_angle)) / (1 + np.sin(friction_angle))
@@ -139,15 +144,18 @@ def friction_angle(
 ) -> float:
     r"""Estimation of the internal angle of friction using spt_n60.
 
-    For cohesionless soils the coefficient of internal friction ($\phi$) was
-    determined from the minimum value from `Peck, Hanson and Thornburn (1974)`
-    and `Kullhawy and Mayne (1990)` respectively. The correlations are shown below.
+    For cohesionless soils the coefficient of internal friction :math:`\phi` was
+    determined from the minimum value from ``Peck, Hanson and Thornburn (1974)``
+    and ``Kullhawy and Mayne (1990)`` respectively. The correlations are shown below.
 
-    $$\phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2$$
+    .. math::
 
-    $$\phi = \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3(\frac{\sigma_o}{P_a})} \right]^0.34$$
+        \phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2
 
-    Examples:
+        \phi = \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3(\frac{\sigma_o}{P_a})} \right]^0.34
+
+    :Example:
+
         >>> friction_angle(20)
         32.88
         >>> friction_angle(30)
@@ -159,14 +167,14 @@ def friction_angle(
         >>> friction_angle(40, 10, 30)
         1.04
 
-    Args:
-        spt_n60: The SPT N-value corrected for 60% hammer efficiency. (blows/300 mm)
-        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
-        atmospheric_pressure: Atmospheric pressure in the same unit as
-                              `effective_overburden_pressure`.
-
-    Returns:
-        The internal angle of friction in degrees.
+    :param spt_n60: The SPT N-value corrected for 60% hammer efficiency
+    :type spt_n60: float
+    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`, defaults to None
+    :type effective_overburden_pressure: float, optional
+    :param atmospheric_pressure: Atmospheric pressure :math:`kN/m^2`, defaults to None
+    :type atmospheric_pressure: float, optional
+    :return: The internal angle of friction in degrees
+    :rtype: float
     """
     if (effective_overburden_pressure is not None) and (
         atmospheric_pressure is not None
@@ -182,12 +190,15 @@ def friction_angle(
 
 
 def stroud_undrained_shear_strength(spt_n60: float, k: float = 3.5) -> float:
-    r"""Undrained shear strength estimated from the correlation developed by `Stroud`
+    r"""Undrained shear strength estimated from the correlation developed by ``Stroud``
     in 1974.
 
-    $$C_u = K \times N_{60}$$
+    .. math::
 
-    Examples:
+        C_u = K \times N_{60}
+
+    :Example:
+
         >>> stroud_undrained_shear_strength(20)
         70.0
         >>> stroud_undrained_shear_strength(30, 4)
@@ -201,52 +212,53 @@ def stroud_undrained_shear_strength(spt_n60: float, k: float = 3.5) -> float:
         ...
         ValueError: k should be 3.5 <= k <= 6.5 not 7.5
 
-    Args:
-        spt_n60: The SPT N-value corrected for 60% hammer efficiency. (blows/300 mm)
-        k: Stroud Parameter. ($kN/m^2$)
-
-    Returns:
-        undrained shear strength of the soil. ($kN/m^2$)
+    :param spt_n60: The SPT N-value corrected for 60% hammer efficiency
+    :type spt_n60: float
+    :param k: Stroud Parameter :math:`kN/m^2`, defaults to 3.5
+    :type k: float, optional
+    :return: undrained shear strength of the soil :math:`kN/m^2`
+    :rtype: float
     """
     if not (3.5 <= k <= 6.5):
         raise ValueError(f"k should be 3.5 <= k <= 6.5 not {k}")
 
     shear_strength = k * spt_n60
-
     return np.round(shear_strength, DECIMAL_PLACES)
 
 
 def skempton_undrained_shear_strength(
     effective_overburden_pressure: float, plasticity_index: float
 ):
-    r"""Undrained shear strength estimated from the correlation developed by `Skempton`
+    r"""Undrained shear strength estimated from the correlation developed by ``Skempton``
     in 1957.
 
-    The ratio $\frac{C_u}{\sigma_o}$ is a constant for a given clay.
-    `Skempton` suggested that a similar constant ratio exists between the undrained shear
-    strength of normally consolidated natural deposits and the effective overburden pressure.
-    It has been established that the ratio ($\frac{C_u}{\sigma_o}$) is constant provided the
+    The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay. ``Skempton``
+    suggested that a similar constant ratio exists between the undrained shear strength
+    of normally consolidated natural deposits and the effective overburden pressure.
+    It has been established that the ratio :math:`\frac{C_u}{\sigma_o}` is constant provided the
     plasticity index (PI) of the soil remains constant.
 
     The relationship is expressed as:
 
-    $$\dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \times PI$$
+    .. math::
 
-    The value of the ratio ($\frac{C_u}{\sigma_o}$) determined in a consolidated-undrained test on
+        \dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \times PI
+
+    The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained test on
     undisturbed samples is generally greater than actual value because of anisotropic consolidation
     in the field. The actual value is best determined by `in-situ shear vane test`. (Arora, p. 330)
 
-    Args:
-        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
-        plasticity_index: Range of water content over which soil remains in plastic condition
-                          `PI = LL - PL`. (%)
-    Returns:
-        undrained shear strength of the soil. ($kN/m^2$)
+    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
+    :type effective_overburden_pressure: float
+    :param plasticity_index: Range of water content over which soil remains in plastic condition
+    :type plasticity_index: float
+    :return: undrained shear strength of the soil :math:`kN/m^2`
+    :rtype: float
 
-    References:
-        Arora, K 2003, _Soil Mechanics and Foundation Engineering_, 6 Edition,
-        Standard Publishers Distributors, Delhi.
+    References
+    ----------
+
+    .. bibliography::
     """
     shear_strength = effective_overburden_pressure * (0.11 + 0.0037 * plasticity_index)
-
     return np.round(shear_strength, DECIMAL_PLACES)
