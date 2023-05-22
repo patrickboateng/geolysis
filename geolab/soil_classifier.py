@@ -1,15 +1,14 @@
-r"""This module provides the implementations for `USCS` and `AASHTO`
-classification.
+r"""This module provides the implementations for ``USCS`` and ``AASHTO`` classification.
 
 This module contains the following functions:
 
-- `curvature_coefficient` $\rightarrow$ Returns the coefficient of curvature of the soil.
-- `uniformity_coefficient` $\rightarrow$ Returns the coefficient of uniformity of the soil.
-- `grading` $\rightarrow$ Returns the grading of the soil. (W or P)
-- `A_line` $\rightarrow$ Returns the A line.
-- `group_index` $\rightarrow$ Returns the group index used to further evaluate the soil.
-- `uscs` $\rightarrow$ Returns the classification of the soil according to `USCS` standard.
-- `aashto` $\rightarrow$ Returns the classification of the soil according to `AASHTO` standard.
+- ``curvature_coefficient`` :math:`\rightarrow` Returns the coefficient of curvature of the soil.
+- ``uniformity_coefficient`` :math:`\rightarrow` Returns the coefficient of uniformity of the soil.
+- `grading` :math:`\rightarrow` Returns the grading of the soil. (W or P)
+- `A_line` :math:`\rightarrow` Returns the A line.
+- `group_index` :math:`\rightarrow` Returns the group index used to further evaluate the soil.
+- `uscs` :math:`\rightarrow` Returns the classification of the soil according to ``USCS`` standard.
+- `aashto` :math:`\rightarrow` Returns the classification of the soil according to ``AASHTO`` standard.
 
 """
 
@@ -45,10 +44,60 @@ def _check_pi(liquid_limit, plastic_limit, plasticity_index):
         )
 
 
-def _dual_symbol(liquid_limit, plasticity_index, psd, soil_type) -> str:
-    curvature_coeff = curvature_coefficient(**psd)
-    uniformity_coeff = uniformity_coefficient(psd["d10"], psd["d60"])
-    grad = grading(curvature_coeff, uniformity_coeff, soil_type)
+class PSDCoefficient:
+    """Provides methods for calculating the ``coefficient of curvature`` and
+    ``coefficient of uniformity``.
+    """
+
+    def __init__(self, d10: float, d30: float, d60: float) -> None:
+        """
+        :param d10: diameter at which 10% of the soil by weight is finer
+        :type d10: float
+        :param d30: diameter at which 30% of the soil by weight is finer
+        :type d30: float
+        :param d60: diameter at which 60% of the soil by weight is finer
+        :type d60: float
+        """
+        self.d10 = d10
+        self.d30 = d30
+        self.d60 = d60
+
+    @property
+    def curvature_coefficient(self) -> float:
+        r"""Calculates the coefficient of curvature of the soil.
+
+        .. math::
+
+            C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}
+
+        :return: The coefficient of curvature of the soil.
+        :rtype: float
+        """
+        return (self.d30**2) / (self.d60 * self.d10)
+
+    @property
+    def uniformity_coefficient(self) -> float:
+        r"""Calculates the coefficient of uniformity of the soil.
+
+        .. math::
+
+            C_u = \dfrac{d_{60}}{d_{10}}
+
+        :return: The coefficient of curvature of the soil.
+        :rtype: float
+        """
+        return self.d60 / self.d10
+
+
+def _dual_symbol(
+    liquid_limit: float,
+    plasticity_index: float,
+    psd_coeff: PSDCoefficient,
+    soil_type: str,
+) -> str:
+    grad = grading(
+        psd_coeff.curvature_coefficient, psd_coeff.uniformity_coefficient, soil_type
+    )
     type_of_fines = CLAY if plasticity_index > A_line(liquid_limit) else SILT
 
     return f"{soil_type}{grad}-{soil_type}{type_of_fines}"
@@ -70,7 +119,9 @@ def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str
     if 5 <= fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
         if psd is not None:
-            return _dual_symbol(liquid_limit, plasticity_index, psd, soil_type)
+            return _dual_symbol(
+                liquid_limit, plasticity_index, PSDCoefficient(**psd), soil_type
+            )
         return (
             f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},"
             f"{soil_type}{POORLY_GRADED}-{soil_type}{SILT},"
@@ -81,65 +132,27 @@ def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str
     # Less than 5% pass No. 200 sieve
     # Obtain Cc and Cu from grain size graph
     if psd is not None:
-        curvature_coeff = curvature_coefficient(**psd)
-        uniformity_coeff = uniformity_coefficient(psd["d10"], psd["d60"])
-        grad = grading(curvature_coeff, uniformity_coeff, soil_type)
+        psd_coeff = PSDCoefficient(**psd)
+        grad = grading(
+            psd_coeff.curvature_coefficient, psd_coeff.uniformity_coefficient, soil_type
+        )
         return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
     return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
 
 
-def curvature_coefficient(d10: float, d30: float, d60: float) -> float:
-    r"""Calculates the coefficient of curvature of the soil.
-
-    $$C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}$$
-
-    Args:
-        d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
-        d30: diameter at which 30% of the soil by weight is finer. Defaults to 0.
-        d60: diameter at which 60% of the soil by weight is finer. Defaults to 0.
-
-    Returns:
-        The coefficient of curvature of the soil.
-    """
-    return (d30**2) / (d60 * d10)
-
-
-def uniformity_coefficient(d10: float, d60: float) -> float:
-    r"""Calculates the coefficient of uniformity of the soil.
-
-    $$C_u = \dfrac{d_{60}}{d_{10}}$$
-
-    Args:
-        d10: diameter at which 10% of the soil by weight is finer. Defaults to 0.
-        d60: diameter at which 60% of the soil by weight is finer. Defaults to 0.
-
-    Returns:
-        The coefficient of uniformity of the soil sample.
-    """
-    return d60 / d10
-
-
-def grading(
-    curvature_coeff: float, uniformity_coeff: float, soil_type: Optional[str] = GRAVEL
-) -> str:
+def grading(curvature_coeff: float, uniformity_coeff: float, soil_type: str) -> str:
     """Determines the grading of the soil.
 
-    Args:
-        curvature_coeff: Coefficient of curvature.
-        uniformity_coeff: Coefficient of uniformity.
-        soil_type: Type of soil. (`G` or `S`). `G` for Gravel and `S` for Sand. Defaults to `G`.
-
-    Returns:
-        The grading of the soil. (W or P)
-
-    Raises:
-        exceptions.SoilTypeError: Raised when invalid soil type is specified.
+    :param curvature_coeff: Coefficient of curvature
+    :type curvature_coeff: float
+    :param uniformity_coeff: Coefficient of uniformity
+    :type uniformity_coeff: float
+    :param soil_type: Type of soil. ``G`` for Gravel and ``S`` for Sand
+    :type soil_type: str
+    :raises exceptions.SoilTypeError: Raised when invalid soil type is specified
+    :return: The grading of the soil (W or P)
+    :rtype: str
     """
-    if soil_type not in {GRAVEL, SAND}:
-        raise exceptions.SoilTypeError(
-            f"Soil type should be {GRAVEL} or {SAND} not {soil_type}"
-        )
-
     if soil_type == GRAVEL:
         return (
             WELL_GRADED
@@ -154,39 +167,39 @@ def grading(
 
 
 def A_line(liquid_limit: float) -> float:
-    r"""Calculates the `A-line`.
+    r"""Calculates the ``A-line``.
 
-    $$0.73 \left(LL - 20 \right)$$
+    .. math::
 
-    Args:
-        liquid_limit: Water content beyond which soils flows under their own weight. (%)
+        0.73 \left(LL - 20 \right)
 
-    Returns:
-        The `A-line` of the soil.
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :return: The ``A-line`` of the soil
+    :rtype: float
     """
     return 0.73 * (liquid_limit - 20)
 
 
 def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> float:
-    """The `Group Index (GI)` is used to further evaluate soils with a group
-    (subgroups).
+    """The ``Group Index (GI)`` is used to further evaluate soils with a group (subgroups).
 
-    $$GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)$$
+    .. math::
 
-    Args:
-        fines: Percentage of fines in the soil sample. (%)
-        liquid_limit: Water content beyond which soils flows under their own weight. (%)
-        plasticity_index: Range of water content over which soil remains in plastic
-                          condition `PI = LL - PL` (%)
+        GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
 
-    Returns:
-        The group index of the soil sample.
+    :param fines: Percentage of fines in the soil sample (%)
+    :type fines: float
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+    :type plasticity_index: float
+    :return: The group index of the soil sample
+    :rtype: float
     """
-
     _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (fines - 15) * (
         plasticity_index - 10
     )
-
     return 0.0 if _gi <= 0 else _gi
 
 
@@ -202,36 +215,39 @@ def uscs(
     color: Optional[bool] = False,
     odor: Optional[bool] = False,
 ) -> str:
-    """Unified Soil Classification System (`USCS`).
+    """Unified Soil Classification System (``USCS``).
 
-    The `Unified Soil Classification System`, initially developed by Casagrande in 1948
+    The Unified Soil Classification System, initially developed by Casagrande in 1948
     and later modified in 1952, is widely utilized in engineering projects involving soils.
     It is the most popular system for soil classification and is similar to Casagrande's
     Classification System. The system relies on Particle Size Distribution and Atterberg Limits
     for classification. Soils are categorized into three main groups: coarse-grained, fine-grained,
     and highly organic soils. Additionally, the system has been adopted by the American Society for
-    Testing and Materials (`ASTM`).
+    Testing and Materials (``ASTM``).
 
-    Args:
-        liquid_limit: Water content beyond which soils flows under their own weight. (%)
-        plastic_limit: Water content at which plastic deformation can be initiated. (%)
-        plasticity_index: Range of water content over which soil remains in plastic condition
-                          `PI = LL - PL`. (%)
-        fines: Percentage of fines in soil sample. (%)
-        sand:  Percentage of sand in soil sample. (%)
-        gravels: Percentage of gravels in soil sample. (%)
-        psd: Particle Size Distribution of the soil sample.
-        color: Indicates if soil has color or not.
-        odor: Indicates if soil has odor or not.
-
-    Returns:
-        The unified classification of the soil.
-
-    Raises:
-        exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%.
-        exceptions.PIValueError: Raised when `PI` is not equal to `LL - PL`.
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
+    :type plastic_limit: float
+    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+    :type plasticity_index: float
+    :param fines: Percentage of fines in soil sample (%)
+    :type fines: float
+    :param sand:  Percentage of sand in soil sample (%)
+    :type sand: float
+    :param gravels: Percentage of gravels in soil sample (%)
+    :type gravels: float
+    :param psd: Particle Size Distribution of the soil sample, defaults to None
+    :type psd: dict, optional
+    :param color: Indicates if soil has color or not, defaults to False
+    :type color: bool, optional
+    :param odor: Indicates if soil has odor or not, defaults to False
+    :type odor: bool, optional
+    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
+    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
+    :return: The unified classification of the soil
+    :rtype: str
     """
-
     _check_pi(liquid_limit, plastic_limit, plasticity_index)
     _check_psd(fines, sand, gravels)
 
@@ -274,7 +290,7 @@ def uscs(
 def aashto(
     liquid_limit: float, plastic_limit: float, plasticity_index: float, fines: float
 ) -> str:
-    """American Association of State Highway and Transportation Officials (`AASHTO`)
+    """American Association of State Highway and Transportation Officials (``AASHTO``)
     classification system.
 
     The AASHTO Classification system categorizes soils for highways based on
@@ -282,20 +298,18 @@ def aashto(
     both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
     with subgroups, along with a separate category (A8) for organic soils.
 
-    Args:
-        liquid_limit: Water content beyond which soils flows under their own weight. (%)
-        plastic_limit: Water content at which plastic deformation can be initiated. (%)
-        plasticity_index: Range of water content over which soil remains in plastic
-                          condition `PI = LL - PL`. (%)
-        fines: Percentage of fines in soil sample. (%)
-
-    Returns:
-        The `aashto` classification of the soil.
-
-    Raises:
-        exceptions.PIValueError: Raised when PI != LL - PL.
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
+    :type plastic_limit: float
+    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+    :type plasticity_index: float
+    :param fines: Percentage of fines in soil sample (%)
+    :type fines: float
+    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
+    :return: The ``aashto`` classification of the soil
+    :rtype: str
     """
-
     _check_pi(liquid_limit, plastic_limit, plasticity_index)
     gi = group_index(fines, liquid_limit, plasticity_index)
 
