@@ -246,7 +246,7 @@ def skempton_undrained_shear_strength(
 
     The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained test on
     undisturbed samples is generally greater than actual value because of anisotropic consolidation
-    in the field. The actual value is best determined by `in-situ shear vane test`. (Arora, p. 330)
+    in the field. The actual value is best determined by `in-situ shear vane test`. (:cite:author:`2003:arora`, p. 330)
 
     :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
     :type effective_overburden_pressure: float
