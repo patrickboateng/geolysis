@@ -8,23 +8,28 @@ from geolab import DECIMAL_PLACES, ERROR_TOLERANCE
 def spt_n60(
     recorded_spt_nvalue: int,
     hammer_efficiency: float = 0.575,
-    borehole_diameter_cor: float = 1,
-    sampler_cor: float = 1,
+    borehole_diameter_cor: float = 1.0,
+    sampler_cor: float = 1.0,
     rod_length_cor: float = 0.75,
 ) -> float:
     r"""SPT N-value corrected for field procedures.
 
-    $$N_{60} = \dfrac{E_m \times C_B \times C_s \times C_R \times N_r}{0.6}$$
+    .. math::
 
-    Args:
-        recorded_spt_nvalue: Recorded SPT N-value.
-        hammer_efficiency: Hammer Efficiency. Defaults to 0.575.
-        borehole_diameter_cor: Borehole Diameter Correction. Defaults to 1.
-        sampler_cor: Sampler Correction. Defaults to 1.
-        rod_length_cor: Rod Length Correction. Defaults to 0.75.
+        N_{60} = \dfrac{E_m \times C_B \times C_s \times C_R \times N_r}{0.6}
 
-    Returns:
-        SPT N-value corrected for 60% hammer efficiency.
+    :param recorded_spt_nvalue: Recorded SPT N-value (blows/300mm)
+    :type recorded_spt_nvalue: int
+    :param hammer_efficiency: Hammer Efficiency, defaults to 0.575
+    :type hammer_efficiency: float, optional
+    :param borehole_diameter_cor: Borehole Diameter Correction, defaults to 1
+    :type borehole_diameter_cor: float, optional
+    :param sampler_cor: Sampler Correction, defaults to 1
+    :type sampler_cor: float, optional
+    :param rod_length_cor: Rod Length Correction, defaults to 0.75
+    :type rod_length_cor: float
+    :return: SPT N-value corrected for 60% hammer efficiency
+    :rtype: float
     """
     first_expr = (
         hammer_efficiency
@@ -43,31 +48,31 @@ def dilatancy_spt_correction(recorded_spt_nvalue: int) -> Union[float, int]:
     **Dilatancy Correction** is a correction for silty fine sands and fine sands
     below the water table that develop pore pressure which is not easily
     dissipated. The pore pressure increases the resistance of the soil hence the
-    penetration number (N).
+    penetration number (N). (:cite:author:`2003:arora`)
 
-    Correction of silty fine sands recommended by `Terzaghi and Peck (1967)` if
-    $N_R$ exceeds 15.
+    Correction of silty fine sands recommended by ``Terzaghi and Peck (1967)`` if
+    :math:`N_R` exceeds 15.
 
-    $N_c = 15 + \frac{1}{2}\left(N_R - 15\right)$ if $N_R \gt 15$
+    .. math::
 
-    $N_c = N_R$ if $N_R \le 15$
+        N_c = 15 + \frac{1}{2}\left(N_R - 15\right) if N_R \gt 15
 
-    Args:
-        recorded_spt_nvalue: Recorded SPT N-value.
+        N_c = N_R if N_R \le 15
 
-    Returns:
-        Corrected SPT N-value.
+    :param recorded_spt_nvalue: Recorded SPT N-value (blows/300mm)
+    :type recorded_spt_nvalue: int
+    :return: Corrected SPT N-value
 
-    References:
-        Arora, K 2003, _Soil Mechanics and Foundation Engineering_, 6 Edition,
-        Standard Publishers Distributors, Delhi.
+    References
+    ----------
+
+    .. bibliography::
     """
     if recorded_spt_nvalue <= 15:
         corrected_spt_nvalue = recorded_spt_nvalue
         return corrected_spt_nvalue
 
     corrected_spt_nvalue = 15 + 0.5 * (recorded_spt_nvalue - 15)
-
     return np.round(corrected_spt_nvalue, DECIMAL_PLACES)
 
 
@@ -83,28 +88,31 @@ def overburden_pressure_spt_correction(
     for soils at shallow depths is underestimated and that at greater depths is overestimated.
     For uniformity, the N-values obtained from field tests under different effective overburden pressures
     are corrected to a standard effective overburden pressure.
-    `Gibbs and Holtz (1957)` recommend the use of the following equation for dry or moist clean sand.
-    (Arora 2003, p. 428)
+    ``Gibbs and Holtz (1957)`` recommend the use of the following equation for dry or moist clean sand.
+    (:cite:author:`2003:arora`, p. 428)
 
-    $N = \dfrac{350}{\sigma_o + 70} \times N_R$ if $\sigma_o \le 280kN/m^2$
+    .. math::
 
-    !!! Note
-        $\frac{N_c}{N_R}$ should lie between 0.45 and 2.0, if $\frac{N_c}{N_R}$ is greater than 2.0,
-        $N_c$ should be divided by 2.0 to obtain the design value used in finding the bearing
-        capacity of the soil. (Arora 2003, p. 428)
+        N = \dfrac{350}{\sigma_o + 70} \times N_R if \sigma_o \le 280kN/m^2
 
-    Args:
-        recorded_spt_nvalue: Recorded SPT N-value.
-        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
+    .. note::
 
-    Returns:
-        Corrected SPT N-value.
+        :math:`\frac{N_c}{N_R}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_R}` is greater than 2.0,
+        :math:`N_c` should be divided by 2.0 to obtain the design value used in finding the bearing capacity of
+        the soil. (:cite:author:`2003:arora`, p. 428)
 
-    References:
-        Arora, K 2003, _Soil Mechanics and Foundation Engineering_, 6 edn,
-        Standard Publishers Distributors, Delhi.
+    :param recorded_spt_nvalue: Recorded SPT N-value
+    :type recorded_spt_nvalue: int
+    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
+    :type effective_overburden_pressure: float
+    :return: Corrected SPT N-value
+    :rtype: float
+
+    References
+    ----------
+
+    .. bibliography::
     """
-
     if effective_overburden_pressure > 280:
         raise ValueError(
             f"{effective_overburden_pressure} should be less than or equal to 280"
@@ -127,17 +135,19 @@ def skempton_spt_correction(
 ) -> float:
     r"""SPT N-value correction.
 
-    $$N = \dfrac{2}{1 + 0.01044\sigma_o} \times N_R$$
+    .. math::
 
-    Args:
-        recorded_spt_nvalue: Recorded SPT N-value.
-        effective_overburden_pressure: Effective overburden pressure. ($kN/m^2$)
+        N = \dfrac{2}{1 + 0.01044\sigma_o} \times N_R
 
-    Returns:
-        Corrected SPT N-value.
+    :param recorded_spt_nvalue: Recorded SPT N-value
+    :type recorded_spt_nvalue: int
+    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
+    :type effective_overburden_pressure: float
+    :return: Corrected SPT N-value
+    :rtype: float
     """
-    first_expr = 2 / (1 + 0.01044 * effective_overburden_pressure)
-    corrected_spt = first_expr * recorded_spt_nvalue
+    correction = 2 / (1 + 0.01044 * effective_overburden_pressure)
+    corrected_spt = correction * recorded_spt_nvalue
 
     return np.round(corrected_spt, DECIMAL_PLACES)
 
@@ -147,22 +157,24 @@ def bazaraa_spt_correction(
 ) -> float:
     r"""SPT N-value correction.
 
-    This is a correction given by `Bazaraa (1967)` and also by
-    `Peck and Bazaraa (1969)` and it is one of the commonly used corrections.
+    This is a correction given by ``Bazaraa (1967)`` and also by ``Peck and Bazaraa (1969)``
+    and it is one of the commonly used corrections.
     According to them:
 
-    $N = \dfrac{4N_R}{1 + 0.0418\sigma_o}$ if $\sigma_o \lt 71.8kN/m^2$
+    .. math::
 
-    $N = \dfrac{4N_R}{3.25 + 0.0104\sigma_o}$ if $\sigma_o \gt 71.8kN/m^2$
+        N = \dfrac{4N_R}{1 + 0.0418\sigma_o} if \sigma_o \lt 71.8kN/m^2
 
-    $N = N_R$ if $\sigma_o = 71.8kN/m^2$
+        N = \dfrac{4N_R}{3.25 + 0.0104\sigma_o} if \sigma_o \gt 71.8kN/m^2
 
-    Args:
-        recorded_spt_nvalue: Recorded SPT N-value.
-        effective_overburden_pressure: Effective overburden pressure ($kN/m^2$).
+        N = N_R if \sigma_o = 71.8kN/m^2
 
-    Returns:
-        Corrected SPT N-value.
+    :param recorded_spt_nvalue: Recorded SPT N-value.
+    :type recorded_spt_nvalue: int
+    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
+    :type effective_overburden_pressure: float
+    :return: Corrected SPT N-value
+    :rtype: float
     """
     overburden_pressure = 71.8
 
