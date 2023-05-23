@@ -14,7 +14,7 @@ release = "0.1.0"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.doctest", "sphinxcontrib.bibtex"]
+extensions = ["sphinx.ext.doctest", "sphinxcontrib.bibtex", "sphinx.ext.autodoc"]
 
 templates_path = ["_templates"]
 exclude_patterns = []
@@ -22,6 +22,7 @@ exclude_patterns = []
 # -- References ------------------------------
 # https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html
 bibtex_bibfiles = ["refs.bib"]
+bibtex_default_style = "unsrt"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
