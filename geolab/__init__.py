@@ -31,7 +31,7 @@ ERROR_TOLERANCE = 0.01
 DECIMAL_PLACES = 2
 
 
-@deg2rad("friction_angle")
+@deg2rad
 def passive_earth_pressure_coef(*, friction_angle: float) -> float:
     r"""Coefficient of passive earth pressure :math:`K_p`.
 
