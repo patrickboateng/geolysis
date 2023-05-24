@@ -178,5 +178,4 @@ def bazaraa_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
         return np.round(spt_correction, DECIMAL_PLACES)
 
     spt_correction = 4 * recorded_spt_nvalue / (3.25 + 0.0104 * eop)
-
     return np.round(spt_correction, DECIMAL_PLACES)
