@@ -3,6 +3,7 @@ from typing import Union
 import numpy as np
 
 from geolab import DECIMAL_PLACES, ERROR_TOLERANCE
+from geolab.utils import product
 
 
 def spt_n60(
@@ -31,15 +32,15 @@ def spt_n60(
     :return: SPT N-value corrected for 60% hammer efficiency
     :rtype: float
     """
-    first_expr = (
-        hammer_efficiency
-        * borehole_diameter_cor
-        * sampler_cor
-        * rod_length_cor
-        * recorded_spt_nvalue
+    correction = product(
+        hammer_efficiency,
+        borehole_diameter_cor,
+        sampler_cor,
+        rod_length_cor,
     )
 
-    return round(first_expr / 0.6, DECIMAL_PLACES)
+    corrected_spt_nvalue = correction * recorded_spt_nvalue
+    return round(corrected_spt_nvalue / 0.6, DECIMAL_PLACES)
 
 
 def dilatancy_spt_correction(recorded_spt_nvalue: int) -> Union[float, int]:
@@ -69,16 +70,13 @@ def dilatancy_spt_correction(recorded_spt_nvalue: int) -> Union[float, int]:
     .. bibliography::
     """
     if recorded_spt_nvalue <= 15:
-        corrected_spt_nvalue = recorded_spt_nvalue
-        return corrected_spt_nvalue
+        return recorded_spt_nvalue
 
     corrected_spt_nvalue = 15 + 0.5 * (recorded_spt_nvalue - 15)
     return np.round(corrected_spt_nvalue, DECIMAL_PLACES)
 
 
-def overburden_pressure_spt_correction(
-    recorded_spt_nvalue: int, effective_overburden_pressure: float
-) -> float:
+def overburden_pressure_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
     r"""SPT N-value Overburden Pressure Correction.
 
     In granular soils, the overburden pressure affects the penetration resistance.
@@ -86,10 +84,10 @@ def overburden_pressure_spt_correction(
     the one with a higher confining pressure gives a higher penetration number. As the
     confining pressure in cohesionless soils increases with the depth, the penetration number
     for soils at shallow depths is underestimated and that at greater depths is overestimated.
-    For uniformity, the N-values obtained from field tests under different effective overburden pressures
-    are corrected to a standard effective overburden pressure.
-    ``Gibbs and Holtz (1957)`` recommend the use of the following equation for dry or moist clean sand.
-    (:cite:author:`2003:arora`, p. 428)
+    For uniformity, the N-values obtained from field tests under different effective overburden
+    pressures are corrected to a standard effective overburden pressure.
+    ``Gibbs and Holtz (1957)`` recommend the use of the following equation for dry or moist clean
+    sand. (:cite:author:`2003:arora`, p. 428)
 
     .. math::
 
@@ -97,14 +95,14 @@ def overburden_pressure_spt_correction(
 
     .. note::
 
-        :math:`\frac{N_c}{N_R}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_R}` is greater than 2.0,
-        :math:`N_c` should be divided by 2.0 to obtain the design value used in finding the bearing capacity of
-        the soil. (:cite:author:`2003:arora`, p. 428)
+        :math:`\frac{N_c}{N_R}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_R}` is
+        greater than 2.0, :math:`N_c` should be divided by 2.0 to obtain the design value used in
+        finding the bearing capacity of the soil. (:cite:author:`2003:arora`, p. 428)
 
     :param recorded_spt_nvalue: Recorded SPT N-value
     :type recorded_spt_nvalue: int
-    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
-    :type effective_overburden_pressure: float
+    :param eop: Effective overburden pressure :math:`kN/m^2`
+    :type eop: float
     :return: Corrected SPT N-value
     :rtype: float
 
@@ -113,12 +111,10 @@ def overburden_pressure_spt_correction(
 
     .. bibliography::
     """
-    if effective_overburden_pressure > 280:
-        raise ValueError(
-            f"{effective_overburden_pressure} should be less than or equal to 280"
-        )
+    if eop > 280:
+        raise ValueError(f"{eop} should be less than or equal to 280")
 
-    corrected_spt = recorded_spt_nvalue * (350 / (effective_overburden_pressure + 70))
+    corrected_spt = recorded_spt_nvalue * (350 / (eop + 70))
     spt_ratio = corrected_spt / recorded_spt_nvalue
 
     if 0.45 < spt_ratio < 2.0:
@@ -130,9 +126,7 @@ def overburden_pressure_spt_correction(
     return np.round(corrected_spt, DECIMAL_PLACES)
 
 
-def skempton_spt_correction(
-    recorded_spt_nvalue: int, effective_overburden_pressure: float
-) -> float:
+def skempton_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
     r"""SPT N-value correction.
 
     .. math::
@@ -141,20 +135,18 @@ def skempton_spt_correction(
 
     :param recorded_spt_nvalue: Recorded SPT N-value
     :type recorded_spt_nvalue: int
-    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
-    :type effective_overburden_pressure: float
+    :param eop: Effective overburden pressure :math:`kN/m^2`
+    :type eop: float
     :return: Corrected SPT N-value
     :rtype: float
     """
-    correction = 2 / (1 + 0.01044 * effective_overburden_pressure)
+    correction = 2 / (1 + 0.01044 * eop)
     corrected_spt = correction * recorded_spt_nvalue
 
     return np.round(corrected_spt, DECIMAL_PLACES)
 
 
-def bazaraa_spt_correction(
-    recorded_spt_nvalue: int, effective_overburden_pressure: float
-) -> float:
+def bazaraa_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
     r"""SPT N-value correction.
 
     This is a correction given by ``Bazaraa (1967)`` and also by ``Peck and Bazaraa (1969)``
@@ -171,26 +163,20 @@ def bazaraa_spt_correction(
 
     :param recorded_spt_nvalue: Recorded SPT N-value.
     :type recorded_spt_nvalue: int
-    :param effective_overburden_pressure: Effective overburden pressure :math:`kN/m^2`
-    :type effective_overburden_pressure: float
+    :param eop: Effective overburden pressure :math:`kN/m^2`
+    :type eop: float
     :return: Corrected SPT N-value
     :rtype: float
     """
     overburden_pressure = 71.8
 
-    if np.isclose(
-        effective_overburden_pressure, overburden_pressure, rtol=ERROR_TOLERANCE
-    ):
+    if np.isclose(eop, overburden_pressure, rtol=ERROR_TOLERANCE):
         return recorded_spt_nvalue
 
-    if effective_overburden_pressure < overburden_pressure:
-        spt_correction = (
-            4 * recorded_spt_nvalue / (1 + 0.0418 * effective_overburden_pressure)
-        )
+    if eop < overburden_pressure:
+        spt_correction = 4 * recorded_spt_nvalue / (1 + 0.0418 * eop)
         return np.round(spt_correction, DECIMAL_PLACES)
 
-    spt_correction = (
-        4 * recorded_spt_nvalue / (3.25 + 0.0104 * effective_overburden_pressure)
-    )
+    spt_correction = 4 * recorded_spt_nvalue / (3.25 + 0.0104 * eop)
 
     return np.round(spt_correction, DECIMAL_PLACES)
