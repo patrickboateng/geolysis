@@ -44,4 +44,5 @@ def passive_earth_pressure_coef(*, friction_angle: float) -> float:
     :return: Passive earth pressure coefficient
     :rtype: float
     """
-    return (1 + np.sin(friction_angle)) / (1 - np.sin(friction_angle))
+    kp = (1 + np.sin(friction_angle)) / (1 - np.sin(friction_angle))
+    return round(kp, DECIMAL_PLACES)
