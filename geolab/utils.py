@@ -1,5 +1,6 @@
 import functools
 import math
+import re
 from typing import Callable, Iterable, TypeVar, cast
 
 import numpy as np
@@ -7,22 +8,47 @@ import numpy as np
 F = TypeVar("F", bound=Callable[..., float])
 
 
+def update_kwargs(key, kwargs):
+    kwargs[key] = np.deg2rad(kwargs[key])
+    return kwargs
+
+
 def deg2rad(*deg: Iterable) -> Callable[[F], F]:
-    """A decorator that converts `deg` from degree to radians.
+    """A decorator that converts ``deg`` from degree to radians.
 
-    Args:
-        deg: registered keyword arguments to convert.
+    :Example:
 
-    Returns:
-        A decorator.
+
+    :param deg: registered keyword arguments to convert
+    :type deg: tuple
+    :return: A decorator.
+    :rtype: Callable
     """
+    if not deg:
+        raise TypeError("deg should be a non-empty tuple")
 
+    if callable(deg[0]):
+        func = deg[0]
+
+        @functools.wraps(func)
+        def regex_wrapper(*args, **kwargs):
+            keys = kwargs.keys()
+            regex_pattern = re.compile(r"\w*angle\w*", re.IGNORECASE)
+            for key in keys:
+                match_pattern = regex_pattern.search(key)
+                if match_pattern is None:
+                    continue
+                kwargs = update_kwargs(key, kwargs)
+            return func(*args, **kwargs)
+
+        return regex_wrapper
+
+    # If actual arguments were passed to the function
     def dec(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             for key in deg:
-                angle = kwargs[key]
-                kwargs[key] = np.deg2rad(angle)
+                kwargs = update_kwargs(key, kwargs)
             return func(*args, **kwargs)
 
         return cast(F, wrapper)
