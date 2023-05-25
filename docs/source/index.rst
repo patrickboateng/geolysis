@@ -45,8 +45,8 @@ Windows:
 
    pip install geolab
 
-Usage example
--------------
+A simple usage example
+----------------------
 
 .. doctest:: 
 
@@ -62,6 +62,7 @@ Release History
 - 0.1.0
   - **rapid** development.
 
+
 .. Contributing
 .. ------------
 
@@ -75,10 +76,11 @@ Release History
    :maxdepth: 2
    :caption: Contents:
 
+   reference
 
-.. Indices and tables
-.. ==================
+Indices and tables
+==================
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
