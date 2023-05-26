@@ -1,7 +1,7 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE, passive_earth_pressure_coef
-from geolab.bearing_capacity import Terzaghi
+from geolab.bearing_capacity import Terzaghi, Meyerhoff
 from geolab.estimators import foundation_depth
 
 T_nq = [(0, 1.00), (1, 1.10), (15, 4.45), (25, 12.72), (27, 15.9), (18.76, 6.54)]
@@ -35,21 +35,23 @@ class TestTerzaghi:
         assert Terzaghi.ngamma(friction_angle=phi) == pytest.approx(exp)
 
 
-# class TestM:
-#     """Tests for Meyerhoff Bearing Capacity Theory."""
+class TestMeyerhoff:
+    """Tests for Meyerhoff Bearing Capacity Theory."""
 
-#     #     @pytest.mark.skip(reason="Need to verify values")
-#     #     def test_Nq(self):
-#     #         assert M.Nq(0) == pytest.approx(1.00, 0.01)
-#     #         assert M.Nq(1) == pytest.approx(1.00, 0.01)
-#     #         assert M.Nq(2) == pytest.approx(1.20, 0.01)
+    @pytest.mark.skip(reason="Need to verify values")
+    def test_nq(self):
+        assert Meyerhoff.nq(0) == pytest.approx(1.00, 0.01)
+        assert Meyerhoff.nq(1) == pytest.approx(1.00, 0.01)
+        assert Meyerhoff.nq(2) == pytest.approx(1.20, 0.01)
 
-#     #     @pytest.mark.xfail
-#     #     def test_Nc(self):
-#     #         # assert M.Nc(0) == pytest.approx(5.14, 0.01)
-#     #         assert M.Nc(1) == pytest.approx(5.38, 0.01)
-#     #         assert M.Nc(2) == pytest.approx(5.63, 0.01)
+    @pytest.mark.xfail
+    def test_nc(self):
+        assert Meyerhoff.nc(0) == pytest.approx(5.14, 0.01)
+        assert Meyerhoff.nc(1) == pytest.approx(5.38, 0.01)
+        assert Meyerhoff.nc(2) == pytest.approx(5.63, 0.01)
 
-#     @pytest.mark.parametrize("phi,exp", M_ngamma)
-#     def test_Ngamma(self, phi, exp):
-#         assert M.Ngamma(phi=phi) == pytest.approx(exp, ERROR_TOLERANCE)
+    @pytest.mark.parametrize("phi,exp", M_ngamma)
+    def test_ngamma(self, phi, exp):
+        assert Meyerhoff.ngamma(friction_angle=phi) == pytest.approx(
+            exp, ERROR_TOLERANCE
+        )
