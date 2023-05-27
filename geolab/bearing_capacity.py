@@ -1,10 +1,16 @@
 """This module provides functions for bearing capacity analysis."""
 
+from abc import ABC, abstractmethod
+
 import numpy as np
 
 from geolab import DECIMAL_PLACES, deg2rad, passive_earth_pressure_coef
 from geolab.utils import product
 from geolab.exceptions import AllowableSettlementError
+
+
+def check_foundation_settelement():
+    ...
 
 
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
@@ -25,8 +31,63 @@ def depth_factor(foundation_depth: float, foundation_width: float) -> float:
     return np.round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
 
 
-class Terzaghi:
+class BearingCapacityFactors(ABC):
+    @property
+    @abstractmethod
+    def nq(self):
+        ...
+
+    @property
+    @abstractmethod
+    def nc(self):
+        ...
+
+    @property
+    @abstractmethod
+    def ngamma(self):
+        ...
+
+
+class DepthFactors:
+    ...
+
+
+class ShapeFactors:
+    ...
+
+
+class Terzaghi(BearingCapacityFactors):
     """Terzaghi Bearing Capacity."""
+
+    @deg2rad
+    def __init__(
+        self,
+        *,
+        cohesion: float,
+        friction_angle: float,
+        unit_weight_of_soil: float,
+        foundation_depth: float,
+        foundation_width: float,
+    ) -> None:
+        """
+        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
+        :type cohesion: float
+        :param friction_angle: internal angle of friction :math:`(\phi)`
+        :type friction_angle: float
+        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
+        :type unit_weight_of_soil: float
+        :param foundation_depth: depth of foundation :math:`d_f` (m)
+        :type foundation_depth: float
+        :param foundation_width: width of foundation (**b**) (m)
+        :type foundation_width: float
+        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
+        :rtype: float
+        """
+        self.cohesion = cohesion
+        self.friction_angle = friction_angle
+        self.unit_weight_of_soil = unit_weight_of_soil
+        self.foundation_depth = foundation_depth
+        self.foundation_width = foundation_width
 
     @staticmethod
     def _nq(friction_angle: float) -> float:
@@ -35,206 +96,158 @@ class Terzaghi:
 
         return num / den
 
-    @classmethod
-    @deg2rad
-    def nq(cls, *, friction_angle: float) -> float:
+    @property
+    def nq(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_q`.
 
         .. math::
 
-            \frac{e^{(\frac{3\pi}{2} - \phi)\tan \phi}}{2 \cos^2 \left(45^{\circ} + \frac{\phi}{2} \right)}$$
+            \frac{e^{(\frac{3\pi}{2}-\phi)\tan\phi}}{2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
 
-        :param friction_angle: Internal angle of friction (degrees)
-        :type friction_angle: float
         :return: The bearing capacity factor :math:`N_q`
         :rtype: float
         """
-        return np.round(cls._nq(friction_angle), DECIMAL_PLACES)
+        return np.round(self._nq(self.friction_angle), DECIMAL_PLACES)
 
-    @classmethod
-    @deg2rad
-    def nc(cls, *, friction_angle: float) -> float:
+    @property
+    def nc(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_c`.
 
         .. math::
 
             \cot \phi \left(N_q - 1 \right)
 
-        :param friction_angle: Internal angle of friction (degrees)
-        :type friction_angle: float
         :return: The bearing capacity factor :math:`N_c`
         :rtype: float
         """
-        if np.isclose(friction_angle, 0.0):
+        if np.isclose(self.friction_angle, 0.0):
             return 5.70
 
-        _nc = (1 / np.tan(friction_angle)) * (cls._nq(friction_angle) - 1)
+        _nc = (1 / np.tan(self.friction_angle)) * (self._nq(self.friction_angle) - 1)
 
         return np.round(_nc, DECIMAL_PLACES)
 
-    @staticmethod
-    @deg2rad
-    def ngamma(*, friction_angle: float) -> float:
+    @property
+    def ngamma(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`.
 
         .. math::
 
             \frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi
 
-        :param friction_angle: Internal angle of friction (degrees)
-        :type friction_angle: float
         :return: The bearing capacity factor :math:`N_\gamma`
         :rtype: float
         """
-        phi = np.rad2deg(friction_angle)
+        phi = np.rad2deg(self.friction_angle)
         num = passive_earth_pressure_coef(friction_angle=phi)
-        den = np.cos(friction_angle) ** 2
+        den = np.cos(self.friction_angle) ** 2
         mid_expr = (num / den) - 1
 
-        _ngamma = 0.5 * (mid_expr) * np.tan(friction_angle)
+        _ngamma = 0.5 * (mid_expr) * np.tan(self.friction_angle)
 
         return np.round(_ngamma, DECIMAL_PLACES)
 
-    @classmethod
-    def qult_4_strip_footing(
-        cls,
-        cohesion: float,
-        friction_angle: float,
-        unit_weight_of_soil: float,
-        foundation_depth: float,
-        foundation_width: float,
-    ) -> float:
+    def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
 
         .. math::
 
             q_u = cN_c + \gamma D_f N_q + 0.5 \gamma B N_\gamma
 
-        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
-        :type cohesion: float
-        :param friction_angle: internal angle of friction :math:`(\phi)`
-        :type friction_angle: float
-        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
-        :type unit_weight_of_soil: float
-        :param foundation_depth: depth of foundation :math:`d_f` (m)
-        :type foundation_depth: float
-        :param foundation_width: width of foundation (**b**) (m)
-        :type foundation_width: float
         :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
         :rtype: float
         """
         qult = (
-            product(cohesion, cls.nc(friction_angle=friction_angle))
-            + product(
-                unit_weight_of_soil,
-                foundation_depth,
-                cls.nq(friction_angle=friction_angle),
-            )
-            + product(
-                0.5,
-                unit_weight_of_soil,
-                foundation_width,
-                cls.ngamma(friction_angle=friction_angle),
-            )
+            product(self.cohesion, self.nc)
+            + product(self.unit_weight_of_soil, self.foundation_depth, self.nq)
+            + product(0.5, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
         )
 
         return np.round(qult, DECIMAL_PLACES)
 
-    @classmethod
-    def qult_4_square_foundation(
-        cls,
-        cohesion: float,
-        friction_angle: float,
-        unit_weight_of_soil: float,
-        foundation_depth: float,
-        foundation_width: float,
-    ):
+    def qult_4_square_foundation(self):
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``square footing``.
 
         .. math::
 
             q_u = 1.2cN_c + \gamma D_f N_q + 0.4 \gamma B N_\gamma
 
-        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
-        :type cohesion: float
-        :param friction_angle: internal angle of friction :math:`(\phi)`
-        :type friction_angle: float
-        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
-        :type unit_weight_of_soil: float
-        :param foundation_depth: depth of foundation :math:`d_f` (m)
-        :type foundation_depth: float
-        :param foundation_width: width of foundation (**b**) (m)
-        :type foundation_width: float
         :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
         :rtype: float
         """
         qult = (
-            product(1.2, cohesion, cls.nc(friction_angle=friction_angle))
-            + product(
-                unit_weight_of_soil,
-                foundation_depth,
-                cls.nq(friction_angle=friction_angle),
-            )
-            + product(
-                0.4,
-                unit_weight_of_soil,
-                foundation_width,
-                cls.ngamma(friction_angle=friction_angle),
-            )
+            product(1.2, self.cohesion, self.nc)
+            + product(self.unit_weight_of_soil, self.foundation_depth, self.nq)
+            + product(0.4, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
         )
 
         return np.round(qult, DECIMAL_PLACES)
 
-    @classmethod
-    def qult_4_circular_foundation(
-        cls,
-        cohesion: float,
-        friction_angle: float,
-        unit_weight_of_soil: float,
-        foundation_depth: float,
-        foundation_width: float,
-    ):
+    def qult_4_circular_foundation(self):
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``circular footing``.
 
         .. math::
 
             q_u = 1.2cN_c + \gamma D_f N_q + 0.3 \gamma B N_{\gamma}
 
-        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
-        :type cohesion: float
-        :param friction_angle: internal angle of friction :math:`(\phi)`
-        :type friction_angle: float
-        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
-        :type unit_weight_of_soil: float
-        :param foundation_depth: depth of foundation :math:`d_f` (m)
-        :type foundation_depth: float
-        :param foundation_width: width of foundation (**b**) (m)
-        :type foundation_width: float
         :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
         :rtype: float
         """
         qult = (
-            product(1.2, cohesion, cls.nc(friction_angle=friction_angle))
-            + product(
-                unit_weight_of_soil,
-                foundation_depth,
-                cls.nq(friction_angle=friction_angle),
-            )
-            + product(
-                0.3,
-                unit_weight_of_soil,
-                foundation_width,
-                cls.ngamma(friction_angle=friction_angle),
-            )
+            product(1.2, self.cohesion, self.nc)
+            + product(self.unit_weight_of_soil, self.foundation_depth, self.nq)
+            + product(0.3, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
         )
 
         return np.round(qult, DECIMAL_PLACES)
 
 
-class Meyerhoff:
+class Meyerhoff(BearingCapacityFactors):
     """Meyerhoff Bearing Capacity."""
 
     ALLOWABLE_SETTLEMENT: float = 25.4
+
+    @deg2rad
+    def __init__(
+        self,
+        *,
+        n_design: float,
+        foundation_depth: float,
+        foundation_width: float,
+        foundation_length: float,
+        friction_angle: float,
+        beta: float,
+        allow_settlement: float,
+    ) -> None:
+        """
+        :param n_design: Average corrected number of blows from ``SPT N-value``
+        :type n_design: float
+        :param foundation_depth: Depth of foundation (m)
+        :type foundation_depth: float
+        :param foundation_width: Width of foundation (m)
+        :type foundation_width: float
+        :param foundation_length: Length of foundation (m)
+        :type foundation_length: float
+        :param friction_angle: Internal angle of friction (degrees)
+        ::param beta: inclination of the load on the foundation with
+                     respect to the vertical (degrees)
+        :type beta: floattype friction_angle: float
+        :param allow_settlement: Tolerable settlement (mm)
+        :type allow_settlement: float
+        :raises AllowableSettlementError: Raised when `allow_settlement` is greater than `25.4mm`
+        """
+        if allow_settlement > self.ALLOWABLE_SETTLEMENT:
+            raise AllowableSettlementError(
+                f"allow_settlement: {allow_settlement} cannot be greater than 25.4mm"
+            )
+
+        self.n_design = n_design
+        self.foundation_depth = foundation_depth
+        self.foundation_width = foundation_width
+        self.foundation_length = foundation_length
+        self.friction_angle = friction_angle
+        self.beta = beta
+        self.allow_settlement = allow_settlement
 
     @classmethod
     def allow_bearing_capacity(
@@ -247,22 +260,9 @@ class Meyerhoff:
         r"""Allowable bearing capacity :math:`q_{a(net)}` for a given tolerable
         settlement proposed by Meyerhoff.
 
-        :param n_design: Average corrected number of blows from ``SPT N-value``
-        :type n_design: float
-        :param foundation_depth: Depth of foundation (m)
-        :type foundation_depth: float
-        :param foundation_width: Width of foundation (m)
-        :type foundation_width: float
-        :param allow_settlement: Tolerable settlement (mm)
-        :type allow_settlement: float
-        :raises AllowableSettlementError: Raised when `allow_settlement` is greater than `25.4mm`.
         :return: Allowable bearing capacity.
         :rtype: float
         """
-        if allow_settlement > cls.ALLOWABLE_SETTLEMENT:
-            raise AllowableSettlementError(
-                f"allow_settlement: {allow_settlement} cannot be greater than 25.4mm"
-            )
 
         if foundation_width <= 1.22:
             _allow_settlement = (
