@@ -1,8 +1,8 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE, passive_earth_pressure_coef
-from geolab.bearing_capacity import Terzaghi, Meyerhoff
-from geolab.estimators import foundation_depth
+from geolab import passive_earth_pressure_coef
+from geolab.bearing_capacity.terzaghi import TBC
+from geolab.bearing_capacity.meyerhoff import MBC
 
 T_nq = [(0, 1.00), (1, 1.10), (15, 4.45), (25, 12.72), (27, 15.9), (18.76, 6.54)]
 T_nc = [(0, 5.70), (1, 6.00), (15, 12.86), (25, 25.13), (27, 29.24), (18.76, 16.21)]
@@ -12,12 +12,6 @@ M_ngamma = [(0, 0.0), (1, 0.07), (2, 0.15)]
 
 def test_Kp():
     assert passive_earth_pressure_coef(friction_angle=30) == pytest.approx(3)
-
-
-def test_foundation_depth():
-    assert foundation_depth(350, 18, friction_angle=35) == pytest.approx(
-        1.429, ERROR_TOLERANCE
-    )
 
 
 # class TestTerzaghi:
