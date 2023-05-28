@@ -1,21 +1,22 @@
 r"""This module provides the implementations for ``USCS`` and ``AASHTO`` classification.
 
-This module contains the following functions:
+Public Functions
+----------------
 
-- ``curvature_coefficient`` :math:`\rightarrow` Returns the coefficient of curvature of the soil.
-- ``uniformity_coefficient`` :math:`\rightarrow` Returns the coefficient of uniformity of the soil.
-- `grading` :math:`\rightarrow` Returns the grading of the soil. (W or P)
-- `A_line` :math:`\rightarrow` Returns the A line.
-- `group_index` :math:`\rightarrow` Returns the group index used to further evaluate the soil.
-- `uscs` :math:`\rightarrow` Returns the classification of the soil according to ``USCS`` standard.
-- `aashto` :math:`\rightarrow` Returns the classification of the soil according to ``AASHTO`` standard.
+- ``curvature_coefficient``: Returns the coefficient of curvature of the soil
+- ``uniformity_coefficient``: Returns the coefficient of uniformity of the soil
+- `grading`: Returns the grading of the soil (W or P)
+- `A_line`: Returns the A line
+- `group_index`: Returns the group index used to further evaluate the soil
+- `uscs`: Returns the classification of the soil according to ``USCS`` standard
+- `aashto`: Returns the classification of the soil according to ``AASHTO`` standard
 
 """
 
 import math
 from typing import Optional
 
-from geolab import ERROR_TOLERANCE, exceptions
+from geolab import DECIMAL_PLACES, ERROR_TOLERANCE, exceptions
 
 GRAVEL = "G"
 WELL_GRADED = "W"
@@ -70,10 +71,10 @@ class PSDCoefficient:
 
             C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}
 
-        :return: The coefficient of curvature of the soil.
-        :rtype: float
+        :return (float): The coefficient of curvature of the soil.
         """
-        return (self.d30**2) / (self.d60 * self.d10)
+        _cc = (self.d30**2) / (self.d60 * self.d10)
+        return round(_cc, DECIMAL_PLACES)
 
     @property
     def uniformity_coefficient(self) -> float:
@@ -83,10 +84,10 @@ class PSDCoefficient:
 
             C_u = \dfrac{d_{60}}{d_{10}}
 
-        :return: The coefficient of curvature of the soil.
-        :rtype: float
+        :return (float): The coefficient of curvature of the soil.
         """
-        return self.d60 / self.d10
+        _cu = self.d60 / self.d10
+        return round(_cu, DECIMAL_PLACES)
 
 
 def _dual_symbol(
@@ -178,7 +179,8 @@ def A_line(liquid_limit: float) -> float:
     :return: The ``A-line`` of the soil
     :rtype: float
     """
-    return 0.73 * (liquid_limit - 20)
+    a_line = 0.73 * (liquid_limit - 20)
+    return round(a_line, DECIMAL_PLACES)
 
 
 def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> float:
@@ -200,7 +202,7 @@ def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> f
     _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (fines - 15) * (
         plasticity_index - 10
     )
-    return 0.0 if _gi <= 0 else _gi
+    return 0.0 if _gi <= 0 else round(_gi, DECIMAL_PLACES)
 
 
 def uscs(
