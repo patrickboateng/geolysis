@@ -1,7 +1,7 @@
 import functools
 import math
 import re
-from typing import Callable, Iterable, TypeVar, cast
+from typing import Callable, Iterable, TypeVar, Union, cast
 
 import numpy as np
 
@@ -13,7 +13,7 @@ def update_kwargs(key, kwargs):
     return kwargs
 
 
-def deg2rad(*deg: Iterable) -> Callable[[F], F]:
+def deg2rad(*deg: Union[Iterable, Callable]) -> Callable[[F], F]:
     """A decorator that converts ``deg`` from degree to radians.
 
     :Example:
