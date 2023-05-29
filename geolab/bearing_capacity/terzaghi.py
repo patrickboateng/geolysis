@@ -1,3 +1,5 @@
+"""Terzaghi Bearing Capacity Analysis."""
+
 import numpy as np
 
 from geolab import DECIMAL_PLACES, deg2rad, passive_earth_pressure_coef
@@ -5,65 +7,33 @@ from geolab.bearing_capacity import BCF
 from geolab.utils import product
 
 
-class TerzaghiBCF(BCF):
+class _TerzaghiBCF(BCF):
     """Terzaghi Bearing Capacity Factors."""
 
-    def __init__(self, friction_angle: float) -> None:
-        """
-        :param friction_angle: internal angle of friction :math:`(\phi)`
-        :type friction_angle: float
-        """
+    def __init__(self, friction_angle):
         self.friction_angle = friction_angle
 
     @staticmethod
-    def _nq(friction_angle: float) -> float:
+    def _nq(friction_angle):
         num = np.exp(((3 * np.pi) / 2 - friction_angle) * np.tan(friction_angle))
         den = 2 * (np.cos(np.deg2rad(45) + (friction_angle / 2)) ** 2)
-
         return num / den
 
     @property
-    def nq(self) -> float:
-        r"""Terzaghi Bearing Capacity factor :math:`N_q`.
-
-        .. math::
-
-            \frac{e^{(\frac{3\pi}{2}-\phi)\tan\phi}}{2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
-
-        :return: The bearing capacity factor :math:`N_q`
-        :rtype: float
-        """
-        return np.round(self._nq(self.friction_angle), DECIMAL_PLACES)
+    def nq(self):
+        return round(self._nq(self.friction_angle), DECIMAL_PLACES)
 
     @property
-    def nc(self) -> float:
-        r"""Terzaghi Bearing Capacity factor :math:`N_c`.
-
-        .. math::
-
-            \cot \phi \left(N_q - 1 \right)
-
-        :return: The bearing capacity factor :math:`N_c`
-        :rtype: float
-        """
+    def nc(self):
         if np.isclose(self.friction_angle, 0.0):
             return 5.70
 
         _nc = (1 / np.tan(self.friction_angle)) * (self._nq(self.friction_angle) - 1)
 
-        return np.round(_nc, DECIMAL_PLACES)
+        return round(_nc, DECIMAL_PLACES)
 
     @property
-    def ngamma(self) -> float:
-        r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`.
-
-        .. math::
-
-            \frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi
-
-        :return: The bearing capacity factor :math:`N_\gamma`
-        :rtype: float
-        """
+    def ngamma(self):
         phi = np.rad2deg(self.friction_angle)
         num = passive_earth_pressure_coef(friction_angle=phi)
         den = np.cos(self.friction_angle) ** 2
@@ -71,7 +41,7 @@ class TerzaghiBCF(BCF):
 
         _ngamma = 0.5 * (mid_expr) * np.tan(self.friction_angle)
 
-        return np.round(_ngamma, DECIMAL_PLACES)
+        return round(_ngamma, DECIMAL_PLACES)
 
 
 class TBC:
@@ -90,33 +60,56 @@ class TBC:
         """
         :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
         :type cohesion: float
-
+        :param friction_angle: internal angle of friction (degrees)
+        :type friction_angle: float
         :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
         :type unit_weight_of_soil: float
         :param foundation_depth: depth of foundation :math:`d_f` (m)
         :type foundation_depth: float
         :param foundation_width: width of foundation (**b**) (m)
         :type foundation_width: float
-        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
-        :rtype: float
         """
         self.cohesion = cohesion
-        self.bcf = TerzaghiBCF(friction_angle)
+        self._bcf = _TerzaghiBCF(friction_angle)
         self.unit_weight_of_soil = unit_weight_of_soil
         self.foundation_depth = foundation_depth
         self.foundation_width = foundation_width
 
     @property
-    def nq(self):
-        return self.bcf.nq
+    def nq(self) -> float:
+        r"""Terzaghi Bearing Capacity factor :math:`N_q`.
+
+        .. math::
+
+            \dfrac{e^{(\frac{3\pi}{2}-\phi)\tan\phi}}{2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
+
+        :return (float): The bearing capacity factor :math:`N_q`
+        """
+        return self._bcf.nq
 
     @property
-    def nc(self):
-        return self.bcf.nc
+    def nc(self) -> float:
+        r"""Terzaghi Bearing Capacity factor :math:`N_c`.
+
+        .. math::
+
+            \cot \phi \left(N_q - 1 \right)
+
+        :return (float): The bearing capacity factor :math:`N_c`
+        """
+        return self._bcf.nc
 
     @property
-    def ngamma(self):
-        return self.bcf.ngamma
+    def ngamma(self) -> float:
+        r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`.
+
+        .. math::
+
+            \frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi
+
+        :return (float): The bearing capacity factor :math:`N_\gamma`
+        """
+        return self._bcf.ngamma
 
     def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
@@ -134,9 +127,9 @@ class TBC:
             + product(0.5, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
         )
 
-        return np.round(qult, DECIMAL_PLACES)
+        return round(qult, DECIMAL_PLACES)
 
-    def qult_4_square_foundation(self):
+    def qult_4_square_footing(self):
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``square footing``.
 
         .. math::
@@ -152,9 +145,9 @@ class TBC:
             + product(0.4, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
         )
 
-        return np.round(qult, DECIMAL_PLACES)
+        return round(qult, DECIMAL_PLACES)
 
-    def qult_4_circular_foundation(self):
+    def qult_4_circular_footing(self):
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``circular footing``.
 
         .. math::
@@ -170,4 +163,4 @@ class TBC:
             + product(0.3, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
         )
 
-        return np.round(qult, DECIMAL_PLACES)
+        return round(qult, DECIMAL_PLACES)
