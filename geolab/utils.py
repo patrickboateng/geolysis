@@ -16,14 +16,11 @@ def update_kwargs(key, kwargs):
 def deg2rad(*deg: Union[Iterable, Callable]) -> Callable[[F], F]:
     """A decorator that converts ``deg`` from degree to radians.
 
-    :Example:
-
-
-    :param deg: registered keyword arguments to convert
-    :type deg: tuple
-    :return: A decorator.
-    :rtype: Callable
+    :raises TypeError: raised when ``deg`` is not a valid type
+    :return: a decorator or a decorated wrapper
+    :rtype: Callable[[F], F]
     """
+
     if not deg:
         raise TypeError("deg should be a non-empty tuple")
 
