@@ -1,45 +1,47 @@
 """Terzaghi Bearing Capacity Analysis."""
 
+import functools
+
 import numpy as np
 
-from geolab import DECIMAL_PLACES, deg2rad, passive_earth_pressure_coef
+from geolab import DECIMAL_PLACES, deg2rad
 from geolab.bearing_capacity import BCF
-from geolab.utils import product
+from geolab.utils import cos, exp, product, tan
 
 
-class _TerzaghiBCF(BCF):
+class TerzaghiBCF(BCF):
     """Terzaghi Bearing Capacity Factors."""
 
-    def __init__(self, friction_angle):
-        self.friction_angle = friction_angle
+    @deg2rad
+    def __init__(self, ngamma_type="Meyerhof", *, friction_angle):
+        self.phi = friction_angle
+        self.ngamma_type = ngamma_type.casefold()
 
     @staticmethod
-    def _nq(friction_angle):
-        num = np.exp(((3 * np.pi) / 2 - friction_angle) * np.tan(friction_angle))
-        den = 2 * (np.cos(np.deg2rad(45) + (friction_angle / 2)) ** 2)
+    @functools.cache
+    def _nq(phi):
+        num = exp(((3 * np.pi) / 2 - phi) * tan(phi))
+        den = 2 * (cos(np.deg2rad(45) + (phi / 2)) ** 2)
         return num / den
 
-    @property
     def nq(self):
-        return round(self._nq(self.friction_angle), DECIMAL_PLACES)
+        return round(self._nq(self.phi), DECIMAL_PLACES)
 
-    @property
     def nc(self):
-        if np.isclose(self.friction_angle, 0.0):
+        if np.isclose(self.phi, 0.0):
             return 5.70
 
-        _nc = (1 / np.tan(self.friction_angle)) * (self._nq(self.friction_angle) - 1)
+        _nc = (1 / tan(self.phi)) * (self._nq(self.phi) - 1)
 
         return round(_nc, DECIMAL_PLACES)
 
-    @property
     def ngamma(self):
-        phi = np.rad2deg(self.friction_angle)
-        num = passive_earth_pressure_coef(friction_angle=phi)
-        den = np.cos(self.friction_angle) ** 2
-        mid_expr = (num / den) - 1
-
-        _ngamma = 0.5 * (mid_expr) * np.tan(self.friction_angle)
+        if self.ngamma_type == "meyerhof":
+            _ngamma = (self._nq(self.phi) - 1) * tan(1.4 * self.phi)
+        elif self.ngamma_type == "hansen":
+            _ngamma = 1.8 * (self._nq(self.phi) - 1) * tan(self.phi)
+        else:
+            raise TypeError("Available types are Meyerhof or Hansen")
 
         return round(_ngamma, DECIMAL_PLACES)
 
@@ -47,15 +49,14 @@ class _TerzaghiBCF(BCF):
 class TBC:
     """Terzaghi Bearing Capacity."""
 
-    @deg2rad
     def __init__(
         self,
-        *,
         cohesion: float,
         friction_angle: float,
         unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
+        ngamma_type: str = "Meyerhof",
     ) -> None:
         """
         :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
@@ -68,12 +69,17 @@ class TBC:
         :type foundation_depth: float
         :param foundation_width: width of foundation (**b**) (m)
         :type foundation_width: float
+        :param ngamma_type: specifies the type of ngamma formula to use. Available
+                            values are ``Meyerhof`` and ``Hansen``
+        :type ngamma_type: str
         """
         self.cohesion = cohesion
-        self._bcf = _TerzaghiBCF(friction_angle)
-        self.unit_weight_of_soil = unit_weight_of_soil
-        self.foundation_depth = foundation_depth
-        self.foundation_width = foundation_width
+        self.gamma = unit_weight_of_soil
+        self.fd = foundation_depth
+        self.fw = foundation_width
+        self._bearing_cap_factors = TerzaghiBCF(
+            ngamma_type, friction_angle=friction_angle
+        )
 
     @property
     def nq(self) -> float:
@@ -81,11 +87,12 @@ class TBC:
 
         .. math::
 
-            \dfrac{e^{(\frac{3\pi}{2}-\phi)\tan\phi}}{2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
+            N_q=\dfrac{e^{(\frac{3\pi}{2}-\phi)\tan\phi}}{2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
 
-        :return (float): The bearing capacity factor :math:`N_q`
+        :return: The bearing capacity factor :math:`N_q`
+        :rtype: float
         """
-        return self._bcf.nq
+        return self._bearing_cap_factors.nq()
 
     @property
     def nc(self) -> float:
@@ -93,23 +100,35 @@ class TBC:
 
         .. math::
 
-            \cot \phi \left(N_q - 1 \right)
+            N_c = \cot \phi \left(N_q - 1 \right)
 
-        :return (float): The bearing capacity factor :math:`N_c`
+        :return: The bearing capacity factor :math:`N_c`
+        :rtype: float
         """
-        return self._bcf.nc
+        return self._bearing_cap_factors.nc()
 
     @property
     def ngamma(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`.
 
+        .. note::
+
+            Exact values of :math:`N_\gamma` are not directly obtainable; values have
+            been proposed by ``Brinch Hansen (1968)`` which are widely used in Europe,
+            and also by ``Meyerhof (1963)``, which have been adopted in North America.
+
+        The formulas shown below are ``Brinch Hansen`` and ``Meyerhof`` respectively.
+
         .. math::
 
-            \frac{1}{2}\left(\frac{K_p}{\cos^2 \phi} - 1 \right)\tan \phi
+            N_\gamma = 1.8 \left(N_q - 1 \right) \tan \phi
 
-        :return (float): The bearing capacity factor :math:`N_\gamma`
+            N_\gamma = \left(N_q -1 \right)\tan(1.4\phi)
+
+        :return: The bearing capacity factor :math:`N_\gamma`
+        :rtype: float
         """
-        return self._bcf.ngamma
+        return self._bearing_cap_factors.ngamma()
 
     def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
@@ -123,8 +142,8 @@ class TBC:
         """
         qult = (
             product(self.cohesion, self.nc)
-            + product(self.unit_weight_of_soil, self.foundation_depth, self.nq)
-            + product(0.5, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
+            + product(self.gamma, self.fd, self.nq)
+            + product(0.5, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
@@ -141,8 +160,8 @@ class TBC:
         """
         qult = (
             product(1.2, self.cohesion, self.nc)
-            + product(self.unit_weight_of_soil, self.foundation_depth, self.nq)
-            + product(0.4, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
+            + product(self.gamma, self.fd, self.nq)
+            + product(0.4, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
@@ -159,8 +178,8 @@ class TBC:
         """
         qult = (
             product(1.2, self.cohesion, self.nc)
-            + product(self.unit_weight_of_soil, self.foundation_depth, self.nq)
-            + product(0.3, self.unit_weight_of_soil, self.foundation_width, self.ngamma)
+            + product(self.gamma, self.fd, self.nq)
+            + product(0.3, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
