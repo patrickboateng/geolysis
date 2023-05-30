@@ -1,6 +1,6 @@
 """This module provides functions for bearing capacity analysis."""
 
-from abc import ABC, abstractproperty
+from abc import ABC, abstractmethod
 
 import numpy as np
 
@@ -8,15 +8,15 @@ from geolab import DECIMAL_PLACES
 
 
 class BCF(ABC):
-    @abstractproperty
+    @abstractmethod
     def nq(self):
         ...
 
-    @abstractproperty
+    @abstractmethod
     def nc(self):
         ...
 
-    @abstractproperty
+    @abstractmethod
     def ngamma(self):
         ...
 
