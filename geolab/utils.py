@@ -5,6 +5,12 @@ from typing import Callable, Iterable, TypeVar, Union, cast
 
 import numpy as np
 
+
+tan = np.tan
+sin = np.sin
+cos = np.cos
+exp = np.exp
+
 F = TypeVar("F", bound=Callable[..., float])
 
 
