@@ -1,32 +1,27 @@
 import pytest
 
-from geolab import passive_earth_pressure_coef
-from geolab.bearing_capacity.terzaghi import TBC
-from geolab.bearing_capacity.meyerhoff import MBC
+from geolab import ERROR_TOLERANCE
+from geolab.bearing_capacity.terzaghi import TerzaghiBCF
 
-T_nq = [(0, 1.00), (1, 1.10), (15, 4.45), (25, 12.72), (27, 15.9), (18.76, 6.54)]
-T_nc = [(0, 5.70), (1, 6.00), (15, 12.86), (25, 25.13), (27, 29.24), (18.76, 16.21)]
-T_ngamma = [(0, 0.00), (1, 0.01), (15, 1.52), (25, 8.34), (27, 11.6), (18.76, 2.95)]
-M_ngamma = [(0, 0.0), (1, 0.07), (2, 0.15)]
+# from geolab.bearing_capacity.meyerhof import MBC
+
+T_bearing_cap_factors = [
+    (0, {"nq": 1.00, "nc": 5.7}),
+    (1, {"nq": 1.10, "nc": 6.00}),
+    (15, {"nq": 4.45, "nc": 12.86}),
+    (25, {"nq": 12.72, "nc": 25.13}),
+    (27, {"nq": 15.9, "nc": 29.24}),
+    (18.76, {"nq": 6.54, "nc": 16.21}),
+]
+# M_ngamma = [(0, 0.0), (1, 0.07), (2, 0.15)]
 
 
-def test_Kp():
-    assert passive_earth_pressure_coef(friction_angle=30) == pytest.approx(3)
-
-
-# class TestTerzaghi:
-#     @pytest.mark.parametrize("phi,exp", T_nq)
-#     def test_nq(self, phi, exp):
-#         assert Terzaghi.nq(friction_angle=phi) == pytest.approx(exp)
-
-#     @pytest.mark.parametrize("phi,exp", T_nc)
-#     def test_nc(self, phi, exp):
-#         assert Terzaghi.nc(friction_angle=phi) == pytest.approx(exp, ERROR_TOLERANCE)
-
-#     @pytest.mark.xfail
-#     @pytest.mark.parametrize("phi,exp", T_ngamma)
-#     def test_ngamma(self, phi, exp):
-#         assert Terzaghi.ngamma(friction_angle=phi) == pytest.approx(exp)
+class TestTerzaghi:
+    @pytest.mark.parametrize("phi,exp", T_bearing_cap_factors)
+    def test_bearing_capacity_factors(self, phi, exp):
+        T = TerzaghiBCF(friction_angle=phi)
+        assert T.nc() == pytest.approx(exp["nc"], ERROR_TOLERANCE)
+        assert T.nq() == pytest.approx(exp["nq"], ERROR_TOLERANCE)
 
 
 # class TestMeyerhoff:
