@@ -4,29 +4,35 @@ import functools
 
 import numpy as np
 
+import geolab
 from geolab import DECIMAL_PLACES, deg2rad
-from geolab.bearing_capacity import BCF
-from geolab.utils import cos, exp, product, tan
+from geolab.utils import cos, exp, pi, product, tan
 
 
-class TerzaghiBCF(BCF):
+class TerzaghiBCF:
     """Terzaghi Bearing Capacity Factors."""
 
     @deg2rad
-    def __init__(self, ngamma_type="Meyerhof", *, friction_angle):
+    def __init__(
+        self,
+        ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
+        *,
+        friction_angle,
+    ):
+        if not isinstance(ngamma_type, geolab.GeotechEng):
+            raise TypeError(f"Available types are {geolab.MEYERHOF} or {geolab.HANSEN}")
+
         self.phi = friction_angle
-        self.ngamma_type = ngamma_type.casefold()
+        self.ngamma_type = ngamma_type
 
     @staticmethod
     @functools.cache
     def _nq(phi):
-        num = exp(((3 * np.pi) / 2 - phi) * tan(phi))
+        num = exp(((3 * pi) / 2 - phi) * tan(phi))
         den = 2 * (cos(np.deg2rad(45) + (phi / 2)) ** 2)
         return num / den
 
-    def nq(self):
-        return round(self._nq(self.phi), DECIMAL_PLACES)
-
+    @property
     def nc(self):
         if np.isclose(self.phi, 0.0):
             return 5.70
@@ -35,13 +41,16 @@ class TerzaghiBCF(BCF):
 
         return round(_nc, DECIMAL_PLACES)
 
+    @property
+    def nq(self):
+        return round(self._nq(self.phi), DECIMAL_PLACES)
+
+    @property
     def ngamma(self):
-        if self.ngamma_type == "meyerhof":
+        if self.ngamma_type is geolab.MEYERHOF:
             _ngamma = (self._nq(self.phi) - 1) * tan(1.4 * self.phi)
-        elif self.ngamma_type == "hansen":
+        elif self.ngamma_type is geolab.HANSEN:
             _ngamma = 1.8 * (self._nq(self.phi) - 1) * tan(self.phi)
-        else:
-            raise TypeError("Available types are Meyerhof or Hansen")
 
         return round(_ngamma, DECIMAL_PLACES)
 
@@ -56,7 +65,7 @@ class TBC:
         unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
-        ngamma_type: str = "Meyerhof",
+        ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
     ) -> None:
         """
         :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
@@ -92,7 +101,7 @@ class TBC:
         :return: The bearing capacity factor :math:`N_q`
         :rtype: float
         """
-        return self._bearing_cap_factors.nq()
+        return self._bearing_cap_factors.nq
 
     @property
     def nc(self) -> float:
@@ -105,7 +114,7 @@ class TBC:
         :return: The bearing capacity factor :math:`N_c`
         :rtype: float
         """
-        return self._bearing_cap_factors.nc()
+        return self._bearing_cap_factors.nc
 
     @property
     def ngamma(self) -> float:
@@ -128,7 +137,7 @@ class TBC:
         :return: The bearing capacity factor :math:`N_\gamma`
         :rtype: float
         """
-        return self._bearing_cap_factors.ngamma()
+        return self._bearing_cap_factors.ngamma
 
     def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
