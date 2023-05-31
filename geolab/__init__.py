@@ -20,12 +20,25 @@ Exceptions
 
 """
 
-import numpy as np
+import enum
 
 from geolab.utils import deg2rad
+from geolab.exceptions import PIValueError, PSDValueError
 
-from .exceptions import PIValueError, PSDValueError
 
 __version__ = "0.1.0"
 ERROR_TOLERANCE = 0.01
 DECIMAL_PLACES = 2
+
+
+class GeotechEng(enum.IntEnum):
+    HANSEN = H = enum.auto()
+    MEYERHOF = M = enum.auto()
+    TERZAGHI = T = enum.auto()
+    VESIC = V = enum.auto()
+
+    def __str__(self) -> str:
+        return self.name
+
+
+globals().update(GeotechEng.__members__)
