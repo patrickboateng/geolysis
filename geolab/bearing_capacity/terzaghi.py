@@ -66,7 +66,7 @@ class TerzaghiBearingCapacity:
         self.gamma = unit_weight_of_soil
         self.fd = foundation_depth
         self.fw = foundation_width
-        self._bearing_cap_factors = TerzaghiBCF(
+        self.bearing_cap_factors = TerzaghiBCF(
             ngamma_type, friction_angle=friction_angle
         )
 
@@ -81,7 +81,7 @@ class TerzaghiBearingCapacity:
         :return: The bearing capacity factor :math:`N_q`
         :rtype: float
         """
-        return self._bearing_cap_factors.nq
+        return self.bearing_cap_factors.nq
 
     @property
     def nc(self) -> float:
@@ -94,7 +94,7 @@ class TerzaghiBearingCapacity:
         :return: The bearing capacity factor :math:`N_c`
         :rtype: float
         """
-        return self._bearing_cap_factors.nc
+        return self.bearing_cap_factors.nc
 
     @property
     def ngamma(self) -> float:
@@ -117,7 +117,7 @@ class TerzaghiBearingCapacity:
         :return: The bearing capacity factor :math:`N_\gamma`
         :rtype: float
         """
-        return self._bearing_cap_factors.ngamma
+        return self.bearing_cap_factors.ngamma
 
     def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
