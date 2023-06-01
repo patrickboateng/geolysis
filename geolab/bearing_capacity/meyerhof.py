@@ -1,4 +1,4 @@
-"""Meyerhoff Bearing Capacity Analysis."""
+"""Meyerhof Bearing Capacity Analysis."""
 
 
 from geolab import DECIMAL_PLACES
