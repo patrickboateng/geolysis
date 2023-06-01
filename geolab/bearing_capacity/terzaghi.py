@@ -1,7 +1,5 @@
 """Terzaghi Bearing Capacity Analysis."""
 
-import functools
-
 import numpy as np
 
 import geolab
@@ -22,40 +20,22 @@ class TerzaghiBCF:
         if not isinstance(ngamma_type, geolab.GeotechEng):
             raise TypeError(f"Available types are {geolab.MEYERHOF} or {geolab.HANSEN}")
 
-        self.phi = friction_angle
-        self.ngamma_type = ngamma_type
+        num = exp(((3 * pi) / 2 - friction_angle) * tan(friction_angle))
+        den = 2 * (cos(np.deg2rad(45) + (friction_angle / 2)) ** 2)
+        _nq = num / den
+        _nc = (1 / tan(friction_angle)) * (_nq - 1)
 
-    @staticmethod
-    @functools.cache
-    def _nq(phi):
-        num = exp(((3 * pi) / 2 - phi) * tan(phi))
-        den = 2 * (cos(np.deg2rad(45) + (phi / 2)) ** 2)
-        return num / den
+        if ngamma_type is geolab.MEYERHOF:
+            _ngamma = (_nq - 1) * tan(1.4 * friction_angle)
+        if ngamma_type is geolab.HANSEN:
+            _ngamma = 1.8 * (_nq - 1) * tan(friction_angle)
 
-    @property
-    def nc(self):
-        if np.isclose(self.phi, 0.0):
-            return 5.70
-
-        _nc = (1 / tan(self.phi)) * (self._nq(self.phi) - 1)
-
-        return round(_nc, DECIMAL_PLACES)
-
-    @property
-    def nq(self):
-        return round(self._nq(self.phi), DECIMAL_PLACES)
-
-    @property
-    def ngamma(self):
-        if self.ngamma_type is geolab.MEYERHOF:
-            _ngamma = (self._nq(self.phi) - 1) * tan(1.4 * self.phi)
-        elif self.ngamma_type is geolab.HANSEN:
-            _ngamma = 1.8 * (self._nq(self.phi) - 1) * tan(self.phi)
-
-        return round(_ngamma, DECIMAL_PLACES)
+        self.nc = round(_nc, DECIMAL_PLACES)
+        self.nq = round(_nq, DECIMAL_PLACES)
+        self.ngamma = round(_ngamma, DECIMAL_PLACES)
 
 
-class TBC:
+class TerzaghiBearingCapacity:
     """Terzaghi Bearing Capacity."""
 
     def __init__(
