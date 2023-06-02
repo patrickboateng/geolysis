@@ -1,6 +1,5 @@
 """Meyerhof Bearing Capacity Analysis."""
 
-
 from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import depth_factor
 from geolab.exceptions import AllowableSettlementError
@@ -13,7 +12,7 @@ def _check_foundation_settlement(actual_settlement: float, allow_settlement: flo
         )
 
 
-class MBC:
+class MeyerhofBearingCapacity:
     """Meyerhof Bearing Capacity.
 
     :attr ALLOWABLE_SETTLEMENT: maximum permissible settlement
@@ -64,15 +63,15 @@ class MBC:
         :return: Allowable bearing capacity
         :rtype: float
         """
-        math_expr = (
+        expr = (
             self.n_design
             * depth_factor(self.fd, self.fw)
             * (self.se / self.ALLOWABLE_SETTLEMENT)
         )
         if self.fw <= 1.22:
-            _abc = 19.16 * math_expr  # allow_bearing_capacity
+            _abc = 19.16 * expr  # allow_bearing_capacity
             return round(_abc, DECIMAL_PLACES)
 
         # allow_bearing_capacity
-        _abc = 11.98 * ((3.28 * self.fw + 1) / (3.28 * self.fw)) ** 2 * math_expr
+        _abc = 11.98 * ((3.28 * self.fw + 1) / (3.28 * self.fw)) ** 2 * expr
         return round(_abc, DECIMAL_PLACES)
