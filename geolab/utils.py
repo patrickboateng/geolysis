@@ -10,6 +10,7 @@ tan = np.tan
 sin = np.sin
 cos = np.cos
 exp = np.exp
+pi = np.pi
 
 F = TypeVar("F", bound=Callable[..., float])
 
