@@ -56,10 +56,10 @@ class TerzaghiBearingCapacity:
         :type unit_weight_of_soil: float
         :param foundation_depth: depth of foundation :math:`d_f` (m)
         :type foundation_depth: float
-        :param foundation_width: width of foundation (**b**) (m)
+        :param foundation_width: width of foundation (**B**) (m)
         :type foundation_width: float
         :param ngamma_type: specifies the type of ngamma formula to use. Available
-                            values are ``Meyerhof`` and ``Hansen``
+                            values are geolab.MEYERHOF and geolab.HANSEN
         :type ngamma_type: str
         """
         self.cohesion = cohesion
