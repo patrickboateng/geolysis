@@ -1,5 +1,7 @@
 """Terzaghi Bearing Capacity Analysis."""
 
+from typing import Union
+
 import numpy as np
 
 import geolab
@@ -71,6 +73,23 @@ class TerzaghiBearingCapacity:
         )
 
     @property
+    def nc(self) -> float:
+        r"""Terzaghi Bearing Capacity factor :math:`N_c`.
+
+        .. math::
+
+            N_c = \cot \phi \left(N_q - 1 \right)
+
+        :return: The bearing capacity factor :math:`N_c`
+        :rtype: float
+        """
+        return self.bearing_cap_factors.nc
+
+    @nc.setter
+    def nc(self, val: Union[int, float]):
+        self.bearing_cap_factors.nc = val
+
+    @property
     def nq(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_q`.
 
@@ -83,18 +102,9 @@ class TerzaghiBearingCapacity:
         """
         return self.bearing_cap_factors.nq
 
-    @property
-    def nc(self) -> float:
-        r"""Terzaghi Bearing Capacity factor :math:`N_c`.
-
-        .. math::
-
-            N_c = \cot \phi \left(N_q - 1 \right)
-
-        :return: The bearing capacity factor :math:`N_c`
-        :rtype: float
-        """
-        return self.bearing_cap_factors.nc
+    @nq.setter
+    def nq(self, val: Union[int, float]):
+        self.bearing_cap_factors.nq = val
 
     @property
     def ngamma(self) -> float:
@@ -118,6 +128,10 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         return self.bearing_cap_factors.ngamma
+
+    @ngamma.setter
+    def ngamma(self, val: Union[int, float]):
+        self.bearing_cap_factors.ngamma = val
 
     def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
