@@ -1,5 +1,6 @@
 """Terzaghi Bearing Capacity Analysis."""
 
+from dataclasses import dataclass, field
 from typing import Union
 
 import numpy as np
@@ -9,21 +10,27 @@ from geolab import DECIMAL_PLACES, deg2rad
 from geolab.utils import cos, exp, pi, product, tan
 
 
+@dataclass
 class TerzaghiBCF:
     """Terzaghi Bearing Capacity Factors."""
+
+    nc: float = field(init=False)
+    nq: float = field(init=False)
+    ngamma: float = field(init=False)
 
     @deg2rad
     def __init__(
         self,
         ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
         *,
-        friction_angle,
+        friction_angle: float,
     ):
         if not isinstance(ngamma_type, geolab.GeotechEng):
             raise TypeError(f"Available types are {geolab.MEYERHOF} or {geolab.HANSEN}")
 
         num = exp(((3 * pi) / 2 - friction_angle) * tan(friction_angle))
         den = 2 * (cos(np.deg2rad(45) + (friction_angle / 2)) ** 2)
+
         _nq = num / den
         _nc = (1 / tan(friction_angle)) * (_nq - 1)
 
