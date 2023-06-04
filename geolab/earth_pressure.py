@@ -1,9 +1,8 @@
 from geolab import DECIMAL_PLACES
-from geolab.utils import deg2rad, sin
+from geolab.utils import sin
 
 
-@deg2rad
-def passive_earth_pressure_coef(*, friction_angle: float) -> float:
+def passive_earth_pressure_coef(friction_angle: float) -> float:
     r"""Coefficient of passive earth pressure :math:`K_p`.
 
     .. math::
