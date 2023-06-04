@@ -6,11 +6,24 @@ from typing import Callable, Iterable, TypeVar, Union, cast
 import numpy as np
 
 
-tan = np.tan
-sin = np.sin
-cos = np.cos
+# tan = np.tan
+# sin = np.sin
+# cos = np.cos
 exp = np.exp
 pi = np.pi
+
+
+def tan(x: float):
+    return np.tan(np.deg2rad(x))
+
+
+def sin(x: float):
+    return np.sin(np.deg2rad(x))
+
+
+def cos(x: float):
+    return np.cos(np.deg2rad(x))
+
 
 F = TypeVar("F", bound=Callable[..., float])
 
