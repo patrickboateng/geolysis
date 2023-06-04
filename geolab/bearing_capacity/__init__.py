@@ -1,32 +1,29 @@
 """This module provides functions for bearing capacity analysis."""
 
-from abc import ABC, abstractmethod
-
-import numpy as np
+import enum
 
 from geolab import DECIMAL_PLACES
 
 
-class BCF(ABC):
-    @abstractmethod
-    def nq(self):
-        ...
+class FootingShape(enum.IntEnum):
+    CIRCULAR_FOOTING = enum.auto()
+    RECTANGULAR_FOOTING = enum.auto()
+    SQUARE_FOOTING = enum.auto()
+    STRIP_FOOTING = enum.auto()
 
-    @abstractmethod
-    def nc(self):
-        ...
+    def __str__(self) -> str:
+        return self.name
 
-    @abstractmethod
-    def ngamma(self):
-        ...
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}.{self.name}"
 
 
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
-    """Depth factor used in estimating the allowable bearing capacity of a soil.
+    r"""Depth factor used in estimating the allowable bearing capacity of a soil.
 
     .. math::
 
-        $$k = 1 + 0.33 \\frac{D_f}{B}$$
+        k = 1 + 0.33 \frac{D_f}{B}
 
     :param foundation_depth: Depth of foundation (m)
     :type foundation_depth: float
@@ -36,4 +33,16 @@ def depth_factor(foundation_depth: float, foundation_width: float) -> float:
     :rtype: float
     """
     _depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
-    return np.round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
+    return round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
+
+
+def _check_footing_dimension(width, length):
+    if (width is None) or (length is None):
+        msg = "Foundation dimension cannot be None"
+        raise ValueError(msg)
+
+
+def _check_footing_shape(footing_shape):
+    if not isinstance(footing_shape, FootingShape):
+        msg = f"Available foundation shapes are {','.join(list(FootingShape))}"
+        raise TypeError(msg)
