@@ -5,8 +5,7 @@ from typing import Union
 
 import numpy as np
 
-import geolab
-from geolab import DECIMAL_PLACES, deg2rad
+from geolab import DECIMAL_PLACES, GeotechEng
 from geolab.utils import cos, exp, pi, product, tan
 
 
@@ -21,10 +20,12 @@ class TerzaghiBCF:
     def __init__(
         self,
         friction_angle: float,
-        ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
+        ngamma_type: GeotechEng = GeotechEng.MEYERHOF,
     ):
-        if not isinstance(ngamma_type, geolab.GeotechEng):
-            raise TypeError(f"Available types are {geolab.MEYERHOF} or {geolab.HANSEN}")
+        if not isinstance(ngamma_type, GeotechEng):
+            raise TypeError(
+                f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
+            )
 
         num = exp(((3 * pi) / 2 - np.deg2rad(friction_angle)) * tan(friction_angle))
         den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
@@ -32,9 +33,9 @@ class TerzaghiBCF:
         self.nq = num / den
         self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
 
-        if ngamma_type is geolab.MEYERHOF:
+        if ngamma_type is GeotechEng.MEYERHOF:
             self.ngamma = (self.nq - 1) * tan(1.4 * friction_angle)
-        if ngamma_type is geolab.HANSEN:
+        if ngamma_type is GeotechEng.HANSEN:
             self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
 
 
@@ -48,7 +49,7 @@ class TerzaghiBearingCapacity:
         unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
-        ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
+        ngamma_type: GeotechEng = GeotechEng.MEYERHOF,
     ) -> None:
         """
         :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
@@ -69,9 +70,7 @@ class TerzaghiBearingCapacity:
         self.gamma = unit_weight_of_soil
         self.fd = foundation_depth
         self.fw = foundation_width
-        self.bearing_cap_factors = TerzaghiBCF(
-            ngamma_type, friction_angle=friction_angle
-        )
+        self.bearing_cap_factors = TerzaghiBCF(friction_angle, ngamma_type)
 
     @property
     def nc(self) -> float:
