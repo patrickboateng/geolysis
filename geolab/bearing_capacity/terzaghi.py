@@ -18,30 +18,24 @@ class TerzaghiBCF:
     nq: float = field(init=False)
     ngamma: float = field(init=False)
 
-    @deg2rad
     def __init__(
         self,
-        ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
-        *,
         friction_angle: float,
+        ngamma_type: geolab.GeotechEng = geolab.MEYERHOF,
     ):
         if not isinstance(ngamma_type, geolab.GeotechEng):
             raise TypeError(f"Available types are {geolab.MEYERHOF} or {geolab.HANSEN}")
 
-        num = exp(((3 * pi) / 2 - friction_angle) * tan(friction_angle))
-        den = 2 * (cos(np.deg2rad(45) + (friction_angle / 2)) ** 2)
+        num = exp(((3 * pi) / 2 - np.deg2rad(friction_angle)) * tan(friction_angle))
+        den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 
-        _nq = num / den
-        _nc = (1 / tan(friction_angle)) * (_nq - 1)
+        self.nq = num / den
+        self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
 
         if ngamma_type is geolab.MEYERHOF:
-            _ngamma = (_nq - 1) * tan(1.4 * friction_angle)
+            self.ngamma = (self.nq - 1) * tan(1.4 * friction_angle)
         if ngamma_type is geolab.HANSEN:
-            _ngamma = 1.8 * (_nq - 1) * tan(friction_angle)
-
-        self.nc = round(_nc, DECIMAL_PLACES)
-        self.nq = round(_nq, DECIMAL_PLACES)
-        self.ngamma = round(_ngamma, DECIMAL_PLACES)
+            self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
 
 
 class TerzaghiBearingCapacity:
