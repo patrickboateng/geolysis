@@ -7,9 +7,8 @@ from geolab.exceptions import AllowableSettlementError
 
 def _check_foundation_settlement(actual_settlement: float, allow_settlement: float):
     if actual_settlement > allow_settlement:
-        raise AllowableSettlementError(
-            f"actual_settlement: {actual_settlement} cannot be greater than {allow_settlement}"
-        )
+        msg = f"actual_settlement: {actual_settlement} cannot be greater than {allow_settlement}"
+        raise AllowableSettlementError(msg)
 
 
 class MeyerhofBearingCapacity:
@@ -48,7 +47,7 @@ class MeyerhofBearingCapacity:
 
     def allow_bearing_capacity(self) -> float:
         r"""Allowable bearing capacity :math:`q_{a(net)}` for a given tolerable
-        settlement proposed by Meyerhoff.
+        settlement proposed by ``Meyerhof``.
 
         .. math::
 
