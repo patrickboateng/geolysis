@@ -32,17 +32,15 @@ HIGH_PLASTICITY = "H"
 def _check_psd(fines, sand, gravels):
     total_aggregate = fines + sand + gravels
     if not math.isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
-        raise exceptions.PSDValueError(
-            f"fines + sand + gravels = 100% not {total_aggregate}"
-        )
+        msg = f"fines + sand + gravels = 100% not {total_aggregate}"
+        raise exceptions.PSDValueError(msg)
 
 
 def _check_pi(liquid_limit, plastic_limit, plasticity_index):
     pi = liquid_limit - plastic_limit
     if not math.isclose(pi, plasticity_index, rel_tol=ERROR_TOLERANCE):
-        raise exceptions.PIValueError(
-            f"PI should be equal to {pi} not {plasticity_index}"
-        )
+        msg = f"PI should be equal to {pi} not {plasticity_index}"
+        raise exceptions.PIValueError(msg)
 
 
 class PSDCoefficient:
@@ -71,7 +69,8 @@ class PSDCoefficient:
 
             C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}
 
-        :return (float): The coefficient of curvature of the soil.
+        :return: The coefficient of curvature of the soil
+        :rtype: float
         """
         _cc = (self.d30**2) / (self.d60 * self.d10)
         return round(_cc, DECIMAL_PLACES)
@@ -84,7 +83,8 @@ class PSDCoefficient:
 
             C_u = \dfrac{d_{60}}{d_{10}}
 
-        :return (float): The coefficient of curvature of the soil.
+        :return: The coefficient of uniformity of the soil
+        :rtype: float
         """
         _cu = self.d60 / self.d10
         return round(_cu, DECIMAL_PLACES)
