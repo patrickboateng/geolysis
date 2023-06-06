@@ -55,8 +55,8 @@ class TestVesic:
         assert V.ngamma == pytest.approx(exp["ngamma"], ERROR_TOLERANCE)
 
 
-# class TestMeyerhoff:
-#     """Tests for Meyerhoff Bearing Capacity Theory."""
+# class TestMeyerhof:
+#     """Tests for Meyerhof Bearing Capacity Theory."""
 
 #     @pytest.mark.skip(reason="Need to verify values")
 #     def test_nq(self):
