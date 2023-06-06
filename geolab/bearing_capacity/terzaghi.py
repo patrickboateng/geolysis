@@ -64,7 +64,7 @@ class TerzaghiBearingCapacity:
         :param foundation_width: width of foundation (**B**) (m)
         :type foundation_width: float
         :param eng: specifies the type of ngamma formula to use. Available
-                            values are geolab.MEYERHOF and geolab.HANSEN
+                    values are geolab.MEYERHOF and geolab.HANSEN
         :type eng: GeotechEng
         """
         self.cohesion = cohesion
