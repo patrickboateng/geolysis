@@ -32,10 +32,12 @@ DECIMAL_PLACES = 2
 
 
 class GeotechEng(enum.IntEnum):
-    HANSEN = H = enum.auto()
-    MEYERHOF = M = enum.auto()
-    TERZAGHI = T = enum.auto()
-    VESIC = V = enum.auto()
+    HANSEN = enum.auto()
+    HOUGH = enum.auto()
+    MEYERHOF = enum.auto()
+    SKEMPTON = enum.auto()
+    TERZAGHI = enum.auto()
+    VESIC = enum.auto()
 
     def __str__(self) -> str:
         return self.name
