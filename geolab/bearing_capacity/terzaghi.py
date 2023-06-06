@@ -20,12 +20,11 @@ class TerzaghiBCF:
     def __init__(
         self,
         friction_angle: float,
-        ngamma_type: GeotechEng = GeotechEng.MEYERHOF,
+        eng: GeotechEng = GeotechEng.MEYERHOF,
     ):
-        if not isinstance(ngamma_type, GeotechEng):
-            raise TypeError(
-                f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
-            )
+        msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
+        if not isinstance(eng, GeotechEng):
+            raise TypeError(msg)
 
         num = exp(((3 * pi) / 2 - np.deg2rad(friction_angle)) * tan(friction_angle))
         den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
@@ -33,10 +32,12 @@ class TerzaghiBCF:
         self.nq = num / den
         self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
 
-        if ngamma_type is GeotechEng.MEYERHOF:
+        if eng is GeotechEng.MEYERHOF:
             self.ngamma = (self.nq - 1) * tan(1.4 * friction_angle)
-        if ngamma_type is GeotechEng.HANSEN:
+        elif eng is GeotechEng.HANSEN:
             self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
+        else:
+            raise TypeError(msg)
 
 
 class TerzaghiBearingCapacity:
@@ -49,7 +50,7 @@ class TerzaghiBearingCapacity:
         unit_weight_of_soil: float,
         foundation_depth: float,
         foundation_width: float,
-        ngamma_type: GeotechEng = GeotechEng.MEYERHOF,
+        eng: GeotechEng = GeotechEng.MEYERHOF,
     ) -> None:
         """
         :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
@@ -62,15 +63,15 @@ class TerzaghiBearingCapacity:
         :type foundation_depth: float
         :param foundation_width: width of foundation (**B**) (m)
         :type foundation_width: float
-        :param ngamma_type: specifies the type of ngamma formula to use. Available
+        :param eng: specifies the type of ngamma formula to use. Available
                             values are geolab.MEYERHOF and geolab.HANSEN
-        :type ngamma_type: str
+        :type eng: GeotechEng
         """
         self.cohesion = cohesion
         self.gamma = unit_weight_of_soil
         self.fd = foundation_depth
         self.fw = foundation_width
-        self.bearing_cap_factors = TerzaghiBCF(friction_angle, ngamma_type)
+        self.bearing_cap_factors = TerzaghiBCF(friction_angle, eng)
 
     @property
     def nc(self) -> float:
