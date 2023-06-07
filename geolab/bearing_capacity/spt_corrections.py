@@ -9,11 +9,15 @@ from geolab.utils import product
 def spt_n60(
     recorded_spt_nvalue: int,
     hammer_efficiency: float = 0.575,
-    borehole_diameter_cor: float = 1.0,
-    sampler_cor: float = 1.0,
-    rod_length_cor: float = 0.75,
+    borehole_diameter_correction: float = 1.0,
+    sampler_correction: float = 1.0,
+    rod_length_correction: float = 0.75,
 ) -> float:
-    r"""SPT N-value corrected for field procedures.
+    r"""SPT N-value corrected for field procedures according to ``Skempton (1986)``.
+
+    .. note::
+
+        This correction is to be applied irrespective of the type of soil.
 
     .. math::
 
@@ -34,13 +38,13 @@ def spt_n60(
     """
     correction = product(
         hammer_efficiency,
-        borehole_diameter_cor,
-        sampler_cor,
-        rod_length_cor,
+        borehole_diameter_correction,
+        sampler_correction,
+        rod_length_correction,
     )
 
-    corrected_spt_nvalue = correction * recorded_spt_nvalue
-    return round(corrected_spt_nvalue / 0.6, DECIMAL_PLACES)
+    corrected_spt_nvalue = (correction * recorded_spt_nvalue) / 0.6
+    return round(corrected_spt_nvalue, DECIMAL_PLACES)
 
 
 def dilatancy_spt_correction(recorded_spt_nvalue: int) -> Union[float, int]:
@@ -73,7 +77,7 @@ def dilatancy_spt_correction(recorded_spt_nvalue: int) -> Union[float, int]:
         return recorded_spt_nvalue
 
     corrected_spt_nvalue = 15 + 0.5 * (recorded_spt_nvalue - 15)
-    return np.round(corrected_spt_nvalue, DECIMAL_PLACES)
+    return round(corrected_spt_nvalue, DECIMAL_PLACES)
 
 
 def overburden_pressure_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
@@ -111,19 +115,21 @@ def overburden_pressure_spt_correction(recorded_spt_nvalue: int, eop: float) -> 
 
     .. bibliography::
     """
-    if eop > 280:
-        raise ValueError(f"{eop} should be less than or equal to 280")
+    std_pressure = 280
+
+    if eop > std_pressure:
+        raise ValueError(f"{eop} should be less than or equal to {std_pressure}")
 
     corrected_spt = recorded_spt_nvalue * (350 / (eop + 70))
     spt_ratio = corrected_spt / recorded_spt_nvalue
 
     if 0.45 < spt_ratio < 2.0:
-        return np.round(corrected_spt, DECIMAL_PLACES)
+        return round(corrected_spt, DECIMAL_PLACES)
 
     if spt_ratio > 2.0:
-        return np.round(corrected_spt / 2, DECIMAL_PLACES)
+        return round(corrected_spt / 2, DECIMAL_PLACES)
 
-    return np.round(corrected_spt, DECIMAL_PLACES)
+    return round(corrected_spt, DECIMAL_PLACES)
 
 
 def skempton_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
@@ -143,7 +149,7 @@ def skempton_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
     correction = 2 / (1 + 0.01044 * eop)
     corrected_spt = correction * recorded_spt_nvalue
 
-    return np.round(corrected_spt, DECIMAL_PLACES)
+    return round(corrected_spt, DECIMAL_PLACES)
 
 
 def bazaraa_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
@@ -168,14 +174,14 @@ def bazaraa_spt_correction(recorded_spt_nvalue: int, eop: float) -> float:
     :return: Corrected SPT N-value
     :rtype: float
     """
-    overburden_pressure = 71.8
+    std_pressure = 71.8
 
-    if np.isclose(eop, overburden_pressure, rtol=ERROR_TOLERANCE):
+    if np.isclose(eop, std_pressure, rtol=ERROR_TOLERANCE):
         return recorded_spt_nvalue
 
-    if eop < overburden_pressure:
+    if eop < std_pressure:
         spt_correction = 4 * recorded_spt_nvalue / (1 + 0.0418 * eop)
-        return np.round(spt_correction, DECIMAL_PLACES)
+        return round(spt_correction, DECIMAL_PLACES)
 
     spt_correction = 4 * recorded_spt_nvalue / (3.25 + 0.0104 * eop)
-    return np.round(spt_correction, DECIMAL_PLACES)
+    return round(spt_correction, DECIMAL_PLACES)
