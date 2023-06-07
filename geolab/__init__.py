@@ -22,7 +22,6 @@ Exceptions
 
 import enum
 
-from geolab.utils import deg2rad
 from geolab.exceptions import PIValueError, PSDValueError
 
 
