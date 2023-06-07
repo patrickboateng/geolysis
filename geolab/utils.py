@@ -7,16 +7,15 @@ exp = np.exp
 pi = np.pi
 
 
-def tan(x: float):
-    return np.tan(np.deg2rad(x))
+deg2rad = lambda x: np.deg2rad(x)
 
+rad2deg = lambda x: np.rad2deg(x)
 
-def sin(x: float):
-    return np.sin(np.deg2rad(x))
+tan = lambda x: np.tan(deg2rad(x))
 
+sin = lambda x: np.sin(deg2rad(x))
 
-def cos(x: float):
-    return np.cos(np.deg2rad(x))
+cos = lambda x: np.cos(deg2rad(x))
 
 
 def product(*args) -> float:
