@@ -3,10 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Union
 
-import numpy as np
-
 from geolab import DECIMAL_PLACES, GeotechEng
-from geolab.utils import cos, exp, pi, product, tan
+from geolab.utils import cos, exp, pi, product, tan, deg2rad
 
 
 @dataclass
@@ -26,7 +24,7 @@ class TerzaghiBCF:
         if not isinstance(eng, GeotechEng):
             raise TypeError(msg)
 
-        num = exp(((3 * pi) / 2 - np.deg2rad(friction_angle)) * tan(friction_angle))
+        num = exp(((3 * pi) / 2 - deg2rad(friction_angle)) * tan(friction_angle))
         den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 
         self.nq = num / den
