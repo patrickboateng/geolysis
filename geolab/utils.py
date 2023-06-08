@@ -17,6 +17,8 @@ sin = lambda x: np.sin(deg2rad(x))
 
 cos = lambda x: np.cos(deg2rad(x))
 
+arctan = lambda x: rad2deg(np.arctan(x))
+
 
 def product(*args) -> float:
     """Calculate the product of all the elements in the input iterable.
