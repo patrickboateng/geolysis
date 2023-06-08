@@ -35,6 +35,7 @@ class GeotechEng(enum.IntEnum):
     HOUGH = enum.auto()
     MEYERHOF = enum.auto()
     SKEMPTON = enum.auto()
+    STROUD = enum.auto()
     TERZAGHI = enum.auto()
     VESIC = enum.auto()
 
