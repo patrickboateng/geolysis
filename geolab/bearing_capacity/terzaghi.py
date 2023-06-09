@@ -20,10 +20,6 @@ class TerzaghiBCF:
         friction_angle: float,
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ):
-        msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
-        if not isinstance(eng, GeotechEng):
-            raise TypeError(msg)
-
         num = exp(((3 * pi) / 2 - deg2rad(friction_angle)) * tan(friction_angle))
         den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 
@@ -35,6 +31,7 @@ class TerzaghiBCF:
         elif eng is GeotechEng.HANSEN:
             self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
         else:
+            msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
             raise TypeError(msg)
 
 
