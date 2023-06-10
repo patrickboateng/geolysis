@@ -31,9 +31,13 @@ DECIMAL_PLACES = 2
 
 
 class GeotechEng(enum.IntEnum):
+    BAZARAA = enum.auto()
+    GIBBS = enum.auto()
     HANSEN = enum.auto()
     HOUGH = enum.auto()
+    LIAO = enum.auto()
     MEYERHOF = enum.auto()
+    PECK = enum.auto()
     SKEMPTON = enum.auto()
     STROUD = enum.auto()
     TERZAGHI = enum.auto()
