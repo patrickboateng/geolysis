@@ -19,6 +19,10 @@ cos = lambda x: np.cos(deg2rad(x))
 
 arctan = lambda x: rad2deg(np.arctan(x))
 
+log10 = lambda x: np.log10(x)
+
+sqrt = lambda x: np.sqrt(x)
+
 
 def product(*args) -> float:
     """Calculate the product of all the elements in the input iterable.
