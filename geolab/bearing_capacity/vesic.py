@@ -3,9 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Optional, Union
 
-import numpy as np
 
-from geolab import DECIMAL_PLACES, deg2rad
+from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import (
     FootingShape,
     _check_footing_dimension,
