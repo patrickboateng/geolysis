@@ -1,9 +1,26 @@
 """This module provides functions for estimating soil engineering parameters."""
 
-from typing import Optional
+from typing import Any, Optional
 
 from geolab import DECIMAL_PLACES, GeotechEng
 from geolab.utils import sin, arctan
+
+
+class unit_weight:
+    def __init__(self, spt_n60: float) -> None:
+        self.spt_n60 = spt_n60
+
+    def __call__(self, *args: Any, **kwargs: Any) -> float:
+        return self.moist()
+
+    def moist(self) -> float:
+        return round(16.0 + 0.1 * self.spt_n60, DECIMAL_PLACES)
+
+    def saturated(self) -> float:
+        return round(16.8 + 0.15 * self.spt_n60, DECIMAL_PLACES)
+
+    def submerged(self) -> float:
+        return round(8.8 + 0.01 * self.spt_n60, DECIMAL_PLACES)
 
 
 def compression_index(
@@ -73,7 +90,7 @@ def elastic_modulus(spt_n60: float) -> float:
         >>> elastic_modulus(10)
         8000
 
-    :param spt_n60: The SPT N-value corrected for 60% hammer efficiency
+    :param spt_n60: SPT N-value corrected for 60% hammer efficiency
     :type spt_n60: float
     :return: Elastic modulus of the soil :math:`kN/m^2`
     :rtype: float
@@ -154,13 +171,11 @@ def _stroud_undrained_shear_strength(spt_n60, k):
         msg = f"k should be 3.5 <= k <= 6.5 not {k}"
         raise ValueError(msg)
 
-    strength = k * spt_n60
-    return round(strength, DECIMAL_PLACES)
+    return round(k * spt_n60, DECIMAL_PLACES)
 
 
-def _skempton_undrained_shear_strength(eop, plasticity_index):
-    strength = eop * (0.11 + 0.0037 * plasticity_index)
-    return round(strength, DECIMAL_PLACES)
+def _skempton_undrained_strength(eop, plasticity_index):
+    return round(eop * (0.11 + 0.0037 * plasticity_index), DECIMAL_PLACES)
 
 
 def undrained_shear_strength(
@@ -216,7 +231,7 @@ def undrained_shear_strength(
         return _stroud_undrained_shear_strength(spt_n60, k)
 
     if eng is GeotechEng.SKEMPTON:
-        return _skempton_undrained_shear_strength(eop, plasticity_index)
+        return _skempton_undrained_strength(eop, plasticity_index)
 
     msg = f"{eng} is not a valid type for undrained shear strength"
     raise TypeError(msg)
