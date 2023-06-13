@@ -87,9 +87,9 @@ Contributing
 ------------
 
 #. `Fork it <https://github.com/patrickboateng/geolab/fork>`_
-#. Create your feature branch (`git checkout -b feature`)
-#. Commit your changes (`git commit -am 'Add some fooBar'`)
-#. Push to the branch (`git push origin feature`)
+#. Create your feature branch (``git checkout -b feature``)
+#. Commit your changes (``git commit -am 'Add some fooBar'``)
+#. Push to the branch (``git push origin feature``)
 #. Create a new Pull Request
 
 License
