@@ -43,7 +43,7 @@ Features
 - Settlement analysis tools to predict and model soil settlements under various loads and conditions.
 - Supports finite element modelling of soil behaviour under different conditions.
 
-.. toctree:: 
+.. contents:: 
 .. ## Table of Contents
 
 .. - [Installation](#installation)
