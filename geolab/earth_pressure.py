@@ -9,9 +9,9 @@ def passive_earth_pressure_coef(friction_angle: float) -> float:
 
         \dfrac{1 + \sin \phi}{1 - \sin \phi}
 
-    :param friction_angle: Internal angle of friction (degrees)
+    :param friction_angle: internal angle of friction (degrees)
     :type friction_angle: float
-    :return: Passive earth pressure coefficient
+    :return: passive earth pressure coefficient
     :rtype: float
     """
     phi = friction_angle
