@@ -2,10 +2,8 @@ import math
 
 import numpy as np
 
-
 exp = np.exp
 pi = np.pi
-
 
 deg2rad = lambda x: np.deg2rad(x)
 
@@ -24,10 +22,10 @@ log10 = lambda x: np.log10(x)
 sqrt = lambda x: np.sqrt(x)
 
 
-def product(*args) -> float:
-    """Calculate the product of all the elements in the input iterable.
+def mul(*args) -> float:
+	"""Calculate the product of all the elements in the input iterable.
 
     :return: The products of all elements in `args`
     :rtype: float
     """
-    return math.prod(args)
+	return math.prod(args)
