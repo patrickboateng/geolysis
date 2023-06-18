@@ -77,6 +77,7 @@ Release History
    :caption: Contents:
 
    reference
+   soil_classification
 
 Indices and tables
 ==================
