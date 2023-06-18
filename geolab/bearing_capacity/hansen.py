@@ -10,7 +10,7 @@ from geolab.bearing_capacity import (
     _check_footing_dimension,
     _check_footing_shape,
 )
-from geolab.utils import exp, pi, tan, product
+from geolab.utils import exp, pi, tan, mul
 
 
 @dataclass
@@ -161,9 +161,9 @@ class HansenBearingCapacity:
         :return: ultimate bearing capacity
         :rtype: float
         """
-        expr_1 = product(self.cohesion, self.nc, self.sc, self.dc, self.ic)
-        expr_2 = product(self.gamma, self.fd, self.nq, self.sq, self.dq, self.iq)
-        expr_3 = product(
+        expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
+        expr_2 = mul(self.gamma, self.fd, self.nq, self.sq, self.dq, self.iq)
+        expr_3 = mul(
             self.gamma, self.fw, self.ngamma, self.sgamma, self.dgamma, self.igamma
         )
         qult = expr_1 + expr_2 + 0.5 * expr_3

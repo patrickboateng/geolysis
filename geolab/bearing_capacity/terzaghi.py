@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Union
 
 from geolab import DECIMAL_PLACES, GeotechEng
-from geolab.utils import cos, exp, pi, product, tan, deg2rad
+from geolab.utils import cos, exp, pi, mul, tan, deg2rad
 
 
 @dataclass
@@ -140,9 +140,9 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         qult = (
-            product(self.cohesion, self.nc)
-            + product(self.gamma, self.fd, self.nq)
-            + product(0.5, self.gamma, self.fw, self.ngamma)
+		        mul(self.cohesion, self.nc)
+		        + mul(self.gamma, self.fd, self.nq)
+		        + mul(0.5, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
@@ -158,9 +158,9 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         qult = (
-            product(1.2, self.cohesion, self.nc)
-            + product(self.gamma, self.fd, self.nq)
-            + product(0.4, self.gamma, self.fw, self.ngamma)
+		        mul(1.2, self.cohesion, self.nc)
+		        + mul(self.gamma, self.fd, self.nq)
+		        + mul(0.4, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
@@ -176,9 +176,9 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         qult = (
-            product(1.2, self.cohesion, self.nc)
-            + product(self.gamma, self.fd, self.nq)
-            + product(0.3, self.gamma, self.fw, self.ngamma)
+		        mul(1.2, self.cohesion, self.nc)
+		        + mul(self.gamma, self.fd, self.nq)
+		        + mul(0.3, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)

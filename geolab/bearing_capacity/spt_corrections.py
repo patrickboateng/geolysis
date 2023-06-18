@@ -1,7 +1,7 @@
 import math
 
 from geolab import DECIMAL_PLACES, ERROR_TOLERANCE, GeotechEng
-from geolab.utils import product, log10, sqrt
+from geolab.utils import mul, log10, sqrt
 
 
 def spt_n60(
@@ -34,7 +34,7 @@ def spt_n60(
     :return: spt N-value corrected for 60% hammer efficiency
     :rtype: float
     """
-    correction = product(
+    correction = mul(
         hammer_efficiency,
         borehole_diameter_correction,
         sampler_correction,
