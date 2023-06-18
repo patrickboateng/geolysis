@@ -60,7 +60,7 @@ Installation
 
 .. note:: 
 
-  **&#9432;** This install does not work yet. Project is still under **rapid** development.
+  This install does not work yet. Project is still under **rapid** development.
 
 .. code::
 
@@ -80,7 +80,7 @@ Usage example
 Release History
 ---------------
 
-- 0.1.0
+* 0.1.0
   - **rapid** development.
 
 Contributing
@@ -103,7 +103,9 @@ Contact Information
 - Email: boatengpato.pb@gmail.com, 
 - LinkedIn: https://linkedin.com/in/patrickboateng/
 
-*For questions or comments about geolab, please contact boatengpato.pb@gmail.com*
+.. note::
+
+  For questions or comments about geolab, please contact boatengpato.pb@gmail.com
 
 Links
 -----
