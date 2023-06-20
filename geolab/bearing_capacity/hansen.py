@@ -82,6 +82,7 @@ class HansenDepthFactors:
         self.dgamma = 1.0
 
 
+@dataclass
 class HansenInclinationFactors:
     """Hansen Inclination Factors."""
 
@@ -148,7 +149,11 @@ class HansenBearingCapacity:
         self.shape_factors = HansenShapeFactors(footing_shape, self.fw, self.fl)
         self.depth_factors = HansenDepthFactors(self.fd, self.fw)
         self.incl_factors = HansenInclinationFactors(
-            self.cohesion, self.fw, self.fl, beta, total_vertical_load
+            self.cohesion,
+            self.fw,
+            self.fl,
+            beta,
+            total_vertical_load,
         )
 
     def ultimate_bearing_capacity(self) -> float:
