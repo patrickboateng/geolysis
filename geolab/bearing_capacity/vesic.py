@@ -139,7 +139,12 @@ class VesicBearingCapacity:
 
         self.bearing_cap_factors = VesicBCF(friction_angle)
         self.shape_factors = VesicShapeFactors(
-            footing_shape, self.nq, self.nc, self.fw, self.fl, friction_angle
+            footing_shape,
+            self.nq,
+            self.nc,
+            self.fw,
+            self.fl,
+            friction_angle,
         )
         self.depth_factors = VesicDepthFactors(self.fd, self.fw, friction_angle)
         self.incl_factors = VesicInclinationFactors(beta, friction_angle)
