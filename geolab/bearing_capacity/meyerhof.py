@@ -1,5 +1,7 @@
 """Meyerhof Bearing Capacity Analysis."""
 
+from dataclasses import dataclass, field
+
 from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import depth_factor
 from geolab.exceptions import AllowableSettlementError
@@ -9,6 +11,18 @@ def _check_foundation_settlement(actual_settlement: float, allow_settlement: flo
     if actual_settlement > allow_settlement:
         msg = f"actual_settlement: {actual_settlement} cannot be greater than {allow_settlement}"
         raise AllowableSettlementError(msg)
+
+
+@dataclass
+class MeyerhofBCF:
+    """Terzaghi Bearing Capacity Factors."""
+
+    nc: float = field(init=False)
+    nq: float = field(init=False)
+    ngamma: float = field(init=False)
+
+    def __init__(self, friction_angle: float):
+        ...
 
 
 class MeyerhofBearingCapacity:
