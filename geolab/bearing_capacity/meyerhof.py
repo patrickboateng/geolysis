@@ -13,16 +13,16 @@ def _check_foundation_settlement(actual_settlement: float, allow_settlement: flo
         raise AllowableSettlementError(msg)
 
 
-@dataclass
-class MeyerhofBCF:
-    """Terzaghi Bearing Capacity Factors."""
+def nc():
+    ...
 
-    nc: float = field(init=False)
-    nq: float = field(init=False)
-    ngamma: float = field(init=False)
 
-    def __init__(self, friction_angle: float):
-        ...
+def nq():
+    ...
+
+
+def ngamma():
+    ...
 
 
 class MeyerhofBearingCapacity:
