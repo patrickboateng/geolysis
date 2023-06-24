@@ -1,7 +1,5 @@
 """Meyerhof Bearing Capacity Analysis."""
 
-from dataclasses import dataclass, field
-
 from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import depth_factor
 from geolab.exceptions import AllowableSettlementError
@@ -25,42 +23,13 @@ def ngamma():
     ...
 
 
-class MeyerhofBearingCapacity:
-    """Meyerhof Bearing Capacity.
-
-    :attr ALLOWABLE_SETTLEMENT: maximum permissible settlement
-    :type ALLOWABLE_SETTLEMENT: float
-    """
-
-    ALLOWABLE_SETTLEMENT: float = 25.4
-
-    def __init__(
-        self,
-        n_design: float,
-        foundation_depth: float,
-        foundation_width: float,
-        actual_settlement: float = 25.4,
-    ) -> None:
-        """
-        :param n_design: average corrected number of blows from ``SPT N-value``
-        :type n_design: float
-        :param foundation_depth: depth of foundation (m)
-        :type foundation_depth: float
-        :param foundation_width: width of foundation (m)
-        :type foundation_width: float
-        :param actual_settlement: foundation settlement (mm)
-        :type actual_settlement: float
-        :raises AllowableSettlementError: Raised when `allow_settlement` is greater than `25.4mm`
-        """
-        _check_foundation_settlement(actual_settlement, self.ALLOWABLE_SETTLEMENT)
-
-        self.n_design = n_design
-        self.fd = foundation_depth
-        self.fw = foundation_width
-        self.se = actual_settlement
-
-    def allow_bearing_capacity(self) -> float:
-        r"""Allowable bearing capacity :math:`q_{a(net)}` for a given tolerable
+def meyerhof_allow_bearing_capacity(
+    n_design,
+    foundation_depth,
+    foundation_width,
+    actual_settlement,
+) -> float:
+    r"""Allowable bearing capacity :math:`q_{a(net)}` for a given tolerable
         settlement proposed by ``Meyerhof``.
 
         .. math::
@@ -73,18 +42,33 @@ class MeyerhofBearingCapacity:
 
                 q_{a(net)} = 11.98 N_des (\frac{3.28B + 1}{3.28B})^2 F_d \frac{S_e}{25.4}
 
-        :return: Allowable bearing capacity
-        :rtype: float
-        """
-        expr = (
-            self.n_design
-            * depth_factor(self.fd, self.fw)
-            * (self.se / self.ALLOWABLE_SETTLEMENT)
-        )
-        if self.fw <= 1.22:
-            _abc = 19.16 * expr  # allow_bearing_capacity
-            return round(_abc, DECIMAL_PLACES)
+    :param n_design: average corrected number of blows from ``SPT N-value``
+    :type n_design: float
+    :param foundation_depth: depth of foundation (m)
+    :type foundation_depth: float
+    :param foundation_width: width of foundation (m)
+    :type foundation_width: float
+    :param actual_settlement: foundation settlement (mm)
+    :type actual_settlement: float
+    :raises AllowableSettlementError: Raised when ``allow_settlement`` is greater than ``25.4mm``
+    :return: allowable bearing capacity
+    :rtype: float
 
-        # allow_bearing_capacity
-        _abc = 11.98 * ((3.28 * self.fw + 1) / (3.28 * self.fw)) ** 2 * expr
+    """
+    ALLOWABLE_SETTLEMENT = 25.4
+    _check_foundation_settlement(actual_settlement, ALLOWABLE_SETTLEMENT)
+
+    expr = (
+        n_design
+        * depth_factor(foundation_depth, foundation_width)
+        * (actual_settlement / ALLOWABLE_SETTLEMENT)
+    )
+    if foundation_width <= 1.22:
+        _abc = 19.16 * expr  # allow_bearing_capacity
         return round(_abc, DECIMAL_PLACES)
+
+    # allow_bearing_capacity
+    _abc = (
+        11.98 * ((3.28 * foundation_width + 1) / (3.28 * foundation_width)) ** 2 * expr
+    )
+    return round(_abc, DECIMAL_PLACES)
