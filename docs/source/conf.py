@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "geolab"
-copyright = "2023, Patrick Boateng"
+copyright = "2023, geolab"
 author = "Patrick Boateng"
 release = "0.1.0"
 
@@ -21,6 +21,7 @@ exclude_patterns = []
 
 # -- References ------------------------------
 # https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html
+
 bibtex_bibfiles = ["refs.bib"]
 bibtex_default_style = "unsrt"
 
@@ -29,4 +30,9 @@ bibtex_default_style = "unsrt"
 
 html_theme = "furo"
 html_static_path = ["_static"]
-html_css_files = ["css/custom.css"]
+
+html_theme_options = {
+    "light_css_variables": {
+        "font-stack--monospace": "Jetbrains Mono, monospace",
+    }
+}
