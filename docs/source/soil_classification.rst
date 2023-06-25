@@ -12,7 +12,10 @@ It is important to characterize soils to be able to assess their engineering pro
 Particle Size Distribution (PSD)
 --------------------------------
 
-The range of particle sizes in a sample of material is referred to as the particle size distribution. It is commonly measured using sieve analysis techniques, which entail using a stack of sieves to measure the size of the particles in a sample and graphing the results to illustrate the distribution of the particle sizes. The particle size distribution can provide important information about the materials' physical characteristics.
+The range of particle sizes in a sample of material is referred to as the particle size distribution. 
+It is commonly measured using sieve analysis techniques, which entail using a stack of sieves to measure 
+the size of the particles in a sample and graphing the results to illustrate the distribution of the particle 
+sizes. The particle size distribution can provide important information about the materials' physical characteristics.
 
 Soil type based on Particle Size
 --------------------------------
@@ -156,14 +159,18 @@ Atterberg Limits
 
 - **Liquid Limit (LL)**: Water content **beyond** which soil flows under their own weight (or a specified small force).
 
-- **Plastic Limit (PL)**: Water content **at** which plastic derformation can be initiated. Minimum water content at which soil can be rolled into a thread 3mm thick (molded without breaking).
+- **Plastic Limit (PL)**: Water content **at** which plastic derformation can be initiated. Minimum water 
+                          content at which soil can be rolled into a thread 3mm thick (molded without breaking).
 
 - **Plasticity Index (PI)**: Range of water content over which soil remains in the plastic condition. :math:`PI = LL - PL`
 
 Unified Soil Classification System (USCS)
 -----------------------------------------
 
-The Unified Soil Classification System was first developed by Casagrande in 1948, and later in 1952, was modified by the Bureau of Reclamation and the Corps of Engineers of the United States of America. The system has also been adopted by American Society for Testing and Materials (ASTM). The system is the most popular system for use in all types of engineering problems involving soils.
+The Unified Soil Classification System was first developed by Casagrande in 1948, and later in 1952, 
+was modified by the Bureau of Reclamation and the Corps of Engineers of the United States of America. 
+The system has also been adopted by American Society for Testing and Materials (ASTM). The system is 
+the most popular system for use in all types of engineering problems involving soils.
 
 - It is similar to the Cassagrande's Classification System.
 - It uses **Particle Size Distribution** and **Atterberg Limits** for classification.
@@ -200,7 +207,10 @@ The Unified Soil Classification System was first developed by Casagrande in 1948
 American Association of State Highway and Transportation Officials (AASHTO)
 ---------------------------------------------------------------------------
 
-AASHTO Classification system is useful for classifying soils for highways. The **Particle Size Distribution** and the plasticity characteristics are required to classify a soil. The classification system is a complete system which classifies both coarse-grained and fine-grained soils. Soils are divided into 8 major groups: ``A1 ~ A7`` (with several subgroups) and organic soils ``A8``.
+AASHTO Classification system is useful for classifying soils for highways. The **Particle Size Distribution** 
+and the plasticity characteristics are required to classify a soil. The classification system is a complete 
+system which classifies both coarse-grained and fine-grained soils. Soils are divided into 8 major groups: 
+``A1 ~ A7`` (with several subgroups) and organic soils ``A8``.
 
 ``A1 ~ A3`` (Granular Materials) :math:`\le` 35% pass No. 200 sieve
 
@@ -216,11 +226,13 @@ Fine grained soils are further rated for their suitability for highways by the g
 - LL: Liquid Limit (%), expressed as a whole number.
 - PI: Plasticity Index (%), expressed as a whole number.
 
-The smaller the value of the group index, the better is the soil in that category. A group index of zero indicates a good subgrade, whereas a group index of 20 or greater shows a very poor subgrade.
+The smaller the value of the group index, the better is the soil in that category. A group index of zero 
+indicates a good subgrade, whereas a group index of 20 or greater shows a very poor subgrade.
 
 .. note::
 
-    The group index must be mentioned even when it is zero to indicate that the soil has been classified as per **AASHTO** classification system.
+    The group index must be mentioned even when it is zero to indicate that the soil has been classified as 
+    per **AASHTO** classification system.
 
 Approximate Equivalence Between AASHTO and USC system
 -----------------------------------------------------
