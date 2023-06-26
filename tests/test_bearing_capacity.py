@@ -55,23 +55,3 @@ class TestVesic:
         assert V.ngamma == pytest.approx(exp["ngamma"], ERROR_TOLERANCE)
 
 
-# class TestMeyerhof:
-#     """Tests for Meyerhof Bearing Capacity Theory."""
-
-#     @pytest.mark.skip(reason="Need to verify values")
-#     def test_nq(self):
-#         assert Meyerhoff.nq(0) == pytest.approx(1.00, 0.01)
-#         assert Meyerhoff.nq(1) == pytest.approx(1.00, 0.01)
-#         assert Meyerhoff.nq(2) == pytest.approx(1.20, 0.01)
-
-#     @pytest.mark.xfail
-#     def test_nc(self):
-#         assert Meyerhoff.nc(0) == pytest.approx(5.14, 0.01)
-#         assert Meyerhoff.nc(1) == pytest.approx(5.38, 0.01)
-#         assert Meyerhoff.nc(2) == pytest.approx(5.63, 0.01)
-
-#     @pytest.mark.parametrize("phi,exp", M_ngamma)
-#     def test_ngamma(self, phi, exp):
-#         assert Meyerhoff.ngamma(friction_angle=phi) == pytest.approx(
-#             exp, ERROR_TOLERANCE
-#         )
