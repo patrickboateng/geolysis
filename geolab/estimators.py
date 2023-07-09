@@ -137,7 +137,9 @@ def foundation_depth(
     q_all = allow_bearing_capacity
     gamma = unit_weight_of_soil
     phi = friction_angle
-    _foundation_depth = (q_all / gamma) * ((1 - sin(phi)) / (1 + sin(phi))) ** 2
+    _foundation_depth = (q_all / gamma) * (
+        (1 - sin(phi)) / (1 + sin(phi))
+    ) ** 2
 
     return round(_foundation_depth, DECIMAL_PLACES)
 
@@ -258,7 +260,9 @@ def undrained_shear_strength(
         return round(shear_strength, DECIMAL_PLACES)
 
     if eng is GeotechEng.SKEMPTON:
-        shear_strength = _skempton_undrained_shear_strength(eop, plasticity_index)
+        shear_strength = _skempton_undrained_shear_strength(
+            eop, plasticity_index
+        )
         return round(shear_strength, DECIMAL_PLACES)
 
     msg = f"{eng} is not a valid type for undrained shear strength"
