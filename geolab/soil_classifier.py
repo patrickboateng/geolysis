@@ -97,14 +97,18 @@ def _dual_symbol(
     soil_type: str,
 ) -> str:
     grad = grading(
-        psd_coeff.curvature_coefficient, psd_coeff.uniformity_coefficient, soil_type
+        psd_coeff.curvature_coefficient,
+        psd_coeff.uniformity_coefficient,
+        soil_type,
     )
     type_of_fines = CLAY if plasticity_index > A_line(liquid_limit) else SILT
 
     return f"{soil_type}{grad}-{soil_type}{type_of_fines}"
 
 
-def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str:
+def _classify(
+    liquid_limit, plasticity_index, fines, psd, soil_type: str
+) -> str:
     if fines > 12:
         Aline = A_line(liquid_limit)
         # Limit plot in hatched zone on plasticity chart
@@ -121,7 +125,10 @@ def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str
         # Requires dual symbol based on graduation and plasticity chart
         if psd is not None:
             return _dual_symbol(
-                liquid_limit, plasticity_index, PSDCoefficient(**psd), soil_type
+                liquid_limit,
+                plasticity_index,
+                PSDCoefficient(**psd),
+                soil_type,
             )
         return (
             f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},"
@@ -135,13 +142,21 @@ def _classify(liquid_limit, plasticity_index, fines, psd, soil_type: str) -> str
     if psd is not None:
         psd_coeff = PSDCoefficient(**psd)
         grad = grading(
-            psd_coeff.curvature_coefficient, psd_coeff.uniformity_coefficient, soil_type
+            psd_coeff.curvature_coefficient,
+            psd_coeff.uniformity_coefficient,
+            soil_type,
         )
-        return f"{soil_type}{grad}" if soil_type == GRAVEL else f"{soil_type}{grad}"
+        return (
+            f"{soil_type}{grad}"
+            if soil_type == GRAVEL
+            else f"{soil_type}{grad}"
+        )
     return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
 
 
-def grading(curvature_coeff: float, uniformity_coeff: float, soil_type: str) -> str:
+def grading(
+    curvature_coeff: float, uniformity_coeff: float, soil_type: str
+) -> str:
     """Determines the grading of the soil.
 
     :param curvature_coeff: Coefficient of curvature
@@ -183,7 +198,9 @@ def A_line(liquid_limit: float) -> float:
     return round(a_line, DECIMAL_PLACES)
 
 
-def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> float:
+def group_index(
+    fines: float, liquid_limit: float, plasticity_index: float
+) -> float:
     """The ``Group Index (GI)`` is used to further evaluate soils with a group (subgroups).
 
     .. math::
@@ -199,9 +216,9 @@ def group_index(fines: float, liquid_limit: float, plasticity_index: float) -> f
     :return: The group index of the soil sample
     :rtype: float
     """
-    _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (fines - 15) * (
-        plasticity_index - 10
-    )
+    _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
+        fines - 15
+    ) * (plasticity_index - 10)
     return 0.0 if _gi <= 0 else round(_gi, DECIMAL_PLACES)
 
 
@@ -285,12 +302,17 @@ def uscs(
 
     # Below A-Line
     return (
-        f"{ORGANIC}{HIGH_PLASTICITY}" if (color or odor) else f"{SILT}{HIGH_PLASTICITY}"
+        f"{ORGANIC}{HIGH_PLASTICITY}"
+        if (color or odor)
+        else f"{SILT}{HIGH_PLASTICITY}"
     )
 
 
 def aashto(
-    liquid_limit: float, plastic_limit: float, plasticity_index: float, fines: float
+    liquid_limit: float,
+    plastic_limit: float,
+    plasticity_index: float,
+    fines: float,
 ) -> str:
     """American Association of State Highway and Transportation Officials (``AASHTO``)
     classification system.
