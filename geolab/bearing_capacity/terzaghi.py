@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Union
 
 from geolab import DECIMAL_PLACES, GeotechEng
-from geolab.utils import cos, exp, pi, mul, tan, deg2rad
+from geolab.utils import cos, exp, PI, mul, tan, deg2rad
 
 
 @dataclass
@@ -21,7 +21,7 @@ class TerzaghiBCF:
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ):
         num = exp(
-            ((3 * pi) / 2 - deg2rad(friction_angle)) * tan(friction_angle)
+            ((3 * PI) / 2 - deg2rad(friction_angle)) * tan(friction_angle)
         )
         den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 

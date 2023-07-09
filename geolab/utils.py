@@ -34,7 +34,7 @@ def sqrt(x: float) -> float:
 
 
 exp = math.exp
-pi = math.pi
+PI = math.pi
 
 
 def mul(*args) -> float:

@@ -10,7 +10,7 @@ from geolab.bearing_capacity import (
     _check_footing_dimension,
     _check_footing_shape,
 )
-from geolab.utils import exp, pi, tan, mul
+from geolab.utils import exp, PI, tan, mul
 
 
 @dataclass
@@ -23,7 +23,7 @@ class HansenBCF:
 
     def __init__(self, friction_angle: float) -> None:
         self.nq = tan(45 + friction_angle / 2) ** 2 * exp(
-            pi * tan(friction_angle)
+            PI * tan(friction_angle)
         )
         self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
         self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
