@@ -40,7 +40,7 @@ pi = math.pi
 def mul(*args) -> float:
     """Calculate the product of all the elements in the input iterable.
 
-    :return: The products of all elements in `args`
+    :return: The products of all elements in ``args``
     :rtype: float
     """
     return math.prod(args)
