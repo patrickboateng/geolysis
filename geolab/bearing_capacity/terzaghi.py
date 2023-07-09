@@ -20,7 +20,9 @@ class TerzaghiBCF:
         friction_angle: float,
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ):
-        num = exp(((3 * pi) / 2 - deg2rad(friction_angle)) * tan(friction_angle))
+        num = exp(
+            ((3 * pi) / 2 - deg2rad(friction_angle)) * tan(friction_angle)
+        )
         den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 
         self.nq = num / den
@@ -140,9 +142,9 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         qult = (
-		        mul(self.cohesion, self.nc)
-		        + mul(self.gamma, self.fd, self.nq)
-		        + mul(0.5, self.gamma, self.fw, self.ngamma)
+            mul(self.cohesion, self.nc)
+            + mul(self.gamma, self.fd, self.nq)
+            + mul(0.5, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
@@ -158,9 +160,9 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         qult = (
-		        mul(1.2, self.cohesion, self.nc)
-		        + mul(self.gamma, self.fd, self.nq)
-		        + mul(0.4, self.gamma, self.fw, self.ngamma)
+            mul(1.2, self.cohesion, self.nc)
+            + mul(self.gamma, self.fd, self.nq)
+            + mul(0.4, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)
@@ -176,9 +178,9 @@ class TerzaghiBearingCapacity:
         :rtype: float
         """
         qult = (
-		        mul(1.2, self.cohesion, self.nc)
-		        + mul(self.gamma, self.fd, self.nq)
-		        + mul(0.3, self.gamma, self.fw, self.ngamma)
+            mul(1.2, self.cohesion, self.nc)
+            + mul(self.gamma, self.fd, self.nq)
+            + mul(0.3, self.gamma, self.fw, self.ngamma)
         )
 
         return round(qult, DECIMAL_PLACES)

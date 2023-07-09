@@ -22,7 +22,9 @@ class VesicBCF:
     ngamma: float = field(init=False)
 
     def __init__(self, friction_angle: float) -> None:
-        self.nq = tan(45 + friction_angle / 2) ** 2 * exp(pi * tan(friction_angle))
+        self.nq = tan(45 + friction_angle / 2) ** 2 * exp(
+            pi * tan(friction_angle)
+        )
         self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
         self.ngamma = 2 * (self.nq + 1) * tan(friction_angle)
 
@@ -74,11 +76,16 @@ class VesicDepthFactors:
     dgamma: float = field(init=False)
 
     def __init__(
-        self, foundation_depth: float, foundation_width: float, friction_angle: float
+        self,
+        foundation_depth: float,
+        foundation_width: float,
+        friction_angle: float,
     ) -> None:
         d2w = foundation_depth / foundation_width
         self.dc = 1 + 0.4 * d2w
-        self.dq = 1 + 2 * tan(friction_angle) * (1 - sin(friction_angle)) ** 2 * d2w
+        self.dq = (
+            1 + 2 * tan(friction_angle) * (1 - sin(friction_angle)) ** 2 * d2w
+        )
         self.dgamma = 1.0
 
 
@@ -146,7 +153,9 @@ class VesicBearingCapacity:
             self.fl,
             friction_angle,
         )
-        self.depth_factors = VesicDepthFactors(self.fd, self.fw, friction_angle)
+        self.depth_factors = VesicDepthFactors(
+            self.fd, self.fw, friction_angle
+        )
         self.incl_factors = VesicInclinationFactors(beta, friction_angle)
 
     def ultimate_bearing_capacity(self) -> float:
@@ -162,7 +171,12 @@ class VesicBearingCapacity:
         expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
         expr_2 = mul(self.gamma, self.fd, self.nq, self.sq, self.dq, self.iq)
         expr_3 = mul(
-            self.gamma, self.fw, self.ngamma, self.sgamma, self.dgamma, self.igamma
+            self.gamma,
+            self.fw,
+            self.ngamma,
+            self.sgamma,
+            self.dgamma,
+            self.igamma,
         )
         qult = expr_1 + expr_2 + 0.5 * expr_3
 

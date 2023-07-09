@@ -5,7 +5,9 @@ from geolab.bearing_capacity import depth_factor
 from geolab.exceptions import AllowableSettlementError
 
 
-def _check_foundation_settlement(actual_settlement: float, allow_settlement: float):
+def _check_foundation_settlement(
+    actual_settlement: float, allow_settlement: float
+):
     if actual_settlement > allow_settlement:
         msg = f"actual_settlement: {actual_settlement} cannot be greater than {allow_settlement}"
         raise AllowableSettlementError(msg)
@@ -69,6 +71,8 @@ def meyerhof_allow_bearing_capacity(
 
     # allow_bearing_capacity
     _abc = (
-        11.98 * ((3.28 * foundation_width + 1) / (3.28 * foundation_width)) ** 2 * expr
+        11.98
+        * ((3.28 * foundation_width + 1) / (3.28 * foundation_width)) ** 2
+        * expr
     )
     return round(_abc, DECIMAL_PLACES)

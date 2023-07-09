@@ -22,7 +22,9 @@ class HansenBCF:
     ngamma: float = field(init=False)
 
     def __init__(self, friction_angle: float) -> None:
-        self.nq = tan(45 + friction_angle / 2) ** 2 * exp(pi * tan(friction_angle))
+        self.nq = tan(45 + friction_angle / 2) ** 2 * exp(
+            pi * tan(friction_angle)
+        )
         self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
         self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
 
@@ -75,7 +77,9 @@ class HansenDepthFactors:
     dq: float = field(init=False)
     dgamma: float = field(init=False)
 
-    def __init__(self, foundation_depth: float, foundation_width: float) -> None:
+    def __init__(
+        self, foundation_depth: float, foundation_width: float
+    ) -> None:
         d2w = foundation_depth / foundation_width
         self.dc = 1 + 0.35 * d2w
         self.dq = self.dc
@@ -98,7 +102,9 @@ class HansenInclinationFactors:
         beta: float,
         total_vertical_load: float,
     ) -> None:
-        self.ic = 1 - (beta) / (2 * cohesion * foundation_width * foundation_length)
+        self.ic = 1 - (beta) / (
+            2 * cohesion * foundation_width * foundation_length
+        )
         self.iq = 1 - (1.5 * beta) / total_vertical_load
         self.igamma = (self.iq) ** 2
 
@@ -146,7 +152,9 @@ class HansenBearingCapacity:
         self.fl = foundation_length
 
         self.bearing_cap_factors = HansenBCF(friction_angle)
-        self.shape_factors = HansenShapeFactors(footing_shape, self.fw, self.fl)
+        self.shape_factors = HansenShapeFactors(
+            footing_shape, self.fw, self.fl
+        )
         self.depth_factors = HansenDepthFactors(self.fd, self.fw)
         self.incl_factors = HansenInclinationFactors(
             self.cohesion,
@@ -169,7 +177,12 @@ class HansenBearingCapacity:
         expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
         expr_2 = mul(self.gamma, self.fd, self.nq, self.sq, self.dq, self.iq)
         expr_3 = mul(
-            self.gamma, self.fw, self.ngamma, self.sgamma, self.dgamma, self.igamma
+            self.gamma,
+            self.fw,
+            self.ngamma,
+            self.sgamma,
+            self.dgamma,
+            self.igamma,
         )
         qult = expr_1 + expr_2 + 0.5 * expr_3
 

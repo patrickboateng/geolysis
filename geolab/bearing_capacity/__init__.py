@@ -33,7 +33,9 @@ def depth_factor(foundation_depth: float, foundation_width: float) -> float:
     :rtype: float
     """
     _depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
-    return round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
+    return (
+        round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
+    )
 
 
 def _check_footing_dimension(width, length):
