@@ -1,6 +1,10 @@
 import math
 
 
+exp = math.exp
+PI = math.pi
+
+
 def deg2rad(x: float) -> float:
     return math.radians(x)
 
@@ -31,10 +35,6 @@ def log10(x: float) -> float:
 
 def sqrt(x: float) -> float:
     return math.sqrt(x)
-
-
-exp = math.exp
-PI = math.pi
 
 
 def mul(*args) -> float:
