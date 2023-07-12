@@ -1,40 +1,27 @@
 """Terzaghi Bearing Capacity Analysis."""
 
-from dataclasses import dataclass, field
-from typing import Union
-
 from geolab import DECIMAL_PLACES, GeotechEng
-from geolab.utils import cos, exp, PI, mul, tan, deg2rad
+from geolab.utils import PI, cos, deg2rad, exp, mul, tan
 
 
-@dataclass
-class TerzaghiBCF:
-    """Terzaghi Bearing Capacity Factors."""
+def _nc(phi: float) -> float:
+    num = exp(((3 * PI) / 2 - deg2rad(phi)) * tan(phi))
+    den = 2 * (cos(45 + (phi / 2)) ** 2)
 
-    nc: float = field(init=False)
-    nq: float = field(init=False)
-    ngamma: float = field(init=False)
+    return num / den
 
-    def __init__(
-        self,
-        friction_angle: float,
-        eng: GeotechEng = GeotechEng.MEYERHOF,
-    ):
-        num = exp(
-            ((3 * PI) / 2 - deg2rad(friction_angle)) * tan(friction_angle)
-        )
-        den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 
-        self.nq = num / den
-        self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
+def _nq(phi: float) -> float:
+    return (1 / tan(phi)) * (_nq(phi) - 1)
 
-        if eng is GeotechEng.MEYERHOF:
-            self.ngamma = (self.nq - 1) * tan(1.4 * friction_angle)
-        elif eng is GeotechEng.HANSEN:
-            self.ngamma = 1.8 * (self.nq - 1) * tan(friction_angle)
-        else:
-            msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
-            raise TypeError(msg)
+
+def _ngamma(phi: float, eng: GeotechEng = GeotechEng.MEYERHOF):
+    if eng is GeotechEng.MEYERHOF:
+        return (_nq(phi) - 1) * tan(1.4 * phi)
+    if eng is GeotechEng.HANSEN:
+        return 1.8 * (_nq(phi) - 1) * tan(phi)
+    msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
+    raise TypeError(msg)
 
 
 class TerzaghiBearingCapacity:
@@ -68,7 +55,12 @@ class TerzaghiBearingCapacity:
         self.gamma = unit_weight_of_soil
         self.fd = foundation_depth
         self.fw = foundation_width
-        self.bearing_cap_factors = TerzaghiBCF(friction_angle, eng)
+        self._friction_angle = friction_angle
+        self.eng = eng
+
+    @property
+    def friction_angle(self) -> float:
+        return self._friction_angle
 
     @property
     def nc(self) -> float:
@@ -81,11 +73,7 @@ class TerzaghiBearingCapacity:
         :return: The bearing capacity factor :math:`N_c`
         :rtype: float
         """
-        return self.bearing_cap_factors.nc
-
-    @nc.setter
-    def nc(self, val: Union[int, float]):
-        self.bearing_cap_factors.nc = val
+        return _nc(self.friction_angle)
 
     @property
     def nq(self) -> float:
@@ -98,11 +86,7 @@ class TerzaghiBearingCapacity:
         :return: The bearing capacity factor :math:`N_q`
         :rtype: float
         """
-        return self.bearing_cap_factors.nq
-
-    @nq.setter
-    def nq(self, val: Union[int, float]):
-        self.bearing_cap_factors.nq = val
+        return _nq(self.friction_angle)
 
     @property
     def ngamma(self) -> float:
@@ -125,11 +109,7 @@ class TerzaghiBearingCapacity:
         :return: The bearing capacity factor :math:`N_\gamma`
         :rtype: float
         """
-        return self.bearing_cap_factors.ngamma
-
-    @ngamma.setter
-    def ngamma(self, val: Union[int, float]):
-        self.bearing_cap_factors.ngamma = val
+        return _ngamma(self.friction_angle, self.eng)
 
     def qult_4_strip_footing(self) -> float:
         r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
