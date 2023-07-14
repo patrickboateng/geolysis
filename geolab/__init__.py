@@ -50,31 +50,3 @@ class GeotechEng(enum.IntEnum):
 
 
 globals().update(GeotechEng.__members__)
-
-
-CallableOrPrecision = Union[Callable, int]
-
-
-def round_(f: CallableOrPrecision):
-    if callable(f):
-
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            return round(f(*args, **kwargs), DECIMAL_PLACES)
-
-        return wrapper
-
-    if isinstance(f, int):  # f is the precision
-        precision = f
-
-        def dec(func):  # decorator function
-            @functools.wraps(func)
-            def wrapper(*args, **kwargs):
-                return round(func(*args, **kwargs), precision)
-
-            return wrapper
-
-        return dec
-
-    msg = "f should be a function or an int"
-    raise TypeError(msg)
