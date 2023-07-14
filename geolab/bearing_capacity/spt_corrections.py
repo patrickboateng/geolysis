@@ -1,9 +1,10 @@
 import math
 
-from geolab import DECIMAL_PLACES, ERROR_TOLERANCE, GeotechEng
+from geolab import ERROR_TOLERANCE, GeotechEng, round_
 from geolab.utils import mul, log10, sqrt
 
 
+@round_
 def spt_n60(
     recorded_spt_nvalue: int,
     hammer_efficiency: float = 0.6,
@@ -41,15 +42,11 @@ def spt_n60(
         rod_length_correction,
     )
 
-    corrected_spt_nvalue = (correction * recorded_spt_nvalue) / 0.6
-    return round(corrected_spt_nvalue, DECIMAL_PLACES)
+    return (correction * recorded_spt_nvalue) / 0.6
 
 
 def _skempton_opc(spt_n60: float, eop: float) -> float:
-    correction = 2 / (1 + 0.01044 * eop)
-    corrected_spt = correction * spt_n60
-
-    return round(corrected_spt, DECIMAL_PLACES)
+    return (2 / (1 + 0.01044 * eop)) * spt_n60
 
 
 def _bazaraa_opc(spt_n60: float, eop: float) -> float:
@@ -59,11 +56,9 @@ def _bazaraa_opc(spt_n60: float, eop: float) -> float:
         return spt_n60
 
     if eop < std_pressure:
-        spt_correction = 4 * spt_n60 / (1 + 0.0418 * eop)
-        return round(spt_correction, DECIMAL_PLACES)
+        return 4 * spt_n60 / (1 + 0.0418 * eop)
 
-    spt_correction = 4 * spt_n60 / (3.25 + 0.0104 * eop)
-    return round(spt_correction, DECIMAL_PLACES)
+    return 4 * spt_n60 / (3.25 + 0.0104 * eop)
 
 
 def _gibbs_holtz_opc(spt_n60: float, eop: float) -> float:
@@ -77,12 +72,9 @@ def _gibbs_holtz_opc(spt_n60: float, eop: float) -> float:
     spt_ratio = corrected_spt / spt_n60
 
     if 0.45 < spt_ratio < 2.0:
-        return round(corrected_spt, DECIMAL_PLACES)
+        return corrected_spt
 
-    if spt_ratio > 2.0:
-        return round(corrected_spt / 2, DECIMAL_PLACES)
-
-    return round(corrected_spt, DECIMAL_PLACES)
+    return corrected_spt / 2 if spt_ratio > 2.0 else corrected_spt
 
 
 def _peck_opc(spt_n60: float, eop: float) -> float:
@@ -92,15 +84,14 @@ def _peck_opc(spt_n60: float, eop: float) -> float:
         msg = f"{eop} should be greater than or equal to {std_pressure}"
         raise ValueError(msg)
 
-    _cn = 0.77 * log10(1905 / eop)
-
-    return round(_cn * spt_n60, DECIMAL_PLACES)
+    return 0.77 * log10(1905 / eop) * spt_n60
 
 
 def _liao_whitman_opc(spt_n60: float, eop: float) -> float:
-    return round(sqrt(100 / eop) * spt_n60, DECIMAL_PLACES)
+    return sqrt(100 / eop) * spt_n60
 
 
+@round_
 def overburden_pressure_spt_correction(
     spt_n60: float,
     eop: float,
@@ -213,6 +204,7 @@ def overburden_pressure_spt_correction(
     raise TypeError(msg)
 
 
+@round_
 def dilatancy_spt_correction(spt_n60: float) -> float:
     r"""SPT N-value Dilatancy Correction.
 
@@ -239,7 +231,4 @@ def dilatancy_spt_correction(spt_n60: float) -> float:
 
     .. bibliography::
     """
-    if spt_n60 <= 15:
-        return spt_n60
-
-    return round(15 + 0.5 * (spt_n60 - 15), DECIMAL_PLACES)
+    return spt_n60 if spt_n60 <= 15 else 15 + 0.5 * (spt_n60 - 15)
