@@ -45,7 +45,7 @@ Features
 
 - Provides soil classification based on `USCS` and `AASHTO` standards.
 - Bearing capacity analysis can be performed, both from results obtained from **laboratory** or **field**.
-- Estimates important soil engineering properties, aiding in decision-making.
+- Estimates important soil engineering properties.
 - Settlement analysis tools to predict and model soil settlements under various loads and conditions.
 - Supports finite element modelling of soil behaviour under different conditions.
 
