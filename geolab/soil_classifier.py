@@ -16,7 +16,7 @@ import math
 from dataclasses import dataclass
 from typing import Optional
 
-from geolab import DECIMAL_PLACES, ERROR_TOLERANCE, exceptions
+from geolab import ERROR_TOLERANCE, exceptions
 from geolab.utils import round_
 
 GRAVEL = "G"
@@ -31,8 +31,9 @@ HIGH_PLASTICITY = "H"
 
 
 def _check_psd(fines, sand, gravels):
-    total_aggregate = fines + sand + gravels
-    if not math.isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
+    if not math.isclose(
+        total_aggregate := fines + sand + gravels, 100, rel_tol=ERROR_TOLERANCE
+    ):
         msg = f"fines + sand + gravels = 100% not {total_aggregate}"
         raise exceptions.PSDValueError(msg)
 
