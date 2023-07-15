@@ -12,11 +12,12 @@ Public Functions
 - `aashto`: Returns the classification of the soil according to ``AASHTO`` standard
 
 """
-
 import math
+from dataclasses import dataclass
 from typing import Optional
 
 from geolab import DECIMAL_PLACES, ERROR_TOLERANCE, exceptions
+from geolab.utils import round_
 
 GRAVEL = "G"
 WELL_GRADED = "W"
@@ -43,25 +44,25 @@ def _check_pi(liquid_limit, plastic_limit, plasticity_index):
         raise exceptions.PIValueError(msg)
 
 
+@dataclass
 class PSDCoefficient:
     """Provides methods for calculating the ``coefficient of curvature`` and
     ``coefficient of uniformity``.
+
+    :param d10: diameter at which 10% of the soil by weight is finer
+    :type d10: float
+    :param d30: diameter at which 30% of the soil by weight is finer
+    :type d30: float
+    :param d60: diameter at which 60% of the soil by weight is finer
+    :type d60: float
     """
 
-    def __init__(self, d10: float, d30: float, d60: float) -> None:
-        """
-        :param d10: diameter at which 10% of the soil by weight is finer
-        :type d10: float
-        :param d30: diameter at which 30% of the soil by weight is finer
-        :type d30: float
-        :param d60: diameter at which 60% of the soil by weight is finer
-        :type d60: float
-        """
-        self.d10 = d10
-        self.d30 = d30
-        self.d60 = d60
+    d10: float
+    d30: float
+    d60: float
 
     @property
+    @round_(precision=2)
     def curvature_coefficient(self) -> float:
         r"""Calculates the coefficient of curvature of the soil.
 
@@ -72,10 +73,10 @@ class PSDCoefficient:
         :return: The coefficient of curvature of the soil
         :rtype: float
         """
-        _cc = (self.d30**2) / (self.d60 * self.d10)
-        return round(_cc, DECIMAL_PLACES)
+        return (self.d30**2) / (self.d60 * self.d10)
 
     @property
+    @round_(precision=2)
     def uniformity_coefficient(self) -> float:
         r"""Calculates the coefficient of uniformity of the soil.
 
@@ -86,8 +87,7 @@ class PSDCoefficient:
         :return: The coefficient of uniformity of the soil
         :rtype: float
         """
-        _cu = self.d60 / self.d10
-        return round(_cu, DECIMAL_PLACES)
+        return self.d60 / self.d10
 
 
 def _dual_symbol(
@@ -182,6 +182,7 @@ def grading(
     )
 
 
+@round_(precision=2)
 def A_line(liquid_limit: float) -> float:
     r"""Calculates the ``A-line``.
 
@@ -194,10 +195,10 @@ def A_line(liquid_limit: float) -> float:
     :return: The ``A-line`` of the soil
     :rtype: float
     """
-    a_line = 0.73 * (liquid_limit - 20)
-    return round(a_line, DECIMAL_PLACES)
+    return 0.73 * (liquid_limit - 20)
 
 
+@round_(precision=2)
 def group_index(
     fines: float, liquid_limit: float, plasticity_index: float
 ) -> float:
@@ -219,7 +220,7 @@ def group_index(
     _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
         fines - 15
     ) * (plasticity_index - 10)
-    return 0.0 if _gi <= 0 else round(_gi, DECIMAL_PLACES)
+    return 0.0 if _gi <= 0 else _gi
 
 
 def uscs(
