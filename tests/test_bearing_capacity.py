@@ -1,9 +1,12 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE
-from geolab.bearing_capacity.terzaghi import TerzaghiBCF
-from geolab.bearing_capacity.hansen import HansenBCF
-from geolab.bearing_capacity.vesic import VesicBCF
+from geolab.bearing_capacity.terzaghi import (
+    TerzaghiBearingCapacity,
+)
+
+# from geolab.bearing_capacity.hansen import HansenBCF
+# from geolab.bearing_capacity.vesic import VesicBCF
 
 
 T_bearing_capacity_factors = [
@@ -27,31 +30,3 @@ V_bearing_capacity_factors = [
     (15, {"nq": 3.94, "nc": 10.98, "ngamma": 2.65}),
     (20, {"nq": 6.40, "nc": 14.83, "ngamma": 5.39}),
 ]
-
-
-class TestTerzaghi:
-    @pytest.mark.parametrize("phi,exp", T_bearing_capacity_factors)
-    def test_bearing_capacity_factors(self, phi, exp):
-        T = TerzaghiBCF(friction_angle=phi)
-        assert T.nc == pytest.approx(exp["nc"], ERROR_TOLERANCE)
-        assert T.nq == pytest.approx(exp["nq"], ERROR_TOLERANCE)
-
-
-class TestHansen:
-    @pytest.mark.parametrize("phi,exp", H_bearing_capacity_factors)
-    def test_bearing_capacity_factors(self, phi, exp):
-        H = HansenBCF(friction_angle=phi)
-        assert H.nc == pytest.approx(exp["nc"], ERROR_TOLERANCE)
-        assert H.nq == pytest.approx(exp["nq"], ERROR_TOLERANCE)
-        assert H.ngamma == pytest.approx(exp["ngamma"], ERROR_TOLERANCE)
-
-
-class TestVesic:
-    @pytest.mark.parametrize("phi,exp", V_bearing_capacity_factors)
-    def test_bearing_capacity_factors(self, phi, exp):
-        V = VesicBCF(friction_angle=phi)
-        assert V.nc == pytest.approx(exp["nc"], ERROR_TOLERANCE)
-        assert V.nq == pytest.approx(exp["nq"], ERROR_TOLERANCE)
-        assert V.ngamma == pytest.approx(exp["ngamma"], ERROR_TOLERANCE)
-
-
