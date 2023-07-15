@@ -1,4 +1,8 @@
+import functools
 import math
+from typing import Callable, Union
+
+from geolab import DECIMAL_PLACES
 
 
 exp = math.exp
@@ -37,10 +41,29 @@ def sqrt(x: float) -> float:
     return math.sqrt(x)
 
 
-def mul(*args) -> float:
-    """Calculate the product of all the elements in the input iterable.
+CallableOrPrecision = Union[Callable, int]
 
-    :return: The products of all elements in ``args``
-    :rtype: float
-    """
+
+def round_(
+    precision: CallableOrPrecision,
+):
+    def dec(func, /, *, precision=DECIMAL_PLACES):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            return round(func(*args, **kwargs), ndigits=precision)
+
+        return wrapper
+
+    if callable(precision):
+        return dec(precision)  # return wrapper
+
+    if isinstance(precision, int):
+        return functools.partial(dec, precision=precision)  # return decorator
+
+    msg = "f should be a function or an int"
+    raise TypeError(msg)
+
+
+def mul(*args) -> float:
+    """Calculate the product of all the elements in the input iterable."""
     return math.prod(args)
