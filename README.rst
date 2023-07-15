@@ -1,4 +1,4 @@
-``geolab``
+geolab
 ==========
 
 ``geolab`` is an open-source software for geotechnical engineering analysis and modelling.
@@ -122,11 +122,11 @@ Links
 - `Issue Tracker <https://>`_
 - `Website <https://>`_
 
-Todo
-----
+.. Todo
+.. ----
 
-- [x] Soil Classifier
-- [x] Bearing Capacity Analysis
-- [x] Estimating Soil Engineering Parameters
-- [ ] Settlement Analysis
-- [ ] Modelling the behavior of Soils under loads using ``FEM``
+.. - [x] Soil Classifier
+.. - [x] Bearing Capacity Analysis
+.. - [x] Estimating Soil Engineering Parameters
+.. - [ ] Settlement Analysis
+.. - [ ] Modelling the behavior of Soils under loads using ``FEM``
