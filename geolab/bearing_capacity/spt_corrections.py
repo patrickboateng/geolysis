@@ -1,7 +1,7 @@
 import math
 
-from geolab import ERROR_TOLERANCE, GeotechEng, round_
-from geolab.utils import mul, log10, sqrt
+from geolab import ERROR_TOLERANCE, GeotechEng
+from geolab.utils import mul, log10, sqrt, round_
 
 
 @round_
