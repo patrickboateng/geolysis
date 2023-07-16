@@ -2,43 +2,52 @@
 
 from typing import Any, Optional
 
-from geolab import DECIMAL_PLACES, GeotechEng
-from geolab.utils import sin, arctan
+from geolab import GeotechEng
+from geolab.utils import sin, arctan, round_
 
 
 class soil_unit_weight:
-    """Calculates the moist, saturated and submerged unit weight
-    of soil.
+    """Calculates the moist, saturated and submerged unit weight of soil.
+
+    :param spt_n60: spt N-value corrected for 60% hammer efficiency
+    :type spt_n60: float
     """
 
     def __init__(self, spt_n60: float) -> None:
         self.spt_n60 = spt_n60
 
-    def __call__(self, *args: Any, **kwargs: Any) -> float:
-        return self.moist()
+    def __call__(self) -> float:
+        return self.moist
 
+    @property
+    @round_
     def moist(self) -> float:
-        return round(16.0 + 0.1 * self.spt_n60, DECIMAL_PLACES)
+        return 16.0 + 0.1 * self.spt_n60
 
+    @property
+    @round_
     def saturated(self) -> float:
-        return round(16.8 + 0.15 * self.spt_n60, DECIMAL_PLACES)
+        return 16.8 + 0.15 * self.spt_n60
 
+    @property
+    @round_
     def submerged(self) -> float:
-        return round(8.8 + 0.01 * self.spt_n60, DECIMAL_PLACES)
+        return 8.8 + 0.01 * self.spt_n60
 
 
-def _terzaghi_peck_ci(liquid_limit: float) -> float:
+def _terzaghi_peck_compression_idx(liquid_limit: float) -> float:
     return 0.009 * (liquid_limit - 10)
 
 
-def _skempton_ci(liquid_limit: float) -> float:
+def _skempton_compression_idx(liquid_limit: float) -> float:
     return 0.007 * (liquid_limit - 10)
 
 
-def _hough_ci(void_ratio: float) -> float:
+def _hough_compression_idx(void_ratio: float) -> float:
     return 0.29 * (void_ratio - 0.27)
 
 
+@round_
 def compression_index(
     liquid_limit: Optional[float] = None,
     void_ratio: Optional[float] = None,
@@ -75,21 +84,19 @@ def compression_index(
         raise ValueError(msg)
 
     if eng is GeotechEng.SKEMPTON:
-        _ci = _skempton_ci(liquid_limit)
-        return round(_ci, DECIMAL_PLACES)
+        return _skempton_compression_idx(liquid_limit)
 
     if eng is GeotechEng.TERZAGHI:
-        _ci = _terzaghi_peck_ci(liquid_limit)
-        return round(_ci, DECIMAL_PLACES)
+        return _terzaghi_peck_compression_idx(liquid_limit)
 
     if eng is GeotechEng.HOUGH:
-        _ci = _hough_ci(void_ratio)
-        return round(_ci, DECIMAL_PLACES)
+        return _hough_compression_idx(void_ratio)
 
     msg = f"{eng} is not a valid type for compression index"
     raise TypeError(msg)
 
 
+@round_
 def soil_elastic_modulus(spt_n60: float) -> float:
     r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
 
@@ -110,10 +117,10 @@ def soil_elastic_modulus(spt_n60: float) -> float:
     :return: Elastic modulus of the soil :math:`kN/m^2`
     :rtype: float
     """
-    elastic_modulus = 320 * (spt_n60 + 15)
-    return round(elastic_modulus, DECIMAL_PLACES)
+    return 320 * (spt_n60 + 15)
 
 
+@round_
 def foundation_depth(
     allow_bearing_capacity: float,
     unit_weight_of_soil: float,
@@ -134,14 +141,9 @@ def foundation_depth(
     :return: depth of foundation
     :rtype: float
     """
-    q_all = allow_bearing_capacity
-    gamma = unit_weight_of_soil
-    phi = friction_angle
-    _foundation_depth = (q_all / gamma) * (
-        (1 - sin(phi)) / (1 + sin(phi))
+    return (allow_bearing_capacity / unit_weight_of_soil) * (
+        (1 - sin(friction_angle)) / (1 + sin(friction_angle))
     ) ** 2
-
-    return round(_foundation_depth, DECIMAL_PLACES)
 
 
 def _peck_et_al_friction_angle(spt_n60: float) -> float:
@@ -157,6 +159,7 @@ def _kullhawy_mayne_friction_angle(
     return arctan(expr**0.34)
 
 
+@round_
 def friction_angle(
     spt_n60,
     eop: Optional[float] = None,
@@ -186,12 +189,9 @@ def friction_angle(
     :rtype: float
     """
     if (eop is not None) and (atm_pressure is not None):
-        phi = _kullhawy_mayne_friction_angle(spt_n60, eop, atm_pressure)
-        return round(phi, DECIMAL_PLACES)
+        return _kullhawy_mayne_friction_angle(spt_n60, eop, atm_pressure)
 
-    phi = _peck_et_al_friction_angle(spt_n60)
-    # rounded to 2 d.p for consistency with eng. practices
-    return round(phi, DECIMAL_PLACES)
+    return _peck_et_al_friction_angle(spt_n60)
 
 
 def _stroud_undrained_shear_strength(spt_n60, k):
@@ -206,6 +206,7 @@ def _skempton_undrained_shear_strength(eop, plasticity_index):
     return eop * (0.11 + 0.0037 * plasticity_index)
 
 
+@round_
 def undrained_shear_strength(
     spt_n60: Optional[float] = None,
     eop: Optional[float] = None,
@@ -256,14 +257,10 @@ def undrained_shear_strength(
     .. bibliography::
     """
     if eng is GeotechEng.STROUD:
-        shear_strength = _stroud_undrained_shear_strength(spt_n60, k)
-        return round(shear_strength, DECIMAL_PLACES)
+        return _stroud_undrained_shear_strength(spt_n60, k)
 
     if eng is GeotechEng.SKEMPTON:
-        shear_strength = _skempton_undrained_shear_strength(
-            eop, plasticity_index
-        )
-        return round(shear_strength, DECIMAL_PLACES)
+        return _skempton_undrained_shear_strength(eop, plasticity_index)
 
     msg = f"{eng} is not a valid type for undrained shear strength"
     raise TypeError(msg)
