@@ -39,8 +39,11 @@ def _check_psd(fines, sand, gravels):
 
 
 def _check_pi(liquid_limit, plastic_limit, plasticity_index):
-    pi = liquid_limit - plastic_limit
-    if not math.isclose(pi, plasticity_index, rel_tol=ERROR_TOLERANCE):
+    if not math.isclose(
+        pi := liquid_limit - plastic_limit,
+        plasticity_index,
+        rel_tol=ERROR_TOLERANCE,
+    ):
         msg = f"PI should be equal to {pi} not {plasticity_index}"
         raise exceptions.PIValueError(msg)
 
@@ -91,72 +94,76 @@ class PSDCoefficient:
         return self.d60 / self.d10
 
 
-def _dual_symbol(
-    liquid_limit: float,
-    plasticity_index: float,
-    psd_coeff: PSDCoefficient,
-    soil_type: str,
+def _dual_soil_symbol(
+    liquid_limit,
+    plasticity_index,
+    psd_coeff,
+    gravel_or_sand,
 ) -> str:
-    grad = grading(
+    soil_grade = soil_grading(
         psd_coeff.curvature_coefficient,
         psd_coeff.uniformity_coefficient,
-        soil_type,
+        gravel_or_sand,
     )
-    type_of_fines = CLAY if plasticity_index > A_line(liquid_limit) else SILT
+    clay_or_silt = CLAY if plasticity_index > A_line(liquid_limit) else SILT
 
-    return f"{soil_type}{grad}-{soil_type}{type_of_fines}"
+    return f"{gravel_or_sand}{soil_grade}-{gravel_or_sand}{clay_or_silt}"
 
 
-def _classify(
-    liquid_limit, plasticity_index, fines, psd, soil_type: str
+def _classify_soil(
+    liquid_limit,
+    plasticity_index,
+    fines,
+    psd,
+    gravel_or_sand,
 ) -> str:
     if fines > 12:
         Aline = A_line(liquid_limit)
         # Limit plot in hatched zone on plasticity chart
         if math.isclose(plasticity_index, Aline):
-            return f"{soil_type}{SILT}-{soil_type}{CLAY}"
+            return f"{gravel_or_sand}{SILT}-{gravel_or_sand}{CLAY}"
 
         if plasticity_index > Aline:
-            return f"{soil_type}{CLAY}"
+            return f"{gravel_or_sand}{CLAY}"
 
         # Below A-Line
-        return f"{soil_type}{SILT}"
+        return f"{gravel_or_sand}{SILT}"
 
     if 5 <= fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
         if psd is not None:
-            return _dual_symbol(
+            return _dual_soil_symbol(
                 liquid_limit,
                 plasticity_index,
                 PSDCoefficient(**psd),
-                soil_type,
+                gravel_or_sand,
             )
         return (
-            f"{soil_type}{WELL_GRADED}-{soil_type}{SILT},"
-            f"{soil_type}{POORLY_GRADED}-{soil_type}{SILT},"
-            f"{soil_type}{WELL_GRADED}-{soil_type}{CLAY},"
-            f"{soil_type}{POORLY_GRADED}-{soil_type}{CLAY}"
+            f"{gravel_or_sand}{WELL_GRADED}-{gravel_or_sand}{SILT},"
+            f"{gravel_or_sand}{POORLY_GRADED}-{gravel_or_sand}{SILT},"
+            f"{gravel_or_sand}{WELL_GRADED}-{gravel_or_sand}{CLAY},"
+            f"{gravel_or_sand}{POORLY_GRADED}-{gravel_or_sand}{CLAY}"
         )
 
     # Less than 5% pass No. 200 sieve
     # Obtain Cc and Cu from grain size graph
     if psd is not None:
         psd_coeff = PSDCoefficient(**psd)
-        grad = grading(
+        soil_grade = soil_grading(
             psd_coeff.curvature_coefficient,
             psd_coeff.uniformity_coefficient,
-            soil_type,
+            gravel_or_sand,
         )
         return (
-            f"{soil_type}{grad}"
-            if soil_type == GRAVEL
-            else f"{soil_type}{grad}"
+            f"{gravel_or_sand}{soil_grade}"
+            if gravel_or_sand == GRAVEL
+            else f"{gravel_or_sand}{soil_grade}"
         )
-    return f"{soil_type}{WELL_GRADED} or {soil_type}{POORLY_GRADED}"
+    return f"{gravel_or_sand}{WELL_GRADED} or {gravel_or_sand}{POORLY_GRADED}"
 
 
-def grading(
-    curvature_coeff: float, uniformity_coeff: float, soil_type: str
+def soil_grading(
+    curvature_coeff: float, uniformity_coeff: float, gravel_or_sand: str
 ) -> str:
     """Determines the grading of the soil.
 
@@ -164,13 +171,13 @@ def grading(
     :type curvature_coeff: float
     :param uniformity_coeff: Coefficient of uniformity
     :type uniformity_coeff: float
-    :param soil_type: Type of soil. ``G`` for Gravel and ``S`` for Sand
-    :type soil_type: str
+    :param gravel_or_sand: Type of soil. ``G`` for Gravel and ``S`` for Sand
+    :type gravel_or_sand: str
     :raises exceptions.SoilTypeError: Raised when invalid soil type is specified
     :return: The grading of the soil (W or P)
     :rtype: str
     """
-    if soil_type == GRAVEL:
+    if gravel_or_sand == GRAVEL:
         return (
             WELL_GRADED
             if (1 < curvature_coeff < 3) and (uniformity_coeff >= 4)
@@ -224,7 +231,7 @@ def group_index(
     return 0.0 if _gi <= 0 else _gi
 
 
-def uscs(
+def unified_soil_classification(
     liquid_limit: float,
     plastic_limit: float,
     plasticity_index: float,
@@ -274,12 +281,12 @@ def uscs(
 
     if fines < 50:
         # Coarse grained, Run Sieve Analysis
-        soil_info = (liquid_limit, plasticity_index, fines, psd)
+        soil_properties = (liquid_limit, plasticity_index, fines, psd)
         if gravels > sand:
             # Gravel
-            return _classify(*soil_info, soil_type=GRAVEL)
+            return _classify_soil(*soil_properties, gravel_or_sand=GRAVEL)
         # Sand
-        return _classify(*soil_info, soil_type=SAND)
+        return _classify_soil(*soil_properties, gravel_or_sand=SAND)
 
     # Fine grained, Run Atterberg
     Aline = A_line(liquid_limit)
@@ -310,7 +317,7 @@ def uscs(
     )
 
 
-def aashto(
+def aashto_soil_classification(
     liquid_limit: float,
     plastic_limit: float,
     plasticity_index: float,
@@ -337,7 +344,7 @@ def aashto(
     :rtype: str
     """
     _check_pi(liquid_limit, plastic_limit, plasticity_index)
-    gi = group_index(fines, liquid_limit, plasticity_index)
+    gi = f"{group_index(fines, liquid_limit, plasticity_index):.0f}"
 
     if fines <= 35:
         if liquid_limit <= 40:
@@ -346,13 +353,13 @@ def aashto(
 
     # Silts A4-A7
     if liquid_limit <= 40:
-        return f"A-4({gi:.0f})" if plasticity_index <= 10 else f"A-6({gi:.0f})"
+        return f"A-4({gi})" if plasticity_index <= 10 else f"A-6({gi})"
 
     if plasticity_index <= 10:
-        return f"A-5({gi:.0f})"
+        return f"A-5({gi})"
 
     return (
-        f"A-7-5({gi:.0f})"
+        f"A-7-5({gi})"
         if plasticity_index <= (liquid_limit - 30)
-        else f"A-7-6({gi:.0f})"
+        else f"A-7-6({gi})"
     )
