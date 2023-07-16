@@ -225,10 +225,10 @@ def group_index(
     :return: The group index of the soil sample
     :rtype: float
     """
-    _gi = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
+    grp_idx = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
         fines - 15
     ) * (plasticity_index - 10)
-    return 0.0 if _gi <= 0 else _gi
+    return 0.0 if grp_idx <= 0 else grp_idx
 
 
 def unified_soil_classification(
@@ -265,7 +265,8 @@ def unified_soil_classification(
     :type sand: float
     :param gravels: Percentage of gravels in soil sample (%)
     :type gravels: float
-    :param psd: Particle Size Distribution of the soil sample, defaults to None
+    :param psd: ``Particle Size Distribution`` of the soil sample. This should be a ``dict``
+                with ``d10``, ``d30``, ``d60`` as keys. defaults to None
     :type psd: dict, optional
     :param color: Indicates if soil has color or not, defaults to False
     :type color: bool, optional
@@ -344,22 +345,32 @@ def aashto_soil_classification(
     :rtype: str
     """
     _check_pi(liquid_limit, plastic_limit, plasticity_index)
-    gi = f"{group_index(fines, liquid_limit, plasticity_index):.0f}"
+    grp_idx = f"{group_index(fines, liquid_limit, plasticity_index):.0f}"
 
     if fines <= 35:
         if liquid_limit <= 40:
-            return f"A-2-4({gi})" if plasticity_index <= 10 else f"A-2-6({gi})"
-        return f"A-2-5({gi})" if plasticity_index <= 10 else f"A-2-7({gi})"
+            return (
+                f"A-2-4({grp_idx})"
+                if plasticity_index <= 10
+                else f"A-2-6({grp_idx})"
+            )
+        return (
+            f"A-2-5({grp_idx})"
+            if plasticity_index <= 10
+            else f"A-2-7({grp_idx})"
+        )
 
     # Silts A4-A7
     if liquid_limit <= 40:
-        return f"A-4({gi})" if plasticity_index <= 10 else f"A-6({gi})"
+        return (
+            f"A-4({grp_idx})" if plasticity_index <= 10 else f"A-6({grp_idx})"
+        )
 
     if plasticity_index <= 10:
-        return f"A-5({gi})"
+        return f"A-5({grp_idx})"
 
     return (
-        f"A-7-5({gi})"
+        f"A-7-5({grp_idx})"
         if plasticity_index <= (liquid_limit - 30)
-        else f"A-7-6({gi})"
+        else f"A-7-6({grp_idx})"
     )
