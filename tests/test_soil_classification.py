@@ -1,7 +1,13 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE, PIValueError, PSDValueError
-from geolab.soil_classifier import PSDCoefficient, aashto, grading, group_index, uscs
+from geolab.soil_classifier import (
+    PSDCoefficient,
+    aashto_soil_classification,
+    soil_grading,
+    group_index,
+    unified_soil_classification,
+)
 
 dual_class_test_data = [
     (
@@ -33,12 +39,12 @@ single_class_test_data = [
 ]
 
 aashto_class_test_data = [
-    ((17.9, 14.5, 3.4, 24.01), "A-2-4(0.0)"),
+    ((17.9, 14.5, 3.4, 24.01), "A-2-4(0)"),
     ((37.7, 23.8, 13.9, 47.44), "A-6(4)"),
-    ((30.1, 16.4, 13.7, 18.38), "A-2-6(0.0)"),
+    ((30.1, 16.4, 13.7, 18.38), "A-2-6(0)"),
     ((61.7, 32.3, 29.4, 52.09), "A-7-5(12)"),
     ((52.6, 27.6, 25, 45.8), "A-7-6(7)"),
-    ((30.2, 23.9, 6.3, 11.18), "A-2-4(0.0)"),
+    ((30.2, 23.9, 6.3, 11.18), "A-2-4(0)"),
     ((70, 38, 32, 86), "A-7-5(33)"),
 ]
 
@@ -51,7 +57,7 @@ coefficient_of_curvature_test_data = [
 
 
 def test_grading():
-    assert grading(0.95, 4, "G") == "P"
+    assert soil_grading(0.95, 4, "G") == "P"
 
 
 def test_group_index():
@@ -60,32 +66,40 @@ def test_group_index():
 
 def test_PSD():
     with pytest.raises(PSDValueError):
-        uscs(30, 10, 20, 30, 30, 30)
+        unified_soil_classification(30, 10, 20, 30, 30, 30)
 
 
 def test_PI():
     with pytest.raises(PIValueError):
-        aashto(30, 10, 10, 30)
-        uscs(30, 10, 10, 30, 30, 40)
+        aashto_soil_classification(30, 10, 10, 30)
+        unified_soil_classification(30, 10, 10, 30, 30, 40)
 
 
 @pytest.mark.parametrize("psd,exp", coefficient_of_curvature_test_data)
 def test_PSDCoeffiecient(psd, exp):
     psd_coeff = PSDCoefficient(*psd)
-    assert psd_coeff.curvature_coefficient == pytest.approx(exp["cc"], ERROR_TOLERANCE)
-    assert psd_coeff.uniformity_coefficient == pytest.approx(exp["cu"], ERROR_TOLERANCE)
+    assert psd_coeff.curvature_coefficient == pytest.approx(
+        exp["cc"], ERROR_TOLERANCE
+    )
+    assert psd_coeff.uniformity_coefficient == pytest.approx(
+        exp["cu"], ERROR_TOLERANCE
+    )
 
 
 @pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
 def test_aashto(soil_params, classification):
-    assert aashto(*soil_params) == classification
+    assert aashto_soil_classification(*soil_params) == classification
 
 
-@pytest.mark.parametrize("soil_params,psd,classification", dual_class_test_data)
-def test_dual_classification(soil_params: tuple, psd: dict, classification: dict):
-    assert uscs(*soil_params, psd=psd) == classification
+@pytest.mark.parametrize(
+    "soil_params,psd,classification", dual_class_test_data
+)
+def test_dual_classification(
+    soil_params: tuple, psd: dict, classification: dict
+):
+    assert unified_soil_classification(*soil_params, psd=psd) == classification
 
 
 @pytest.mark.parametrize("soil_params,classification", single_class_test_data)
 def test_single_classification(soil_params: tuple, classification: str):
-    assert uscs(*soil_params) == classification
+    assert unified_soil_classification(*soil_params) == classification
