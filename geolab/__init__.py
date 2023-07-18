@@ -21,8 +21,6 @@ Exceptions
 """
 
 import enum
-import functools
-from typing import Any, Callable, Union
 
 from geolab.exceptions import PIValueError, PSDValueError
 
