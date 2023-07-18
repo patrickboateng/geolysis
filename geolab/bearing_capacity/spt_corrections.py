@@ -1,7 +1,7 @@
 import math
 
 from geolab import ERROR_TOLERANCE, GeotechEng
-from geolab.utils import mul, log10, sqrt, round_
+from geolab.utils import log10, mul, round_, sqrt
 
 
 @round_
@@ -97,9 +97,8 @@ def overburden_pressure_spt_correction(
     eop: float,
     eng: GeotechEng = GeotechEng.GIBBS,
 ) -> float:
-    r"""
-    SPT N-value Overburden Pressure Correction.
-    ===========================================
+    r"""SPT N-value Overburden Pressure Correction.
+
 
     Gibbs and Holtz (1957)
     ----------------------
