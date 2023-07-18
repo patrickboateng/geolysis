@@ -1,11 +1,12 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE, PIValueError, PSDValueError
+from geolab import ERROR_TOLERANCE
+from geolab.exceptions import PIValueError, PSDValueError
 from geolab.soil_classifier import (
     PSDCoefficient,
     aashto_soil_classification,
-    soil_grading,
     group_index,
+    soil_grading,
     unified_soil_classification,
 )
 
