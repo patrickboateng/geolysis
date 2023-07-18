@@ -22,8 +22,6 @@ Exceptions
 
 import enum
 
-from geolab.exceptions import PIValueError, PSDValueError
-
 
 __version__ = "0.1.0"
 ERROR_TOLERANCE = 0.01
