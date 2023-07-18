@@ -1,7 +1,7 @@
-from geolab import DECIMAL_PLACES
-from geolab.utils import sin
+from geolab.utils import sin, round_
 
 
+@round_
 def passive_earth_pressure_coef(friction_angle: float) -> float:
     r"""Coefficient of passive earth pressure :math:`K_p`.
 
@@ -14,6 +14,4 @@ def passive_earth_pressure_coef(friction_angle: float) -> float:
     :return: passive earth pressure coefficient
     :rtype: float
     """
-    phi = friction_angle
-    kp = (1 + sin(phi)) / (1 - sin(phi))
-    return round(kp, DECIMAL_PLACES)
+    return (1 + sin(friction_angle)) / (1 - sin(friction_angle))
