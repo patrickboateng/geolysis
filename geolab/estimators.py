@@ -1,6 +1,6 @@
 """This module provides functions for estimating soil engineering parameters."""
 
-from typing import Any, Optional
+from typing import Optional
 
 from geolab import GeotechEng
 from geolab.utils import sin, arctan, round_
