@@ -22,7 +22,6 @@ Exceptions
 
 import enum
 
-
 __version__ = "0.1.0"
 ERROR_TOLERANCE = 0.01
 DECIMAL_PLACES = 3
