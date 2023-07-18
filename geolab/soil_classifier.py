@@ -30,7 +30,7 @@ LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
-def _check_psd(fines, sand, gravels):
+def _check_size_distribution(fines, sand, gravels):
     if not math.isclose(
         total_aggregate := fines + sand + gravels, 100, rel_tol=ERROR_TOLERANCE
     ):
@@ -38,7 +38,7 @@ def _check_psd(fines, sand, gravels):
         raise exceptions.PSDValueError(msg)
 
 
-def _check_pi(liquid_limit, plastic_limit, plasticity_index):
+def _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index):
     if not math.isclose(
         pi := liquid_limit - plastic_limit,
         plasticity_index,
@@ -174,7 +174,7 @@ def soil_grading(
     :param gravel_or_sand: Type of soil. ``G`` for Gravel and ``S`` for Sand
     :type gravel_or_sand: str
     :raises exceptions.SoilTypeError: Raised when invalid soil type is specified
-    :return: The grading of the soil (W or P)
+    :return: The grading of the soil (W -> WELL GRADED or P -> POORLY GRADED)
     :rtype: str
     """
     if gravel_or_sand == GRAVEL:
@@ -183,6 +183,8 @@ def soil_grading(
             if (1 < curvature_coeff < 3) and (uniformity_coeff >= 4)
             else POORLY_GRADED
         )
+
+    # Sand
     return (
         WELL_GRADED
         if (1 < curvature_coeff < 3) and (uniformity_coeff >= 6)
@@ -277,8 +279,8 @@ def unified_soil_classification(
     :return: The unified classification of the soil
     :rtype: str
     """
-    _check_pi(liquid_limit, plastic_limit, plasticity_index)
-    _check_psd(fines, sand, gravels)
+    _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index)
+    _check_size_distribution(fines, sand, gravels)
 
     if fines < 50:
         # Coarse grained, Run Sieve Analysis
@@ -344,7 +346,7 @@ def aashto_soil_classification(
     :return: The ``aashto`` classification of the soil
     :rtype: str
     """
-    _check_pi(liquid_limit, plastic_limit, plasticity_index)
+    _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index)
     grp_idx = f"{group_index(fines, liquid_limit, plasticity_index):.0f}"
 
     if fines <= 35:
