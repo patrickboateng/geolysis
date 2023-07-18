@@ -1,4 +1,4 @@
-from geolab.utils import sin, round_
+from geolab.utils import round_, sin
 
 
 @round_

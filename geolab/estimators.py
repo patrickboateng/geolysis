@@ -3,7 +3,7 @@
 from typing import Optional
 
 from geolab import GeotechEng
-from geolab.utils import sin, arctan, round_
+from geolab.utils import arctan, round_, sin
 
 
 class soil_unit_weight:

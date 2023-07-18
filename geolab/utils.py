@@ -4,7 +4,6 @@ from typing import Callable, Union
 
 from geolab import DECIMAL_PLACES
 
-
 exp = math.exp
 PI = math.pi
 
