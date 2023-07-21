@@ -1,8 +1,24 @@
 """This module provides functions for bearing capacity analysis."""
 
 import enum
+from dataclasses import dataclass
 
 from geolab import DECIMAL_PLACES
+
+
+BearingCapacityFactors = dict[str, float]
+
+
+@dataclass
+class FootingSize:
+    width: float
+    length: float
+
+
+@dataclass
+class FoundationSize:
+    footing_size: FootingSize
+    depth: float
 
 
 class FootingShape(enum.IntEnum):
