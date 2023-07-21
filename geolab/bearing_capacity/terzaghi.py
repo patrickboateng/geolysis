@@ -1,12 +1,11 @@
 """Terzaghi Bearing Capacity Analysis."""
 
-from types import SimpleNamespace
-
 from geolab import GeotechEng
 from geolab.bearing_capacity import (
     FootingShape,
     FoundationSize,
     BearingCapacityFactors,
+    _check_footing_shape,
 )
 from geolab.utils import PI, cos, deg2rad, exp, mul, round_, tan
 
@@ -112,6 +111,8 @@ class TerzaghiBearingCapacity:
         footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ) -> None:
+        _check_footing_shape(footing_shape)
+
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
@@ -200,7 +201,7 @@ class TerzaghiBearingCapacity:
         :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
         :rtype: float
         """
-        bcf = SimpleNamespace(nc=self.nc, nq=self.nq, ngamma=self.ngamma)
+        bcf = BearingCapacityFactors(self.nc, self.nq, self.ngamma)
 
         if self.footing_shape is FootingShape.STRIP_FOOTING:
             return _qult_4_strip_footing(
@@ -225,6 +226,3 @@ class TerzaghiBearingCapacity:
                 self.foundation_size,
                 bcf,
             )
-
-        msg = ""
-        raise TypeError(msg)
