@@ -1,7 +1,14 @@
 """Terzaghi Bearing Capacity Analysis."""
 
-from geolab import DECIMAL_PLACES, GeotechEng
-from geolab.utils import PI, cos, deg2rad, exp, mul, tan
+from types import SimpleNamespace
+
+from geolab import GeotechEng
+from geolab.bearing_capacity import (
+    FootingShape,
+    FoundationSize,
+    BearingCapacityFactors,
+)
+from geolab.utils import PI, cos, deg2rad, exp, mul, round_, tan
 
 
 def _nc(phi: float) -> float:
@@ -24,45 +31,96 @@ def _ngamma(phi: float, eng: GeotechEng = GeotechEng.MEYERHOF):
     raise TypeError(msg)
 
 
+def _qult_4_strip_footing(
+    cohesion: float,
+    soil_unit_weight: float,
+    foundation_size: FoundationSize,
+    bcf: BearingCapacityFactors,
+) -> float:
+    return (
+        mul(cohesion, bcf.nc)
+        + mul(soil_unit_weight, foundation_size.depth, bcf.nq)
+        + mul(
+            0.5,
+            soil_unit_weight,
+            foundation_size.footing_size.width,
+            bcf.ngamma,
+        )
+    )
+
+
+def _qult_4_square_footing(
+    cohesion: float,
+    soil_unit_weight: float,
+    foundation_size: FoundationSize,
+    bcf: BearingCapacityFactors,
+):
+    return (
+        mul(1.2, cohesion, bcf.nc)
+        + mul(soil_unit_weight, foundation_size.depth, bcf.nq)
+        + mul(
+            0.4,
+            soil_unit_weight,
+            foundation_size.footing_size.width,
+            bcf.ngamma,
+        )
+    )
+
+
+def _qult_4_circular_footing(
+    cohesion: float,
+    soil_unit_weight: float,
+    foundation_size: FoundationSize,
+    bcf: BearingCapacityFactors,
+):
+    return (
+        mul(1.2, cohesion, bcf.nc)
+        + mul(soil_unit_weight, foundation_size.depth, bcf.nq)
+        + mul(
+            0.3,
+            soil_unit_weight,
+            foundation_size.footing_size.width,
+            bcf.ngamma,
+        )
+    )
+
+
 class TerzaghiBearingCapacity:
-    """Terzaghi Bearing Capacity."""
+    """Terzaghi Bearing Capacity.
+
+    :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
+    :type cohesion: float
+    :param friction_angle: internal angle of friction (degrees)
+    :type friction_angle: float
+    :param soil_unit_weight: unit weight of soil :math:`(kN/m^3)`
+    :type soil_unit_weight: float
+    :param foundation_depth: depth of foundation :math:`d_f` (m)
+    :type foundation_depth: float
+    :param foundation_width: width of foundation (**B**) (m)
+    :type foundation_width: float
+    :param eng: specifies the type of ngamma formula to use. Available
+                values are geolab.MEYERHOF and geolab.HANSEN
+    :type eng: GeotechEng
+    """
 
     def __init__(
         self,
         cohesion: float,
         friction_angle: float,
-        unit_weight_of_soil: float,
-        foundation_depth: float,
-        foundation_width: float,
+        soil_unit_weight: float,
+        foundation_size: FoundationSize,
+        footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ) -> None:
-        """
-        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
-        :type cohesion: float
-        :param friction_angle: internal angle of friction (degrees)
-        :type friction_angle: float
-        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
-        :type unit_weight_of_soil: float
-        :param foundation_depth: depth of foundation :math:`d_f` (m)
-        :type foundation_depth: float
-        :param foundation_width: width of foundation (**B**) (m)
-        :type foundation_width: float
-        :param eng: specifies the type of ngamma formula to use. Available
-                    values are geolab.MEYERHOF and geolab.HANSEN
-        :type eng: GeotechEng
-        """
         self.cohesion = cohesion
-        self.gamma = unit_weight_of_soil
-        self.fd = foundation_depth
-        self.fw = foundation_width
-        self._friction_angle = friction_angle
+        self.soil_unit_weight = soil_unit_weight
+        self.foundation_size = foundation_size
+        self.friction_angle = friction_angle
+        self.footing_shape = footing_shape
         self.eng = eng
 
     @property
-    def friction_angle(self) -> float:
-        return self._friction_angle
-
-    @property
+    @round_
     def nc(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_c`.
 
@@ -76,6 +134,7 @@ class TerzaghiBearingCapacity:
         return _nc(self.friction_angle)
 
     @property
+    @round_
     def nq(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_q`.
 
@@ -89,6 +148,7 @@ class TerzaghiBearingCapacity:
         return _nq(self.friction_angle)
 
     @property
+    @round_
     def ngamma(self) -> float:
         r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`.
 
@@ -111,44 +171,27 @@ class TerzaghiBearingCapacity:
         """
         return _ngamma(self.friction_angle, self.eng)
 
-    def qult_4_strip_footing(self) -> float:
-        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``.
+    @round_
+    def ultimate_bearing_capacity(self) -> float:
+        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``, ``square footing``
+        and ``circular footing``.
+
+        STRIP FOOTING
+        -------------
 
         .. math::
 
             q_u = cN_c + \gamma D_f N_q + 0.5 \gamma B N_\gamma
 
-        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
-        :rtype: float
-        """
-        qult = (
-            mul(self.cohesion, self.nc)
-            + mul(self.gamma, self.fd, self.nq)
-            + mul(0.5, self.gamma, self.fw, self.ngamma)
-        )
-
-        return round(qult, DECIMAL_PLACES)
-
-    def qult_4_square_footing(self):
-        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``square footing``.
+        SQUARE FOOTING
+        --------------
 
         .. math::
 
             q_u = 1.2cN_c + \gamma D_f N_q + 0.4 \gamma B N_\gamma
 
-        :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
-        :rtype: float
-        """
-        qult = (
-            mul(1.2, self.cohesion, self.nc)
-            + mul(self.gamma, self.fd, self.nq)
-            + mul(0.4, self.gamma, self.fw, self.ngamma)
-        )
-
-        return round(qult, DECIMAL_PLACES)
-
-    def qult_4_circular_footing(self):
-        r"""Ultimate bearing capacity according to ``Terzaghi`` for ``circular footing``.
+        CIRCULAR FOOTING
+        ----------------
 
         .. math::
 
@@ -157,10 +200,31 @@ class TerzaghiBearingCapacity:
         :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
         :rtype: float
         """
-        qult = (
-            mul(1.2, self.cohesion, self.nc)
-            + mul(self.gamma, self.fd, self.nq)
-            + mul(0.3, self.gamma, self.fw, self.ngamma)
-        )
+        bcf = SimpleNamespace(nc=self.nc, nq=self.nq, ngamma=self.ngamma)
 
-        return round(qult, DECIMAL_PLACES)
+        if self.footing_shape is FootingShape.STRIP_FOOTING:
+            return _qult_4_strip_footing(
+                self.cohesion,
+                self.soil_unit_weight,
+                self.foundation_size,
+                bcf,
+            )
+
+        if self.footing_shape is FootingShape.SQUARE_FOOTING:
+            return _qult_4_square_footing(
+                self.cohesion,
+                self.soil_unit_weight,
+                self.foundation_size,
+                bcf,
+            )
+
+        if self.footing_shape is FootingShape.CIRCULAR_FOOTING:
+            return _qult_4_circular_footing(
+                self.cohesion,
+                self.soil_unit_weight,
+                self.foundation_size,
+                bcf,
+            )
+
+        msg = ""
+        raise TypeError(msg)
