@@ -3,22 +3,31 @@
 import enum
 from dataclasses import dataclass
 
-from geolab import DECIMAL_PLACES
+from geolab.utils import round_
 
 
-BearingCapacityFactors = dict[str, float]
+class SoilProperties:
+    cohesion: float
+    soil_unit_weight: float
 
 
-@dataclass
+@dataclass(slots=True)
 class FootingSize:
     width: float
     length: float
 
 
-@dataclass
+@dataclass(slots=True)
 class FoundationSize:
     footing_size: FootingSize
     depth: float
+
+
+@dataclass(slots=True)
+class BearingCapacityFactors:
+    nc: float
+    nq: float
+    ngamma: float
 
 
 class FootingShape(enum.IntEnum):
@@ -34,6 +43,7 @@ class FootingShape(enum.IntEnum):
         return f"{self.__class__.__name__}.{self.name}"
 
 
+@round_
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
     r"""Depth factor used in estimating the allowable bearing capacity of a soil.
 
@@ -49,9 +59,7 @@ def depth_factor(foundation_depth: float, foundation_width: float) -> float:
     :rtype: float
     """
     _depth_factor = 1 + 0.33 * (foundation_depth / foundation_width)
-    return (
-        round(_depth_factor, DECIMAL_PLACES) if _depth_factor <= 1.33 else 1.33
-    )
+    return min(_depth_factor, 1.33)
 
 
 def _check_footing_dimension(width, length):
