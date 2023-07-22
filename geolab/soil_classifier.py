@@ -13,7 +13,7 @@ Public Functions
 
 """
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple, field, asdict
 from typing import Optional
 
 from geolab import ERROR_TOLERANCE, exceptions
@@ -48,7 +48,35 @@ def _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index):
         raise exceptions.PIValueError(msg)
 
 
-@dataclass
+@dataclass(slots=True)
+class AtterbergLimits:
+    liquid_limit: float
+    plastic_limit: float
+    plasticity_index: float
+
+
+@dataclass(slots=True)
+class ParticleSizes:
+    d10: float
+    d30: float
+    d60: float
+
+    def __bool__(self):
+        return all((self.d10, self.d30, self.d60))
+
+
+@dataclass(slots=True)
+class ParticleSizeDistribution:
+    fines: float
+    sands: float
+    gravels: float
+    particle_sizes: Optional[ParticleSizes] = field(default=None)
+
+    def has_particle_sizes(self):
+        return bool(self.particle_sizes)
+
+
+@dataclass(slots=True)
 class PSDCoefficient:
     """Provides methods for calculating the ``coefficient of curvature`` and
     ``coefficient of uniformity``.
@@ -111,13 +139,12 @@ def _dual_soil_symbol(
 
 
 def _classify_soil(
-    liquid_limit,
-    plasticity_index,
-    fines,
-    psd,
-    gravel_or_sand,
+    liquid_limit: float,
+    plasticity_index: float,
+    psd: ParticleSizeDistribution,
+    gravel_or_sand: str,
 ) -> str:
-    if fines > 12:
+    if psd.fines > 12:
         Aline = A_line(liquid_limit)
         # Limit plot in hatched zone on plasticity chart
         if math.isclose(plasticity_index, Aline):
@@ -129,13 +156,13 @@ def _classify_soil(
         # Below A-Line
         return f"{gravel_or_sand}{SILT}"
 
-    if 5 <= fines <= 12:
+    if 5 <= psd.fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
-        if psd is not None:
+        if psd.has_particle_sizes():
             return _dual_soil_symbol(
                 liquid_limit,
                 plasticity_index,
-                PSDCoefficient(**psd),
+                PSDCoefficient(**asdict(psd.particle_sizes)),
                 gravel_or_sand,
             )
         return (
@@ -147,8 +174,8 @@ def _classify_soil(
 
     # Less than 5% pass No. 200 sieve
     # Obtain Cc and Cu from grain size graph
-    if psd is not None:
-        psd_coeff = PSDCoefficient(**psd)
+    if psd.has_particle_sizes():
+        psd_coeff = PSDCoefficient(**asdict(psd.particle_sizes))
         soil_grade = soil_grading(
             psd_coeff.curvature_coefficient,
             psd_coeff.uniformity_coefficient,
@@ -210,7 +237,9 @@ def A_line(liquid_limit: float) -> float:
 
 @round_(precision=2)
 def group_index(
-    fines: float, liquid_limit: float, plasticity_index: float
+    fines: float,
+    liquid_limit: float,
+    plasticity_index: float,
 ) -> float:
     """The ``Group Index (GI)`` is used to further evaluate soils with a group (subgroups).
 
@@ -234,14 +263,9 @@ def group_index(
 
 
 def unified_soil_classification(
-    liquid_limit: float,
-    plastic_limit: float,
-    plasticity_index: float,
-    fines: float,
-    sand: float,
-    gravels: float,
+    atterberg_limits: AtterbergLimits,
+    psd: ParticleSizeDistribution,
     *,
-    psd: Optional[dict] = None,
     color: Optional[bool] = False,
     odor: Optional[bool] = False,
 ) -> str:
@@ -255,21 +279,10 @@ def unified_soil_classification(
     and highly organic soils. Additionally, the system has been adopted by the American Society for
     Testing and Materials (``ASTM``).
 
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
-    :type liquid_limit: float
-    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
-    :type plastic_limit: float
-    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
-    :type plasticity_index: float
-    :param fines: Percentage of fines in soil sample (%)
-    :type fines: float
-    :param sand:  Percentage of sand in soil sample (%)
-    :type sand: float
-    :param gravels: Percentage of gravels in soil sample (%)
-    :type gravels: float
-    :param psd: ``Particle Size Distribution`` of the soil sample. This should be a ``dict``
-                with ``d10``, ``d30``, ``d60`` as keys. defaults to None
-    :type psd: dict, optional
+    :param atterberg_limits:
+    :type atterberg_limits:
+    :param psd:
+    :type psd:
     :param color: Indicates if soil has color or not, defaults to False
     :type color: bool, optional
     :param odor: Indicates if soil has odor or not, defaults to False
@@ -279,26 +292,38 @@ def unified_soil_classification(
     :return: The unified classification of the soil
     :rtype: str
     """
-    _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index)
-    _check_size_distribution(fines, sand, gravels)
+    _check_plasticity_idx(
+        atterberg_limits.liquid_limit,
+        atterberg_limits.plastic_limit,
+        atterberg_limits.plasticity_index,
+    )
+    _check_size_distribution(psd.fines, psd.sands, psd.gravels)
 
-    if fines < 50:
+    if psd.fines < 50:
         # Coarse grained, Run Sieve Analysis
-        soil_properties = (liquid_limit, plasticity_index, fines, psd)
-        if gravels > sand:
+        soil_properties = (
+            atterberg_limits.liquid_limit,
+            atterberg_limits.plasticity_index,
+            psd,
+        )
+        if psd.gravels > psd.sands:
             # Gravel
             return _classify_soil(*soil_properties, gravel_or_sand=GRAVEL)
         # Sand
         return _classify_soil(*soil_properties, gravel_or_sand=SAND)
 
     # Fine grained, Run Atterberg
-    Aline = A_line(liquid_limit)
-    if liquid_limit < 50:
+    Aline = A_line(atterberg_limits.liquid_limit)
+    if atterberg_limits.liquid_limit < 50:
         # Low LL
-        if (plasticity_index > Aline) and (plasticity_index > 7):
+        if (atterberg_limits.plasticity_index > Aline) and (
+            atterberg_limits.plasticity_index > 7
+        ):
             return f"{CLAY}{LOW_PLASTICITY}"
 
-        if (plasticity_index < Aline) or (plasticity_index < 4):
+        if (atterberg_limits.plasticity_index < Aline) or (
+            atterberg_limits.plasticity_index < 4
+        ):
             return (
                 f"{ORGANIC}{LOW_PLASTICITY}"
                 if (color or odor)
@@ -309,7 +334,7 @@ def unified_soil_classification(
         return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
 
     # High LL
-    if plasticity_index > Aline:
+    if atterberg_limits.plasticity_index > Aline:
         return f"{CLAY}{HIGH_PLASTICITY}"
 
     # Below A-Line
@@ -321,9 +346,7 @@ def unified_soil_classification(
 
 
 def aashto_soil_classification(
-    liquid_limit: float,
-    plastic_limit: float,
-    plasticity_index: float,
+    atterberg_limits: AtterbergLimits,
     fines: float,
 ) -> str:
     """American Association of State Highway and Transportation Officials (``AASHTO``)
@@ -334,45 +357,48 @@ def aashto_soil_classification(
     both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
     with subgroups, along with a separate category (A8) for organic soils.
 
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
-    :type liquid_limit: float
-    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
-    :type plastic_limit: float
-    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
-    :type plasticity_index: float
+    :param atterberg_limits:
+    :type atterberg_limits:
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
     :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
     :return: The ``aashto`` classification of the soil
     :rtype: str
     """
-    _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index)
-    grp_idx = f"{group_index(fines, liquid_limit, plasticity_index):.0f}"
+    _check_plasticity_idx(
+        atterberg_limits.liquid_limit,
+        atterberg_limits.plastic_limit,
+        atterberg_limits.plasticity_index,
+    )
+    grp_idx = f"{group_index(fines, atterberg_limits.liquid_limit, atterberg_limits.plasticity_index):.0f}"
 
     if fines <= 35:
-        if liquid_limit <= 40:
+        if atterberg_limits.liquid_limit <= 40:
             return (
                 f"A-2-4({grp_idx})"
-                if plasticity_index <= 10
+                if atterberg_limits.plasticity_index <= 10
                 else f"A-2-6({grp_idx})"
             )
         return (
             f"A-2-5({grp_idx})"
-            if plasticity_index <= 10
+            if atterberg_limits.plasticity_index <= 10
             else f"A-2-7({grp_idx})"
         )
 
     # Silts A4-A7
-    if liquid_limit <= 40:
+    if atterberg_limits.liquid_limit <= 40:
         return (
-            f"A-4({grp_idx})" if plasticity_index <= 10 else f"A-6({grp_idx})"
+            f"A-4({grp_idx})"
+            if atterberg_limits.plasticity_index <= 10
+            else f"A-6({grp_idx})"
         )
 
-    if plasticity_index <= 10:
+    if atterberg_limits.plasticity_index <= 10:
         return f"A-5({grp_idx})"
 
     return (
         f"A-7-5({grp_idx})"
-        if plasticity_index <= (liquid_limit - 30)
+        if atterberg_limits.plasticity_index
+        <= (atterberg_limits.liquid_limit - 30)
         else f"A-7-6({grp_idx})"
     )
