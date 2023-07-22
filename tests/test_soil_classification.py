@@ -8,6 +8,9 @@ from geolab.soil_classifier import (
     group_index,
     soil_grading,
     unified_soil_classification,
+    AtterbergLimits,
+    ParticleSizeDistribution,
+    ParticleSizes,
 )
 
 dual_class_test_data = [
@@ -67,13 +70,17 @@ def test_group_index():
 
 def test_PSD():
     with pytest.raises(PSDValueError):
-        unified_soil_classification(30, 10, 20, 30, 30, 30)
+        atterberg_limits = AtterbergLimits(30, 10, 20)
+        psd = ParticleSizeDistribution(30, 30, 30)
+        unified_soil_classification(atterberg_limits, psd)
 
 
 def test_PI():
     with pytest.raises(PIValueError):
-        aashto_soil_classification(30, 10, 10, 30)
-        unified_soil_classification(30, 10, 10, 30, 30, 40)
+        atterberg_limits = AtterbergLimits(30, 10, 10)
+        psd = ParticleSizeDistribution(30, 30, 40)
+        aashto_soil_classification(atterberg_limits, fines=30)
+        unified_soil_classification(atterberg_limits, psd)
 
 
 @pytest.mark.parametrize("psd,exp", coefficient_of_curvature_test_data)
@@ -89,18 +96,51 @@ def test_PSDCoeffiecient(psd, exp):
 
 @pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
 def test_aashto(soil_params, classification):
-    assert aashto_soil_classification(*soil_params) == classification
+    liquid_limit, plastic_limit, plasticity_index, fines = soil_params
+    atterberg_limits = AtterbergLimits(
+        liquid_limit, plastic_limit, plasticity_index
+    )
+    assert (
+        aashto_soil_classification(atterberg_limits, fines) == classification
+    )
 
 
 @pytest.mark.parametrize(
-    "soil_params,psd,classification", dual_class_test_data
+    "soil_params,particle_sizes,classification", dual_class_test_data
 )
 def test_dual_classification(
-    soil_params: tuple, psd: dict, classification: dict
+    soil_params: tuple, particle_sizes: dict, classification: dict
 ):
-    assert unified_soil_classification(*soil_params, psd=psd) == classification
+    (
+        liquid_limit,
+        plastic_limit,
+        plasticity_index,
+        fines,
+        sands,
+        gravels,
+    ) = soil_params
+    atterberg_limits = AtterbergLimits(
+        liquid_limit, plastic_limit, plasticity_index
+    )
+    _particle_sizes = ParticleSizes(**particle_sizes)
+    psd = ParticleSizeDistribution(fines, sands, gravels, _particle_sizes)
+    assert unified_soil_classification(atterberg_limits, psd) == classification
 
 
 @pytest.mark.parametrize("soil_params,classification", single_class_test_data)
 def test_single_classification(soil_params: tuple, classification: str):
-    assert unified_soil_classification(*soil_params) == classification
+    (
+        liquid_limit,
+        plastic_limit,
+        plasticity_index,
+        fines,
+        sands,
+        gravels,
+    ) = soil_params
+    atterberg_limits = AtterbergLimits(
+        liquid_limit,
+        plastic_limit,
+        plasticity_index,
+    )
+    psd = ParticleSizeDistribution(fines, sands, gravels)
+    assert unified_soil_classification(atterberg_limits, psd) == classification
