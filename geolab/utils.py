@@ -43,9 +43,7 @@ def sqrt(x: float) -> float:
 CallableOrPrecision = Union[Callable, int]
 
 
-def round_(
-    precision: CallableOrPrecision,
-):
+def round_(precision: CallableOrPrecision):
     def dec(func, /, *, precision=DECIMAL_PLACES):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -59,7 +57,7 @@ def round_(
     if isinstance(precision, int):
         return functools.partial(dec, precision=precision)  # return decorator
 
-    msg = "f should be a function or an int"
+    msg = "precision should be a function or an int"
     raise TypeError(msg)
 
 
