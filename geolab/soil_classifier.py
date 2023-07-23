@@ -13,7 +13,7 @@ Public Functions
 
 """
 import math
-from dataclasses import dataclass, astuple, field, asdict
+from dataclasses import dataclass, field, asdict
 from typing import Optional
 
 from geolab import ERROR_TOLERANCE, exceptions
