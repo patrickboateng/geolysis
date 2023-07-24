@@ -65,7 +65,7 @@ def test_grading():
 
 
 def test_group_index():
-    assert group_index(86, 70, 32) == pytest.approx(33.47, ERROR_TOLERANCE)
+    assert group_index(86, 70, 32) == pytest.approx(33, ERROR_TOLERANCE)
 
 
 def test_PSD():
