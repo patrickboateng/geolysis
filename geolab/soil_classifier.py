@@ -278,7 +278,7 @@ def A_line(liquid_limit: float) -> float:
     return 0.73 * (liquid_limit - 20)
 
 
-@round_(precision=2)
+@round_(precision=0)
 def group_index(
     fines: float,
     liquid_limit: float,
@@ -386,7 +386,12 @@ def aashto_soil_classification(
         atterberg_limits.plastic_limit,
         atterberg_limits.plasticity_index,
     )
-    grp_idx = f"{group_index(fines, atterberg_limits.liquid_limit, atterberg_limits.plasticity_index):.0f}"
+    grp_idx = group_index(
+        fines,
+        atterberg_limits.liquid_limit,
+        atterberg_limits.plasticity_index,
+    )
+    grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
 
     if fines <= 35:
         if atterberg_limits.liquid_limit <= 40:
