@@ -40,16 +40,18 @@ def _check_size_distribution(fines, sand, gravels):
 
 def _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index):
     if not math.isclose(
-        pi := liquid_limit - plastic_limit,
+        _plasticity_idx := liquid_limit - plastic_limit,
         plasticity_index,
         rel_tol=ERROR_TOLERANCE,
     ):
-        msg = f"PI should be equal to {pi} not {plasticity_index}"
+        msg = f"PI should be equal to {_plasticity_idx} not {plasticity_index}"
         raise exceptions.PIValueError(msg)
 
 
 @dataclass(slots=True)
 class AtterbergLimits:
+    """Atterberg Limits."""
+
     liquid_limit: float
     plastic_limit: float
     plasticity_index: float
@@ -57,6 +59,8 @@ class AtterbergLimits:
 
 @dataclass(slots=True)
 class ParticleSizes:
+    """Particle Sizes."""
+
     d10: float
     d30: float
     d60: float
@@ -67,12 +71,14 @@ class ParticleSizes:
 
 @dataclass(slots=True)
 class ParticleSizeDistribution:
+    """Particle Size Distribution."""
+
     fines: float
     sands: float
     gravels: float
     particle_sizes: Optional[ParticleSizes] = field(default=None)
 
-    def has_particle_sizes(self):
+    def has_particle_sizes(self) -> bool:
         return bool(self.particle_sizes)
 
 
@@ -138,7 +144,44 @@ def _dual_soil_symbol(
     return f"{gravel_or_sand}{soil_grade}-{gravel_or_sand}{clay_or_silt}"
 
 
-def _classify_soil(
+def _classify_fine_soil(
+    atterberg_limits: AtterbergLimits,
+    color: bool,
+    odor: bool,
+) -> str:
+    Aline = A_line(atterberg_limits.liquid_limit)
+    if atterberg_limits.liquid_limit < 50:
+        # Low LL
+        if (atterberg_limits.plasticity_index > Aline) and (
+            atterberg_limits.plasticity_index > 7
+        ):
+            return f"{CLAY}{LOW_PLASTICITY}"
+
+        if (atterberg_limits.plasticity_index < Aline) or (
+            atterberg_limits.plasticity_index < 4
+        ):
+            return (
+                f"{ORGANIC}{LOW_PLASTICITY}"
+                if (color or odor)
+                else f"{SILT}{LOW_PLASTICITY}"
+            )
+
+        # Limits plot in hatched area on plasticity chart
+        return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+
+    # High LL
+    if atterberg_limits.plasticity_index > Aline:
+        return f"{CLAY}{HIGH_PLASTICITY}"
+
+    # Below A-Line
+    return (
+        f"{ORGANIC}{HIGH_PLASTICITY}"
+        if (color or odor)
+        else f"{SILT}{HIGH_PLASTICITY}"
+    )
+
+
+def _classify_coarse_soil(
     liquid_limit: float,
     plasticity_index: float,
     psd: ParticleSizeDistribution,
@@ -308,41 +351,14 @@ def unified_soil_classification(
         )
         if psd.gravels > psd.sands:
             # Gravel
-            return _classify_soil(*soil_properties, gravel_or_sand=GRAVEL)
+            return _classify_coarse_soil(
+                *soil_properties, gravel_or_sand=GRAVEL
+            )
         # Sand
-        return _classify_soil(*soil_properties, gravel_or_sand=SAND)
+        return _classify_coarse_soil(*soil_properties, gravel_or_sand=SAND)
 
     # Fine grained, Run Atterberg
-    Aline = A_line(atterberg_limits.liquid_limit)
-    if atterberg_limits.liquid_limit < 50:
-        # Low LL
-        if (atterberg_limits.plasticity_index > Aline) and (
-            atterberg_limits.plasticity_index > 7
-        ):
-            return f"{CLAY}{LOW_PLASTICITY}"
-
-        if (atterberg_limits.plasticity_index < Aline) or (
-            atterberg_limits.plasticity_index < 4
-        ):
-            return (
-                f"{ORGANIC}{LOW_PLASTICITY}"
-                if (color or odor)
-                else f"{SILT}{LOW_PLASTICITY}"
-            )
-
-        # Limits plot in hatched area on plasticity chart
-        return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
-
-    # High LL
-    if atterberg_limits.plasticity_index > Aline:
-        return f"{CLAY}{HIGH_PLASTICITY}"
-
-    # Below A-Line
-    return (
-        f"{ORGANIC}{HIGH_PLASTICITY}"
-        if (color or odor)
-        else f"{SILT}{HIGH_PLASTICITY}"
-    )
+    return _classify_fine_soil(atterberg_limits, color, odor)
 
 
 def aashto_soil_classification(
