@@ -12,16 +12,16 @@ from geolab.bearing_capacity import (
 from geolab.utils import PI, exp, mul, round_, tan
 
 
-def _nc(phi: float) -> float:
-    return (1 / tan(phi)) * (_nq(phi) - 1)
+def _nc(friction_angle: float) -> float:
+    return (1 / tan(friction_angle)) * (_nq(friction_angle) - 1)
 
 
-def _nq(phi: float) -> float:
-    return tan(45 + phi / 2) ** 2 * exp(PI * tan(phi))
+def _nq(friction_angle: float) -> float:
+    return tan(45 + friction_angle / 2) ** 2 * exp(PI * tan(friction_angle))
 
 
-def _ngamma(phi: float) -> float:
-    return 1.8 * (_nq(phi) - 1) * tan(phi)
+def _ngamma(friction_angle: float) -> float:
+    return 1.8 * (_nq(friction_angle) - 1) * tan(friction_angle)
 
 
 def _sc(
@@ -72,10 +72,10 @@ def _sgamma(
     if footing_shape is FootingShape.SQUARE_FOOTING:
         return 0.8
 
-    elif footing_shape is FootingShape.CIRCULAR_FOOTING:
+    if footing_shape is FootingShape.CIRCULAR_FOOTING:
         return 0.6
 
-    else:
+    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
         _check_footing_dimension(footing_size.width, footing_size.length)
 
         return 1 - 0.4 * (footing_size.width / footing_size.length)
