@@ -2,30 +2,30 @@
 
 from geolab import GeotechEng
 from geolab.bearing_capacity import (
+    BearingCapacityFactors,
     FootingShape,
     FoundationSize,
-    BearingCapacityFactors,
     _check_footing_shape,
 )
 from geolab.utils import PI, cos, deg2rad, exp, mul, round_, tan
 
 
-def _nc(phi: float) -> float:
-    num = exp(((3 * PI) / 2 - deg2rad(phi)) * tan(phi))
-    den = 2 * (cos(45 + (phi / 2)) ** 2)
+def _nc(friction_angle: float) -> float:
+    num = exp(((3 * PI) / 2 - deg2rad(friction_angle)) * tan(friction_angle))
+    den = 2 * (cos(45 + (friction_angle / 2)) ** 2)
 
     return num / den
 
 
-def _nq(phi: float) -> float:
-    return (1 / tan(phi)) * (_nq(phi) - 1)
+def _nq(friction_angle: float) -> float:
+    return (1 / tan(friction_angle)) * (_nq(friction_angle) - 1)
 
 
-def _ngamma(phi: float, eng: GeotechEng = GeotechEng.MEYERHOF):
+def _ngamma(friction_angle: float, eng: GeotechEng = GeotechEng.MEYERHOF):
     if eng is GeotechEng.MEYERHOF:
-        return (_nq(phi) - 1) * tan(1.4 * phi)
+        return (_nq(friction_angle) - 1) * tan(1.4 * friction_angle)
     if eng is GeotechEng.HANSEN:
-        return 1.8 * (_nq(phi) - 1) * tan(phi)
+        return 1.8 * (_nq(friction_angle) - 1) * tan(friction_angle)
     msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
     raise TypeError(msg)
 
