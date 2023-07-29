@@ -220,7 +220,7 @@ class HansenBearingCapacity(BearingCapacity):
         :return: A `float` representing the depth factor :math:`d_c`
         :rtype: float
         """
-        return _dc(self.foundation_depth, self.foundation_width)
+        return _dc(self.foundation_size)
 
     @property
     @round_
@@ -234,7 +234,7 @@ class HansenBearingCapacity(BearingCapacity):
         :return: A `float` representing the depth factor :math:`d_q`
         :rtype: float
         """
-        return _dq(self.foundation_depth, self.foundation_width)
+        return _dq(self.foundation_size)
 
     @property
     def dgamma(self) -> float:
@@ -271,11 +271,7 @@ class HansenBearingCapacity(BearingCapacity):
         :return: A `float` representing the shape factor :math:`S_c`
         :rtype: float
         """
-        return _sc(
-            self.footing_shape,
-            self.foundation_width,
-            self.foundation_length,
-        )
+        return _sc(self.footing_shape, self.foundation_size.footing_size)
 
     @property
     @round_
@@ -299,11 +295,7 @@ class HansenBearingCapacity(BearingCapacity):
         :return: A `float` representing the shape factor :math:`S_q`
         :rtype: float
         """
-        return _sq(
-            self.footing_shape,
-            self.foundation_width,
-            self.foundation_length,
-        )
+        return _sq(self.footing_shape, self.foundation_size.footing_size)
 
     @property
     @round_
@@ -327,11 +319,7 @@ class HansenBearingCapacity(BearingCapacity):
         :return: A `float` representing the shape factor :math:`S_\gamma`
         :rtype: float
         """
-        return _sgamma(
-            self.footing_shape,
-            self.foundation_width,
-            self.foundation_length,
-        )
+        return _sgamma(self.footing_shape, self.foundation_size.footing_size)
 
     @property
     @round_
@@ -345,12 +333,7 @@ class HansenBearingCapacity(BearingCapacity):
         :return: A `float` representing the inclination factor :math:`i_c`
         :rtype: float
         """
-        return _ic(
-            self.cohesion,
-            self.foundation_width,
-            self.foundation_length,
-            self.beta,
-        )
+        return _ic(self.cohesion, self.foundation_size.footing_size, self.beta)
 
     @property
     @round_
