@@ -154,7 +154,6 @@ class HansenBearingCapacity(BearingCapacity):
         )
         self.total_vertical_load = total_vertical_load
 
-    @round_
     def ultimate_bearing_capacity(self) -> float:
         r"""Ultimate bearing capacity according to ``Hansen``.
 
