@@ -3,13 +3,13 @@
 from typing import Optional
 
 from geolab.bearing_capacity import (
+    BearingCapacity,
     FootingShape,
     FootingSize,
     FoundationSize,
     _check_footing_dimension,
-    _check_footing_shape,
 )
-from geolab.utils import PI, exp, mul, round_, tan
+from geolab.utils import PI, exp, round_, tan
 
 
 def _nc(friction_angle: float) -> float:
@@ -115,13 +115,13 @@ def _igamma(total_vertical_load: float, beta: float) -> float:
     return _iq(total_vertical_load, beta) ** 2
 
 
-class HansenBearingCapacity:
+class HansenBearingCapacity(BearingCapacity):
     """Hansen Bearing Capacity.
 
     :param cohesion: Cohesion of foundation soil :math:`(kN/m^2)`
     :type cohesion: float
-    :param unit_weight_of_soil: Unit weight of soil :math:`(kN/m^3)`
-    :type unit_weight_of_soil: float
+    :param soil_unit_weight: Unit weight of soil :math:`(kN/m^3)`
+    :type soil_unit_weight: float
     :param foundation_size: Size of foundation
     :param friction_angle: Internal angle of friction (degrees)
     :type friction_angle: float
@@ -137,22 +137,22 @@ class HansenBearingCapacity:
     def __init__(
         self,
         cohesion: float,
-        unit_weight_of_soil: float,
+        soil_unit_weight: float,
         foundation_size: FoundationSize,
         friction_angle: float,
         beta: float,
         total_vertical_load: float,
         footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
     ) -> None:
-        _check_footing_shape(footing_shape)
-
-        self.cohesion = cohesion
-        self.unit_weight_of_soil = unit_weight_of_soil
-        self.foundation_size = foundation_size
-        self.friction_angle = friction_angle
-        self.beta = beta
+        super().__init__(
+            cohesion,
+            soil_unit_weight,
+            foundation_size,
+            friction_angle,
+            beta,
+            footing_shape,
+        )
         self.total_vertical_load = total_vertical_load
-        self.footing_shape = footing_shape
 
     @round_
     def ultimate_bearing_capacity(self) -> float:
@@ -165,24 +165,7 @@ class HansenBearingCapacity:
         :return: ultimate bearing capacity
         :rtype: float
         """
-        expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
-        expr_2 = mul(
-            self.unit_weight_of_soil,
-            self.foundation_depth,
-            self.nq,
-            self.sq,
-            self.dq,
-            self.iq,
-        )
-        expr_3 = mul(
-            self.unit_weight_of_soil,
-            self.foundation_width,
-            self.ngamma,
-            self.sgamma,
-            self.dgamma,
-            self.igamma,
-        )
-        return expr_1 + expr_2 + (0.5 * expr_3)
+        return super().ultimate_bearing_capacity()
 
     @property
     @round_
