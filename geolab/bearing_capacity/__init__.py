@@ -56,10 +56,11 @@ class BearingCapacity(ABC):
         self.beta = beta
         self.footing_shape = footing_shape
 
+    @round_
     def ultimate_bearing_capacity(self) -> float:
         expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
         expr_2 = mul(
-            self.unit_weight_of_soil,
+            self.soil_unit_weight,
             self.foundation_size.depth,
             self.nq,
             self.sq,
@@ -67,7 +68,7 @@ class BearingCapacity(ABC):
             self.iq,
         )
         expr_3 = mul(
-            self.unit_weight_of_soil,
+            self.soil_unit_weight,
             self.foundation_size.footing_size.width,
             self.ngamma,
             self.sgamma,
