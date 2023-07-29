@@ -118,24 +118,19 @@ def _igamma(total_vertical_load: float, beta: float) -> float:
 class HansenBearingCapacity:
     """Hansen Bearing Capacity.
 
-    :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
+    :param cohesion: Cohesion of foundation soil :math:`(kN/m^2)`
     :type cohesion: float
-    :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
+    :param unit_weight_of_soil: Unit weight of soil :math:`(kN/m^3)`
     :type unit_weight_of_soil: float
-    :param foundation_depth: depth of foundation (m)
-    :type foundation_depth: float
-    :param foundation_width: width of foundation (m)
-    :type foundation_width: float
-    :param foundation_length: length of foundation (m)
-    :type foundation_length: float
-    :param friction_angle: internal angle of friction (degrees)
+    :param foundation_size: Size of foundation
+    :param friction_angle: Internal angle of friction (degrees)
     :type friction_angle: float
-    ::param beta: inclination of the load on the foundation with
+    ::param beta: Inclination of the load on the foundation with
                   respect to the vertical (degrees)
     :type beta: float
-    :param total_vertical_load: total vertical load on foundation
+    :param total_vertical_load: Total vertical load on foundation
     :type total_vertical_load: float
-    :param footing_shape: shape of the footing
+    :param footing_shape: Shape of the footing
     :type footing_shape: float
     """
 
