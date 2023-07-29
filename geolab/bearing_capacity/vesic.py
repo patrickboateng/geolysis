@@ -1,8 +1,7 @@
 """Vesic Bearing Capacity Analysis."""
 
-from typing import Optional, Union
+from typing import Optional
 
-from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import (
     BearingCapacity,
     FootingShape,
