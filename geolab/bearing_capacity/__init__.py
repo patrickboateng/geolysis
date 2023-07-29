@@ -1,10 +1,10 @@
 """This module provides functions for bearing capacity analysis."""
 
 import enum
-from dataclasses import dataclass
 from abc import ABC, abstractproperty
+from dataclasses import dataclass
 
-from geolab.utils import round_, mul
+from geolab.utils import mul, round_
 
 
 class SoilProperties:
