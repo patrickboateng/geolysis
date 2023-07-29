@@ -1,162 +1,160 @@
 """Vesic Bearing Capacity Analysis."""
 
-from dataclasses import dataclass, field
 from typing import Optional, Union
-
 
 from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import (
+    BearingCapacity,
     FootingShape,
+    FootingSize,
+    FoundationSize,
     _check_footing_dimension,
-    _check_footing_shape,
 )
-from geolab.utils import exp, PI, tan, mul, sin
+from geolab.utils import PI, exp, mul, round_, sin, tan
 
 
-@dataclass
-class VesicBCF:
-    """Vesic Bearing Capacity Factors."""
+def _nc(friction_angle: float) -> float:
+    return (1 / tan(friction_angle)) * (_nq(friction_angle) - 1)
 
-    nc: float = field(init=False)
-    nq: float = field(init=False)
-    ngamma: float = field(init=False)
 
-    def __init__(self, friction_angle: float) -> None:
-        self.nq = tan(45 + friction_angle / 2) ** 2 * exp(
-            PI * tan(friction_angle)
+def _nq(friction_angle: float) -> float:
+    return tan(45 + friction_angle / 2) ** 2 * exp(PI * tan(friction_angle))
+
+
+def _ngamma(friction_angle: float) -> float:
+    return 2 * (_nq(friction_angle) + 1) * tan(friction_angle)
+
+
+def _sc(
+    friction_angle: float,
+    footing_shape: FootingShape,
+    footing_size: Optional[FootingSize] = None,
+) -> float:
+    if footing_shape is FootingShape.STRIP_FOOTING:
+        return 1.0
+
+    if (
+        footing_shape is FootingShape.SQUARE_FOOTING
+        or footing_shape is FootingShape.CIRCULAR_FOOTING
+    ):
+        return 1 + _nq(friction_angle) / _nc(friction_angle)
+
+    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
+        _check_footing_dimension(footing_size.width, footing_size.length)
+
+        return 1 + (footing_size.width / footing_size.length) * (
+            _nq(friction_angle) / _nc(friction_angle)
         )
-        self.nc = (1 / tan(friction_angle)) * (self.nq - 1)
-        self.ngamma = 2 * (self.nq + 1) * tan(friction_angle)
 
 
-@dataclass
-class VesicShapeFactors:
-    """Vesic Shape Factors."""
+def _sq(
+    friction_angle: float,
+    footing_shape: FootingShape,
+    footing_size: Optional[FootingSize] = None,
+) -> float:
+    if footing_shape is FootingShape.STRIP_FOOTING:
+        return 1.0
 
-    sc: float = field(init=False)
-    sq: float = field(init=False)
-    sgamma: float = field(init=False)
+    if (
+        footing_shape is FootingShape.SQUARE_FOOTING
+        or footing_shape is FootingShape.CIRCULAR_FOOTING
+    ):
+        return 1 + tan(friction_angle)
 
-    def __init__(
-        self,
-        footing_shape: FootingShape,
-        nq: float,
-        nc: float,
-        friction_angle: float,
-        foundation_width: Optional[float] = None,
-        foundation_length: Optional[float] = None,
-    ) -> None:
-        _check_footing_shape(footing_shape)
+    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
+        _check_footing_dimension(footing_size.width, footing_size.length)
 
-        if footing_shape is FootingShape.STRIP_FOOTING:
-            self.sc = 1.0
-            self.sq = 1.0
-            self.sgamma = 1.0
-
-        elif footing_shape is FootingShape.RECTANGULAR_FOOTING:
-            _check_footing_dimension(foundation_width, foundation_length)
-            w2l = foundation_width / foundation_length
-
-            self.sc = 1 + (w2l) * (nq / nc)
-            self.sq = 1 + (w2l) * tan(friction_angle)
-            self.sgamma = 1 - 0.4 * (w2l)
-
-        else:
-            self.sc = 1 + (nq / nc)
-            self.sq = 1 + tan(friction_angle)
-            self.sgamma = 0.6
-
-
-@dataclass
-class VesicDepthFactors:
-    """Vesic Depth Factors."""
-
-    dc: float = field(init=False)
-    dq: float = field(init=False)
-    dgamma: float = field(init=False)
-
-    def __init__(
-        self,
-        foundation_depth: float,
-        foundation_width: float,
-        friction_angle: float,
-    ) -> None:
-        d2w = foundation_depth / foundation_width
-        self.dc = 1 + 0.4 * d2w
-        self.dq = (
-            1 + 2 * tan(friction_angle) * (1 - sin(friction_angle)) ** 2 * d2w
+        return 1 + (footing_size.width / footing_size.length) * tan(
+            friction_angle
         )
-        self.dgamma = 1.0
 
 
-@dataclass
-class VesicInclinationFactors:
-    """Vesic Inclination Factors."""
+def _sgamma(
+    footing_shape: FootingShape,
+    footing_size: Optional[FootingSize] = None,
+) -> float:
+    if footing_shape is FootingShape.STRIP_FOOTING:
+        return 1.0
 
-    ic: float = field(init=False)
-    iq: float = field(init=False)
-    igamma: float = field(init=False)
+    if (
+        footing_shape is FootingShape.SQUARE_FOOTING
+        or footing_shape is FootingShape.CIRCULAR_FOOTING
+    ):
+        return 0.6
 
-    def __init__(self, beta: float, friction_angle: float) -> None:
-        self.ic = (1 - beta / 90) ** 2
-        self.iq = self.ic
-        self.igamma = (1 - beta / friction_angle) ** 2
+    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
+        _check_footing_dimension(footing_size.width, footing_size.length)
+
+        return 1 - 0.4 * (footing_size.width / footing_size.length)
 
 
-class VesicBearingCapacity:
-    """Vesic Bearing Capacity."""
+def _dc(foundation_size: FoundationSize) -> float:
+    return 1 + 0.4 * (
+        foundation_size.depth / foundation_size.footing_size.width
+    )
+
+
+def _dq(friction_angle, foundation_size: FoundationSize) -> float:
+    return 1 + mul(
+        2,
+        tan(friction_angle),
+        pow(1 - sin(friction_angle), 2),
+        foundation_size.depth / foundation_size.footing_size.width,
+    )
+
+
+def _dgamma() -> float:
+    return 1.0
+
+
+def _ic(beta: float) -> float:
+    return pow((1 - beta / 90), 2)
+
+
+def _iq(beta: float) -> float:
+    return _ic(beta)
+
+
+def _igamma(friction_angle: float, beta: float) -> float:
+    return pow((1 - beta / friction_angle), 2)
+
+
+class VesicBearingCapacity(BearingCapacity):
+    """Vesic Bearing Capacity.
+
+    :param cohesion: Cohesion of foundation soil :math:`(kN/m^2)`
+    :type cohesion: float
+    :param unit_weight_of_soil: Unit weight of soil :math:`(kN/m^3)`
+    :type unit_weight_of_soil: float
+    :param foundation_size: Size of foundation
+    :param friction_angle: Internal angle of friction (degrees)
+    :type friction_angle: float
+    ::param beta: Inclination of the load on the foundation with
+                  respect to the vertical (degrees)
+    :type beta: float
+    :param total_vertical_load: total vertical load on foundation
+    :type total_vertical_load: float
+    :param footing_shape: Shape of the footing
+    :type footing_shape: float
+    """
 
     def __init__(
         self,
         cohesion: float,
-        unit_weight_of_soil: float,
-        foundation_depth: float,
-        foundation_width: float,
-        foundation_length: float,
+        soil_unit_weight: float,
+        foundation_size: FoundationSize,
         friction_angle: float,
         beta: float,
         footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
     ) -> None:
-        """
-        :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
-        :type cohesion: float
-        :param unit_weight_of_soil: unit weight of soil :math:`(kN/m^3)`
-        :type unit_weight_of_soil: float
-        :param foundation_depth: depth of foundation (m)
-        :type foundation_depth: float
-        :param foundation_width: width of foundation (m)
-        :type foundation_width: float
-        :param foundation_length: length of foundation (m)
-        :type foundation_length: float
-        :param friction_angle: internal angle of friction (degrees)
-        :type friction_angle: float
-        ::param beta: inclination of the load on the foundation with
-                      respect to the vertical (degrees)
-        :type beta: float
-        :param total_vertical_load: total vertical load on foundation
-        :type total_vertical_load: float
-        :param footing_shape: shape of the footing
-        :type footing_shape: float
-        """
-        self.cohesion = cohesion
-        self.gamma = unit_weight_of_soil
-        self.fd = foundation_depth
-        self.fw = foundation_width
-        self.fl = foundation_length
-
-        self.bearing_cap_factors = VesicBCF(friction_angle)
-        self.shape_factors = VesicShapeFactors(
-            footing_shape,
-            self.nq,
-            self.nc,
-            self.fw,
-            self.fl,
+        super().__init__(
+            cohesion,
+            soil_unit_weight,
+            foundation_size,
             friction_angle,
+            beta,
+            footing_shape,
         )
-        self.depth_factors = VesicDepthFactors(
-            self.fd, self.fw, friction_angle
-        )
-        self.incl_factors = VesicInclinationFactors(beta, friction_angle)
 
     def ultimate_bearing_capacity(self) -> float:
         r"""Ultimate bearing capacity according to ``Vesic``.
@@ -168,21 +166,10 @@ class VesicBearingCapacity:
         :return: ultimate bearing capacity
         :rtype: float
         """
-        expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
-        expr_2 = mul(self.gamma, self.fd, self.nq, self.sq, self.dq, self.iq)
-        expr_3 = mul(
-            self.gamma,
-            self.fw,
-            self.ngamma,
-            self.sgamma,
-            self.dgamma,
-            self.igamma,
-        )
-        qult = expr_1 + expr_2 + 0.5 * expr_3
-
-        return round(qult, DECIMAL_PLACES)
+        return super().ultimate_bearing_capacity()
 
     @property
+    @round_
     def nc(self) -> float:
         r"""Vesic Bearing Capacity factor :math:`N_c`.
 
@@ -193,13 +180,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the bearing capacity factor :math:`N_c`
         :rtype: float
         """
-        return round(self.bearing_cap_factors.nc, DECIMAL_PLACES)
-
-    @nc.setter
-    def nc(self, val: Union[int, float]):
-        self.bearing_cap_factors.nc = val
+        return _nc(self.friction_angle)
 
     @property
+    @round_
     def nq(self) -> float:
         r"""Vesic Bearing Capacity factor :math:`N_q`.
 
@@ -210,13 +194,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the bearing capacity factor :math:`N_q`
         :rtype: float
         """
-        return round(self.bearing_cap_factors.nq, DECIMAL_PLACES)
-
-    @nq.setter
-    def nq(self, val: Union[int, float]):
-        self.bearing_cap_factors.nq = val
+        return _nq(self.friction_angle)
 
     @property
+    @round_
     def ngamma(self) -> float:
         r"""Vesic Bearing Capacity factor :math:`N_\gamma`.
 
@@ -227,13 +208,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the bearing capacity factor :math:`N_\gamma`
         :rtype: float
         """
-        return round(self.bearing_cap_factors.ngamma, DECIMAL_PLACES)
-
-    @ngamma.setter
-    def ngamma(self, val: Union[int, float]):
-        self.bearing_cap_factors.ngamma = val
+        return _ngamma(self.friction_angle)
 
     @property
+    @round_
     def dc(self) -> float:
         r"""Depth factor :math:`d_c`.
 
@@ -244,13 +222,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the depth factor :math:`d_c`
         :rtype: float
         """
-        return round(self.depth_factors.dc, DECIMAL_PLACES)
-
-    @dc.setter
-    def dc(self, val: Union[int, float]):
-        self.depth_factors.dc = val
+        return _dc(self.foundation_size)
 
     @property
+    @round_
     def dq(self) -> float:
         r"""Depth factor :math:`d_q`.
 
@@ -261,13 +236,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the depth factor :math:`d_q`
         :rtype: float
         """
-        return round(self.depth_factors.dq, DECIMAL_PLACES)
-
-    @dq.setter
-    def dq(self, val: Union[int, float]):
-        self.depth_factors.dq = val
+        return _dq(self.friction_angle, self.foundation_size)
 
     @property
+    @round_
     def dgamma(self) -> float:
         r"""Depth factor :math:`d_\gamma`.
 
@@ -278,13 +250,10 @@ class VesicBearingCapacity:
         :return: 1.0
         :rtype: float
         """
-        return round(self.depth_factors.dgamma, DECIMAL_PLACES)
-
-    @dgamma.setter
-    def dgamma(self, val: Union[int, float]):
-        self.depth_factors.dgamma = val
+        return _dgamma()
 
     @property
+    @round_
     def sc(self) -> float:
         r"""Shape factor :math:`S_c`.
 
@@ -302,13 +271,14 @@ class VesicBearingCapacity:
         :return: A `float` representing the shape factor :math:`S_c`
         :rtype: float
         """
-        return round(self.shape_factors.sc, DECIMAL_PLACES)
-
-    @sc.setter
-    def sc(self, val: Union[int, float]):
-        self.shape_factors.sc = val
+        return _sc(
+            self.friction_angle,
+            self.footing_shape,
+            self.foundation_size.footing_size,
+        )
 
     @property
+    @round_
     def sq(self) -> float:
         r"""Shape factor :math:`S_q`.
 
@@ -326,13 +296,14 @@ class VesicBearingCapacity:
         :return: A `float` representing the shape factor :math:`S_q`
         :rtype: float
         """
-        return round(self.shape_factors.sq, DECIMAL_PLACES)
-
-    @sq.setter
-    def sq(self, val: Union[int, float]):
-        self.shape_factors.sq = val
+        return _sq(
+            self.friction_angle,
+            self.footing_shape,
+            self.foundation_size.footing_size,
+        )
 
     @property
+    @round_
     def sgamma(self) -> float:
         r"""Shape factor :math:`S_\gamma`.
 
@@ -350,13 +321,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the shape factor :math:`S_\gamma`
         :rtype: float
         """
-        return round(self.shape_factors.sgamma, DECIMAL_PLACES)
-
-    @sgamma.setter
-    def sgamma(self, val: Union[int, float]):
-        self.shape_factors.sgamma = val
+        return _sgamma(self.friction_angle, self.foundation_size.footing_size)
 
     @property
+    @round_
     def ic(self) -> float:
         r"""Inclination factor :math:`i_c`.
 
@@ -367,13 +335,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the inclination factor :math:`i_c`
         :rtype: float
         """
-        return round(self.incl_factors.ic, DECIMAL_PLACES)
-
-    @ic.setter
-    def ic(self, val: Union[int, float]):
-        self.incl_factors.ic = val
+        return _ic(self.beta)
 
     @property
+    @round_
     def iq(self) -> float:
         r"""Inclination factor :math:`i_q`.
 
@@ -384,13 +349,10 @@ class VesicBearingCapacity:
         :return: A `float` representing the inclination factor :math:`i_q`
         :rtype: float
         """
-        return round(self.incl_factors.iq, DECIMAL_PLACES)
-
-    @iq.setter
-    def iq(self, val: Union[int, float]):
-        self.incl_factors.iq = val
+        return _iq(self.beta)
 
     @property
+    @round_
     def igamma(self) -> float:
         r"""Inclination factor :math:`i_\gamma`.
 
@@ -401,8 +363,4 @@ class VesicBearingCapacity:
         :return: A `float` representing the inclination factor :math:`i_\gamma`
         :rtype: float
         """
-        return round(self.incl_factors.igamma, DECIMAL_PLACES)
-
-    @igamma.setter
-    def igamma(self, val: Union[int, float]):
-        self.incl_factors.igamma = val
+        return _igamma(self.friction_angle, self.beta)
