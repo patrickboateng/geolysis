@@ -2,8 +2,9 @@
 
 import enum
 from dataclasses import dataclass
+from abc import ABC, abstractproperty
 
-from geolab.utils import round_
+from geolab.utils import round_, mul
 
 
 class SoilProperties:
@@ -23,13 +24,6 @@ class FoundationSize:
     depth: float
 
 
-@dataclass(slots=True)
-class BearingCapacityFactors:
-    nc: float
-    nq: float
-    ngamma: float
-
-
 class FootingShape(enum.IntEnum):
     CIRCULAR_FOOTING = enum.auto()
     RECTANGULAR_FOOTING = enum.auto()
@@ -41,6 +35,101 @@ class FootingShape(enum.IntEnum):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}.{self.name}"
+
+
+class BearingCapacity(ABC):
+    def __init__(
+        self,
+        cohesion: float,
+        soil_unit_weight: float,
+        foundation_size: FoundationSize,
+        friction_angle: float,
+        beta: float,
+        footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
+    ) -> None:
+        _check_footing_shape(footing_shape)
+
+        self.cohesion = cohesion
+        self.soil_unit_weight = soil_unit_weight
+        self.foundation_size = foundation_size
+        self.friction_angle = friction_angle
+        self.beta = beta
+        self.footing_shape = footing_shape
+
+    def ultimate_bearing_capacity(self) -> float:
+        expr_1 = mul(self.cohesion, self.nc, self.sc, self.dc, self.ic)
+        expr_2 = mul(
+            self.unit_weight_of_soil,
+            self.foundation_size.depth,
+            self.nq,
+            self.sq,
+            self.dq,
+            self.iq,
+        )
+        expr_3 = mul(
+            self.unit_weight_of_soil,
+            self.foundation_size.footing_size.width,
+            self.ngamma,
+            self.sgamma,
+            self.dgamma,
+            self.igamma,
+        )
+        return expr_1 + expr_2 + (0.5 * expr_3)
+
+    @abstractproperty
+    def nc(self):
+        ...
+
+    @abstractproperty
+    def nq(self):
+        ...
+
+    @abstractproperty
+    def ngamma(self):
+        ...
+
+    @abstractproperty
+    def dc(self):
+        ...
+
+    @abstractproperty
+    def dq(self):
+        ...
+
+    @abstractproperty
+    def dgamma(self):
+        ...
+
+    @abstractproperty
+    def sc(self):
+        ...
+
+    @abstractproperty
+    def sq(self):
+        ...
+
+    @abstractproperty
+    def sgamma(self):
+        ...
+
+    @abstractproperty
+    def ic(self):
+        ...
+
+    @abstractproperty
+    def iq(self):
+        ...
+
+    @abstractproperty
+    def igamma(self):
+        ...
+
+
+@dataclass(slots=True)
+class BearingCapacityFactors:
+    nc: float
+    nq: float
+    ngamma: float
 
 
 @round_
