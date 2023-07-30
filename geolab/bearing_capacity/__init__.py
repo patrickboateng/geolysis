@@ -25,10 +25,10 @@ class FoundationSize:
 
 
 class FootingShape(enum.IntEnum):
-    CIRCULAR_FOOTING = enum.auto()
-    RECTANGULAR_FOOTING = enum.auto()
-    SQUARE_FOOTING = enum.auto()
-    STRIP_FOOTING = enum.auto()
+    CIRCULAR = enum.auto()
+    RECTANGULAR = enum.auto()
+    SQUARE = enum.auto()
+    STRIP = enum.auto()
 
     def __str__(self) -> str:
         return self.name
@@ -45,7 +45,7 @@ class BearingCapacity(ABC):
         foundation_size: FoundationSize,
         friction_angle: float,
         beta: float,
-        footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
+        footing_shape: FootingShape = FootingShape.SQUARE,
     ) -> None:
         _check_footing_shape(footing_shape)
 
