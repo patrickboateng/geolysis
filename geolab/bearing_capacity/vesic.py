@@ -29,16 +29,16 @@ def _sc(
     footing_shape: FootingShape,
     footing_size: Optional[FootingSize] = None,
 ) -> float:
-    if footing_shape is FootingShape.STRIP_FOOTING:
+    if footing_shape is FootingShape.STRIP:
         return 1.0
 
     if (
-        footing_shape is FootingShape.SQUARE_FOOTING
-        or footing_shape is FootingShape.CIRCULAR_FOOTING
+        footing_shape is FootingShape.SQUARE
+        or footing_shape is FootingShape.CIRCULAR
     ):
         return 1 + _nq(friction_angle) / _nc(friction_angle)
 
-    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
+    if footing_shape is FootingShape.RECTANGULAR:
         _check_footing_dimension(footing_size.width, footing_size.length)
 
         return 1 + (footing_size.width / footing_size.length) * (
@@ -51,16 +51,16 @@ def _sq(
     footing_shape: FootingShape,
     footing_size: Optional[FootingSize] = None,
 ) -> float:
-    if footing_shape is FootingShape.STRIP_FOOTING:
+    if footing_shape is FootingShape.STRIP:
         return 1.0
 
     if (
-        footing_shape is FootingShape.SQUARE_FOOTING
-        or footing_shape is FootingShape.CIRCULAR_FOOTING
+        footing_shape is FootingShape.SQUARE
+        or footing_shape is FootingShape.CIRCULAR
     ):
         return 1 + tan(friction_angle)
 
-    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
+    if footing_shape is FootingShape.RECTANGULAR:
         _check_footing_dimension(footing_size.width, footing_size.length)
 
         return 1 + (footing_size.width / footing_size.length) * tan(
@@ -72,16 +72,16 @@ def _sgamma(
     footing_shape: FootingShape,
     footing_size: Optional[FootingSize] = None,
 ) -> float:
-    if footing_shape is FootingShape.STRIP_FOOTING:
+    if footing_shape is FootingShape.STRIP:
         return 1.0
 
     if (
-        footing_shape is FootingShape.SQUARE_FOOTING
-        or footing_shape is FootingShape.CIRCULAR_FOOTING
+        footing_shape is FootingShape.SQUARE
+        or footing_shape is FootingShape.CIRCULAR
     ):
         return 0.6
 
-    if footing_shape is FootingShape.RECTANGULAR_FOOTING:
+    if footing_shape is FootingShape.RECTANGULAR:
         _check_footing_dimension(footing_size.width, footing_size.length)
 
         return 1 - 0.4 * (footing_size.width / footing_size.length)
@@ -144,7 +144,7 @@ class VesicBearingCapacity(BearingCapacity):
         foundation_size: FoundationSize,
         friction_angle: float,
         beta: float,
-        footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
+        footing_shape: FootingShape = FootingShape.SQUARE,
     ) -> None:
         super().__init__(
             cohesion,
