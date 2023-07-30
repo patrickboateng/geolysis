@@ -1,8 +1,9 @@
 """Terzaghi Bearing Capacity Analysis."""
 
+from dataclasses import dataclass
+
 from geolab import GeotechEng
 from geolab.bearing_capacity import (
-    BearingCapacityFactors,
     FootingShape,
     FoundationSize,
     _check_footing_shape,
@@ -28,6 +29,13 @@ def _ngamma(friction_angle: float, eng: GeotechEng = GeotechEng.MEYERHOF):
         return 1.8 * (_nq(friction_angle) - 1) * tan(friction_angle)
     msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
     raise TypeError(msg)
+
+
+@dataclass(slots=True)
+class BearingCapacityFactors:
+    nc: float
+    nq: float
+    ngamma: float
 
 
 def _qult_4_strip_footing(
