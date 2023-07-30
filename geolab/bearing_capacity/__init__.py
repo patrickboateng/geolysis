@@ -126,13 +126,6 @@ class BearingCapacity(ABC):
         ...
 
 
-@dataclass(slots=True)
-class BearingCapacityFactors:
-    nc: float
-    nq: float
-    ngamma: float
-
-
 @round_
 def depth_factor(foundation_depth: float, foundation_width: float) -> float:
     r"""Depth factor used in estimating the allowable bearing capacity of a soil.
