@@ -1,13 +1,7 @@
 """Terzaghi Bearing Capacity Analysis."""
 
-from dataclasses import dataclass
-
 from geolab import GeotechEng
-from geolab.bearing_capacity import (
-    FootingShape,
-    FoundationSize,
-    _check_footing_shape,
-)
+from geolab.bearing_capacity import FootingShape, FoundationSize, _check_footing_shape
 from geolab.utils import PI, cos, deg2rad, exp, mul, round_, tan
 
 
@@ -31,65 +25,11 @@ def _ngamma(friction_angle: float, eng: GeotechEng = GeotechEng.MEYERHOF):
     raise TypeError(msg)
 
 
-@dataclass(slots=True)
-class BearingCapacityFactors:
-    nc: float
-    nq: float
-    ngamma: float
-
-
-def _qult_4_strip_footing(
-    cohesion: float,
-    soil_unit_weight: float,
-    foundation_size: FoundationSize,
-    bcf: BearingCapacityFactors,
-) -> float:
-    return (
-        mul(cohesion, bcf.nc)
-        + mul(soil_unit_weight, foundation_size.depth, bcf.nq)
-        + mul(
-            0.5,
-            soil_unit_weight,
-            foundation_size.footing_size.width,
-            bcf.ngamma,
-        )
-    )
-
-
-def _qult_4_square_footing(
-    cohesion: float,
-    soil_unit_weight: float,
-    foundation_size: FoundationSize,
-    bcf: BearingCapacityFactors,
-):
-    return (
-        mul(1.2, cohesion, bcf.nc)
-        + mul(soil_unit_weight, foundation_size.depth, bcf.nq)
-        + mul(
-            0.4,
-            soil_unit_weight,
-            foundation_size.footing_size.width,
-            bcf.ngamma,
-        )
-    )
-
-
-def _qult_4_circular_footing(
-    cohesion: float,
-    soil_unit_weight: float,
-    foundation_size: FoundationSize,
-    bcf: BearingCapacityFactors,
-):
-    return (
-        mul(1.2, cohesion, bcf.nc)
-        + mul(soil_unit_weight, foundation_size.depth, bcf.nq)
-        + mul(
-            0.3,
-            soil_unit_weight,
-            foundation_size.footing_size.width,
-            bcf.ngamma,
-        )
-    )
+CONSTANTS = {
+    FootingShape.STRIP: 0.5,
+    FootingShape.SQUARE: 0.4,
+    FootingShape.CIRCULAR: 0.3,
+}
 
 
 class TerzaghiBearingCapacity:
@@ -116,7 +56,7 @@ class TerzaghiBearingCapacity:
         friction_angle: float,
         soil_unit_weight: float,
         foundation_size: FoundationSize,
-        footing_shape: FootingShape = FootingShape.SQUARE_FOOTING,
+        footing_shape: FootingShape = FootingShape.SQUARE,
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ) -> None:
         _check_footing_shape(footing_shape)
@@ -127,6 +67,8 @@ class TerzaghiBearingCapacity:
         self.friction_angle = friction_angle
         self.footing_shape = footing_shape
         self.eng = eng
+
+        self.const = 1 if footing_shape is FootingShape.STRIP else 1.2
 
     @property
     @round_
@@ -209,28 +151,14 @@ class TerzaghiBearingCapacity:
         :return: ultimate bearing capacity of the soil :math:`(q_{ult})`
         :rtype: float
         """
-        bcf = BearingCapacityFactors(self.nc, self.nq, self.ngamma)
 
-        if self.footing_shape is FootingShape.STRIP_FOOTING:
-            return _qult_4_strip_footing(
-                self.cohesion,
+        return (
+            mul(self.const, self.cohesion, self.nc)
+            + mul(self.soil_unit_weight, self.foundation_size.depth, self.nq)
+            + mul(
+                CONSTANTS[self.footing_shape],
                 self.soil_unit_weight,
-                self.foundation_size,
-                bcf,
+                self.foundation_size.footing_size.width,
+                self.ngamma,
             )
-
-        if self.footing_shape is FootingShape.SQUARE_FOOTING:
-            return _qult_4_square_footing(
-                self.cohesion,
-                self.soil_unit_weight,
-                self.foundation_size,
-                bcf,
-            )
-
-        if self.footing_shape is FootingShape.CIRCULAR_FOOTING:
-            return _qult_4_circular_footing(
-                self.cohesion,
-                self.soil_unit_weight,
-                self.foundation_size,
-                bcf,
-            )
+        )
