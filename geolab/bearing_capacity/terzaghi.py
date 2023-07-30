@@ -1,7 +1,11 @@
 """Terzaghi Bearing Capacity Analysis."""
 
 from geolab import GeotechEng
-from geolab.bearing_capacity import FootingShape, FoundationSize, _check_footing_shape
+from geolab.bearing_capacity import (
+    FootingShape,
+    FoundationSize,
+    _check_footing_shape,
+)
 from geolab.utils import PI, cos, deg2rad, exp, mul, round_, tan
 
 
