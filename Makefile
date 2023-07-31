@@ -12,4 +12,4 @@ format:
 
 test:
 	@echo "Running pytest..."
-	@pytest
+	pytest
