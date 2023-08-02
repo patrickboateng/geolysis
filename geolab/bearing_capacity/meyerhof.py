@@ -1,8 +1,8 @@
 """Meyerhof Bearing Capacity Analysis."""
 
-from geolab import DECIMAL_PLACES
 from geolab.bearing_capacity import depth_factor
 from geolab.exceptions import AllowableSettlementError
+from geolab.utils import mul, round_
 
 
 def _check_foundation_settlement(
@@ -25,6 +25,7 @@ def ngamma():
     ...
 
 
+@round_
 def meyerhof_allow_bearing_capacity(
     n_design,
     foundation_depth,
@@ -32,17 +33,17 @@ def meyerhof_allow_bearing_capacity(
     actual_settlement,
 ) -> float:
     r"""Allowable bearing capacity :math:`q_{a(net)}` for a given tolerable
-        settlement proposed by ``Meyerhof``.
+    settlement proposed by ``Meyerhof``.
 
-        .. math::
+    .. math::
 
-            if B \le 1.22:
+        if B \le 1.22:
 
-                q_{a(net)} = 19.16 N_des F_d \frac{S_e}{25.4}
+            q_{a(net)} = 19.16 N_des F_d \frac{S_e}{25.4}
 
-            if B \gt 1.22:
+        if B \gt 1.22:
 
-                q_{a(net)} = 11.98 N_des (\frac{3.28B + 1}{3.28B})^2 F_d \frac{S_e}{25.4}
+            q_{a(net)} = 11.98 N_des (\frac{3.28B + 1}{3.28B})^2 F_d \frac{S_e}{25.4}
 
     :param n_design: average corrected number of blows from ``SPT N-value``
     :type n_design: float
@@ -60,19 +61,16 @@ def meyerhof_allow_bearing_capacity(
     ALLOWABLE_SETTLEMENT = 25.4
     _check_foundation_settlement(actual_settlement, ALLOWABLE_SETTLEMENT)
 
-    expr = (
-        n_design
-        * depth_factor(foundation_depth, foundation_width)
-        * (actual_settlement / ALLOWABLE_SETTLEMENT)
+    expr = mul(
+        n_design,
+        depth_factor(foundation_depth, foundation_width),
+        (actual_settlement / ALLOWABLE_SETTLEMENT),
     )
     if foundation_width <= 1.22:
-        _abc = 19.16 * expr  # allow_bearing_capacity
-        return round(_abc, DECIMAL_PLACES)
+        return 19.16 * expr
 
-    # allow_bearing_capacity
-    _abc = (
-        11.98
-        * ((3.28 * foundation_width + 1) / (3.28 * foundation_width)) ** 2
-        * expr
+    return mul(
+        11.98,
+        pow(((3.28 * foundation_width + 1) / (3.28 * foundation_width)), 2),
+        expr,
     )
-    return round(_abc, DECIMAL_PLACES)
