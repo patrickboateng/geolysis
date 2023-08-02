@@ -3,14 +3,14 @@ import pytest
 from geolab import ERROR_TOLERANCE
 from geolab.exceptions import PIValueError, PSDValueError
 from geolab.soil_classifier import (
+    AtterbergLimits,
+    ParticleSizeDistribution,
+    ParticleSizes,
     PSDCoefficient,
     aashto_soil_classification,
     group_index,
     soil_grading,
     unified_soil_classification,
-    AtterbergLimits,
-    ParticleSizeDistribution,
-    ParticleSizes,
 )
 
 dual_class_test_data = [
