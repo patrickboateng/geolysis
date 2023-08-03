@@ -96,9 +96,6 @@ class PSDCoefficient:
     """
 
     particle_sizes: ParticleSizes
-    # d10: float
-    # d30: float
-    # d60: float
 
     @property
     @round_(precision=2)
