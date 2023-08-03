@@ -85,7 +85,8 @@ def test_PI():
 
 @pytest.mark.parametrize("psd,exp", coefficient_of_curvature_test_data)
 def test_PSDCoeffiecient(psd, exp):
-    psd_coeff = PSDCoefficient(*psd)
+    particle_sizes = ParticleSizes(*psd)
+    psd_coeff = PSDCoefficient(particle_sizes)
     assert psd_coeff.curvature_coefficient == pytest.approx(
         exp["cc"], ERROR_TOLERANCE
     )
