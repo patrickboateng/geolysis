@@ -6,7 +6,6 @@
 ![license](https://img.shields.io/pypi/l/geolab?style=flat-square)
 [![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
-[![docformatter](https://img.shields.io/badge/code%20formatter-docformatter-fedcba.svg?style=flat-square)](https://github.com/PyCQA/docformatter)
 ![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
 
 <!-- [![style guide](https://img.shields.io/badge/%20style-google-3666d6.svg?style=flat-square)](https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings) -->
@@ -29,37 +28,44 @@ design and build better projects with confidence.
 - Settlement analysis tools to predict and model soil settlements under various loads and conditions.
 - Supports finite element modelling of soil behaviour under different conditions.
 
-.. contents::
-.. ## Table of Contents
+## Table of Contents
 
-.. - [Installation](#installation)
-.. - [Usage Example](#usage-example)
-.. - [Release History](#release-history)
-.. - [Contributing](#contributing)
-.. - [License](#license)
-.. - [Contact Information](#contact-information)
-.. - [Links](#links)
-.. - [Todo](#todo)
+- [Installation](#installation)
+- [Usage Example](#usage-example)
+- [Release History](#release-history)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact Information](#contact-information)
+- [Links](#links)
+- [Todo](#todo)
 
 ## Installation
 
-.. note::
+_This install does not work yet. Project is still under **rapid** development_
 
-This install does not work yet. Project is still under **rapid** development.
-
-.. code::
+```shell
 
 pip install geolab
 
+```
+
 ## Usage example
+
+### Soil Classification
 
 ```python
 
-# >>> from geolab.soil_classifier import unified_soil_classification, aashto_soil_classification
-# >>> unified_soil_classification(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88, sand=37.84, gravels=14.28)
-# >>> 'SC'
-# >>> aashto(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88)
-# >>> 'A-6(3)' -->
+```
+
+### Bearing Capacity Analysis
+
+```python
+
+```
+
+### Estimating Soil Engineering Parameters
+
+```python
 
 ```
 
@@ -82,18 +88,17 @@ Distributed under the `MIT license`. See `LICENSE <./LICENSE.txt>`\_ for more in
 
 ## Contact Information
 
-- Email: <boatengpato.pb@gmail.com>,
-- LinkedIn: <https://linkedin.com/in/patrickboateng/>
+- **Email**: <boatengpato.pb@gmail.com>,
+- **LinkedIn**: <https://linkedin.com/in/patrickboateng/>
 
 _For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>_
 
 ## Links
 
-- [Documentation](https://)
-- [PyPi](https://)
-- [Source Code](https://github.com/patrickboateng/geolab/)
-- [Issue Tracker](https://)
-- [Website](https://)
+- [**Documentation**](https://)
+- [**PyPi**](https://)
+- [**Source Code**](https://github.com/patrickboateng/geolab/)
+- [**Website**](https://)
 
 ## Todo
 
