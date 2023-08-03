@@ -74,8 +74,8 @@ class ParticleSizeDistribution:
     """Particle Size Distribution."""
 
     fines: float
-    sands: float
-    gravels: float
+    sand: float
+    gravel: float
     particle_sizes: Optional[ParticleSizes] = field(default=None)
 
     def has_particle_sizes(self) -> bool:
@@ -95,9 +95,10 @@ class PSDCoefficient:
     :type d60: float
     """
 
-    d10: float
-    d30: float
-    d60: float
+    particle_sizes: ParticleSizes
+    # d10: float
+    # d30: float
+    # d60: float
 
     @property
     @round_(precision=2)
@@ -111,7 +112,9 @@ class PSDCoefficient:
         :return: The coefficient of curvature of the soil
         :rtype: float
         """
-        return (self.d30**2) / (self.d60 * self.d10)
+        return (self.particle_sizes.d30**2) / (
+            self.particle_sizes.d60 * self.particle_sizes.d10
+        )
 
     @property
     @round_(precision=2)
@@ -125,7 +128,7 @@ class PSDCoefficient:
         :return: The coefficient of uniformity of the soil
         :rtype: float
         """
-        return self.d60 / self.d10
+        return self.particle_sizes.d60 / self.particle_sizes.d10
 
 
 def _dual_soil_symbol(
@@ -205,7 +208,7 @@ def _classify_coarse_soil(
             return _dual_soil_symbol(
                 liquid_limit,
                 plasticity_index,
-                PSDCoefficient(**asdict(psd.particle_sizes)),
+                PSDCoefficient(psd.particle_sizes),
                 gravel_or_sand,
             )
         return (
@@ -218,7 +221,7 @@ def _classify_coarse_soil(
     # Less than 5% pass No. 200 sieve
     # Obtain Cc and Cu from grain size graph
     if psd.has_particle_sizes():
-        psd_coeff = PSDCoefficient(**asdict(psd.particle_sizes))
+        psd_coeff = PSDCoefficient(psd.particle_sizes)
         soil_grade = soil_grading(
             psd_coeff.curvature_coefficient,
             psd_coeff.uniformity_coefficient,
@@ -340,7 +343,7 @@ def unified_soil_classification(
         atterberg_limits.plastic_limit,
         atterberg_limits.plasticity_index,
     )
-    _check_size_distribution(psd.fines, psd.sands, psd.gravels)
+    _check_size_distribution(psd.fines, psd.sand, psd.gravel)
 
     if psd.fines < 50:
         # Coarse grained, Run Sieve Analysis
@@ -349,7 +352,7 @@ def unified_soil_classification(
             atterberg_limits.plasticity_index,
             psd,
         )
-        if psd.gravels > psd.sands:
+        if psd.gravel > psd.sand:
             # Gravel
             return _classify_coarse_soil(
                 *soil_properties, gravel_or_sand=GRAVEL
