@@ -52,7 +52,7 @@ aashto_class_test_data = [
     ((70, 38, 32, 86), "A-7-5(33)"),
 ]
 
-coefficient_of_curvature_test_data = [
+psd_coefficient = [
     ((0.07, 0.3, 0.8), {"cc": 1.61, "cu": 11.43}),
     ((0.06, 0.6, 7.0), {"cc": 0.86, "cu": 116.67}),
     ((0.153, 0.4, 1.2), {"cc": 0.87, "cu": 7.84}),
@@ -83,7 +83,7 @@ def test_PI():
         unified_soil_classification(atterberg_limits, psd)
 
 
-@pytest.mark.parametrize("psd,exp", coefficient_of_curvature_test_data)
+@pytest.mark.parametrize("psd,exp", psd_coefficient)
 def test_PSDCoeffiecient(psd, exp):
     particle_sizes = ParticleSizes(*psd)
     psd_coeff = PSDCoefficient(particle_sizes)
