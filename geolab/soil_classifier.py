@@ -87,12 +87,8 @@ class PSDCoefficient:
     """Provides methods for calculating the ``coefficient of curvature`` and
     ``coefficient of uniformity``.
 
-    :param d10: diameter at which 10% of the soil by weight is finer
-    :type d10: float
-    :param d30: diameter at which 30% of the soil by weight is finer
-    :type d30: float
-    :param d60: diameter at which 60% of the soil by weight is finer
-    :type d60: float
+    :param particle_sizes: diameter at which 10% of the soil by weight is finer
+    :type particle_sizes: ParticleSizes
     """
 
     particle_sizes: ParticleSizes
