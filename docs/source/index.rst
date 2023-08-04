@@ -17,71 +17,47 @@ geolab: Geotechnical engineering analysis and modelling software
 .. image:: https://img.shields.io/pypi/dm/geolab?style=flat-square
    :alt: downloads
 
-geolab
-------
-
-`geolab` is an open-source software for geotechnical engineering that offers a suite of powerful tools and features for soil analysis and modeling. It provides soil classification based on both USCS and AASHTO standards, bearing capacity analysis, estimation of soil engineering properties, settlement analysis, and finite element modeling. The software assists geotechnical engineers in their day-to-day work, enabling them to perform a wide range of tasks with ease and make informed decisions about design and construction. `geolab` enhances efficiency and effectiveness, allowing engineers to design and build better projects with confidence.
+``geolab`` is an open-source software for geotechnical engineering analysis that offers a suite of powerful tools and features for soil analysis and modeling. 
 
 Features
 --------
 
-- Provides soil classification based on `USCS` and `AASHTO` standards.
+- Provides soil classification based on ``USCS`` and ``AASHTO`` standards.
 - Bearing capacity analysis can be performed in both from results obtained from laboratory or field tests.
 - Estimates important soil engineering properties, aiding in decision-making.
 - Settlement analysis tools predict and model soil settlements under various loads and conditions.
 - Supports finite element modelling of soil behaviour under different conditions.
 
+.. note::
 
-Installation
-------------
+   Not all features mentioned above are availabe.
 
-Windows:
+.. grid:: 2
+   :gutter: 3
 
-.. note:: 
+   .. grid-item-card:: :octicon:`paper-airplane;1.5em;sd-text-info` Getting Started
+      :link: quickstart
+      :link-type: doc
 
-    This install does not work yet. This project is under **rapid** development.
+      Start here if you are new to geolab. Learn about the syntax and the Microsoft Excel addin.
 
-.. code:: bash
+   .. grid-item-card:: :octicon:`book;1.5em;sd-text-info` API Reference
+      :link: api_reference
+      :link-type: doc
 
-   pip install geolab
-
-A simple usage example
-----------------------
-
-.. doctest:: 
-
-   >>> from geolab.soil_classifier import aashto, uscs
-   >>> uscs(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88, sand=37.84, gravels=14.28)
-   'SC'
-   >>> aashto(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13, fines=47.88)
-   'A-6(3)'
-
-Release History
----------------
-
-- 0.1.0
-  - **rapid** development.
-
-
-.. Contributing
-.. ------------
-
-.. #. [Fork it](https://github.com/patrickboateng/geolab/fork)
-.. #. Create your feature branch (`git checkout -b feature`)
-.. #. Commit your changes (`git commit -am 'Add some fooBar'`)
-.. #. Push to the branch (`git push origin feature`)
-.. #. Create a new Pull Request
+      This is a description of all classes, methods, properties, and functions that geolab offers.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   :hidden:
 
-   reference
-   soil_classification
+   quickstart
+   api_reference
 
-Indices and tables
-==================
+.. Indices and tables
+.. ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
