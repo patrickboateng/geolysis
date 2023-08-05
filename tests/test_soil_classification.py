@@ -9,7 +9,7 @@ from geolab.soil_classifier import (
     PSDCoefficient,
     aashto_soil_classification,
     group_index,
-    soil_grading,
+    soil_grade,
     unified_soil_classification,
 )
 
@@ -61,7 +61,8 @@ psd_coefficient = [
 
 
 def test_grading():
-    assert soil_grading(0.95, 4, "G") == "P"
+    psd_coefficient = PSDCoefficient(ParticleSizes(2, 3.9, 8))
+    assert soil_grade(psd_coefficient, "G") == "P"
 
 
 def test_group_index():
