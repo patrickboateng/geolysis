@@ -12,6 +12,7 @@ Public Functions
 - `aashto`: Returns the classification of the soil according to ``AASHTO`` standard
 
 """
+
 import math
 from dataclasses import dataclass, field
 from typing import Optional
