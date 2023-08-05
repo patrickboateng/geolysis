@@ -31,31 +31,35 @@ LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
-def _check_size_distribution(fines, sand, gravels):
-    if not math.isclose(
-        total_aggregate := fines + sand + gravels, 100, rel_tol=ERROR_TOLERANCE
-    ):
-        msg = f"fines + sand + gravels = 100% not {total_aggregate}"
-        raise exceptions.PSDValueError(msg)
-
-
-def _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index):
-    if not math.isclose(
-        _plasticity_idx := liquid_limit - plastic_limit,
-        plasticity_index,
-        rel_tol=ERROR_TOLERANCE,
-    ):
-        msg = f"PI should be equal to {_plasticity_idx} not {plasticity_index}"
-        raise exceptions.PIValueError(msg)
-
-
 @dataclass(slots=True)
 class AtterbergLimits:
-    """Atterberg Limits."""
+    """Atterberg Limits.
+
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    """
 
     liquid_limit: float
     plastic_limit: float
     plasticity_index: float
+
+    @property
+    @round_(precision=2)
+    def Aline(self) -> float:
+        r"""Calculates the ``A-line``.
+
+        .. math::
+
+            0.73 \left(LL - 20 \right)
+
+        """
+        return 0.73 * (self.liquid_limit - 20)
+
+    def above_A_line(self) -> bool:
+        return self.plasticity_index > self.Aline
+
+    def limit_plot_in_hatched_zone(self) -> bool:
+        return math.isclose(self.plasticity_index, self.Aline)
 
 
 @dataclass(slots=True)
@@ -125,20 +129,41 @@ class PSDCoefficient:
         return self.particle_sizes.d60 / self.particle_sizes.d10
 
 
-def _dual_soil_symbol(
-    liquid_limit,
-    plasticity_index,
-    psd_coeff,
-    gravel_or_sand,
-) -> str:
-    soil_grade = soil_grading(
-        psd_coeff.curvature_coefficient,
-        psd_coeff.uniformity_coefficient,
-        gravel_or_sand,
+def _check_size_distribution(
+    particle_size_distribution: ParticleSizeDistribution,
+):
+    total_aggregate = (
+        particle_size_distribution.fines
+        + particle_size_distribution.sand
+        + particle_size_distribution.gravel
     )
-    clay_or_silt = CLAY if plasticity_index > A_line(liquid_limit) else SILT
+    if not math.isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
+        msg = f"fines + sand + gravels = 100% not {total_aggregate}"
+        raise exceptions.PSDValueError(msg)
 
-    return f"{gravel_or_sand}{soil_grade}-{gravel_or_sand}{clay_or_silt}"
+
+def _check_plasticity_idx(atterberg_limits: AtterbergLimits):
+    plasticity_idx = (
+        atterberg_limits.liquid_limit - atterberg_limits.plastic_limit
+    )
+    if not math.isclose(
+        plasticity_idx,
+        atterberg_limits.plasticity_index,
+        rel_tol=ERROR_TOLERANCE,
+    ):
+        msg = f"PI should be equal to {plasticity_idx} not {atterberg_limits.plasticity_index}"
+        raise exceptions.PIValueError(msg)
+
+
+def _dual_soil_symbol(
+    atterberg_limits: AtterbergLimits,
+    psd_coefficient: PSDCoefficient,
+    coarse_soil: str,
+) -> str:
+    _soil_grd = soil_grade(psd_coefficient, coarse_soil)
+    fine_soil = CLAY if atterberg_limits.above_A_line() else SILT
+
+    return f"{coarse_soil}{_soil_grd}-{coarse_soil}{fine_soil}"
 
 
 def _classify_fine_soil(
@@ -146,15 +171,14 @@ def _classify_fine_soil(
     color: bool,
     odor: bool,
 ) -> str:
-    Aline = A_line(atterberg_limits.liquid_limit)
     if atterberg_limits.liquid_limit < 50:
         # Low LL
-        if (atterberg_limits.plasticity_index > Aline) and (
+        if (atterberg_limits.above_A_line()) and (
             atterberg_limits.plasticity_index > 7
         ):
             return f"{CLAY}{LOW_PLASTICITY}"
 
-        if (atterberg_limits.plasticity_index < Aline) or (
+        if (not atterberg_limits.above_A_line()) or (
             atterberg_limits.plasticity_index < 4
         ):
             return (
@@ -167,7 +191,7 @@ def _classify_fine_soil(
         return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
 
     # High LL
-    if atterberg_limits.plasticity_index > Aline:
+    if atterberg_limits.above_A_line():
         return f"{CLAY}{HIGH_PLASTICITY}"
 
     # Below A-Line
@@ -179,100 +203,77 @@ def _classify_fine_soil(
 
 
 def _classify_coarse_soil(
-    liquid_limit: float,
-    plasticity_index: float,
-    psd: ParticleSizeDistribution,
-    gravel_or_sand: str,
+    atterberg_limits: AtterbergLimits,
+    particle_size_distribution: ParticleSizeDistribution,
+    coarse_soil: str,
 ) -> str:
-    if psd.fines > 12:
-        Aline = A_line(liquid_limit)
-        # Limit plot in hatched zone on plasticity chart
-        if math.isclose(plasticity_index, Aline):
-            return f"{gravel_or_sand}{SILT}-{gravel_or_sand}{CLAY}"
+    if particle_size_distribution.fines > 12:
+        if atterberg_limits.limit_plot_in_hatched_zone():
+            return f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
 
-        if plasticity_index > Aline:
-            return f"{gravel_or_sand}{CLAY}"
-
-        # Below A-Line
-        return f"{gravel_or_sand}{SILT}"
-
-    if 5 <= psd.fines <= 12:
+        else:
+            return (
+                f"{coarse_soil}{CLAY}"
+                if atterberg_limits.above_A_line()
+                else f"{coarse_soil}{SILT}"
+            )
+    if 5 <= particle_size_distribution.fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
-        if psd.has_particle_sizes():
+        if particle_size_distribution.has_particle_sizes():
             return _dual_soil_symbol(
-                liquid_limit,
-                plasticity_index,
-                PSDCoefficient(psd.particle_sizes),
-                gravel_or_sand,
+                atterberg_limits,
+                PSDCoefficient(particle_size_distribution.particle_sizes),
+                coarse_soil,
             )
         return (
-            f"{gravel_or_sand}{WELL_GRADED}-{gravel_or_sand}{SILT},"
-            f"{gravel_or_sand}{POORLY_GRADED}-{gravel_or_sand}{SILT},"
-            f"{gravel_or_sand}{WELL_GRADED}-{gravel_or_sand}{CLAY},"
-            f"{gravel_or_sand}{POORLY_GRADED}-{gravel_or_sand}{CLAY}"
+            f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
+            f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{SILT},"
+            f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{CLAY},"
+            f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{CLAY}"
         )
 
     # Less than 5% pass No. 200 sieve
     # Obtain Cc and Cu from grain size graph
-    if psd.has_particle_sizes():
-        psd_coeff = PSDCoefficient(psd.particle_sizes)
-        soil_grade = soil_grading(
-            psd_coeff.curvature_coefficient,
-            psd_coeff.uniformity_coefficient,
-            gravel_or_sand,
+    if particle_size_distribution.has_particle_sizes():
+        _soil_grd = soil_grade(
+            PSDCoefficient(particle_size_distribution.particle_sizes),
+            coarse_soil,
         )
         return (
-            f"{gravel_or_sand}{soil_grade}"
-            if gravel_or_sand == GRAVEL
-            else f"{gravel_or_sand}{soil_grade}"
+            f"{coarse_soil}{_soil_grd}"
+            if coarse_soil == GRAVEL
+            else f"{coarse_soil}{_soil_grd}"
         )
-    return f"{gravel_or_sand}{WELL_GRADED} or {gravel_or_sand}{POORLY_GRADED}"
+    return f"{coarse_soil}{WELL_GRADED} or {coarse_soil}{POORLY_GRADED}"
 
 
-def soil_grading(
-    curvature_coeff: float, uniformity_coeff: float, gravel_or_sand: str
-) -> str:
+def soil_grade(psd_coefficient: PSDCoefficient, coarse_soil: str) -> str:
     """Determines the grading of the soil.
 
-    :param curvature_coeff: Coefficient of curvature
-    :type curvature_coeff: float
-    :param uniformity_coeff: Coefficient of uniformity
-    :type uniformity_coeff: float
-    :param gravel_or_sand: Type of soil. ``G`` for Gravel and ``S`` for Sand
-    :type gravel_or_sand: str
-    :raises exceptions.SoilTypeError: Raised when invalid soil type is specified
+    :param psd_coefficient: Particle Size Distribution coefficients
+    :type psd_coefficient: PSDCoefficient
+    :param coarse_soil: Type of soil. ``G`` for Gravel and ``S`` for Sand
+    :type coarse_soil: str
     :return: The grading of the soil (W -> WELL GRADED or P -> POORLY GRADED)
     :rtype: str
     """
-    if gravel_or_sand == GRAVEL:
+
+    # Gravel
+    if coarse_soil == GRAVEL:
         return (
             WELL_GRADED
-            if (1 < curvature_coeff < 3) and (uniformity_coeff >= 4)
+            if (1 < psd_coefficient.curvature_coefficient < 3)
+            and (psd_coefficient.uniformity_coefficient >= 4)
             else POORLY_GRADED
         )
 
     # Sand
     return (
         WELL_GRADED
-        if (1 < curvature_coeff < 3) and (uniformity_coeff >= 6)
+        if (1 < psd_coefficient.curvature_coefficient < 3)
+        and (psd_coefficient.uniformity_coefficient >= 6)
         else POORLY_GRADED
     )
-
-
-@round_(precision=2)
-def A_line(liquid_limit: float) -> float:
-    r"""Calculates the ``A-line``.
-
-    .. math::
-
-        0.73 \left(LL - 20 \right)
-
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
-    :type liquid_limit: float
-    :return: The ``A-line`` of the soil
-    :rtype: float
-    """
-    return 0.73 * (liquid_limit - 20)
 
 
 @round_(precision=0)
@@ -304,7 +305,7 @@ def group_index(
 
 def unified_soil_classification(
     atterberg_limits: AtterbergLimits,
-    psd: ParticleSizeDistribution,
+    particle_size_distribution: ParticleSizeDistribution,
     *,
     color: Optional[bool] = False,
     odor: Optional[bool] = False,
@@ -321,8 +322,8 @@ def unified_soil_classification(
 
     :param atterberg_limits:
     :type atterberg_limits:
-    :param psd:
-    :type psd:
+    :param particle_size_distribution:
+    :type particle_size_distribution:
     :param color: Indicates if soil has color or not, defaults to False
     :type color: bool, optional
     :param odor: Indicates if soil has odor or not, defaults to False
@@ -332,27 +333,25 @@ def unified_soil_classification(
     :return: The unified classification of the soil
     :rtype: str
     """
-    _check_plasticity_idx(
-        atterberg_limits.liquid_limit,
-        atterberg_limits.plastic_limit,
-        atterberg_limits.plasticity_index,
-    )
-    _check_size_distribution(psd.fines, psd.sand, psd.gravel)
+    _check_plasticity_idx(atterberg_limits)
+    _check_size_distribution(particle_size_distribution)
 
-    if psd.fines < 50:
+    if particle_size_distribution.fines < 50:
         # Coarse grained, Run Sieve Analysis
-        soil_properties = (
-            atterberg_limits.liquid_limit,
-            atterberg_limits.plasticity_index,
-            psd,
-        )
-        if psd.gravel > psd.sand:
+        if particle_size_distribution.gravel > particle_size_distribution.sand:
             # Gravel
             return _classify_coarse_soil(
-                *soil_properties, gravel_or_sand=GRAVEL
+                atterberg_limits,
+                particle_size_distribution,
+                coarse_soil=GRAVEL,
             )
+
         # Sand
-        return _classify_coarse_soil(*soil_properties, gravel_or_sand=SAND)
+        return _classify_coarse_soil(
+            atterberg_limits,
+            particle_size_distribution,
+            coarse_soil=SAND,
+        )
 
     # Fine grained, Run Atterberg
     return _classify_fine_soil(atterberg_limits, color, odor)
@@ -378,11 +377,8 @@ def aashto_soil_classification(
     :return: The ``aashto`` classification of the soil
     :rtype: str
     """
-    _check_plasticity_idx(
-        atterberg_limits.liquid_limit,
-        atterberg_limits.plastic_limit,
-        atterberg_limits.plasticity_index,
-    )
+    _check_plasticity_idx(atterberg_limits)
+
     grp_idx = group_index(
         fines,
         atterberg_limits.liquid_limit,
