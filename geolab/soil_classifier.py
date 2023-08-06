@@ -211,12 +211,11 @@ def _classify_coarse_soil(
         if atterberg_limits.limit_plot_in_hatched_zone():
             return f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
 
-        else:
-            return (
-                f"{coarse_soil}{CLAY}"
-                if atterberg_limits.above_A_line()
-                else f"{coarse_soil}{SILT}"
-            )
+        return (
+            f"{coarse_soil}{CLAY}"
+            if atterberg_limits.above_A_line()
+            else f"{coarse_soil}{SILT}"
+        )
     if 5 <= particle_size_distribution.fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
         if particle_size_distribution.has_particle_sizes():
