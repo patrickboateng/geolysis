@@ -62,5 +62,4 @@ def round_(precision: CallableOrPrecision):
 
 
 def mul(*args) -> float:
-    """Calculate the product of all the elements in the input iterable."""
     return math.prod(args)
