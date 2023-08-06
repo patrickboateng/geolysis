@@ -84,7 +84,7 @@ pip install geolab
 
 ## License
 
-Distributed under the `MIT license`. See `LICENSE <./LICENSE.txt>`\_ for more information.
+Distributed under the `MIT license`. See [LICENSE](./LICENSE.txt) for more information.
 
 ## Contact Information
 
