@@ -6,10 +6,17 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))
+
+import geolab
+
 project = "geolab"
 copyright = "2023, geolab"
 author = "Patrick Boateng"
-release = "0.1.0"
+release = geolab.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
