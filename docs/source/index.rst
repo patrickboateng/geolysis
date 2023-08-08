@@ -42,7 +42,7 @@ Features
       Start here if you are new to geolab. Learn about the syntax and the Microsoft Excel addin.
 
    .. grid-item-card:: :octicon:`book;1.5em;sd-text-info` API Reference
-      :link: api_reference
+      :link: api/index
       :link-type: doc
 
       This is a description of all classes, methods, properties, and functions that geolab offers.
@@ -53,7 +53,7 @@ Features
    :hidden:
 
    quickstart
-   api_reference
+   api/index
 
 .. Indices and tables
 .. ==================
