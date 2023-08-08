@@ -37,6 +37,10 @@ class AtterbergLimits:
 
     :param liquid_limit: Water content beyond which soils flows under their own weight (%)
     :type liquid_limit: float
+    :param plastic_limit:
+    :type plastic_limit: float
+    :param plasticity_index:
+    :type plasticity_index: float
     """
 
     liquid_limit: float
