@@ -26,7 +26,7 @@ design and build better projects with confidence.
 - Bearing capacity analysis can be performed, both from results obtained from **laboratory** or **field**.
 - Estimates important soil engineering properties.
 - Settlement analysis tools to predict and model soil settlements under various loads and conditions.
-- Supports finite element modelling of soil behaviour under different conditions.
+- Supports finite element modeling of soil behaviour under different conditions.
 
 ## Table of Contents
 
