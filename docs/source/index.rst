@@ -19,14 +19,13 @@ geolab: Geotechnical engineering analysis and modelling software
 
 ``geolab`` is an open-source software for geotechnical engineering analysis that offers a suite of powerful tools and features for soil analysis and modeling. 
 
-Features
---------
+Some of the features ``geolab`` provides are:
 
 - Provides soil classification based on ``USCS`` and ``AASHTO`` standards.
 - Bearing capacity analysis can be performed in both from results obtained from laboratory or field tests.
 - Estimates important soil engineering properties, aiding in decision-making.
 - Settlement analysis tools predict and model soil settlements under various loads and conditions.
-- Supports finite element modelling of soil behaviour under different conditions.
+- Supports finite element modeling of soil behaviour under different conditions.
 
 .. note::
 
