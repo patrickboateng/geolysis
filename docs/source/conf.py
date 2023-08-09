@@ -25,6 +25,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinxcontrib.bibtex",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx_copybutton",
     "sphinx_design",
 ]
