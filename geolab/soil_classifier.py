@@ -1,16 +1,5 @@
 r"""This module provides the implementations for ``USCS`` and ``AASHTO`` classification.
 
-Public Functions
-----------------
-
-- ``curvature_coefficient``: Returns the coefficient of curvature of the soil
-- ``uniformity_coefficient``: Returns the coefficient of uniformity of the soil
-- `grading`: Returns the grading of the soil (W or P)
-- `A_line`: Returns the A line
-- `group_index`: Returns the group index used to further evaluate the soil
-- `uscs`: Returns the classification of the soil according to ``USCS`` standard
-- `aashto`: Returns the classification of the soil according to ``AASHTO`` standard
-
 """
 
 import math
@@ -21,14 +10,22 @@ from geolab import ERROR_TOLERANCE, exceptions
 from geolab.utils import round_
 
 GRAVEL = "G"
-WELL_GRADED = "W"
-POORLY_GRADED = "P"
 SAND = "S"
 CLAY = "C"
 SILT = "M"
+WELL_GRADED = "W"
+POORLY_GRADED = "P"
 ORGANIC = "O"
 LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
+
+
+class OrganicSoil:
+    pass
+
+
+class InOrganicSoil:
+    pass
 
 
 @dataclass(slots=True)
@@ -37,9 +34,9 @@ class AtterbergLimits:
 
     :param liquid_limit: Water content beyond which soils flows under their own weight (%)
     :type liquid_limit: float
-    :param plastic_limit:
+    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
     :type plastic_limit: float
-    :param plasticity_index:
+    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
     :type plasticity_index: float
     """
 
@@ -68,7 +65,15 @@ class AtterbergLimits:
 
 @dataclass(slots=True)
 class ParticleSizes:
-    """Particle Sizes."""
+    """Particle Sizes
+
+    :param d10: Diameter at which 30% of the soil by weight is finer
+    :type d10: float
+    :param d30: Diameter at which 30% of the soil by weight is finer
+    :type d30: float
+    :param d60: Diameter at which 60% of the soil by weight is finer
+    :type d60: float
+    """
 
     d10: float
     d30: float
@@ -80,7 +85,17 @@ class ParticleSizes:
 
 @dataclass(slots=True)
 class ParticleSizeDistribution:
-    """Particle Size Distribution."""
+    """Particle Size Distribution.
+
+    :param fines: Percentage of fines in soil sample (%)
+    :type fines: float
+    :param sand: Percentage of sand in soil sample (%)
+    :type sand: float
+    :param gravel: Percentage of gravel in soil sample (%)
+    :type gravel: float
+    :param particle_sizes: Particle sizes
+    :type particle_sizes: ParticleSizes
+    """
 
     fines: float
     sand: float
@@ -96,7 +111,7 @@ class PSDCoefficient:
     """Provides methods for calculating the ``coefficient of curvature`` and
     ``coefficient of uniformity``.
 
-    :param particle_sizes: diameter at which 10% of the soil by weight is finer
+    :param particle_sizes: Particle Size Distribution
     :type particle_sizes: ParticleSizes
     """
 
@@ -171,9 +186,7 @@ def _dual_soil_symbol(
 
 
 def _classify_fine_soil(
-    atterberg_limits: AtterbergLimits,
-    color: bool,
-    odor: bool,
+    atterberg_limits: AtterbergLimits, soil_type: InOrganicSoil | OrganicSoil
 ) -> str:
     if atterberg_limits.liquid_limit < 50:
         # Low LL
@@ -187,7 +200,7 @@ def _classify_fine_soil(
         ):
             return (
                 f"{ORGANIC}{LOW_PLASTICITY}"
-                if (color or odor)
+                if isinstance(soil_type, OrganicSoil)
                 else f"{SILT}{LOW_PLASTICITY}"
             )
 
@@ -201,7 +214,7 @@ def _classify_fine_soil(
     # Below A-Line
     return (
         f"{ORGANIC}{HIGH_PLASTICITY}"
-        if (color or odor)
+        if isinstance(soil_type, OrganicSoil)
         else f"{SILT}{HIGH_PLASTICITY}"
     )
 
@@ -310,8 +323,7 @@ def unified_soil_classification(
     atterberg_limits: AtterbergLimits,
     particle_size_distribution: ParticleSizeDistribution,
     *,
-    color: Optional[bool] = False,
-    odor: Optional[bool] = False,
+    soil_type: Optional[InOrganicSoil | OrganicSoil] = InOrganicSoil,
 ) -> str:
     """Unified Soil Classification System (``USCS``).
 
@@ -323,14 +335,12 @@ def unified_soil_classification(
     and highly organic soils. Additionally, the system has been adopted by the American Society for
     Testing and Materials (``ASTM``).
 
-    :param atterberg_limits:
-    :type atterberg_limits:
-    :param particle_size_distribution:
-    :type particle_size_distribution:
-    :param color: Indicates if soil has color or not, defaults to False
-    :type color: bool, optional
-    :param odor: Indicates if soil has odor or not, defaults to False
-    :type odor: bool, optional
+    :param atterberg_limits: Atterberg Limits
+    :type atterberg_limits: AtterbergLimits
+    :param particle_size_distribution: Particle Size Distribution
+    :type particle_size_distribution: ParticleSizeDistribution
+    :param soil_type: Indicates the type of soil
+    :type soil_type: InOrganicSoil or OrganicSoil, optional
     :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
     :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
     :return: The unified classification of the soil
@@ -357,7 +367,7 @@ def unified_soil_classification(
         )
 
     # Fine grained, Run Atterberg
-    return _classify_fine_soil(atterberg_limits, color, odor)
+    return _classify_fine_soil(atterberg_limits, soil_type)
 
 
 def aashto_soil_classification(
@@ -372,12 +382,12 @@ def aashto_soil_classification(
     both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
     with subgroups, along with a separate category (A8) for organic soils.
 
-    :param atterberg_limits:
-    :type atterberg_limits:
+    :param atterberg_limits: Atterberg Limits
+    :type atterberg_limits: AtterbergLimits
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
     :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :return: The ``aashto`` classification of the soil
+    :return: The ``AASHTO`` classification of the soil
     :rtype: str
     """
     _check_plasticity_idx(atterberg_limits)
