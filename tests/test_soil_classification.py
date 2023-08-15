@@ -3,14 +3,14 @@ import pytest
 from geolab import ERROR_TOLERANCE
 from geolab.exceptions import PIValueError, PSDValueError
 from geolab.soil_classifier import (
+    AASHTO,
+    USCS,
     AtterbergLimits,
     ParticleSizeDistribution,
     ParticleSizes,
     PSDCoefficient,
-    aashto_soil_classification,
     group_index,
     soil_grade,
-    unified_soil_classification,
 )
 
 dual_class_test_data = [
@@ -73,15 +73,15 @@ def test_PSD():
     with pytest.raises(PSDValueError):
         atterberg_limits = AtterbergLimits(30, 10, 20)
         psd = ParticleSizeDistribution(30, 30, 30)
-        unified_soil_classification(atterberg_limits, psd)
+        USCS(atterberg_limits, psd)()
 
 
 def test_PI():
     with pytest.raises(PIValueError):
         atterberg_limits = AtterbergLimits(30, 10, 10)
         psd = ParticleSizeDistribution(30, 30, 40)
-        aashto_soil_classification(atterberg_limits, fines=30)
-        unified_soil_classification(atterberg_limits, psd)
+        AASHTO(atterberg_limits, fines=30)()
+        USCS(atterberg_limits, psd)()
 
 
 @pytest.mark.parametrize("psd,exp", psd_coefficient)
@@ -102,9 +102,7 @@ def test_aashto(soil_params, classification):
     atterberg_limits = AtterbergLimits(
         liquid_limit, plastic_limit, plasticity_index
     )
-    assert (
-        aashto_soil_classification(atterberg_limits, fines) == classification
-    )
+    assert AASHTO(atterberg_limits, fines)() == classification
 
 
 @pytest.mark.parametrize(
@@ -126,7 +124,7 @@ def test_dual_classification(
     )
     _particle_sizes = ParticleSizes(**particle_sizes)
     psd = ParticleSizeDistribution(fines, sands, gravels, _particle_sizes)
-    assert unified_soil_classification(atterberg_limits, psd) == classification
+    assert USCS(atterberg_limits, psd)() == classification
 
 
 @pytest.mark.parametrize("soil_params,classification", single_class_test_data)
@@ -145,4 +143,4 @@ def test_single_classification(soil_params: tuple, classification: str):
         plasticity_index,
     )
     psd = ParticleSizeDistribution(fines, sands, gravels)
-    assert unified_soil_classification(atterberg_limits, psd) == classification
+    assert USCS(atterberg_limits, psd)() == classification
