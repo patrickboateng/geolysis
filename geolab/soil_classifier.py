@@ -233,6 +233,7 @@ def _classify_coarse_soil(
             if atterberg_limits.above_A_line()
             else f"{coarse_soil}{SILT}"
         )
+
     if 5 <= particle_size_distribution.fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
         if particle_size_distribution.has_particle_sizes():
@@ -260,6 +261,7 @@ def _classify_coarse_soil(
             if coarse_soil == GRAVEL
             else f"{coarse_soil}{_soil_grd}"
         )
+
     return f"{coarse_soil}{WELL_GRADED} or {coarse_soil}{POORLY_GRADED}"
 
 
@@ -319,33 +321,11 @@ def group_index(
     return 0.0 if grp_idx <= 0 else grp_idx
 
 
-def unified_soil_classification(
+def _uscs(
     atterberg_limits: AtterbergLimits,
     particle_size_distribution: ParticleSizeDistribution,
-    *,
     soil_type: Optional[InOrganicSoil | OrganicSoil] = InOrganicSoil,
 ) -> str:
-    """Unified Soil Classification System (``USCS``).
-
-    The Unified Soil Classification System, initially developed by Casagrande in 1948
-    and later modified in 1952, is widely utilized in engineering projects involving soils.
-    It is the most popular system for soil classification and is similar to Casagrande's
-    Classification System. The system relies on Particle Size Distribution and Atterberg Limits
-    for classification. Soils are categorized into three main groups: coarse-grained, fine-grained,
-    and highly organic soils. Additionally, the system has been adopted by the American Society for
-    Testing and Materials (``ASTM``).
-
-    :param atterberg_limits: Atterberg Limits
-    :type atterberg_limits: AtterbergLimits
-    :param particle_size_distribution: Particle Size Distribution
-    :type particle_size_distribution: ParticleSizeDistribution
-    :param soil_type: Indicates the type of soil
-    :type soil_type: InOrganicSoil or OrganicSoil, optional
-    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
-    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :return: The unified classification of the soil
-    :rtype: str
-    """
     _check_plasticity_idx(atterberg_limits)
     _check_size_distribution(particle_size_distribution)
 
@@ -370,26 +350,10 @@ def unified_soil_classification(
     return _classify_fine_soil(atterberg_limits, soil_type)
 
 
-def aashto_soil_classification(
+def _aashto(
     atterberg_limits: AtterbergLimits,
     fines: float,
 ) -> str:
-    """American Association of State Highway and Transportation Officials (``AASHTO``)
-    classification system.
-
-    The AASHTO Classification system categorizes soils for highways based on
-    Particle Size Distribution and plasticity characteristics. It classifies
-    both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
-    with subgroups, along with a separate category (A8) for organic soils.
-
-    :param atterberg_limits: Atterberg Limits
-    :type atterberg_limits: AtterbergLimits
-    :param fines: Percentage of fines in soil sample (%)
-    :type fines: float
-    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :return: The ``AASHTO`` classification of the soil
-    :rtype: str
-    """
     _check_plasticity_idx(atterberg_limits)
 
     grp_idx = group_index(
@@ -429,3 +393,73 @@ def aashto_soil_classification(
         <= (atterberg_limits.liquid_limit - 30)
         else f"A-7-6({grp_idx})"
     )
+
+
+class AASHTO:
+    """American Association of State Highway and Transportation Officials (``AASHTO``)
+    classification system.
+
+    The AASHTO Classification system categorizes soils for highways based on
+    Particle Size Distribution and plasticity characteristics. It classifies
+    both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
+    with subgroups, along with a separate category (A8) for organic soils.
+
+    :param atterberg_limits: Atterberg Limits
+    :type atterberg_limits: AtterbergLimits
+    :param fines: Percentage of fines in soil sample (%)
+    :type fines: float
+    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
+    :return: The ``AASHTO`` classification of the soil
+    :rtype: str
+    """
+
+    def __init__(
+        self, atterberg_limits: AtterbergLimits, fines: float
+    ) -> None:
+        self.atterberg_limits = atterberg_limits
+        self.fines = fines
+
+    def __call__(self) -> str:
+        return _aashto(self.atterberg_limits, self.fines)
+
+
+class USCS:
+    """Unified Soil Classification System (``USCS``).
+
+    The Unified Soil Classification System, initially developed by Casagrande in 1948
+    and later modified in 1952, is widely utilized in engineering projects involving soils.
+    It is the most popular system for soil classification and is similar to Casagrande's
+    Classification System. The system relies on Particle Size Distribution and Atterberg Limits
+    for classification. Soils are categorized into three main groups: coarse-grained, fine-grained,
+    and highly organic soils. Additionally, the system has been adopted by the American Society for
+    Testing and Materials (``ASTM``).
+
+    :param atterberg_limits: Atterberg Limits
+    :type atterberg_limits: AtterbergLimits
+    :param particle_size_distribution: Particle Size Distribution
+    :type particle_size_distribution: ParticleSizeDistribution
+    :param soil_type: Indicates the type of soil
+    :type soil_type: InOrganicSoil or OrganicSoil, optional
+    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
+    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
+    :return: The unified classification of the soil
+    :rtype: str
+    """
+
+    def __init__(
+        self,
+        atterberg_limits: AtterbergLimits,
+        particle_size_distribution: ParticleSizeDistribution,
+        *,
+        soil_type: Optional[InOrganicSoil | OrganicSoil] = InOrganicSoil,
+    ) -> None:
+        self.atterberg_limits = atterberg_limits
+        self.particle_size_distribution = particle_size_distribution
+        self.soil_type = soil_type
+
+    def __call__(self) -> str:
+        return _uscs(
+            self.atterberg_limits,
+            self.particle_size_distribution,
+            self.soil_type,
+        )
