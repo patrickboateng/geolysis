@@ -157,7 +157,59 @@ Function USCS( _
         Else
             coarseSoil = m_GRAVEL
             USCS = ClassifyCoarseSoil(liquidLmt, plasticLmt, plasticityIdx, fines, sand, gravel, coarseSoil)
+        End If
+    End If
 
+End Function
+
+
+Function AASHTO( _
+    liquidLmt As Double, _
+    plasticityIdx As Double, _ 
+    fines As Double _
+) As String
+
+    Dim grpIdx As Double
+    Dim subgradeInfo As String
+
+    grpIdx = GroupIndex(fines, liquidLmt, plasticityIdx)
+
+    subgradeInfo = " (" & grpIdx & ")"
+
+    ' A1 - A3
+    If (fines <= 35) Then  
+        If (liquidLmt <= 40) Then  
+            If (plasticityIdx <= 10) Then
+                AASHTO = "A-2-4" & subgradeInfo
+            Else
+                AASHTO = "A-2-6" & subgradeInfo
+            End If
+        Else
+            If (plasticityIdx <= 10) Then  
+                AASHTO = "A-2-5" & subgradeInfo
+            Else
+                AASHTO = "A-2-7" & subgradeInfo
+            End If
+        End If
+
+    ' A4 - A7
+    Else
+        If (liquidLmt <= 40) Then  
+            If (plasticityIdx <= 10) Then
+                AASHTO = "A4" & subgradeInfo
+            Else
+                AASHTO = "A6" & subgradeInfo
+            End If
+        Else
+            If (plasticityIdx <= 10) Then  
+                AASHTO = "A5" & subgradeInfo
+            Else
+                If (plasticityIdx <= liquidLmt - 30) Then
+                    AASHTO = "A-7-5" & subgradeInfo
+                Else 
+                    AASHTO = "A-7-6" & subgradeInfo
+                End If
+            End If
         End If
     End If
 
