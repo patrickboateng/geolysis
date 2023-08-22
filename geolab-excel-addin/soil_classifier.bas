@@ -26,7 +26,6 @@ Private Function IsClose( _
 End Function
 
 Private Function GroupIndex(fines As Double, liquidLmt As Double, plasticityIdx As Double) As Double
-
     Dim groupIdx As Double
     
     groupIdx = (fines - 35) * (0.2 + 0.005*(liquidLmt - 40)) + 0.01 * (fines - 15) * (plasticityIdx - 10)
@@ -40,9 +39,7 @@ Private Function GroupIndex(fines As Double, liquidLmt As Double, plasticityIdx 
 End Function
 
 Private Function ALine(liquidLmt As Double)
-
     ALine = 0.73 * (liquidLmt - 20)
-
 End Function
 
 Private Function ClassifyCoarseSoil( _
@@ -87,7 +84,6 @@ Private Function ClassifyCoarseSoil( _
     Else
         ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "or" & coarseSoil & POORLY_GRADED
     End If
-
 
 End Function
 
@@ -146,14 +142,12 @@ Public Function USCS( _
     Optional color As Boolean = False, _
     Optional odor As Boolean = False _
 ) As String
-
     ' More than 50% passes the No. 200 sieve
     If (fines > 50) Then 
         USCS = ClassifyFineSoil(liquidLmt, plasticLmt, plasticityIdx, color, odor)
     
     ' 50% or more retained on No. 200 sieve
     Else
-    
         Dim coarseSoil As String
         
         If (sand > gravel) Then  
@@ -163,6 +157,7 @@ Public Function USCS( _
             coarseSoil = m_GRAVEL
             USCS = ClassifyCoarseSoil(liquidLmt, plasticLmt, plasticityIdx, fines, sand, gravel, coarseSoil)
         End If
+
     End If
 
 End Function
@@ -173,12 +168,10 @@ Public Function AASHTO( _
     plasticityIdx As Double, _ 
     fines As Double _
 ) As String
-
     Dim grpIdx As Double
     Dim subgradeInfo As String
 
     grpIdx = GroupIndex(fines, liquidLmt, plasticityIdx)
-
     subgradeInfo = " (" & grpIdx & ")"
 
     ' A1 - A3
