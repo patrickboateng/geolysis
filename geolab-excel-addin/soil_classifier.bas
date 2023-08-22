@@ -53,13 +53,13 @@ Private Function ClassifyCoarseSoil( _
 ) As String
     ' More than 12% pass No. 200 sieve
     If (fines > 12) Then
-        ' Limits plot in hatched zone on plasticity chart
         Dim A_LINE As Double 
         Dim relTol As Double
 
         A_LINE = ALine(liquidLmt)
         relTol = 0.01
 
+        ' Limits plot in hatched zone on plasticity chart
         if (IsClose(plasticityIdx, A_LINE, relTol)) Then  
             ClassifyCoarseSoil = coarseSoil & SILT & "-" & coarseSoil & CLAY   
 
