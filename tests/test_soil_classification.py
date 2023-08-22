@@ -7,8 +7,6 @@ from geolab.soil_classifier import (
     USCS,
     AtterbergLimits,
     ParticleSizeDistribution,
-    ParticleSizes,
-    PSDCoefficient,
     group_index,
     soil_grade,
 )
@@ -43,26 +41,18 @@ single_class_test_data = [
 ]
 
 aashto_class_test_data = [
-    ((17.9, 14.5, 3.4, 24.01), "A-2-4(0)"),
-    ((37.7, 23.8, 13.9, 47.44), "A-6(4)"),
-    ((30.1, 16.4, 13.7, 18.38), "A-2-6(0)"),
-    ((61.7, 32.3, 29.4, 52.09), "A-7-5(12)"),
-    ((52.6, 27.6, 25, 45.8), "A-7-6(7)"),
-    ((30.2, 23.9, 6.3, 11.18), "A-2-4(0)"),
-    ((70, 38, 32, 86), "A-7-5(33)"),
-]
-
-psd_coefficient = [
-    ((0.07, 0.3, 0.8), {"cc": 1.61, "cu": 11.43}),
-    ((0.06, 0.6, 7.0), {"cc": 0.86, "cu": 116.67}),
-    ((0.153, 0.4, 1.2), {"cc": 0.87, "cu": 7.84}),
-    ((2, 3.9, 8), {"cc": 0.95, "cu": 4}),
+    ((17.9, 3.4, 24.01), "A-2-4(0)"),
+    ((37.7, 13.9, 47.44), "A-6(4)"),
+    ((30.1, 13.7, 18.38), "A-2-6(0)"),
+    ((61.7, 29.4, 52.09), "A-7-5(12)"),
+    ((52.6, 25.0, 45.8), "A-7-6(7)"),
+    ((30.2, 6.3, 11.18), "A-2-4(0)"),
+    ((70.0, 32.0, 86), "A-7-5(33)"),
 ]
 
 
 def test_grading():
-    psd_coefficient = PSDCoefficient(ParticleSizes(2, 3.9, 8))
-    assert soil_grade(psd_coefficient, "G") == "P"
+    assert soil_grade(0.95, 4, "G") == "P"
 
 
 def test_group_index():
@@ -71,38 +61,20 @@ def test_group_index():
 
 def test_PSD():
     with pytest.raises(PSDValueError):
-        atterberg_limits = AtterbergLimits(30, 10, 20)
-        psd = ParticleSizeDistribution(30, 30, 30)
-        USCS(atterberg_limits, psd)()
+        ParticleSizeDistribution(30, 30, 30)
 
 
 def test_PI():
     with pytest.raises(PIValueError):
         atterberg_limits = AtterbergLimits(30, 10, 10)
         psd = ParticleSizeDistribution(30, 30, 40)
-        AASHTO(atterberg_limits, fines=30)()
-        USCS(atterberg_limits, psd)()
-
-
-@pytest.mark.parametrize("psd,exp", psd_coefficient)
-def test_PSDCoeffiecient(psd, exp):
-    particle_sizes = ParticleSizes(*psd)
-    psd_coeff = PSDCoefficient(particle_sizes)
-    assert psd_coeff.curvature_coefficient == pytest.approx(
-        exp["cc"], ERROR_TOLERANCE
-    )
-    assert psd_coeff.uniformity_coefficient == pytest.approx(
-        exp["cu"], ERROR_TOLERANCE
-    )
+        AASHTO(atterberg_limits, fines=30).classify()
+        USCS(atterberg_limits, psd).classify()
 
 
 @pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
 def test_aashto(soil_params, classification):
-    liquid_limit, plastic_limit, plasticity_index, fines = soil_params
-    atterberg_limits = AtterbergLimits(
-        liquid_limit, plastic_limit, plasticity_index
-    )
-    assert AASHTO(atterberg_limits, fines)() == classification
+    assert AASHTO(*soil_params).classify() == classification
 
 
 @pytest.mark.parametrize(
@@ -111,36 +83,9 @@ def test_aashto(soil_params, classification):
 def test_dual_classification(
     soil_params: tuple, particle_sizes: dict, classification: dict
 ):
-    (
-        liquid_limit,
-        plastic_limit,
-        plasticity_index,
-        fines,
-        sands,
-        gravels,
-    ) = soil_params
-    atterberg_limits = AtterbergLimits(
-        liquid_limit, plastic_limit, plasticity_index
-    )
-    _particle_sizes = ParticleSizes(**particle_sizes)
-    psd = ParticleSizeDistribution(fines, sands, gravels, _particle_sizes)
-    assert USCS(atterberg_limits, psd)() == classification
+    assert USCS(*soil_params, **particle_sizes).classify() == classification
 
 
 @pytest.mark.parametrize("soil_params,classification", single_class_test_data)
 def test_single_classification(soil_params: tuple, classification: str):
-    (
-        liquid_limit,
-        plastic_limit,
-        plasticity_index,
-        fines,
-        sands,
-        gravels,
-    ) = soil_params
-    atterberg_limits = AtterbergLimits(
-        liquid_limit,
-        plastic_limit,
-        plasticity_index,
-    )
-    psd = ParticleSizeDistribution(fines, sands, gravels)
-    assert USCS(atterberg_limits, psd)() == classification
+    assert USCS(*soil_params).classify() == classification
