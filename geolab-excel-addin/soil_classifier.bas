@@ -1,3 +1,5 @@
+Option Explicit
+
 Const m_GRAVEL As String = "G"
 Const m_SAND As String = "S"
 Const CLAY As String = "C"
@@ -56,9 +58,12 @@ Private Function ClassifyCoarseSoil( _
     If (fines > 12) Then
         ' Limits plot in hatched zone on plasticity chart
         Dim A_LINE As Double 
-        A_LINE = ALine(liquidLmt)
+        Dim relTol As Double
 
-        if (IsClose(plasticityIdx, A_LINE, relTol=0.01)) Then  
+        A_LINE = ALine(liquidLmt)
+        relTol = 0.01
+
+        if (IsClose(plasticityIdx, A_LINE, relTol)) Then  
             ClassifyCoarseSoil = coarseSoil & SILT & "-" & coarseSoil & CLAY   
 
         ' Above Aline 
@@ -131,7 +136,7 @@ Private Function ClassifyFineSoil( _
     End If
 End Function
 
-Function USCS( _
+Public Function USCS( _
     liquidLmt As Double, _
     plasticLmt As Double, _
     plasticityIdx As Double, _ 
@@ -163,7 +168,7 @@ Function USCS( _
 End Function
 
 
-Function AASHTO( _
+Public Function AASHTO( _
     liquidLmt As Double, _
     plasticityIdx As Double, _ 
     fines As Double _
