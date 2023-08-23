@@ -4,9 +4,9 @@ from geolab import ERROR_TOLERANCE
 from geolab.exceptions import PIValueError, PSDValueError
 from geolab.soil_classifier import (
     AASHTO,
+    PSD,
     USCS,
     AtterbergLimits,
-    ParticleSizeDistribution,
     group_index,
     soil_grade,
 )
@@ -47,7 +47,8 @@ aashto_class_test_data = [
     ((61.7, 29.4, 52.09), "A-7-5(12)"),
     ((52.6, 25.0, 45.8), "A-7-6(7)"),
     ((30.2, 6.3, 11.18), "A-2-4(0)"),
-    ((70.0, 32.0, 86), "A-7-5(33)"),
+    ((70.0, 32.0, 86), "A-7-5(20)"),
+    ((45, 29, 60), "A-7-6(13)"),
 ]
 
 
@@ -56,18 +57,19 @@ def test_grading():
 
 
 def test_group_index():
-    assert group_index(86, 70, 32) == pytest.approx(33, ERROR_TOLERANCE)
+    assert group_index(86, 70, 32) == pytest.approx(20, ERROR_TOLERANCE)
+    assert group_index(60, 45, 29) == pytest.approx(13, ERROR_TOLERANCE)
 
 
 def test_PSD():
     with pytest.raises(PSDValueError):
-        ParticleSizeDistribution(30, 30, 30)
+        PSD(30, 30, 30)
 
 
 def test_PI():
     with pytest.raises(PIValueError):
         atterberg_limits = AtterbergLimits(30, 10, 10)
-        psd = ParticleSizeDistribution(30, 30, 40)
+        psd = PSD(30, 30, 40)
         AASHTO(atterberg_limits, fines=30).classify()
         USCS(atterberg_limits, psd).classify()
 
