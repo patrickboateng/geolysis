@@ -42,6 +42,38 @@ Private Function ALine(liquidLmt As Double)
     ALine = 0.73 * (liquidLmt - 20)
 End Function
 
+Private  Function CurvatureCoefficient(d10 As Double, d30 As Double, d60 As Double) As Double
+    CoefficientOfCurvature = d30 ^ 2 / (d10 * d60)
+End Function
+
+Private  Function UniformityCoefficient(d10 As Double, d60 As Double) As Double
+    CoefficientOfUniformity = d60 / d10
+End Function
+
+Private  Function SoilGrade( _
+    curvatureCoefficient As Double, _
+    uniformityCoefficient As Double, _
+    coarseSoil As String _
+) As String
+    ' Gravel
+    If (coarseSoil = m_GRAVEL) Then 
+        If (1 < curvatureCoefficient < 3 and uniformityCoefficient >= 4) Then 
+            SoilGrade = WELL_GRADED
+        Else
+            SoilGrade = POORLY_GRADED
+        End If
+    
+    ' Sand
+    Else
+        If (1 < curvatureCoefficient < 3 and uniformityCoefficient >= 6) Then 
+            SoilGrade = WELL_GRADED        
+        Else
+            SoilGrade = POORLY_GRADED
+        End If
+    End If
+
+End Function
+
 Private Function ClassifyCoarseSoil( _
     liquidLmt As Double, _
     plasticLmt As Double, _
@@ -49,18 +81,19 @@ Private Function ClassifyCoarseSoil( _
     fines As Double, _
     sand As Double, _
     gravel As Double, _
-    coarseSoil As String _
+    coarseSoil As String, _
+    d10 As Double, _
+    d30 As Double, _
+    d60 As Double  _
 ) As String
     ' More than 12% pass No. 200 sieve
     If (fines > 12) Then
         Dim A_LINE As Double 
-        Dim relTol As Double
 
         A_LINE = ALine(liquidLmt)
-        relTol = 0.01
 
         ' Limits plot in hatched zone on plasticity chart
-        if (IsClose(plasticityIdx, A_LINE, relTol)) Then  
+        if (IsClose(plasticityIdx, A_LINE, relTol:=0.01)) Then  
             ClassifyCoarseSoil = coarseSoil & SILT & "-" & coarseSoil & CLAY   
 
         ' Above Aline 
@@ -82,7 +115,19 @@ Private Function ClassifyCoarseSoil( _
 
     ' Less than 5% pass No. 200 sieve
     Else
-        ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "or" & coarseSoil & POORLY_GRADED
+        If (d10=0 and d30=0 and d60=0) Then 
+            ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "or" & coarseSoil & POORLY_GRADED
+        Else
+            Dim cc As Double
+            Dim cu As Double
+            Dim soilGrd As String
+            
+            cc = CurvatureCoefficient(d10, d30, d60)
+            cu = UniformityCoefficient(d10, d60)
+            soilGrd = SoilGrade(cc, cu, coarseSoil)
+
+            ClassifyCoarseSoil = coarseSoil & soilGrd
+        End If
     End If
 
 End Function
@@ -139,6 +184,9 @@ Public Function USCS( _
     fines As Double, _
     sand As Double, _
     gravel As Double, _
+    Optional d10 As Double, _
+    Optional d30 As Double, _
+    Optional d60 As Double, _
     Optional color As Boolean = False, _
     Optional odor As Boolean = False _
 ) As String
@@ -148,16 +196,33 @@ Public Function USCS( _
     
     ' 50% or more retained on No. 200 sieve
     Else
-        Dim coarseSoil As String
-        
         If (sand > gravel) Then  
-            coarseSoil = m_SAND
-            USCS = ClassifyCoarseSoil(liquidLmt, plasticLmt, plasticityIdx, fines, sand, gravel, coarseSoil)
+            USCS = ClassifyCoarseSoil( _
+                liquidLmt, _
+                plasticLmt, _ 
+                plasticityIdx, _
+                fines, _
+                sand, _
+                gravel, _ 
+                coarseSoil:=m_SAND, _
+                d10:=d10, _
+                d30:=d30, _
+                d60:=d60 _
+                )
         Else
-            coarseSoil = m_GRAVEL
-            USCS = ClassifyCoarseSoil(liquidLmt, plasticLmt, plasticityIdx, fines, sand, gravel, coarseSoil)
+            USCS = ClassifyCoarseSoil( _
+                liquidLmt, _
+                plasticLmt, _ 
+                plasticityIdx, _
+                fines, _
+                sand, _
+                gravel, _ 
+                coarseSoil:=m_GRAVEL, _
+                d10:=d10, _
+                d30:=d30, _
+                d60:=d60 _
+                )
         End If
-
     End If
 
 End Function
