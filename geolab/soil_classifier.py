@@ -72,7 +72,7 @@ class AtterbergLimits:
 
     @property
     @round_(precision=2)
-    def Aline(self) -> float:
+    def A_line(self) -> float:
         r"""Calculates the ``A-line``.
 
         .. math::
@@ -83,13 +83,13 @@ class AtterbergLimits:
         return 0.73 * (self.liquid_limit - 20)
 
     def above_A_line(self) -> bool:
-        return self.plasticity_index > self.Aline
+        return self.plasticity_index > self.A_line
 
     def limit_plot_in_hatched_zone(self) -> bool:
-        return math.isclose(self.plasticity_index, self.Aline)
+        return math.isclose(self.plasticity_index, self.A_line)
 
 
-class ParticleSizeDistribution:
+class PSD:
     # TODO
     # Add more description to the docstring
     """Particle Size Distribution.
@@ -158,15 +158,13 @@ class ParticleSizeDistribution:
         return self.d60 / self.d10
 
 
-def _dual_soil_symbol(
+def _dual_soil_classifier(
     atterberg_limits: AtterbergLimits,
-    psd: ParticleSizeDistribution,
+    psd: PSD,
     coarse_soil: str,
 ) -> str:
     _soil_grd = soil_grade(
-        psd.curvature_coefficient,
-        psd.uniformity_coefficient,
-        coarse_soil,
+        psd.curvature_coefficient, psd.uniformity_coefficient, coarse_soil
     )
     fine_soil = CLAY if atterberg_limits.above_A_line() else SILT
 
@@ -209,7 +207,7 @@ def _classify_fine_soil(
 
 def _classify_coarse_soil(
     atterberg_limits: AtterbergLimits,
-    psd: ParticleSizeDistribution,
+    psd: PSD,
     coarse_soil: str,
 ) -> str:
     if psd.fines > 12:
@@ -225,7 +223,7 @@ def _classify_coarse_soil(
     if 5 <= psd.fines <= 12:
         # Requires dual symbol based on graduation and plasticity chart
         if psd.has_particle_sizes():
-            return _dual_soil_symbol(atterberg_limits, psd, coarse_soil)
+            return _dual_soil_classifier(atterberg_limits, psd, coarse_soil)
 
         return (
             f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
@@ -242,11 +240,7 @@ def _classify_coarse_soil(
             psd.uniformity_coefficient,
             coarse_soil,
         )
-        return (
-            f"{coarse_soil}{_soil_grd}"
-            if coarse_soil == GRAVEL
-            else f"{coarse_soil}{_soil_grd}"
-        )
+        return f"{coarse_soil}{_soil_grd}"
 
     return f"{coarse_soil}{WELL_GRADED} or {coarse_soil}{POORLY_GRADED}"
 
@@ -304,73 +298,16 @@ def group_index(
     :return: The group index of the soil sample
     :rtype: float
     """
-    grp_idx = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
-        fines - 15
-    ) * (plasticity_index - 10)
+    expr_1 = 0 if (expr := fines - 35) < 0 else min(expr, 40)
+    expr_2 = 0 if (expr := liquid_limit - 40) < 0 else min(expr, 20)
+    expr_3 = 0 if (expr := fines - 15) < 0 else min(expr, 40)
+    expr_4 = 0 if (expr := plasticity_index - 10) < 0 else min(expr, 20)
+
+    # grp_idx = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
+    #     fines - 15
+    # ) * (plasticity_index - 10)
+    grp_idx = (expr_1) * (0.2 + 0.005 * (expr_2)) + 0.01 * (expr_3) * (expr_4)
     return 0.0 if grp_idx <= 0 else grp_idx
-
-
-def _uscs(
-    atterberg_limits: AtterbergLimits,
-    particle_size_distribution: ParticleSizeDistribution,
-    soil_type: Optional[InOrganicSoil | OrganicSoil] = InOrganicSoil,
-) -> str:
-    if particle_size_distribution.fines < 50:
-        # Coarse grained, Run Sieve Analysis
-        if particle_size_distribution.gravel > particle_size_distribution.sand:
-            # Gravel
-            return _classify_coarse_soil(
-                atterberg_limits,
-                particle_size_distribution,
-                coarse_soil=GRAVEL,
-            )
-
-        # Sand
-        return _classify_coarse_soil(
-            atterberg_limits,
-            particle_size_distribution,
-            coarse_soil=SAND,
-        )
-
-    # Fine grained, Run Atterberg
-    return _classify_fine_soil(atterberg_limits, soil_type)
-
-
-def _aashto(
-    liquid_limit: float,
-    plasticity_index: float,
-    fines: float,
-) -> str:
-    grp_idx = group_index(fines, liquid_limit, plasticity_index)
-    grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
-
-    if fines <= 35:
-        if liquid_limit <= 40:
-            return (
-                f"A-2-4({grp_idx})"
-                if plasticity_index <= 10
-                else f"A-2-6({grp_idx})"
-            )
-        return (
-            f"A-2-5({grp_idx})"
-            if plasticity_index <= 10
-            else f"A-2-7({grp_idx})"
-        )
-
-    # Silts A4-A7
-    if liquid_limit <= 40:
-        return (
-            f"A-4({grp_idx})" if plasticity_index <= 10 else f"A-6({grp_idx})"
-        )
-
-    if plasticity_index <= 10:
-        return f"A-5({grp_idx})"
-
-    return (
-        f"A-7-5({grp_idx})"
-        if plasticity_index <= (liquid_limit - 30)
-        else f"A-7-6({grp_idx})"
-    )
 
 
 class AASHTO:
@@ -402,7 +339,40 @@ class AASHTO:
         self.fines = fines
 
     def classify(self) -> str:
-        return _aashto(self.liquid_limit, self.plasticity_index, self.fines)
+        grp_idx = group_index(
+            self.fines, self.liquid_limit, self.plasticity_index
+        )
+        grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
+
+        if self.fines <= 35:
+            if self.liquid_limit <= 40:
+                return (
+                    f"A-2-4({grp_idx})"
+                    if self.plasticity_index <= 10
+                    else f"A-2-6({grp_idx})"
+                )
+            return (
+                f"A-2-5({grp_idx})"
+                if self.plasticity_index <= 10
+                else f"A-2-7({grp_idx})"
+            )
+
+        # Silts A4-A7
+        if self.liquid_limit <= 40:
+            return (
+                f"A-4({grp_idx})"
+                if self.plasticity_index <= 10
+                else f"A-6({grp_idx})"
+            )
+
+        if self.plasticity_index <= 10:
+            return f"A-5({grp_idx})"
+
+        return (
+            f"A-7-5({grp_idx})"
+            if self.plasticity_index <= (self.liquid_limit - 30)
+            else f"A-7-6({grp_idx})"
+        )
 
 
 class USCS:
@@ -447,19 +417,22 @@ class USCS:
             plastic_limit,
             plasticity_index,
         )
-        self.particle_size_distribution = ParticleSizeDistribution(
-            fines,
-            sand,
-            gravel,
-            d10,
-            d30,
-            d60,
-        )
+        self.psd = PSD(fines, sand, gravel, d10, d30, d60)
         self.soil_type = soil_type
 
     def classify(self) -> str:
-        return _uscs(
-            self.atterberg_limits,
-            self.particle_size_distribution,
-            self.soil_type,
-        )
+        if self.psd.fines < 50:
+            # Coarse grained, Run Sieve Analysis
+            if self.psd.gravel > self.psd.sand:
+                # Gravel
+                return _classify_coarse_soil(
+                    self.atterberg_limits, self.psd, coarse_soil=GRAVEL
+                )
+
+            # Sand
+            return _classify_coarse_soil(
+                self.atterberg_limits, self.psd, coarse_soil=SAND
+            )
+
+        # Fine grained, Run Atterberg
+        return _classify_fine_soil(self.atterberg_limits, self.soil_type)
