@@ -303,9 +303,6 @@ def group_index(
     expr_3 = 0 if (expr := fines - 15) < 0 else min(expr, 40)
     expr_4 = 0 if (expr := plasticity_index - 10) < 0 else min(expr, 20)
 
-    # grp_idx = (fines - 35) * (0.2 + 0.005 * (liquid_limit - 40)) + 0.01 * (
-    #     fines - 15
-    # ) * (plasticity_index - 10)
     grp_idx = (expr_1) * (0.2 + 0.005 * (expr_2)) + 0.01 * (expr_3) * (expr_4)
     return 0.0 if grp_idx <= 0 else grp_idx
 
