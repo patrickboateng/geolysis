@@ -26,11 +26,16 @@ Private Function IsClose( _
 End Function
 
 Private Function GroupIndex(fines As Double, liquidLmt As Double, plasticityIdx As Double) As Double
-    Dim groupIdx As Double
-    
-    groupIdx = (fines - 35) * (0.2 + 0.005*(liquidLmt - 40)) + 0.01 * (fines - 15) * (plasticityIdx - 10)
+    Dim expr1, expr2, expr3, expr4, groupIdx As Double
 
-    GroupIndex = IIf(groupIdx <=0, 0, Round(groupIdx, 0))
+    expr1 = IIf(fines - 35 < 0, 0, WorksheetFunction.Min(fines - 35, 40))
+    expr2 = IIf(liquidLmt - 40 < 0, 0, WorksheetFunction.Min(liquidLmt - 40, 20))
+    expr3 = IIf(fines - 15 < 0, 0, WorksheetFunction.Min(fines - 15, 40))
+    expr4 = IIf(plasticityIdx - 10 < 0, 0, WorksheetFunction.Min(plasticityIdx - 10, 20))
+
+    groupIdx = (expr1) * (0.2 + 0.005*(expr2)) + 0.01 * (expr3) * (expr4)
+
+    GroupIndex = IIf(groupIdx <= 0, 0, Round(groupIdx, 0))
 
 End Function
 
@@ -38,15 +43,15 @@ Private Function ALine(liquidLmt As Double)
     ALine = 0.73 * (liquidLmt - 20)
 End Function
 
-Private  Function CurvatureCoefficient(d10 As Double, d30 As Double, d60 As Double) As Double
+Private Function CurvatureCoefficient(d10 As Double, d30 As Double, d60 As Double) As Double
     CurvatureCoefficient = d30 ^ 2 / (d10 * d60)
 End Function
 
-Private  Function UniformityCoefficient(d10 As Double, d60 As Double) As Double
+Private Function UniformityCoefficient(d10 As Double, d60 As Double) As Double
     UniformityCoefficient = d60 / d10
 End Function
 
-Private  Function SoilGrade( _
+Private Function SoilGrade( _
     curvatureCoefficient As Double, _
     uniformityCoefficient As Double, _
     coarseSoil As String _
