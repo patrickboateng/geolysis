@@ -26,7 +26,7 @@ Private Function IsClose( _
 End Function
 
 Private Function GroupIndex(fines As Double, liquidLmt As Double, plasticityIdx As Double) As Double
-    Dim expr1, expr2, expr3, expr4, groupIdx As Double
+    Dim expr1#, expr2#, expr3#, expr4#, groupIdx As Double
 
     expr1 = IIf(fines - 35 < 0, 0, WorksheetFunction.Min(fines - 35, 40))
     expr2 = IIf(liquidLmt - 40 < 0, 0, WorksheetFunction.Min(liquidLmt - 40, 20))
