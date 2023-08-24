@@ -43,11 +43,11 @@ Private Function ALine(liquidLmt As Double)
 End Function
 
 Private  Function CurvatureCoefficient(d10 As Double, d30 As Double, d60 As Double) As Double
-    CoefficientOfCurvature = d30 ^ 2 / (d10 * d60)
+    CurvatureCoefficient = d30 ^ 2 / (d10 * d60)
 End Function
 
 Private  Function UniformityCoefficient(d10 As Double, d60 As Double) As Double
-    CoefficientOfUniformity = d60 / d10
+    UniformityCoefficient = d60 / d10
 End Function
 
 Private  Function SoilGrade( _
@@ -57,7 +57,7 @@ Private  Function SoilGrade( _
 ) As String
     ' Gravel
     If (coarseSoil = m_GRAVEL) Then 
-        If (1 < curvatureCoefficient < 3 and uniformityCoefficient >= 4) Then 
+        If (curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 4) Then 
             SoilGrade = WELL_GRADED
         Else
             SoilGrade = POORLY_GRADED
@@ -65,12 +65,33 @@ Private  Function SoilGrade( _
     
     ' Sand
     Else
-        If (1 < curvatureCoefficient < 3 and uniformityCoefficient >= 6) Then 
+        If (curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 6) Then 
             SoilGrade = WELL_GRADED        
         Else
             SoilGrade = POORLY_GRADED
         End If
     End If
+
+End Function
+
+Private  Function DualSoilClassifier( _
+    liquidLmt As Double, _
+    plasticityIdx As Double, _ 
+    curvatureCoefficient As Double, _
+    uniformityCoefficient As Double, _
+    coarseSoil As String _
+) As String
+    Dim soilGrd As String, A_LINE As Double, fineSoil As String
+    soilGrd = SoilGrade(curvatureCoefficient, uniformityCoefficient, coarseSoil)
+    A_LINE = ALine(liquidLmt)
+    
+    If (plasticityIdx > A_LINE) Then 
+        fineSoil = CLAY
+    Else
+        fineSoil = SILT
+    End If
+
+    DualSoilClassifier = coarseSoil & soilGrd & "-" & coarseSoil & fineSoil
 
 End Function
 
@@ -99,7 +120,6 @@ Private Function ClassifyCoarseSoil( _
         ' Above Aline 
         ElseIf (plasticityIdx > A_LINE) Then
             ClassifyCoarseSoil = coarseSoil & CLAY
-
         ' Below Aline
         Else
             ClassifyCoarseSoil = coarseSoil & SILT
@@ -107,21 +127,25 @@ Private Function ClassifyCoarseSoil( _
     
     ' Between 5% and 12% pass No. 200 sieve
     ElseIf (fines >= 5 and fines <= 12) Then
+        Dim cc As Double, cu As Double, soilGrd As String
+
         'Requires dual symbol based on gradation and plasticity characteristics
-        ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "-" & coarseSoil & SILT  & ", " & _
+        If (d10=0 and d30=0 and d60=0) Then 
+            ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "-" & coarseSoil & SILT  & ", " & _
                              coarseSoil & POORLY_GRADED & "-" & coarseSoil & SILT & ", " & _ 
                              coarseSoil & WELL_GRADED & "-" & coarseSoil & CLAY & ", " & _
                              coarseSoil & POORLY_GRADED & "-" & coarseSoil & CLAY 
-
+        Else
+            cc = CurvatureCoefficient(d10, d30, d60)
+            cu = UniformityCoefficient(d10, d60)
+            
+            ClassifyCoarseSoil = DualSoilClassifier(liquidLmt, plasticityIdx, cc, cu, coarseSoil)
+        End If
     ' Less than 5% pass No. 200 sieve
     Else
         If (d10=0 and d30=0 and d60=0) Then 
             ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "or" & coarseSoil & POORLY_GRADED
         Else
-            Dim cc As Double
-            Dim cu As Double
-            Dim soilGrd As String
-            
             cc = CurvatureCoefficient(d10, d30, d60)
             cu = UniformityCoefficient(d10, d60)
             soilGrd = SoilGrade(cc, cu, coarseSoil)
