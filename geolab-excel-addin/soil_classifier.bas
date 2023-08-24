@@ -30,11 +30,7 @@ Private Function GroupIndex(fines As Double, liquidLmt As Double, plasticityIdx 
     
     groupIdx = (fines - 35) * (0.2 + 0.005*(liquidLmt - 40)) + 0.01 * (fines - 15) * (plasticityIdx - 10)
 
-    If (groupIdx <= 0) Then 
-        GroupIndex = 0
-    Else
-        GroupIndex = Round(groupIdx, 0)
-    End If
+    GroupIndex = IIf(groupIdx <=0, 0, Round(groupIdx, 0))
 
 End Function
 
@@ -55,21 +51,17 @@ Private  Function SoilGrade( _
     uniformityCoefficient As Double, _
     coarseSoil As String _
 ) As String
+    Dim condition As Boolean
+
     ' Gravel
     If (coarseSoil = m_GRAVEL) Then 
-        If (curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 4) Then 
-            SoilGrade = WELL_GRADED
-        Else
-            SoilGrade = POORLY_GRADED
-        End If
+        condition = curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 4
+        SoilGrade = IIf(condition, WELL_GRADED, POORLY_GRADED)
     
     ' Sand
     Else
-        If (curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 6) Then 
-            SoilGrade = WELL_GRADED        
-        Else
-            SoilGrade = POORLY_GRADED
-        End If
+        condition = curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 6
+        SoilGrade = IIf(condition, WELL_GRADED, POORLY_GRADED)
     End If
 
 End Function
@@ -82,14 +74,11 @@ Private  Function DualSoilClassifier( _
     coarseSoil As String _
 ) As String
     Dim soilGrd As String, A_LINE As Double, fineSoil As String
+
     soilGrd = SoilGrade(curvatureCoefficient, uniformityCoefficient, coarseSoil)
     A_LINE = ALine(liquidLmt)
-    
-    If (plasticityIdx > A_LINE) Then 
-        fineSoil = CLAY
-    Else
-        fineSoil = SILT
-    End If
+
+    fineSoil = IIf(plasticityIdx > A_LINE, CLAY, SILT)
 
     DualSoilClassifier = coarseSoil & soilGrd & "-" & coarseSoil & fineSoil
 
