@@ -82,6 +82,10 @@ class AtterbergLimits:
         """
         return 0.73 * (self.liquid_limit - 20)
 
+    @property
+    def fine_soil(self) -> str:
+        return CLAY if self.above_A_line() else SILT
+
     def above_A_line(self) -> bool:
         return self.plasticity_index > self.A_line
 
@@ -129,6 +133,33 @@ class PSD:
     def has_particle_sizes(self) -> bool:
         return all((self.d10, self.d30, self.d60))
 
+    def grade(self, coarse_soil: str) -> str:
+        soil_grade: str
+
+        # Gravel
+        if coarse_soil == GRAVEL:
+            if (
+                1 < self.curvature_coefficient < 3
+                and self.uniformity_coefficient >= 4
+            ):
+                soil_grade = WELL_GRADED
+
+            else:
+                soil_grade = POORLY_GRADED
+
+        # Sand
+        else:
+            if (
+                1 < self.curvature_coefficient < 3
+                and self.uniformity_coefficient >= 6
+            ):
+                soil_grade = WELL_GRADED
+
+            else:
+                soil_grade = POORLY_GRADED
+
+        return soil_grade
+
     @property
     @round_(precision=2)
     def curvature_coefficient(self) -> float:
@@ -156,155 +187,6 @@ class PSD:
         :rtype: float
         """
         return self.d60 / self.d10
-
-
-def _dual_soil_classifier(
-    atterberg_limits: AtterbergLimits,
-    psd: PSD,
-    coarse_soil: str,
-) -> str:
-    _soil_grd = soil_grade(
-        psd.curvature_coefficient, psd.uniformity_coefficient, coarse_soil
-    )
-    fine_soil = CLAY if atterberg_limits.above_A_line() else SILT
-
-    return f"{coarse_soil}{_soil_grd}-{coarse_soil}{fine_soil}"
-
-
-def _classify_fine_soil(
-    atterberg_limits: AtterbergLimits, soil_type: InOrganicSoil | OrganicSoil
-) -> str:
-    if atterberg_limits.liquid_limit < 50:
-        # Low LL
-        if (atterberg_limits.above_A_line()) and (
-            atterberg_limits.plasticity_index > 7
-        ):
-            return f"{CLAY}{LOW_PLASTICITY}"
-
-        if (not atterberg_limits.above_A_line()) or (
-            atterberg_limits.plasticity_index < 4
-        ):
-            return (
-                f"{ORGANIC}{LOW_PLASTICITY}"
-                if isinstance(soil_type, OrganicSoil)
-                else f"{SILT}{LOW_PLASTICITY}"
-            )
-
-        # Limits plot in hatched area on plasticity chart
-        return f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
-
-    # High LL
-    if atterberg_limits.above_A_line():
-        return f"{CLAY}{HIGH_PLASTICITY}"
-
-    # Below A-Line
-    return (
-        f"{ORGANIC}{HIGH_PLASTICITY}"
-        if isinstance(soil_type, OrganicSoil)
-        else f"{SILT}{HIGH_PLASTICITY}"
-    )
-
-
-def _classify_coarse_soil(
-    atterberg_limits: AtterbergLimits,
-    psd: PSD,
-    coarse_soil: str,
-) -> str:
-    if psd.fines > 12:
-        if atterberg_limits.limit_plot_in_hatched_zone():
-            return f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
-
-        return (
-            f"{coarse_soil}{CLAY}"
-            if atterberg_limits.above_A_line()
-            else f"{coarse_soil}{SILT}"
-        )
-
-    if 5 <= psd.fines <= 12:
-        # Requires dual symbol based on graduation and plasticity chart
-        if psd.has_particle_sizes():
-            return _dual_soil_classifier(atterberg_limits, psd, coarse_soil)
-
-        return (
-            f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
-            f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{SILT},"
-            f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{CLAY},"
-            f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{CLAY}"
-        )
-
-    # Less than 5% pass No. 200 sieve
-    # Obtain Cc and Cu from grain size graph
-    if psd.has_particle_sizes():
-        _soil_grd = soil_grade(
-            psd.curvature_coefficient,
-            psd.uniformity_coefficient,
-            coarse_soil,
-        )
-        return f"{coarse_soil}{_soil_grd}"
-
-    return f"{coarse_soil}{WELL_GRADED} or {coarse_soil}{POORLY_GRADED}"
-
-
-def soil_grade(
-    curvature_coefficient: float,
-    uniformity_coefficient: float,
-    coarse_soil: str,
-) -> str:
-    # TODO
-    # Modify docstrings
-    """Determines the grading of the soil.
-
-    :param coarse_soil: Type of soil. ``G`` for Gravel and ``S`` for Sand
-    :type coarse_soil: str
-    :return: The grading of the soil (W -> WELL GRADED or P -> POORLY GRADED)
-    :rtype: str
-    """
-
-    # Gravel
-    if coarse_soil == GRAVEL:
-        return (
-            WELL_GRADED
-            if (1 < curvature_coefficient < 3)
-            and (uniformity_coefficient >= 4)
-            else POORLY_GRADED
-        )
-
-    # Sand
-    return (
-        WELL_GRADED
-        if (1 < curvature_coefficient < 3) and (uniformity_coefficient >= 6)
-        else POORLY_GRADED
-    )
-
-
-@round_(precision=0)
-def group_index(
-    fines: float,
-    liquid_limit: float,
-    plasticity_index: float,
-) -> float:
-    """The ``Group Index (GI)`` is used to further evaluate soils with a group (subgroups).
-
-    .. math::
-
-        GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
-
-    :param fines: Percentage of fines in the soil sample (%)
-    :type fines: float
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
-    :type liquid_limit: float
-    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
-    :type plasticity_index: float
-    :return: The group index of the soil sample
-    :rtype: float
-    """
-    expr_1 = 0 if (expr := fines - 35) < 0 else min(expr, 40)
-    expr_2 = 0 if (expr := liquid_limit - 40) < 0 else min(expr, 20)
-    expr_3 = 0 if (expr := fines - 15) < 0 else min(expr, 40)
-    expr_4 = 0 if (expr := plasticity_index - 10) < 0 else min(expr, 20)
-
-    grp_idx = (expr_1) * (0.2 + 0.005 * expr_2) + 0.01 * expr_3 * expr_4
-    return 0.0 if grp_idx <= 0 else grp_idx
 
 
 class AASHTO:
@@ -335,10 +217,35 @@ class AASHTO:
         self.plasticity_index = plasticity_index
         self.fines = fines
 
-    def classify(self) -> str:
-        grp_idx = group_index(
-            self.fines, self.liquid_limit, self.plasticity_index
+    @round_(precision=0)
+    def group_index(self) -> float:
+        """The ``Group Index (GI)`` is used to further evaluate soils with a group (subgroups).
+
+        .. math::
+
+            GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
+
+        :param fines: Percentage of fines in the soil sample (%)
+        :type fines: float
+        :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+        :type liquid_limit: float
+        :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+        :type plasticity_index: float
+        :return: The group index of the soil sample
+        :rtype: float
+        """
+        expr_1 = 0 if (expr := self.fines - 35) < 0 else min(expr, 40)
+        expr_2 = 0 if (expr := self.liquid_limit - 40) < 0 else min(expr, 20)
+        expr_3 = 0 if (expr := self.fines - 15) < 0 else min(expr, 40)
+        expr_4 = (
+            0 if (expr := self.plasticity_index - 10) < 0 else min(expr, 20)
         )
+
+        grp_idx = (expr_1) * (0.2 + 0.005 * expr_2) + 0.01 * expr_3 * expr_4
+        return 0.0 if grp_idx <= 0 else grp_idx
+
+    def classify(self) -> str:
+        grp_idx = self.group_index()
         grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
 
         if self.fines <= 35:
@@ -417,19 +324,95 @@ class USCS:
         self.psd = PSD(fines, sand, gravel, d10, d30, d60)
         self.soil_type = soil_type
 
+    def _dual_soil_classifier(self, coarse_soil: str) -> str:
+        _soil_grd = self.psd.grade(coarse_soil)
+        return f"{coarse_soil}{_soil_grd}-{coarse_soil}{self.atterberg_limits.fine_soil}"
+
+    def _classify_coarse_soil(self, coarse_soil: str) -> str:
+        clf: str  # soil classification
+
+        if self.psd.fines > 12:
+            if self.atterberg_limits.limit_plot_in_hatched_zone():
+                clf = f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
+
+            elif self.atterberg_limits.above_A_line():
+                clf = f"{coarse_soil}{CLAY}"
+
+            else:
+                clf = f"{coarse_soil}{SILT}"
+
+        elif 5 <= self.psd.fines <= 12:
+            # Requires dual symbol based on graduation and plasticity chart
+            if self.psd.has_particle_sizes():
+                clf = self._dual_soil_classifier(coarse_soil)
+
+            else:
+                clf = (
+                    f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
+                    f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{SILT},"
+                    f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{CLAY},"
+                    f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{CLAY}"
+                )
+
+        # Less than 5% pass No. 200 sieve
+        # Obtain Cc and Cu from grain size graph
+        else:
+            if self.psd.has_particle_sizes():
+                _soil_grd = self.psd.grade(coarse_soil)
+                clf = f"{coarse_soil}{_soil_grd}"
+
+            else:
+                clf = f"{coarse_soil}{WELL_GRADED} or {coarse_soil}{POORLY_GRADED}"
+
+        return clf
+
+    def _classify_fine_soil(self) -> str:
+        clf: str  # soil classification
+
+        if self.atterberg_limits.liquid_limit < 50:
+            # Low LL
+            if (self.atterberg_limits.above_A_line()) and (
+                self.atterberg_limits.plasticity_index > 7
+            ):
+                clf = f"{CLAY}{LOW_PLASTICITY}"
+
+            elif (not self.atterberg_limits.above_A_line()) or (
+                self.atterberg_limits.plasticity_index < 4
+            ):
+                if isinstance(self.soil_type, OrganicSoil):
+                    clf = f"{ORGANIC}{LOW_PLASTICITY}"
+
+                else:
+                    clf = f"{SILT}{LOW_PLASTICITY}"
+
+            # Limits plot in hatched area on plasticity chart
+            else:
+                clf = f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+
+        # High LL
+        else:
+            # Above A-Line
+            if self.atterberg_limits.above_A_line():
+                clf = f"{CLAY}{HIGH_PLASTICITY}"
+
+            # Below A-Line
+            else:
+                if isinstance(self.soil_type, OrganicSoil):
+                    clf = f"{ORGANIC}{HIGH_PLASTICITY}"
+                else:
+                    clf = f"{SILT}{HIGH_PLASTICITY}"
+
+        return clf
+
     def classify(self) -> str:
         if self.psd.fines < 50:
             # Coarse grained, Run Sieve Analysis
             if self.psd.gravel > self.psd.sand:
                 # Gravel
-                return _classify_coarse_soil(
-                    self.atterberg_limits, self.psd, coarse_soil=GRAVEL
-                )
+                return self._classify_coarse_soil(coarse_soil=GRAVEL)
 
             # Sand
-            return _classify_coarse_soil(
-                self.atterberg_limits, self.psd, coarse_soil=SAND
-            )
+            return self._classify_coarse_soil(coarse_soil=SAND)
 
         # Fine grained, Run Atterberg
-        return _classify_fine_soil(self.atterberg_limits, self.soil_type)
+        return self._classify_fine_soil()
