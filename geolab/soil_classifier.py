@@ -225,12 +225,6 @@ class AASHTO:
 
             GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
 
-        :param fines: Percentage of fines in the soil sample (%)
-        :type fines: float
-        :param liquid_limit: Water content beyond which soils flows under their own weight (%)
-        :type liquid_limit: float
-        :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
-        :type plasticity_index: float
         :return: The group index of the soil sample
         :rtype: float
         """
@@ -245,38 +239,41 @@ class AASHTO:
         return 0.0 if grp_idx <= 0 else grp_idx
 
     def classify(self) -> str:
+        clf: str  # soil classification
         grp_idx = self.group_index()
         grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
 
         if self.fines <= 35:
             if self.liquid_limit <= 40:
-                return (
-                    f"A-2-4({grp_idx})"
-                    if self.plasticity_index <= 10
-                    else f"A-2-6({grp_idx})"
-                )
-            return (
-                f"A-2-5({grp_idx})"
-                if self.plasticity_index <= 10
-                else f"A-2-7({grp_idx})"
-            )
+                if self.plasticity_index <= 10:
+                    clf = f"A-2-4({grp_idx})"
+                else:
+                    clf = f"A-2-6({grp_idx})"
+
+            else:
+                if self.plasticity_index <= 10:
+                    clf = f"A-2-5({grp_idx})"
+                else:
+                    clf = f"A-2-7({grp_idx})"
 
         # Silts A4-A7
-        if self.liquid_limit <= 40:
-            return (
-                f"A-4({grp_idx})"
-                if self.plasticity_index <= 10
-                else f"A-6({grp_idx})"
-            )
+        else:
+            if self.liquid_limit <= 40:
+                if self.plasticity_index <= 10:
+                    clf = f"A-4({grp_idx})"
+                else:
+                    clf = f"A-6({grp_idx})"
 
-        if self.plasticity_index <= 10:
-            return f"A-5({grp_idx})"
+            else:
+                if self.plasticity_index <= 10:
+                    clf = f"A-5({grp_idx})"
+                else:
+                    if self.plasticity_index <= (self.liquid_limit - 30):
+                        clf = f"A-7-5({grp_idx})"
+                    else:
+                        clf = f"A-7-6({grp_idx})"
 
-        return (
-            f"A-7-5({grp_idx})"
-            if self.plasticity_index <= (self.liquid_limit - 30)
-            else f"A-7-6({grp_idx})"
-        )
+        return clf
 
 
 class USCS:
