@@ -205,8 +205,8 @@ Public Function USCS( _
     Optional d10 As Double, _
     Optional d30 As Double, _
     Optional d60 As Double, _
-    Optional color As Boolean = False, _
-    Optional odor As Boolean = False _
+    Optional color As Boolean, _
+    Optional odor As Boolean _
 ) As String
     ' More than 50% passes the No. 200 sieve
     If (fines > 50) Then 
