@@ -2,14 +2,7 @@ import pytest
 
 from geolab import ERROR_TOLERANCE
 from geolab.exceptions import PIValueError, PSDValueError
-from geolab.soil_classifier import (
-    AASHTO,
-    PSD,
-    USCS,
-    AtterbergLimits,
-    group_index,
-    soil_grade,
-)
+from geolab.soil_classifier import AASHTO, PSD, USCS, AtterbergLimits
 
 dual_class_test_data = [
     (
@@ -50,15 +43,6 @@ aashto_class_test_data = [
     ((70.0, 32.0, 86), "A-7-5(20)"),
     ((45, 29, 60), "A-7-6(13)"),
 ]
-
-
-def test_grading():
-    assert soil_grade(0.95, 4, "G") == "P"
-
-
-def test_group_index():
-    assert group_index(86, 70, 32) == pytest.approx(20, ERROR_TOLERANCE)
-    assert group_index(60, 45, 29) == pytest.approx(13, ERROR_TOLERANCE)
 
 
 def test_PSD():
