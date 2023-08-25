@@ -1,14 +1,14 @@
 Option Explicit
 
-Const m_GRAVEL As String = "G"
-Const m_SAND As String = "S"
-Const CLAY As String = "C"
-Const SILT As String = "M"
-Const WELL_GRADED As String = "W"
-Const POORLY_GRADED As String = "P"
-Const ORGANIC As String = "O"
-Const LOW_PLASTICITY As String = "L"
-Const HIGH_PLASTICITY As String = "H"
+Const mGRAVEL As String = "G"
+Const mSAND As String = "S"
+Const mCLAY As String = "C"
+Const mSILT As String = "M"
+Const mWELL_GRADED As String = "W"
+Const mPOORLY_GRADED As String = "P"
+Const mORGANIC As String = "O"
+Const mLOW_PLASTICITY As String = "L"
+Const mHIGH_PLASTICITY As String = "H"
 
 Private Function IsClose( _
     a As Double, _
@@ -59,19 +59,19 @@ Private Function SoilGrade( _
     Dim condition As Boolean
 
     ' Gravel
-    If (coarseSoil = m_GRAVEL) Then 
+    If (coarseSoil = mGRAVEL) Then 
         condition = curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 4
-        SoilGrade = IIf(condition, WELL_GRADED, POORLY_GRADED)
+        SoilGrade = IIf(condition, mWELL_GRADED, mPOORLY_GRADED)
     
     ' Sand
     Else
         condition = curvatureCoefficient > 1 and curvatureCoefficient < 3 and uniformityCoefficient >= 6
-        SoilGrade = IIf(condition, WELL_GRADED, POORLY_GRADED)
+        SoilGrade = IIf(condition, mWELL_GRADED, mPOORLY_GRADED)
     End If
 
 End Function
 
-Private  Function DualSoilClassifier( _
+Private Function DualSoilClassifier( _
     liquidLmt As Double, _
     plasticityIdx As Double, _ 
     curvatureCoefficient As Double, _
@@ -83,7 +83,7 @@ Private  Function DualSoilClassifier( _
     soilGrd = SoilGrade(curvatureCoefficient, uniformityCoefficient, coarseSoil)
     A_LINE = ALine(liquidLmt)
 
-    fineSoil = IIf(plasticityIdx > A_LINE, CLAY, SILT)
+    fineSoil = IIf(plasticityIdx > A_LINE, mCLAY, mSILT)
 
     DualSoilClassifier = coarseSoil & soilGrd & "-" & coarseSoil & fineSoil
 
@@ -109,14 +109,14 @@ Private Function ClassifyCoarseSoil( _
 
         ' Limits plot in hatched zone on plasticity chart
         if (IsClose(plasticityIdx, A_LINE, relTol:=0.01)) Then  
-            ClassifyCoarseSoil = coarseSoil & SILT & "-" & coarseSoil & CLAY   
+            ClassifyCoarseSoil = coarseSoil & mSILT & "-" & coarseSoil & mCLAY   
 
         ' Above Aline 
         ElseIf (plasticityIdx > A_LINE) Then
-            ClassifyCoarseSoil = coarseSoil & CLAY
+            ClassifyCoarseSoil = coarseSoil & mCLAY
         ' Below Aline
         Else
-            ClassifyCoarseSoil = coarseSoil & SILT
+            ClassifyCoarseSoil = coarseSoil & mSILT
         End If
     
     ' Between 5% and 12% pass No. 200 sieve
@@ -125,10 +125,10 @@ Private Function ClassifyCoarseSoil( _
 
         'Requires dual symbol based on gradation and plasticity characteristics
         If (d10=0 and d30=0 and d60=0) Then 
-            ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "-" & coarseSoil & SILT  & ", " & _
-                             coarseSoil & POORLY_GRADED & "-" & coarseSoil & SILT & ", " & _ 
-                             coarseSoil & WELL_GRADED & "-" & coarseSoil & CLAY & ", " & _
-                             coarseSoil & POORLY_GRADED & "-" & coarseSoil & CLAY 
+            ClassifyCoarseSoil = coarseSoil & mWELL_GRADED & "-" & coarseSoil & mSILT  & ", " & _
+                             coarseSoil & mPOORLY_GRADED & "-" & coarseSoil & mSILT & ", " & _ 
+                             coarseSoil & mWELL_GRADED & "-" & coarseSoil & mCLAY & ", " & _
+                             coarseSoil & mPOORLY_GRADED & "-" & coarseSoil & mCLAY 
         Else
             cc = CurvatureCoefficient(d10, d30, d60)
             cu = UniformityCoefficient(d10, d60)
@@ -138,7 +138,7 @@ Private Function ClassifyCoarseSoil( _
     ' Less than 5% pass No. 200 sieve
     Else
         If (d10=0 and d30=0 and d60=0) Then 
-            ClassifyCoarseSoil = coarseSoil & WELL_GRADED & "or" & coarseSoil & POORLY_GRADED
+            ClassifyCoarseSoil = coarseSoil & mWELL_GRADED & "or" & coarseSoil & mPOORLY_GRADED
         Else
             cc = CurvatureCoefficient(d10, d30, d60)
             cu = UniformityCoefficient(d10, d60)
@@ -161,14 +161,14 @@ Private Function ClassifyFineSoil( _
     If (liquidLmt >= 50) Then 
         ' Above A line on plasticity chart
         If (plasticityIdx > ALine(liquidLmt)) Then 
-            ClassifyFineSoil = CLAY & HIGH_PLASTICITY
+            ClassifyFineSoil = mCLAY & mHIGH_PLASTICITY
         ' Below A line on plasticity chart 
         Else
             ' Color or odor
             If (color = True Or odor = True) Then 
-                ClassifyFineSoil = ORGANIC & HIGH_PLASTICITY
+                ClassifyFineSoil = mORGANIC & mHIGH_PLASTICITY
             Else
-                ClassifyFineSoil = SILT & HIGH_PLASTICITY
+                ClassifyFineSoil = mSILT & mHIGH_PLASTICITY
             End If
         
         End If
@@ -178,23 +178,38 @@ Private Function ClassifyFineSoil( _
         If (plasticityIdx < ALine(liquidLmt) or plasticityIdx < 4) Then
             ' Color or odor
             If (color = True Or odor = True) Then 
-                ClassifyFineSoil = ORGANIC & LOW_PLASTICITY
+                ClassifyFineSoil = mORGANIC & mLOW_PLASTICITY
             Else
-                ClassifyFineSoil = SILT & LOW_PLASTICITY
+                ClassifyFineSoil = mSILT & mLOW_PLASTICITY
             End If
         
         ' Above A line and PI > 7
         ElseIf (plasticityIdx > ALine(liquidLmt) and plasticityIdx > 7) Then
-            ClassifyFineSoil = CLAY & LOW_PLASTICITY
+            ClassifyFineSoil = mCLAY & mLOW_PLASTICITY
         
         ' Limits plot in hatched area on plasticity chart
         Else
-            ClassifyFineSoil = SILT & LOW_PLASTICITY & "-" & CLAY & LOW_PLASTICITY
+            ClassifyFineSoil = mSILT & mLOW_PLASTICITY & "-" & mCLAY & mLOW_PLASTICITY
         End If
     
     End If
 End Function
 
+' 
+' Unified Soil Classification System (`USCS`)
+'
+' @param liquidLmt
+' @param plasticLmt
+' @param plasticityIdx
+' @param fines
+' @param sand
+' @param gravel
+' @param d10
+' @param d30
+' @param d60
+' @param color
+' @param odor
+'
 Public Function USCS( _
     liquidLmt As Double, _
     plasticLmt As Double, _
@@ -222,7 +237,7 @@ Public Function USCS( _
                 fines, _
                 sand, _
                 gravel, _ 
-                coarseSoil:=m_SAND, _
+                coarseSoil:=mSAND, _
                 d10:=d10, _
                 d30:=d30, _
                 d60:=d60 _
@@ -235,7 +250,7 @@ Public Function USCS( _
                 fines, _
                 sand, _
                 gravel, _ 
-                coarseSoil:=m_GRAVEL, _
+                coarseSoil:=mGRAVEL, _
                 d10:=d10, _
                 d30:=d30, _
                 d60:=d60 _
@@ -245,7 +260,14 @@ Public Function USCS( _
 
 End Function
 
-
+'
+' American Association of State Highway and Transportation Officials (``AASHTO``)
+' classification system.
+'
+' @param liquidLmt
+' @param plasticityIdx
+' @param fines
+'
 Public Function AASHTO( _
     liquidLmt As Double, _
     plasticityIdx As Double, _ 
