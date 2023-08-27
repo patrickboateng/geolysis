@@ -195,21 +195,7 @@ Private Function ClassifyFineSoil( _
     End If
 End Function
 
-' 
-' Unified Soil Classification System (`USCS`)
-'
-' @param liquidLmt
-' @param plasticLmt
-' @param plasticityIdx
-' @param fines
-' @param sand
-' @param gravel
-' @param d10
-' @param d30
-' @param d60
-' @param color
-' @param odor
-'
+
 Public Function USCS( _
     liquidLmt As Double, _
     plasticLmt As Double, _
@@ -260,14 +246,7 @@ Public Function USCS( _
 
 End Function
 
-'
-' American Association of State Highway and Transportation Officials (``AASHTO``)
-' classification system.
-'
-' @param liquidLmt
-' @param plasticityIdx
-' @param fines
-'
+
 Public Function AASHTO( _
     liquidLmt As Double, _
     plasticityIdx As Double, _ 
@@ -317,3 +296,28 @@ Public Function AASHTO( _
     End If
 
 End Function
+
+
+Sub RegisterAASHTOFunction()
+' One-time execution just to describe arguments for user-defined functions.
+    Dim desc As String, argDesc(1 To 3) As String
+
+    desc = "Returns the soil classification based on the AASHTO Classification system." 
+    ' liquid limit
+    argDesc(1) = "Water content beyond which soils flows under their own weight (%)"
+    ' plasticity index
+    argDesc(2) = "Range of water content over which soil remains in plastic condition (%)"
+    ' fines
+    argDesc(3) = "Percentage of fines in soil sample (%)"
+
+    Application.MacroOptions _
+        Macro:="AASHTO", _
+        Description:=desc, _
+        ArgumentDescriptions:=ArgDesc, _
+        Category:="Engineering"
+
+End Sub
+
+Sub RegisterUSCSFunction()
+
+End Sub
