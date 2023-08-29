@@ -48,23 +48,22 @@ Public Function hasParticleSizes() As Boolean
 End Function
 
 Public Function grade(coarseSoil As String) As String
-
     ' Gravel
-    If (coarseSoil = mGRAVEL) Then
+    If (coarseSoil = gGRAVEL) Then
         If (curvatureCoefficient > 1 And curvatureCoefficient < 3 _
             And uniformityCoefficient >= 4 _
             ) Then
-            grade = mWELL_GRADED
+            grade = gWELL_GRADED
         Else
-            grade = mPOORLY_GRADED
+            grade = gPOORLY_GRADED
         End If
     Else
         If (curvatureCoefficient > 1 And curvatureCoefficient < 3 _
             And uniformityCoefficient >= 6 _
             ) Then
-            grade = mWELL_GRADED
+            grade = gWELL_GRADED
         Else
-            grade = mPOORLY_GRADED
+            grade = gPOORLY_GRADED
         End If
     End If
 End Function
