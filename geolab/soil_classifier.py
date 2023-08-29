@@ -37,26 +37,8 @@ def _check_plasticity_idx(
         raise exceptions.PIValueError(msg)
 
 
-class OrganicSoil:
-    pass
-
-
-class InOrganicSoil:
-    pass
-
-
 class AtterbergLimits:
-    # TODO
-    # Add more description to docstring
-    """Atterberg Limits.
-
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
-    :type liquid_limit: float
-    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
-    :type plastic_limit: float
-    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
-    :type plasticity_index: float
-    """
+    """Atterberg Limits."""
 
     def __init__(
         self,
@@ -84,42 +66,29 @@ class AtterbergLimits:
 
     @property
     def fine_soil(self) -> str:
+        """Returns the type of fine soil."""
         return CLAY if self.above_A_line() else SILT
 
     def above_A_line(self) -> bool:
+        """Checks if the soil sample is above A-Line."""
         return self.plasticity_index > self.A_line
 
     def limit_plot_in_hatched_zone(self) -> bool:
+        """Checks if soil sample plot in the hatched zone."""
         return math.isclose(self.plasticity_index, self.A_line)
 
 
 class PSD:
-    # TODO
-    # Add more description to the docstring
-    """Particle Size Distribution.
-
-    :param fines: Percentage of fines in soil sample (%)
-    :type fines: float
-    :param sand: Percentage of sand in soil sample (%)
-    :type sand: float
-    :param gravel: Percentage of gravel in soil sample (%)
-    :type gravel: float
-    :param d10: Diameter at which 30% of the soil by weight is finer
-    :type d10: float
-    :param d30: Diameter at which 30% of the soil by weight is finer
-    :type d30: float
-    :param d60: Diameter at which 60% of the soil by weight is finer
-    :type d60: float
-    """
+    """Particle Size Distribution."""
 
     def __init__(
         self,
         fines: float,
         sand: float,
         gravel: float,
-        d10: Optional[float] = None,
-        d30: Optional[float] = None,
-        d60: Optional[float] = None,
+        d10: float = 0,
+        d30: float = 0,
+        d60: float = 0,
     ) -> None:
         _check_size_distribution(fines, sand, gravel)
 
@@ -131,9 +100,11 @@ class PSD:
         self.d60 = d60
 
     def has_particle_sizes(self) -> bool:
+        """Checks if soil sample has particle sizes."""
         return all((self.d10, self.d30, self.d60))
 
     def grade(self, coarse_soil: str) -> str:
+        """Returns the grading of the soil sample."""
         soil_grade: str
 
         # Gravel
@@ -163,28 +134,22 @@ class PSD:
     @property
     @round_(precision=2)
     def curvature_coefficient(self) -> float:
-        r"""Calculates the coefficient of curvature of the soil.
+        r"""Returns the coefficient of curvature of the soil.
 
         .. math::
 
             C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}
-
-        :return: The coefficient of curvature of the soil
-        :rtype: float
         """
         return (self.d30**2) / (self.d60 * self.d10)
 
     @property
     @round_(precision=2)
     def uniformity_coefficient(self) -> float:
-        r"""Calculates the coefficient of uniformity of the soil.
+        r"""Returns the coefficient of uniformity of the soil.
 
         .. math::
 
             C_u = \dfrac{d_{60}}{d_{10}}
-
-        :return: The coefficient of uniformity of the soil
-        :rtype: float
         """
         return self.d60 / self.d10
 
@@ -198,13 +163,11 @@ class AASHTO:
     both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
     with subgroups, along with a separate category (A8) for organic soils.
 
-    :param atterberg_limits: Atterberg Limits
-    :type atterberg_limits: AtterbergLimits
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
-    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :return: The ``AASHTO`` classification of the soil
-    :rtype: str
     """
 
     def __init__(
@@ -219,26 +182,24 @@ class AASHTO:
 
     @round_(precision=0)
     def group_index(self) -> float:
-        """The ``Group Index (GI)`` is used to further evaluate soils with a group (subgroups).
+        """Returns the ``Group Index GI`` of the soil sample.
+
+        The ``(GI)`` is used to further evaluate soils with a group (subgroups).
 
         .. math::
 
             GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
-
-        :return: The group index of the soil sample
-        :rtype: float
         """
-        expr_1 = 0 if (expr := self.fines - 35) < 0 else min(expr, 40)
-        expr_2 = 0 if (expr := self.liquid_limit - 40) < 0 else min(expr, 20)
-        expr_3 = 0 if (expr := self.fines - 15) < 0 else min(expr, 40)
-        expr_4 = (
-            0 if (expr := self.plasticity_index - 10) < 0 else min(expr, 20)
-        )
+        x_1 = 0 if (x := self.fines - 35) < 0 else min(x, 40)
+        x_2 = 0 if (x := self.liquid_limit - 40) < 0 else min(x, 20)
+        x_3 = 0 if (x := self.fines - 15) < 0 else min(x, 40)
+        x_4 = 0 if (x := self.plasticity_index - 10) < 0 else min(x, 20)
+        grp_idx = x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
 
-        grp_idx = (expr_1) * (0.2 + 0.005 * expr_2) + 0.01 * expr_3 * expr_4
         return 0.0 if grp_idx <= 0 else grp_idx
 
     def classify(self) -> str:
+        """Returns the AASHTO classification of the soil sample."""
         clf: str  # soil classification
         grp_idx = self.group_index()
         grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
@@ -287,16 +248,26 @@ class USCS:
     and highly organic soils. Additionally, the system has been adopted by the American Society for
     Testing and Materials (``ASTM``).
 
-    :param atterberg_limits: Atterberg Limits
-    :type atterberg_limits: AtterbergLimits
-    :param particle_size_distribution: Particle Size Distribution
-    :type particle_size_distribution: ParticleSizeDistribution
-    :param soil_type: Indicates the type of soil
-    :type soil_type: InOrganicSoil or OrganicSoil, optional
-    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
+    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :type liquid_limit: float
+    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
+    :type plastic_limit: float
+    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+    :type plasticity_index: float
+    :param fines: Percentage of fines in soil sample (%)
+    :type fines: float
+    :param sand: Percentage of sand in soil sample (%)
+    :type sand: float
+    :param gravel: Percentage of gravel in soil sample (%)
+    :type gravel: float
+    :param d10: Diameter at which 30% of the soil by weight is finer
+    :type d10: float
+    :param d30: Diameter at which 30% of the soil by weight is finer
+    :type d30: float
+    :param d60: Diameter at which 60% of the soil by weight is finer
+    :type d60: float
     :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :return: The unified classification of the soil
-    :rtype: str
+    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
     """
 
     def __init__(
@@ -308,10 +279,10 @@ class USCS:
         sand: float,
         gravel: float,
         *,
-        d10: Optional[float] = None,
-        d30: Optional[float] = None,
-        d60: Optional[float] = None,
-        soil_type: Optional[InOrganicSoil | OrganicSoil] = InOrganicSoil,
+        d10: float = 0,
+        d30: float = 0,
+        d60: float = 0,
+        organic: Optional[bool] = False,
     ) -> None:
         self.atterberg_limits = AtterbergLimits(
             liquid_limit,
@@ -319,11 +290,12 @@ class USCS:
             plasticity_index,
         )
         self.psd = PSD(fines, sand, gravel, d10, d30, d60)
-        self.soil_type = soil_type
+        self.organic = organic
 
     def _dual_soil_classifier(self, coarse_soil: str) -> str:
         _soil_grd = self.psd.grade(coarse_soil)
-        return f"{coarse_soil}{_soil_grd}-{coarse_soil}{self.atterberg_limits.fine_soil}"
+        fine_soil = self.atterberg_limits.fine_soil
+        return f"{coarse_soil}{_soil_grd}-{coarse_soil}{fine_soil}"
 
     def _classify_coarse_soil(self, coarse_soil: str) -> str:
         clf: str  # soil classification
@@ -376,7 +348,7 @@ class USCS:
             elif (not self.atterberg_limits.above_A_line()) or (
                 self.atterberg_limits.plasticity_index < 4
             ):
-                if isinstance(self.soil_type, OrganicSoil):
+                if self.organic:
                     clf = f"{ORGANIC}{LOW_PLASTICITY}"
 
                 else:
@@ -394,7 +366,7 @@ class USCS:
 
             # Below A-Line
             else:
-                if isinstance(self.soil_type, OrganicSoil):
+                if self.organic:
                     clf = f"{ORGANIC}{HIGH_PLASTICITY}"
                 else:
                     clf = f"{SILT}{HIGH_PLASTICITY}"
@@ -402,6 +374,7 @@ class USCS:
         return clf
 
     def classify(self) -> str:
+        """Returns the ``USCS`` classification of the soil."""
         if self.psd.fines < 50:
             # Coarse grained, Run Sieve Analysis
             if self.psd.gravel > self.psd.sand:

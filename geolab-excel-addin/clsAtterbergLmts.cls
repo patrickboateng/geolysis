@@ -1,24 +1,8 @@
-VERSION 1.0 CLASS
-BEGIN
-MultiUse = -1  'True
-END
-Attribute VB_Name = "clsAtterbergLmts"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
-
 Option Explicit
 
 Private liquidLmt_ As Double
 Private plasticLmt_ As Double
 Private plasticityIdx_ As Double
-
-Private Sub Class_Initialize(LL As Double, PL As Double, PI As Double)
-    liquidLmt_ = LL
-    plasticLmt_ = PL
-    plasticityIdx_ = PI
-End Sub
 
 Private Function IsClose( _
     a As Double, _

@@ -1,19 +1,18 @@
 Attribute VB_Name = "soil_classifier"
-
 Option Explicit
 
-Public Const mGRAVEL As String = "G"
-Public Const mSAND As String = "S"
-Public Const mCLAY As String = "C"
-Public Const mSILT As String = "M"
-Public Const mWELL_GRADED As String = "W"
-Public Const mPOORLY_GRADED As String = "P"
-Public Const mORGANIC As String = "O"
-Public Const mLOW_PLASTICITY As String = "L"
-Public Const mHIGH_PLASTICITY As String = "H"
+Public Const gGRAVEL As String = "G"
+Public Const gSAND As String = "S"
+Public Const gCLAY As String = "C"
+Public Const gSILT As String = "M"
+Public Const gWELL_GRADED As String = "W"
+Public Const gPOORLY_GRADED As String = "P"
+Public Const gORGANIC As String = "O"
+Public Const gLOW_PLASTICITY As String = "L"
+Public Const gHIGH_PLASTICITY As String = "H"
 
 Private Function GroupIndex(fines As Double, liquidLmt As Double, plasticityIdx As Double) As Double
-    Dim expr1#, expr2#, expr3#, expr4#, groupIdx As Double
+    Dim x1#, x2#, x3#, x4#, groupIdx As Double
 
     x1 = IIf(fines - 35 < 0, 0, WorksheetFunction.Min(fines - 35, 40))
     x2 = IIf(liquidLmt - 40 < 0, 0, WorksheetFunction.Min(liquidLmt - 40, 20))
@@ -30,7 +29,7 @@ Private Function DualSoilClassifier(AL As clsAtterbergLmts, PSD As clsPSD, coars
     Dim soilGrd As String, fineSoil As String
 
     soilGrd = PSD.grade(coarseSoil)
-    fineSoil = IIf(AL.aboveALINE, mCLAY, mSILT)
+    fineSoil = IIf(AL.aboveALINE, gCLAY, gSILT)
 
     DualSoilClassifier = coarseSoil & soilGrd & "-" & coarseSoil & fineSoil
 End Function
@@ -44,14 +43,14 @@ Private Function ClassifyCoarseSoil( _
     If (PSD.fines > 12) Then
         ' Limits plot in hatched zone on plasticity chart
         If (AL.limitPlotInHatchedZone) Then
-            ClassifyCoarseSoil = coarseSoil & mSILT & "-" & coarseSoil & mCLAY
+            ClassifyCoarseSoil = coarseSoil & gSILT & "-" & coarseSoil & gCLAY
 
             ' Above Aline
         Elseif (AL.aboveALINE) Then
-            ClassifyCoarseSoil = coarseSoil & mCLAY
+            ClassifyCoarseSoil = coarseSoil & gCLAY
             ' Below Aline
         Else
-            ClassifyCoarseSoil = coarseSoil & mSILT
+            ClassifyCoarseSoil = coarseSoil & gSILT
         End If
 
         ' Between 5% And 12% pass No. 200 sieve
@@ -60,10 +59,10 @@ Private Function ClassifyCoarseSoil( _
         If (PSD.hasParticleSizes) Then
             ClassifyCoarseSoil = DualSoilClassifier(AL, PSD, coarseSoil)
         Else
-            ClassifyCoarseSoil = coarseSoil & mWELL_GRADED & "-" & coarseSoil & mSILT & ", " & _
-            coarseSoil & mPOORLY_GRADED & "-" & coarseSoil & mSILT & ", " & _
-            coarseSoil & mWELL_GRADED & "-" & coarseSoil & mCLAY & ", " & _
-            coarseSoil & mPOORLY_GRADED & "-" & coarseSoil & mCLAY
+            ClassifyCoarseSoil = coarseSoil & gWELL_GRADED & "-" & coarseSoil & gSILT & ", " & _
+            coarseSoil & gPOORLY_GRADED & "-" & coarseSoil & gSILT & ", " & _
+            coarseSoil & gWELL_GRADED & "-" & coarseSoil & gCLAY & ", " & _
+            coarseSoil & gPOORLY_GRADED & "-" & coarseSoil & gCLAY
         End If
         ' Less than 5% pass No. 200 sieve
     Else
@@ -74,29 +73,25 @@ Private Function ClassifyCoarseSoil( _
 
             ClassifyCoarseSoil = coarseSoil & soilGrd
         Else
-            ClassifyCoarseSoil = coarseSoil & mWELL_GRADED & "Or" & coarseSoil & mPOORLY_GRADED
+            ClassifyCoarseSoil = coarseSoil & gWELL_GRADED & "Or" & coarseSoil & gPOORLY_GRADED
         End If
     End If
 
 End Function
 
-Private Function ClassifyFineSoil( _
-    Byref AL As clsAtterbergLmts, _
-    color As Boolean, _
-    odor As Boolean _
-    ) As String
+Private Function ClassifyFineSoil(Byref AL As clsAtterbergLmts, organic As Boolean) As String
     ' High LL
     If (AL.liquidLmt >= 50) Then
         ' Above A line on plasticity chart
         If (AL.aboveALINE) Then
-            ClassifyFineSoil = mCLAY & mHIGH_PLASTICITY
+            ClassifyFineSoil = gCLAY & gHIGH_PLASTICITY
             ' Below A line on plasticity chart
         Else
             ' Color Or odor
-            If (color = True Or odor = True) Then
-                ClassifyFineSoil = mORGANIC & mHIGH_PLASTICITY
+            If (organic = True) Then
+                ClassifyFineSoil = gORGANIC & gHIGH_PLASTICITY
             Else
-                ClassifyFineSoil = mSILT & mHIGH_PLASTICITY
+                ClassifyFineSoil = gSILT & gHIGH_PLASTICITY
             End If
 
         End If
@@ -105,19 +100,19 @@ Private Function ClassifyFineSoil( _
         ' Below A line Or PI < 4
         If (Not AL.aboveALINE Or AL.plasticityIdx < 4) Then
             ' Color Or odor
-            If (color = True Or odor = True) Then
-                ClassifyFineSoil = mORGANIC & mLOW_PLASTICITY
+            If (organic = True) Then
+                ClassifyFineSoil = gORGANIC & gLOW_PLASTICITY
             Else
-                ClassifyFineSoil = mSILT & mLOW_PLASTICITY
+                ClassifyFineSoil = gSILT & gLOW_PLASTICITY
             End If
 
             ' Above A line And PI > 7
         Elseif (AL.aboveALINE And AL.plasticityIdx > 7) Then
-            ClassifyFineSoil = mCLAY & mLOW_PLASTICITY
+            ClassifyFineSoil = gCLAY & gLOW_PLASTICITY
 
             ' Limits plot in hatched area on plasticity chart
         Else
-            ClassifyFineSoil = mSILT & mLOW_PLASTICITY & "-" & mCLAY & mLOW_PLASTICITY
+            ClassifyFineSoil = gSILT & gLOW_PLASTICITY & "-" & gCLAY & gLOW_PLASTICITY
         End If
 
     End If
@@ -133,8 +128,7 @@ Public Function USCS( _
     Optional d10 As Double, _
     Optional d30 As Double, _
     Optional d60 As Double, _
-    Optional color As Boolean, _
-    Optional odor As Boolean _
+    Optional organic As Boolean _
     ) As String
     ' More than 50% passes the No. 200 sieve
 
@@ -149,7 +143,7 @@ Public Function USCS( _
     End With
 
     If (fines > 50) Then
-        USCS = ClassifyFineSoil(AL, color, odor)
+        USCS = ClassifyFineSoil(AL, organic)
 
         ' 50% Or more retained on No. 200 sieve
     Else
@@ -164,9 +158,9 @@ Public Function USCS( _
         End With
 
         If (PSD.sand > PSD.gravel) Then
-            USCS = ClassifyCoarseSoil(AL, PSD, coarseSoil:=mSAND)
+            USCS = ClassifyCoarseSoil(AL, PSD, coarseSoil:=gSAND)
         Else
-            USCS = ClassifyCoarseSoil(AL, PSD, coarseSoil:=mGRAVEL)
+            USCS = ClassifyCoarseSoil(AL, PSD, coarseSoil:=gGRAVEL)
         End If
     End If
 
@@ -204,13 +198,13 @@ Public Function AASHTO( _
     Else
         If (liquidLmt <= 40) Then
             If (plasticityIdx <= 10) Then
-                AASHTO = "A4" & subgradeInfo
+                AASHTO = "A-4" & subgradeInfo
             Else
-                AASHTO = "A6" & subgradeInfo
+                AASHTO = "A-6" & subgradeInfo
             End If
         Else
             If (plasticityIdx <= 10) Then
-                AASHTO = "A5" & subgradeInfo
+                AASHTO = "A-5" & subgradeInfo
             Else
                 If (plasticityIdx <= liquidLmt - 30) Then
                     AASHTO = "A-7-5" & subgradeInfo
@@ -241,9 +235,36 @@ Sub RegisterAASHTOFunction()
     Description:=desc, _
     ArgumentDescriptions:=argDesc, _
     Category:="Engineering"
-
 End Sub
 
 Sub RegisterUSCSFunction()
+    Dim desc As String, argDesc(1 To 10) As String
 
+    desc = "Returns the soil classification based on the USC sytem."
+    ' liquid limit
+    argDesc(1) = "Water content beyond which soils flows under their own weight (%)"
+    ' plastic limit
+    argDesc(2) = ""
+    ' plasticity index 
+    argDesc(3) = "Range of water content over which soil remains in plastic condition (%)"
+    ' fines
+    argDesc(4) = "Percentage of fines in soil sample (%)"
+    ' sand
+    argDesc(5) = "Percentage of sand in soil sample (%)"
+    ' gravel
+    argDesc(6) = "Percentage of gravel in soil sample (%)"
+    ' d10
+    argDesc(7) = "Diameter at which 10% of the soil by weight is finer"
+    ' d30
+    argDesc(8) = "Diameter at which 30% of the soil by weight is finer"
+    ' d60
+    argDesc(9) = "Diameter at which 60% of the soil by weight is finer"
+    ' organic
+    argDesc(10) = "Determines If soil sample is organic Or inorganic"
+
+    Application.MacroOptions _ 
+    Macro:="USCS", _ 
+    Description:=desc, _ 
+    ArgumentDescriptions:=argDesc, _
+    Category:="Engineering"
 End Sub
