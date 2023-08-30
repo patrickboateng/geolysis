@@ -60,7 +60,7 @@ venv_*/
 venv-*/
 *.mypy_cache
 
-# Test Files
+# Add-in Files
 *.xlsm
 *.xlam
 
