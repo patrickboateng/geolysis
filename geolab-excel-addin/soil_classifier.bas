@@ -218,53 +218,121 @@ Public Function AASHTO( _
 End Function
 
 
-Sub RegisterAASHTOFunction()
+Sub RegisterUDF()
     ' One-time execution just To describe arguments For user-defined functions.
-    Dim desc As String, argDesc(1 To 3) As String
+    Dim rowIdx As Long, functionDesc As String, ArgDesc() As String
+    Dim workSheetName As String, functionName As String, category As String
+    Dim ws As Worksheet
 
-    desc = "Returns the soil classification based on the AASHTO Classification system."
+    workSheetName = "_IntelliSense_"
+    functionName = "AASHTO"
+    category = "Engineering"
+
+    ReDim ArgDesc(2)
+
+    functionDesc = "Returns the soil classification based on the AASHTO Classification system."
     ' liquid limit
-    argDesc(1) = "Water content beyond which soils flows under their own weight (%)"
+    ArgDesc(0) = "Water content beyond which soils flows under their own weight (%)"
     ' plasticity index
-    argDesc(2) = "Range of water content over which soil remains in plastic condition (%)"
+    ArgDesc(1) = "Range of water content over which soil remains in plastic condition (%)"
     ' fines
-    argDesc(3) = "Percentage of fines in soil sample (%)"
+    ArgDesc(2) = "Percentage of fines in soil sample (%)"
 
     Application.MacroOptions _
-    Macro:="AASHTO", _
-    Description:=desc, _
-    ArgumentDescriptions:=argDesc, _
-    Category:="Engineering"
-End Sub
+    Macro:=functionName, _
+    Description:=functionDesc, _
+    ArgumentDescriptions:=ArgDesc, _
+    Category:=category
 
-Sub RegisterUSCSFunction()
-    Dim desc As String, argDesc(1 To 10) As String
+    Dim i As Long
 
-    desc = "Returns the soil classification based on the USC sytem."
+    For i = 1 To Worksheets.count
+        If Worksheets(i).Name = workSheetName Then
+         Exit Sub
+        End If
+
+     Exit For
+    Next i
+
+
+    Worksheets.Add.Name = workSheetName
+    Set ws = Worksheets(workSheetName)
+
+    ws.Range("A1") = "FunctionInfo"
+    ws.Range("B1") = 1
+
+    ' AASHTO INTELLISENSE
+    rowIdx = 2
+
+    ws.Cells(rowIdx, 1) = functionName
+    ws.Cells(rowIdx, 2) = functionDesc
+    ws.Cells(rowIdx, 3) = "" ' Function help website
+    ws.Cells(rowIdx, 4) = "liquidLmt"
+    ws.Cells(rowIdx, 5) = ArgDesc(0)
+    ws.Cells(rowIdx, 6) = "plasticityIdx"
+    ws.Cells(rowIdx, 7) = ArgDesc(1)
+    ws.Cells(rowIdx, 8) = "fines"
+    ws.Cells(rowIdx, 9) = ArgDesc(2)
+
+    ReDim ArgDesc(9)
+
+    functionName = "USCS"
+    functionDesc = "Returns the soil classification based on the USC system."
     ' liquid limit
-    argDesc(1) = "Water content beyond which soils flows under their own weight (%)"
+    ArgDesc(0) = "Water content beyond which soils flows under their own weight (%)"
     ' plastic limit
-    argDesc(2) = ""
+    ArgDesc(1) = "Water content at which plastic deformation can be initiated (%)"
     ' plasticity index 
-    argDesc(3) = "Range of water content over which soil remains in plastic condition (%)"
+    ArgDesc(2) = "Range of water content over which soil remains in plastic condition (%)"
     ' fines
-    argDesc(4) = "Percentage of fines in soil sample (%)"
+    ArgDesc(3) = "Percentage of fines in soil sample (%)"
     ' sand
-    argDesc(5) = "Percentage of sand in soil sample (%)"
+    ArgDesc(4) = "Percentage of sand in soil sample (%)"
     ' gravel
-    argDesc(6) = "Percentage of gravel in soil sample (%)"
+    ArgDesc(5) = "Percentage of gravel in soil sample (%)"
     ' d10
-    argDesc(7) = "Diameter at which 10% of the soil by weight is finer"
+    ArgDesc(6) = "Diameter at which 10% of the soil by weight is finer"
     ' d30
-    argDesc(8) = "Diameter at which 30% of the soil by weight is finer"
+    ArgDesc(7) = "Diameter at which 30% of the soil by weight is finer"
     ' d60
-    argDesc(9) = "Diameter at which 60% of the soil by weight is finer"
+    ArgDesc(8) = "Diameter at which 60% of the soil by weight is finer"
     ' organic
-    argDesc(10) = "Determines If soil sample is organic Or inorganic"
+    ArgDesc(9) = "Determines If soil sample is organic Or inorganic"
 
     Application.MacroOptions _ 
-    Macro:="USCS", _ 
-    Description:=desc, _ 
-    ArgumentDescriptions:=argDesc, _
-    Category:="Engineering"
+    Macro:=functionName, _ 
+    Description:=functionDesc, _ 
+    ArgumentDescriptions:=ArgDesc, _
+    Category:=category
+
+    ' USCS INTELLISENSE
+    rowIdx = 3
+
+    ws.Cells(rowIdx, 1) = functionName
+    ws.Cells(rowIdx, 2) = functionDesc
+    ws.Cells(rowIdx, 3) = ""
+    ws.Cells(rowIdx, 4) = "liquidLmt"
+    ws.Cells(rowIdx, 5) = ArgDesc(0)
+    ws.Cells(rowIdx, 6) = "plasticLmt"
+    ws.Cells(rowIdx, 7) = ArgDesc(1)
+    ws.Cells(rowIdx, 8) = "plasticityIdx"
+    ws.Cells(rowIdx, 9) = ArgDesc(2)
+    ws.Cells(rowIdx, 10) = "fines"
+    ws.Cells(rowIdx, 11) = ArgDesc(3)
+    ws.Cells(rowIdx, 12) = "sand"
+    ws.Cells(rowIdx, 13) = ArgDesc(4)
+    ws.Cells(rowIdx, 14) = "gravel"
+    ws.Cells(rowIdx, 15) = ArgDesc(5)
+    ws.Cells(rowIdx, 16) = "d10"
+    ws.Cells(rowIdx, 17) = ArgDesc(6)
+    ws.Cells(rowIdx, 18) = "d30"
+    ws.Cells(rowIdx, 19) = ArgDesc(7)
+    ws.Cells(rowIdx, 20) = "d60"
+    ws.Cells(rowIdx, 21) = ArgDesc(8)
+    ws.Cells(rowIdx, 22) = "organic"
+    ws.Cells(rowIdx, 23) = ArgDesc(9)
+
+    ws.Visible = xlSheetVeryHidden
+
+    Debug.Print "Function registration was succesful"
 End Sub
