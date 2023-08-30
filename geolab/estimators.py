@@ -1,13 +1,24 @@
 """This module provides functions for estimating soil engineering parameters."""
 
-from typing import Optional
+from typing import Any, Optional
 
 from geolab import GeotechEng
+from geolab.exceptions import EngineerTypeError
 from geolab.utils import arctan, round_, sin
 
 
+def check_eng(obj, **kwargs):
+    if "eng" in kwargs:
+        obj.eng = kwargs.get("eng")
+
+
+def error_eng_msg(eng: GeotechEng):
+    return f"{eng} is not a valid type for engineer"
+
+
 class soil_unit_weight:
-    """Calculates the moist, saturated and submerged unit weight of soil.
+    """Calculates the moist, saturated and submerged unit weight of soil
+       sample.
 
     :param spt_n60: spt N-value corrected for 60% hammer efficiency
     :type spt_n60: float
@@ -35,24 +46,7 @@ class soil_unit_weight:
         return 8.8 + 0.01 * self.spt_n60
 
 
-def _terzaghi_peck_compression_idx(liquid_limit: float) -> float:
-    return 0.009 * (liquid_limit - 10)
-
-
-def _skempton_compression_idx(liquid_limit: float) -> float:
-    return 0.007 * (liquid_limit - 10)
-
-
-def _hough_compression_idx(void_ratio: float) -> float:
-    return 0.29 * (void_ratio - 0.27)
-
-
-@round_
-def compression_index(
-    liquid_limit: Optional[float] = None,
-    void_ratio: Optional[float] = None,
-    eng: GeotechEng = GeotechEng.SKEMPTON,
-) -> float:
+class compression_index:
     r"""The compression index of the soil estimated from ``liquid limit`` or ``void_ratio``.
 
     The available correlations used are defined below; They are in the order ``Skempton (1994)``,
@@ -75,25 +69,200 @@ def compression_index(
     :param eng: specifies the type of compression index formula to use. Available
                 values are geolab.SKEMPTON, geolab.TERZAGHI and geolab.HOUGH
     :type eng: GeotechEng
-    :return: compression index of soil (unitless)
-    :rtype: float
     """
 
-    if (liquid_limit is None) and (void_ratio is None):
-        msg = "both liquid limit and void ratio cannot be None"
-        raise ValueError(msg)
+    def __init__(
+        self,
+        liquid_limit: float = 0.0,
+        void_ratio: float = 0.0,
+        eng: GeotechEng = GeotechEng.SKEMPTON,
+    ) -> None:
+        self.liquid_limit = liquid_limit
+        self.void_ratio = void_ratio
+        self.eng = eng
 
-    if eng is GeotechEng.SKEMPTON:
-        return _skempton_compression_idx(liquid_limit)
+    def __call__(self, **kwargs) -> float:
+        return self.value(**kwargs)  # type: ignore
 
-    if eng is GeotechEng.TERZAGHI:
-        return _terzaghi_peck_compression_idx(liquid_limit)
+    def _terzaghi_peck_compression_idx(self) -> float:
+        return 0.009 * (self.liquid_limit - 10)
 
-    if eng is GeotechEng.HOUGH:
-        return _hough_compression_idx(void_ratio)
+    def _skempton_compression_idx(self) -> float:
+        return 0.007 * (self.liquid_limit - 10)
 
-    msg = f"{eng} is not a valid type for compression index"
-    raise TypeError(msg)
+    def _hough_compression_idx(self) -> float:
+        return 0.29 * (self.void_ratio - 0.27)
+
+    @round_
+    def value(self, **kwargs) -> float:
+        """Returns the compression index of the soil sample (unitless)"""
+        check_eng(self, **kwargs)
+
+        comp_idx: float  # compression index
+
+        if self.eng is GeotechEng.SKEMPTON:
+            comp_idx = self._skempton_compression_idx()
+
+        elif self.eng is GeotechEng.TERZAGHI:
+            comp_idx = self._terzaghi_peck_compression_idx()
+
+        elif self.eng is GeotechEng.HOUGH:
+            comp_idx = self._hough_compression_idx()
+
+        else:
+            msg = error_eng_msg(self.eng)
+            raise EngineerTypeError(msg)
+
+        return comp_idx
+
+
+class friction_angle:
+    r"""Estimation of the internal angle of friction using spt_n60.
+
+    For cohesionless soils the coefficient of internal friction :math:`\phi` was
+    determined from the minimum value from ``Peck, Hanson and Thornburn (1974)``
+    and ``Kullhawy and Mayne (1990)`` respectively. The correlations are shown below.
+
+    .. math::
+
+        \phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2
+
+        \phi = \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3(\frac{\sigma_o}{P_a})} \right]^0.34
+
+    :Example:
+
+    :param spt_n60: spt N-value corrected for 60% hammer efficiency
+    :type spt_n60: float
+    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to None
+    :type eop: float, optional
+    :param atm_pressure: atmospheric pressure :math:`kN/m^2`, defaults to None
+    :type atm_pressure: float, optional
+    """
+
+    def __init__(
+        self,
+        spt_n60,
+        eop: float = 0,
+        atm_pressure: float = 0,
+        eng: GeotechEng = GeotechEng.PECK,
+    ):
+        self.spt_n60 = spt_n60
+        self.eop = eop
+        self.atm_pressure = atm_pressure
+        self.eng = eng
+
+    def __call__(self, **kwargs) -> float:
+        return self.value(**kwargs)  # type: ignore
+
+    def _peck_et_al_friction_angle(self) -> float:
+        return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
+
+    def _kullhawy_mayne_friction_angle(self) -> float:
+        expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
+        return arctan(expr**0.34)
+
+    @round_
+    def value(self, **kwargs) -> float:
+        """Internal angle of friction in degrees"""
+        check_eng(self, **kwargs)
+
+        _friction_angle: float
+
+        if self.eng is GeotechEng.PECK:
+            _friction_angle = self._peck_et_al_friction_angle()
+
+        elif self.eng is GeotechEng.KULLHAWY:
+            _friction_angle = self._kullhawy_mayne_friction_angle()
+
+        else:
+            msg = error_eng_msg(self.eng)
+            raise EngineerTypeError(msg)
+
+        return _friction_angle
+
+
+class undrained_shear_strength:
+    r"""Undrained shear strength.
+
+    The available correlations used are defined below;
+
+    .. math::
+
+        Stroud (1974) \, \rightarrow C_u = K \times N_{60}
+
+        Skempton (1957) \, \rightarrow \dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \times PI
+
+    The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay. ``Skempton``
+    suggested that a similar constant ratio exists between the undrained shear strength
+    of normally consolidated natural deposits and the effective overburden pressure.
+    It has been established that the ratio :math:`\frac{C_u}{\sigma_o}` is constant provided the
+    plasticity index (PI) of the soil remains constant.
+
+    The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained test on
+    undisturbed samples is generally greater than actual value because of anisotropic consolidation
+    in the field. The actual value is best determined by `in-situ shear vane test`.
+    (:cite:author:`2003:arora`, p. 330)
+
+    :param spt_n60: SPT N-value corrected for 60% hammer efficiency, defaults to None
+    :type spt_n60: Optional[float], optional
+    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to None
+    :type eop: Optional[float], optional
+    :param plasticity_index: range of water content over which soil remains in plastic condition, defaults to None
+    :type plasticity_index: Optional[float], optional
+    :param k: stroud parameter, defaults to 3.5
+    :type k: float, optional
+    :param eng: specifies the type of undrained shear strength formula to use. Available values are
+                geolab.STROUD and geolab.SKEMPTON, defaults to GeotechEng.STROUD
+    :type eng: GeotechEng, optional
+
+    :References:
+
+        .. bibliography::
+    """
+
+    def __init__(
+        self,
+        spt_n60=0,
+        eop=0,
+        plasticity_index=0,
+        k=3.5,
+        eng: GeotechEng = GeotechEng.STROUD,
+    ) -> None:
+        self.spt_n60 = spt_n60
+        self.eop = eop
+        self.plasticity_index = plasticity_index
+        self.k = k
+        self.eng = eng
+
+    def __call__(self, **kwargs) -> float:
+        return self.value(**kwargs)
+
+    def _stroud_undrained_shear_strength(self):
+        if not (3.5 <= self.k <= 6.5):
+            msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
+            raise ValueError(msg)
+
+        return self.k * self.spt_n60
+
+    def _skempton_undrained_shear_strength(self):
+        return self.eop * (0.11 + 0.0037 * self.plasticity_index)
+
+    def value(self, **kwargs) -> float:
+        check_eng(self, **kwargs)
+
+        und_shr: float  # undrained shear strength
+
+        if self.eng is GeotechEng.STROUD:
+            und_shr = self._stroud_undrained_shear_strength()
+
+        elif self.eng is GeotechEng.SKEMPTON:
+            und_shr = self._skempton_undrained_shear_strength()
+
+        else:
+            msg = error_eng_msg(self.eng)
+            raise EngineerTypeError(msg)
+
+        return und_shr
 
 
 @round_
@@ -144,123 +313,3 @@ def foundation_depth(
     return (allow_bearing_capacity / unit_weight_of_soil) * (
         (1 - sin(friction_angle)) / (1 + sin(friction_angle))
     ) ** 2
-
-
-def _peck_et_al_friction_angle(spt_n60: float) -> float:
-    return 27.1 + (0.3 * spt_n60) - (0.00054 * (spt_n60**2))
-
-
-def _kullhawy_mayne_friction_angle(
-    spt_n60: float,
-    eop: float,
-    atm_pressure: float,
-) -> float:
-    expr = spt_n60 / (12.2 + 20.3 * (eop / atm_pressure))
-    return arctan(expr**0.34)
-
-
-@round_
-def friction_angle(
-    spt_n60,
-    eop: Optional[float] = None,
-    atm_pressure: Optional[float] = None,
-) -> float:
-    r"""Estimation of the internal angle of friction using spt_n60.
-
-    For cohesionless soils the coefficient of internal friction :math:`\phi` was
-    determined from the minimum value from ``Peck, Hanson and Thornburn (1974)``
-    and ``Kullhawy and Mayne (1990)`` respectively. The correlations are shown below.
-
-    .. math::
-
-        \phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2
-
-        \phi = \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3(\frac{\sigma_o}{P_a})} \right]^0.34
-
-    :Example:
-
-    :param spt_n60: spt N-value corrected for 60% hammer efficiency
-    :type spt_n60: float
-    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to None
-    :type eop: float, optional
-    :param atm_pressure: atmospheric pressure :math:`kN/m^2`, defaults to None
-    :type atm_pressure: float, optional
-    :return: internal angle of friction in degrees
-    :rtype: float
-    """
-    if (eop is not None) and (atm_pressure is not None):
-        return _kullhawy_mayne_friction_angle(spt_n60, eop, atm_pressure)
-
-    return _peck_et_al_friction_angle(spt_n60)
-
-
-def _stroud_undrained_shear_strength(spt_n60, k):
-    if not (3.5 <= k <= 6.5):
-        msg = f"k should be 3.5 <= k <= 6.5 not {k}"
-        raise ValueError(msg)
-
-    return k * spt_n60
-
-
-def _skempton_undrained_shear_strength(eop, plasticity_index):
-    return eop * (0.11 + 0.0037 * plasticity_index)
-
-
-@round_
-def undrained_shear_strength(
-    spt_n60: Optional[float] = None,
-    eop: Optional[float] = None,
-    plasticity_index: Optional[float] = None,
-    k: float = 3.5,
-    eng: GeotechEng = GeotechEng.STROUD,
-) -> None:
-    r"""Undrained shear strength.
-
-    The available correlations used are defined below;
-
-    .. math::
-
-        Stroud (1974) \, \rightarrow C_u = K \times N_{60}
-
-        Skempton (1957) \, \rightarrow \dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \times PI
-
-    The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay. ``Skempton``
-    suggested that a similar constant ratio exists between the undrained shear strength
-    of normally consolidated natural deposits and the effective overburden pressure.
-    It has been established that the ratio :math:`\frac{C_u}{\sigma_o}` is constant provided the
-    plasticity index (PI) of the soil remains constant.
-
-    The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained test on
-    undisturbed samples is generally greater than actual value because of anisotropic consolidation
-    in the field. The actual value is best determined by `in-situ shear vane test`.
-    (:cite:author:`2003:arora`, p. 330)
-
-    :param spt_n60: SPT N-value corrected for 60% hammer efficiency, defaults to None
-    :type spt_n60: Optional[float], optional
-    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to None
-    :type eop: Optional[float], optional
-    :param plasticity_index: range of water content over which soil remains in plastic condition, defaults to None
-    :type plasticity_index: Optional[float], optional
-    :param k: stroud parameter, defaults to 3.5
-    :type k: float, optional
-    :param eng: specifies the type of undrained shear strength formula to use. Available values are
-                geolab.STROUD and geolab.SKEMPTON, defaults to GeotechEng.STROUD
-    :type eng: GeotechEng, optional
-    :raises ValueError:
-    :raises TypeError:
-    :return:
-    :rtype: float
-
-    References
-    ----------
-
-    .. bibliography::
-    """
-    if eng is GeotechEng.STROUD:
-        return _stroud_undrained_shear_strength(spt_n60, k)
-
-    if eng is GeotechEng.SKEMPTON:
-        return _skempton_undrained_shear_strength(eop, plasticity_index)
-
-    msg = f"{eng} is not a valid type for undrained shear strength"
-    raise TypeError(msg)
