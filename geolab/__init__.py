@@ -39,6 +39,7 @@ class GeotechEng(enum.IntEnum):
     STROUD = enum.auto()
     TERZAGHI = enum.auto()
     VESIC = enum.auto()
+    KULLHAWY = enum.auto()
 
     def __str__(self) -> str:
         return self.name
