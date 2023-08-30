@@ -25,7 +25,7 @@ Follow the steps below to enable hidden items_.
          C(Go to Show/hide ribbon)-->D(Check Hidden items)
 ```
 
-Follow the steps on Microsoft Support website [**here**](https://support.microsoft.com/en-us/office/add-remove-or-change-a-trusted-location-in-microsoft-office-7ee1cdc2-483e-4cbb-bcb3-4e7c67147fb4).
+Follow the steps on Microsoft Support website [**here**](https://support.microsoft.com/en-us/office/add-remove-or-change-a-trusted-location-in-microsoft-office-7ee1cdc2-483e-4cbb-bcb3-4e7c67147fb4)
 to add the folder to **Trusted Locations**. You can also follow [**this**](https://www.youtube.com/watch?v=AhnOU-ulqNg&t=7s)
 video tutorial.
 
