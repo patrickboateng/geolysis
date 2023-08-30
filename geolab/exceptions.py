@@ -13,3 +13,7 @@ class SoilTypeError(TypeError):
 
 class AllowableSettlementError(ValueError):
     """Exception raised when allowable settlement is greater than ``25.4mm``."""
+
+
+class EngineerTypeError(TypeError):
+    """Exception raise when a particular engineer is not allowed"""
