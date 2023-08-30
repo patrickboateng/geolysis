@@ -37,12 +37,12 @@ video tutorial.
   If you prefer reading, use [**this**](https://www.excelcampus.com/vba/how-to-install-an-excel-add-in-guide/)
   resource.
 
-### Install **Excel-DNA**
+### Install Excel-DNA
 
 **Note**: _This step is Optional but highly recommended, this provides intellisense on the custom functions_
 
 - Download the **ExcelDna.IntelliSense64.xll** addin [here](https://github.com/Excel-DNA/IntelliSense/releases/tag/v1.4.2).
-- Follow the same steps [**here**](#install-soil-classifier-addin)
+- Follow the same steps [**above**](#install-soil-classifier-addin)
 
 ## Documentation
 
