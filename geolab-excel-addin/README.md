@@ -32,7 +32,7 @@ video tutorial.
 ### Install Addin
 
 - Download addin [here](https://github.com/patrickboateng/geolab/releases/tag/v1.0.0).
-- Place the file (geolab-1.0.0-win-x64.xlam) into the folder you added to **Trusted Locations**.
+- Place the file (**geolab-1.0.0-win-x64.xlam**) in the folder you added to **Trusted Locations**.
 - Follow [**this**](https://www.youtube.com/watch?v=reuU2zUsEPM) example video tutorial to load the addin.
   If you prefer reading, use [**this**](https://www.excelcampus.com/vba/how-to-install-an-excel-add-in-guide/)
   resource.
@@ -42,7 +42,7 @@ video tutorial.
 **Note**: _This step is Optional but highly recommended, this provides intellisense on the custom functions_
 
 - Download the **ExcelDna.IntelliSense64.xll** addin [here](https://github.com/Excel-DNA/IntelliSense/releases/tag/v1.4.2).
-- Follow the same steps [**above**](#install-soil-classifier-addin)
+- Follow the same steps [**above**](#install-soil-classifier-addin) to load addin.
 
 ## Documentation
 
