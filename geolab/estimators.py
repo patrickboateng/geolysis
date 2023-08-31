@@ -265,51 +265,52 @@ class undrained_shear_strength:
         return und_shr
 
 
-@round_
-def soil_elastic_modulus(spt_n60: float) -> float:
-    r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
+class misc:
+    @staticmethod
+    def soil_elastic_modulus(spt_n60: float) -> float:
+        r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
 
-    .. math::
+        .. math::
 
-        E_s = 320\left(N_{60} + 15 \right)
+            E_s = 320\left(N_{60} + 15 \right)
 
-    :Example:
-        >>> soil_elastic_modulus(20)
-        11200
-        >>> soil_elastic_modulus(30)
-        14400
-        >>> soil_elastic_modulus(10)
-        8000
+        :Example:
+            >>> soil_elastic_modulus(20)
+            11200
+            >>> soil_elastic_modulus(30)
+            14400
+            >>> soil_elastic_modulus(10)
+            8000
 
-    :param spt_n60: spt N-value corrected for 60% hammer efficiency
-    :type spt_n60: float
-    :return: Elastic modulus of the soil :math:`kN/m^2`
-    :rtype: float
-    """
-    return 320 * (spt_n60 + 15)
+        :param spt_n60: spt N-value corrected for 60% hammer efficiency
+        :type spt_n60: float
+        :return: Elastic modulus of the soil :math:`kN/m^2`
+        :rtype: float
+        """
+        return 320 * (spt_n60 + 15)
 
+    @staticmethod
+    def foundation_depth(
+        allow_bearing_capacity: float,
+        unit_weight_of_soil: float,
+        friction_angle: float,
+    ) -> float:
+        r"""Depth of foundation estimated using ``Rankine's`` formula.
 
-@round_
-def foundation_depth(
-    allow_bearing_capacity: float,
-    unit_weight_of_soil: float,
-    friction_angle: float,
-) -> float:
-    r"""Depth of foundation estimated using ``Rankine's`` formula.
+        .. math::
 
-    .. math::
+            D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
 
-        D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
+        :param allow_bearing_capacity: allowable bearing capacity
+        :type allow_bearing_capaciy: float
+        :param unit_weight_of_soil: unit weight of soil :math:`kN/m^3`
+        :type unit_weight_of_soil: float
+        :param friction_angle: internal angle of friction (degrees)
+        :type friction_angle: float
+        :return: depth of foundation
+        :rtype: float
+        """
+        x1 = allow_bearing_capacity / unit_weight_of_soil
+        x2 = (1 - sin(friction_angle)) / (1 + sin(friction_angle))
 
-    :param allow_bearing_capacity: allowable bearing capacity
-    :type allow_bearing_capaciy: float
-    :param unit_weight_of_soil: unit weight of soil :math:`kN/m^3`
-    :type unit_weight_of_soil: float
-    :param friction_angle: internal angle of friction (degrees)
-    :type friction_angle: float
-    :return: depth of foundation
-    :rtype: float
-    """
-    return (allow_bearing_capacity / unit_weight_of_soil) * (
-        (1 - sin(friction_angle)) / (1 + sin(friction_angle))
-    ) ** 2
+        return (x1 * x2) ** 2
