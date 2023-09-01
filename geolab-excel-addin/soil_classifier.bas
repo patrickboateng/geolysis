@@ -73,7 +73,7 @@ Private Function ClassifyCoarseSoil( _
 
             ClassifyCoarseSoil = coarseSoil & soilGrd
         Else
-            ClassifyCoarseSoil = coarseSoil & gWELL_GRADED & "Or" & coarseSoil & gPOORLY_GRADED
+            ClassifyCoarseSoil = coarseSoil & gWELL_GRADED & " Or " & coarseSoil & gPOORLY_GRADED
         End If
     End If
 
