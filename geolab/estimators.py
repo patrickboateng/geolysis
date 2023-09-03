@@ -82,7 +82,7 @@ class compression_index:
         self.eng = eng
 
     def __call__(self, **kwargs) -> float:
-        return self.value(**kwargs)  # type: ignore
+        return self.estimate(**kwargs)  # type: ignore
 
     def _terzaghi_peck_compression_idx(self) -> float:
         return 0.009 * (self.liquid_limit - 10)
@@ -94,7 +94,7 @@ class compression_index:
         return 0.29 * (self.void_ratio - 0.27)
 
     @round_
-    def value(self, **kwargs) -> float:
+    def estimate(self, **kwargs) -> float:
         """Returns the compression index of the soil sample (unitless)"""
         check_eng(self, **kwargs)
 
@@ -152,7 +152,7 @@ class friction_angle:
         self.eng = eng
 
     def __call__(self, **kwargs) -> float:
-        return self.value(**kwargs)  # type: ignore
+        return self.estimate(**kwargs)  # type: ignore
 
     def _peck_et_al_friction_angle(self) -> float:
         return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
@@ -162,7 +162,7 @@ class friction_angle:
         return arctan(expr**0.34)
 
     @round_
-    def value(self, **kwargs) -> float:
+    def estimate(self, **kwargs) -> float:
         """Internal angle of friction in degrees"""
         check_eng(self, **kwargs)
 
@@ -235,7 +235,7 @@ class undrained_shear_strength:
         self.eng = eng
 
     def __call__(self, **kwargs) -> float:
-        return self.value(**kwargs)
+        return self.estimate(**kwargs)
 
     def _stroud_undrained_shear_strength(self):
         if not (3.5 <= self.k <= 6.5):
@@ -247,7 +247,7 @@ class undrained_shear_strength:
     def _skempton_undrained_shear_strength(self):
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)
 
-    def value(self, **kwargs) -> float:
+    def estimate(self, **kwargs) -> float:
         check_eng(self, **kwargs)
 
         und_shr: float  # undrained shear strength
@@ -313,4 +313,4 @@ class misc:
         x1 = allow_bearing_capacity / unit_weight_of_soil
         x2 = (1 - sin(friction_angle)) / (1 + sin(friction_angle))
 
-        return (x1 * x2) ** 2
+        return x1 * (x2**2)
