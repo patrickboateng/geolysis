@@ -1,7 +1,8 @@
 import pytest
 
 from geolab import ERROR_TOLERANCE
-from geolab.bearing_capacity.terzaghi import TerzaghiBearingCapacity
+
+# from geolab.bearing_capacity.terzaghi import TerzaghiBearingCapacity
 
 # from geolab.bearing_capacity.hansen import HansenBCF
 # from geolab.bearing_capacity.vesic import VesicBCF
