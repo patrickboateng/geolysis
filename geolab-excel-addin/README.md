@@ -4,7 +4,7 @@ Microsoft Excel Addin for [**geolab**](https://github.com/patrickboateng/geolab)
 
 ## Installation
 
-**Note**: _All the instructions shown below were tested on **Microsoft Excel 2016** and **Windows
+**Note**: _All the instructions shown below were tested on **Microsoft Excel 2016 (64bit)** and **Windows
 10**_
 
 ### Add Folder To Trusted Locations
@@ -42,11 +42,11 @@ video tutorial.
 **Note**: _This step is Optional but highly recommended, this provides intellisense on the custom functions_
 
 - Download the **ExcelDna.IntelliSense64.xll** addin [here](https://github.com/Excel-DNA/IntelliSense/releases/tag/v1.4.2).
-- Follow the same steps [**above**](#install-soil-classifier-addin) to load addin.
+- Follow the same steps [**above**](#install-addin) to load addin.
 
 ## Documentation
 
-_A comprehensive documentation is underway, for now use documentation provided in Microsoft Excel to learn about custom
+_A comprehensive documentation is underway, for now, use documentation provided in Microsoft Excel to learn about custom
 functions_
 
 The two functions provided are as follows:
