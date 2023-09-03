@@ -2,6 +2,7 @@ Api Reference
 =============
 
 .. toctree:: 
-    :caption: Soil Classifier
+    :maxdepth: 2
 
-    soil_classifier
+    ./soil_classifier/index.rst
+    ./bearing_capacity/index.rst
