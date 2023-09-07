@@ -69,3 +69,6 @@ venv-*/
 .idea
 .prettierignore
 .markdownlint.json
+
+# Sphinx generated files
+*generated
