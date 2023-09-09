@@ -46,3 +46,13 @@ bibtex_default_style = "unsrt"
 html_theme = "pydata_sphinx_theme"
 html_title = "geolab"
 html_static_path = ["_static"]
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/patrickboateng/geolab",
+            "icon": "fab fa-github-square",
+            "type": "fontawesome",
+        },
+    ],
+}
