@@ -7,6 +7,7 @@ class terzaghi_bearing_capacity:
     r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``,
     ``square footing`` and ``circular footing``.
 
+    :Example:
 
 
     :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
@@ -46,18 +47,20 @@ class terzaghi_bearing_capacity:
         self.footing_shape = footing_shape
         self.eng = eng
 
-        self.const = 1 if footing_shape is FootingShape.STRIP else 1.2
+        # constants
+        self._k1 = 1 if footing_shape is FootingShape.STRIP else 1.2
+        self._k2 = self.FOOTING_SHAPES_CONSTS[self.footing_shape]
 
     def __call__(self) -> float:
         return self.ultimate_bearing_capacity()
 
     def ultimate_bearing_capacity(self) -> float:
         """Returns the ultimate bearing capacity according to ``Terzaghi``."""
-        x1 = self.const * self.cohesion * self.nc
+        x1 = self._k1 * self.cohesion * self.nc
         x2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
         x3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
 
-        return x1 + x2 + self.FOOTING_SHAPES_CONSTS[self.footing_shape] * x3
+        return x1 + x2 + self._k2 * x3
 
     @property
     def nc(self) -> float:
