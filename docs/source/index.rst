@@ -3,48 +3,75 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+:html_theme.sidebar_secondary.remove:
 
-geolab: Geotechnical engineering analysis and modelling software
-================================================================
+geolab documentation
+====================
 
-.. image:: https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white 
-   :alt: pypi
-   :target: https://pypi.org/user/Pato546/
-
-.. image:: https://img.shields.io/pypi/l/geolab?style=flat-square
-   :alt: license
-
-.. image:: https://img.shields.io/pypi/dm/geolab?style=flat-square
-   :alt: downloads
-
-``geolab`` is an open-source software for geotechnical engineering analysis that offers a suite of powerful tools and features for soil analysis and modeling. 
+``geolab`` is an open-source software for geotechnical engineering analysis that offers 
+a suite of powerful tools and features for soil analysis and modeling. 
 
 Some of the features ``geolab`` provides are:
 
 - Provides soil classification based on ``USCS`` and ``AASHTO`` standards.
-- Bearing capacity analysis can be performed in both from results obtained from laboratory or field tests.
-- Estimates important soil engineering properties, aiding in decision-making.
-- Settlement analysis tools predict and model soil settlements under various loads and conditions.
+- Bearing capacity analysis can be performed, both from results obtained from **laboratory** or **field**.
+- Estimates important soil engineering properties.
+- Settlement analysis tools to predict and model soil settlements under various loads and conditions.
 - Supports finite element modeling of soil behaviour under different conditions.
 
 .. note::
 
    Not all features mentioned above are availabe.
 
-.. grid:: 2
-   :gutter: 3
+.. grid:: 3
+   :gutter: 2
 
-   .. grid-item-card:: :octicon:`paper-airplane;1.5em;sd-text-info` Getting Started
+   .. grid-item-card::  
       :link: quickstart
       :link-type: doc
 
-      Start here if you are new to geolab. Learn about the syntax and the Microsoft Excel addin.
+      :octicon:`paper-airplane;1em;sd-text-info` Getting Started
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   .. grid-item-card:: :octicon:`book;1.5em;sd-text-info` API Reference
+      New to Geolab? Check out the absolute beginners guide.
+
+   .. grid-item-card::  
+      :link: user_guide
+      :link-type: doc
+
+      :octicon:`paper-airplane;1em;sd-text-info` User Guide 
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+      The user guide provides in-depth information on key concepts of Geolab with 
+      useful background information and explanation.
+
+   .. grid-item-card:: 
       :link: api/index
       :link-type: doc
 
-      This is a description of all classes, methods, properties, and functions that geolab offers.
+      :octicon:`book;1em;sd-text-info` API Reference
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+      This is a description of all classes, methods, properties, and functions that 
+      geolab offers.
+
+   .. grid-item-card::  
+      :link: contributors_guide
+      :link-type: doc
+
+      :octicon:`paper-airplane;1em;sd-text-info` Contributor's Guide
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+      Want to add to the codebase? Check out the contribution guide.
+
+   .. grid-item-card::  
+      :link: microsoft_excel_addin
+      :link-type: doc
+
+      :octicon:`paper-airplane;1em;sd-text-info` Microsoft Excel Addin
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+      Learn about the Microsoft Excel addin.
 
 .. toctree::
    :maxdepth: 2
@@ -52,7 +79,10 @@ Some of the features ``geolab`` provides are:
    :hidden:
 
    quickstart
+   user_guide
    api/index
+   contributors_guide
+   microsoft_excel_addin
 
 .. Indices and tables
 .. ==================
@@ -60,3 +90,4 @@ Some of the features ``geolab`` provides are:
 .. * :ref:`genindex`
 .. * :ref:`modindex`
 .. * :ref:`search`
+
