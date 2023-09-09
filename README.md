@@ -87,7 +87,7 @@ to adhere to. Please read and follow it when participating in this project.
 
 ## Contributing
 
-Check out the contributing guidelines [here](docs/CONTRIBUTING.md#how-to-contribute)
+See [CONTRIBUTING](docs/CONTRIBUTING.md#how-to-contribute) for more information on contributing.
 
 ## License
 
