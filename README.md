@@ -34,6 +34,7 @@ design and build better projects with confidence.
   - [How to Install the Microsoft Excel Addin](#how-to-install-the-microsoft-excel-addin)
 - [Usage Example](#usage-example)
 - [Release History](#release-history)
+- [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
@@ -79,13 +80,14 @@ The installation procedure can be found [**here**](./geolab-excel-addin/README.m
 - 0.1.0
   - **rapid** development.
 
+## Code of Conduct
+
+This project has a [Code of Conduct](docs/CONTRIBUTING.md) that we expect all contributors
+to adhere to. Please read and follow it when participating in this project.
+
 ## Contributing
 
-1. [Fork it](https://github.com/patrickboateng/geolab/fork)
-1. Create your feature branch (`git checkout -b feature`)
-1. Commit your changes (`git commit -am 'Add some fooBar'`)
-1. Push to the branch (`git push origin feature`)
-1. Create a new Pull Request
+Check out the contributing guidelines [here](docs/CONTRIBUTING.md#how-to-contribute)
 
 ## License
 
