@@ -35,12 +35,12 @@ class meyerhof_bearing_capacity:
         self.actual_settlement = actual_settlement
 
     @property
-    def depth_ftr(self) -> float:
+    def f_d(self) -> float:
         """"""
         x1 = self.foundation_depth / self.foundation_width
-        df = 1 + 0.33 * x1  # depth factor
+        fd = 1 + 0.33 * x1  # depth factor
 
-        return min(df, 1.33)
+        return min(fd, 1.33)
 
     @functools.cached_property
     def n_design(self) -> float:
@@ -57,7 +57,7 @@ class meyerhof_bearing_capacity:
         """"""
         abc: float  # allowable bearing capacity
 
-        x1 = self.n_design * self.depth_ftr
+        x1 = self.n_design * self.f_d
         x2 = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
 
         if self.foundation_width <= 1.22:
