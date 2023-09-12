@@ -91,7 +91,9 @@ See [CONTRIBUTING](docs/CONTRIBUTING.md#how-to-contribute) for more information 
 
 ## License
 
-Distributed under the `MIT license`. See [LICENSE](./LICENSE.txt) for more information.
+Distributed under the `MIT license`. See [LICENSE](./LICENSE.txt) for more information. By using,
+distributing, or contributing to this project, you agree to the terms and conditions of this
+license.
 
 ## Contact Information
 
