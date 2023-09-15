@@ -1,6 +1,52 @@
+from dataclasses import dataclass
+
 from geolab import GeotechEng
-from geolab.bearing_capacity import FootingShape, FoundationSize
-from geolab.utils import PI, cos, deg2rad, exp, sin, tan
+from geolab.bearing_capacity import FootingShape, FootingSize, FoundationSize
+from geolab.utils import PI, arctan, cos, deg2rad, exp, sin, tan
+
+
+def _ultimate_bearing_capacity(
+    cohesion: float,
+    soil_unit_weight: float,
+    foundation_size: FoundationSize,
+):
+    ...
+
+
+@dataclass
+class terzaghi_bearing_capacity_factors:
+    soil_friction_angle: float
+    eng: float
+
+    @property
+    def nc(self) -> float:
+        x1 = 1 / tan(self.soil_friction_angle)
+        x2 = self.nq - 1
+
+        return x1 * x2
+
+    @property
+    def nq(self) -> float:
+        x1 = (3 * PI) / 2 - deg2rad(self.soil_friction_angle)
+        x2 = 2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2)
+
+        return exp(x1 * tan(self.soil_friction_angle)) / x2
+
+    @property
+    def ngamma(self) -> float:
+        _ngamma: float
+
+        if self.eng is GeotechEng.MEYERHOF:
+            _ngamma = (self.nq - 1) * tan(1.4 * self.soil_friction_angle)
+
+        elif self.eng is GeotechEng.HANSEN:
+            _ngamma = 1.8 * (self.nq - 1) * tan(self.soil_friction_angle)
+
+        else:
+            msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
+            raise TypeError(msg)
+
+        return _ngamma
 
 
 class terzaghi_bearing_capacity:
@@ -13,7 +59,7 @@ class terzaghi_bearing_capacity:
     :param cohesion: cohesion of foundation soil :math:`(kN/m^2)`
     :type cohesion: float
     :param friction_angle: internal angle of friction (degrees)
-    :type friction_angle: float
+    :type soil_friction_angle: float
     :param soil_unit_weight: unit weight of soil :math:`(kN/m^3)`
     :type soil_unit_weight: float
     :param foundation_depth: depth of foundation :math:`d_f` (m)
@@ -25,86 +71,185 @@ class terzaghi_bearing_capacity:
     :type eng: GeotechEng
     """
 
-    FOOTING_SHAPES_CONSTS = {
-        FootingShape.STRIP: 0.5,
-        FootingShape.SQUARE: 0.4,
-        FootingShape.CIRCULAR: 0.3,
-    }
-
     def __init__(
         self,
         cohesion: float,
-        friction_angle: float,
+        soil_friction_angle: float,
         soil_unit_weight: float,
         foundation_size: FoundationSize,
-        footing_shape: FootingShape = FootingShape.SQUARE,
         eng: GeotechEng = GeotechEng.MEYERHOF,
     ) -> None:
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
-        self.friction_angle = friction_angle
-        self.footing_shape = footing_shape
+        self.soil_friction_angle = soil_friction_angle
         self.eng = eng
 
-        # constants
-        self._k1 = 1 if footing_shape is FootingShape.STRIP else 1.2
-        self._k2 = self.FOOTING_SHAPES_CONSTS[self.footing_shape]
+        self.bcf = terzaghi_bearing_capacity_factors(
+            self.soil_friction_angle, self.eng
+        )
 
-    def __call__(self) -> float:
-        return self.ultimate_bearing_capacity()
-
-    def ultimate_bearing_capacity(self) -> float:
-        """Returns the ultimate bearing capacity according to ``Terzaghi``."""
-        x1 = self._k1 * self.cohesion * self.nc
+    def ultimate_4_strip_footing(self) -> float:
+        x1 = self.cohesion * self.nc
         x2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
         x3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
 
-        return x1 + x2 + self._k2 * x3
+        return x1 + x2 + 0.5 * x3
+
+    def ultimate_4_square_footing(self) -> float:
+        x1 = 1.3 * self.cohesion * self.nc
+        x2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
+        x3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
+
+        return x1 + x2 + 0.4 * x3
+
+    def ultimate_4_circular_footing(self) -> float:
+        x1 = 1.3 * self.cohesion * self.nc
+        x2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
+        x3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
+
+        return x1 + x2 + 0.3 * x3
 
     @property
     def nc(self) -> float:
-        """Returns Terzaghi Bearing Capacity factor :math:`N_c`."""
-        x1 = (3 * PI) / 2 - deg2rad(self.friction_angle)
-        x2 = 2 * (cos(45 + (self.friction_angle / 2)) ** 2)
-
-        return exp(x1 * tan(self.friction_angle)) / x2
+        """Returns Terzaghi bearing capacity factor :math:`N_c`."""
+        return self.bcf.nc
 
     @property
     def nq(self) -> float:
-        """Returns Terzaghi Bearing Capacity factor :math:`N_q`."""
-        x1 = 1 / tan(self.friction_angle)
-        x2 = self.nq - 1
+        """Returns Terzaghi bearing capacity factor :math:`N_q`."""
+        return self.bcf.nq
+
+    @property
+    def ngamma(self) -> float:
+        r"""Returns Terzaghi bearing capacity factor :math:`N_\gamma`."""
+        return self.bcf.ngamma
+
+
+class meyerhof_bearing_capacity_factors:
+    def __init__(self, soil_friction_angle: float):
+        self.soil_friction_angle = soil_friction_angle
+
+    @property
+    def nc(self) -> float:
+        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
+
+    @property
+    def nq(self) -> float:
+        x1 = tan(45 + self.soil_friction_angle / 2) ** 2
+        x2 = exp(PI * tan(self.soil_friction_angle))
 
         return x1 * x2
 
     @property
     def ngamma(self) -> float:
-        r"""Terzaghi Bearing Capacity factor :math:`N_\gamma`."""
-        _ngamma: float
+        return 2 * (self.nq + 1) * tan(self.soil_friction_angle)
 
-        if self.eng is GeotechEng.MEYERHOF:
-            _ngamma = (self.nq - 1) * tan(1.4 * self.friction_angle)
 
-        elif self.eng is GeotechEng.HANSEN:
-            _ngamma = 1.8 * (self.nq - 1) * tan(self.friction_angle)
+@dataclass
+class meyerhof_depth_factors:
+    soil_friction_angle: float
+    foundation_size: FoundationSize
+
+    @property
+    def depth_2_width_ratio(self) -> float:
+        return self.foundation_size.depth_2_width_ratio
+
+    @property
+    def dc(self) -> float:
+        _dc: float
+
+        if self.depth_2_width_ratio <= 1:
+            _dc = 1 + 0.4 * self.depth_2_width_ratio
 
         else:
-            msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
-            raise TypeError(msg)
+            x1 = 0.4 * arctan(self.depth_2_width_ratio)
+            _dc = 1 + x1 * (PI / 180)
 
-        return _ngamma
+        return _dc
+
+    @property
+    def dq(self) -> float:
+        _dq: float
+
+        x2 = (1 - sin(self.soil_friction_angle)) ** 2
+
+        if self.depth_2_width_ratio <= 1:
+            x1 = 2 * tan(self.soil_friction_angle)
+            _dq = 1 + x1 * x2 * self.depth_2_width_ratio
+
+        else:
+            x1 = 2 * tan(self.soil_friction_angle)
+            x3 = arctan(self.depth_2_width_ratio)
+            _dq = 1 + x1 * x2 * x3 * (PI / 180)
+
+        return _dq
+
+    @property
+    def dgamma(self) -> float:
+        return 1
+
+
+@dataclass
+class meyerhof_shape_factors:
+    soil_friction_angle: float
+    footing_size: FootingSize
+    nq: float
+    nc: float
+
+    @property
+    def width_2_length_ratio(self) -> float:
+        return self.footing_size.width / self.footing_size.length
+
+    @property
+    def sc(self) -> float:
+        return 1 + self.width_2_length_ratio * (self.nq / self.nc)
+
+    @property
+    def sq(self) -> float:
+        return 1 + self.width_2_length_ratio * tan(self.soil_friction_angle)
+
+    @property
+    def sgamma(self) -> float:
+        return 1 - 0.4 * self.width_2_length_ratio
+
+
+@dataclass
+class meyerhof_inclination_factors:
+    soil_friction_angle: float
+    beta: float
+
+    @property
+    def ic(self) -> float:
+        return (1 - self.beta / 90) ** 2
+
+    @property
+    def iq(self) -> float:
+        return self.ic
+
+    @property
+    def igamma(self) -> float:
+        return (1 - self.beta / self.soil_friction_angle) ** 2
 
 
 class meyerhof_bearing_capacity:
-    def nc(self):
-        ...
+    ...
 
-    def nq(self):
-        ...
 
-    def ngamma(self):
-        ...
+class hansen_bearing_capacity_factors:
+    ...
+
+
+class hansen_depth_factors:
+    ...
+
+
+class hansen_shape_factors:
+    ...
+
+
+class hansen_inclination_factors:
+    ...
 
 
 class hansen_bearing_capacity:
@@ -145,9 +290,9 @@ class hansen_bearing_capacity:
         self.total_vertical_load = total_vertical_load
 
     def __call__(self) -> float:
-        return self.ultimate_bearing_capacity()
+        return self.ultimate()
 
-    def ultimate_bearing_capacity(self) -> float:
+    def ultimate(self) -> float:
         r"""Returns the ultimate bearing capacity according to ``Hansen``."""
         x1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
         x2 = self.soil_unit_weight * self.foundation_size.depth
@@ -294,6 +439,22 @@ class hansen_bearing_capacity:
         return self.iq**2
 
 
+class vesic_bearing_capacity_factors:
+    ...
+
+
+class vesic_depth_factors:
+    ...
+
+
+class vesic_shape_factors:
+    ...
+
+
+class vesic_inclination_factors:
+    ...
+
+
 class vesic_bearing_capacity:
     r"""Ultimate bearing capacity according to ``Vesic``.
 
@@ -330,9 +491,9 @@ class vesic_bearing_capacity:
         self.footing_shape = footing_shape
 
     def __call__(self) -> float:
-        return self.ultimate_bearing_capacity()
+        return self.ultimate()
 
-    def ultimate_bearing_capacity(self) -> float:
+    def ultimate(self) -> float:
         r"""Returns the ultimate bearing capacity according to ``Hansen``."""
         x1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
         x2 = self.soil_unit_weight * self.foundation_size.depth
