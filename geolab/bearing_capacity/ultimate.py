@@ -5,14 +5,6 @@ from geolab.bearing_capacity import FootingShape, FootingSize, FoundationSize
 from geolab.utils import PI, arctan, cos, deg2rad, exp, sin, tan
 
 
-def _ultimate_bearing_capacity(
-    cohesion: float,
-    soil_unit_weight: float,
-    foundation_size: FoundationSize,
-):
-    ...
-
-
 @dataclass
 class terzaghi_bearing_capacity_factors:
     soil_friction_angle: float
@@ -233,23 +225,263 @@ class meyerhof_inclination_factors:
 
 
 class meyerhof_bearing_capacity:
-    ...
+    def __init__(
+        self,
+        cohesion: float,
+        soil_unit_weight: float,
+        foundation_size: FoundationSize,
+        soil_friction_angle: float,
+        beta: float,
+    ) -> None:
+        self.cohesion = cohesion
+        self.soil_unit_weight = soil_unit_weight
+        self.foundation_size = foundation_size
+        self.soil_friction_angle = soil_friction_angle
+        self.beta = beta
+
+        self.bearing_cpty_factors = meyerhof_bearing_capacity_factors(
+            self.soil_friction_angle
+        )
+        self.depth_factors = meyerhof_depth_factors(
+            self.soil_friction_angle, self.foundation_size
+        )
+        self.shape_factors = meyerhof_shape_factors(
+            self.soil_friction_angle,
+            self.foundation_size.footing_size,
+            self.nq,
+            self.nc,
+        )
+        self.incl_factors = meyerhof_inclination_factors(
+            self.soil_friction_angle, self.beta
+        )
+
+    def __call__(self) -> float:
+        return self.ultimate()
+
+    def ultimate(self) -> float:
+        r"""Returns the ultimate bearing capacity according to ``Hansen``."""
+        x1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
+        x2 = self.soil_unit_weight * self.foundation_size.depth
+        x3 = self.nq * self.sq * self.dq * self.iq
+        x4 = self.soil_unit_weight * self.foundation_size.width
+        x5 = self.ngamma * self.sgamma * self.dgamma * self.igamma
+
+        return x1 + (x2 * x3) + (0.5 * x4 * x5)
+
+    @property
+    def nc(self) -> float:
+        """"""
+        return self.bearing_cpty_factors.nc
+
+    @property
+    def nq(self) -> float:
+        """"""
+        return self.bearing_cpty_factors.nq
+
+    @property
+    def ngamma(self) -> float:
+        """"""
+        return self.bearing_cpty_factors.ngamma
+
+    @property
+    def dc(self) -> float:
+        """"""
+        return self.depth_factors.dc
+
+    @property
+    def dq(self) -> float:
+        """"""
+        return self.depth_factors.dq
+
+    @property
+    def dgamma(self) -> float:
+        """"""
+        return self.depth_factors.dgamma
+
+    @property
+    def sc(self) -> float:
+        """"""
+        return self.shape_factors.sc
+
+    @property
+    def sq(self) -> float:
+        """"""
+        return self.shape_factors.sq
+
+    @property
+    def sgamma(self) -> float:
+        """"""
+        return self.shape_factors.sgamma
+
+    @property
+    def ic(self) -> float:
+        """"""
+        return self.incl_factors.ic
+
+    @property
+    def iq(self) -> float:
+        """"""
+        return self.incl_factors.iq
+
+    @property
+    def igamma(self) -> float:
+        """"""
+        return self.incl_factors.igamma
 
 
+@dataclass
 class hansen_bearing_capacity_factors:
-    ...
+    soil_friction_angle: float
+
+    @property
+    def nc(self) -> float:
+        x1 = 1 / tan(self.soil_friction_angle)
+        x2 = self.nq - 1.0
+
+        return x1 * x2
+
+    @property
+    def nq(self) -> float:
+        x1 = tan(45 + self.soil_friction_angle / 2) ** 2
+        x2 = exp(PI * tan(self.soil_friction_angle))
+
+        return x1 * x2
+
+    @property
+    def ngamma(self) -> float:
+        return 1.8 * (self.nq - 1.0) * tan(self.soil_friction_angle)
 
 
+@dataclass
 class hansen_depth_factors:
-    ...
+    foundation_size: FoundationSize
+
+    @property
+    def depth_2_width_ratio(self) -> float:
+        return self.foundation_size.depth_2_width_ratio
+
+    @property
+    def dc(self) -> float:
+        """"""
+        return 1 + 0.35 * self.depth_2_width_ratio
+
+    @property
+    def dq(self) -> float:
+        """"""
+        return self.dc
+
+    @property
+    def dgamma(self) -> float:
+        """"""
+        return 1.0
 
 
+@dataclass
 class hansen_shape_factors:
-    ...
+    footing_size: FootingSize
+    footing_shape: FootingShape
+
+    @property
+    def width_2_length_ratio(self) -> float:
+        return self.footing_size.width / self.footing_size.length
+
+    @property
+    def sc(self) -> float:
+        """"""
+        _sc: float
+
+        if self.footing_shape is FootingShape.STRIP:
+            _sc = 1.0
+
+        elif (
+            self.footing_shape is FootingShape.SQUARE
+            or self.footing_shape is FootingShape.CIRCULAR
+        ):
+            _sc = 1.3
+
+        elif self.footing_shape is FootingShape.RECTANGULAR:
+            _sc = 1 + 0.2 * self.width_2_length_ratio
+
+        else:
+            msg = ""
+            raise TypeError(msg)
+
+        return _sc
+
+    @property
+    def sq(self) -> float:
+        """"""
+        _sq: float
+
+        if self.footing_shape is FootingShape.STRIP:
+            _sq = 1.0
+
+        elif (
+            self.footing_shape is FootingShape.SQUARE
+            or self.footing_shape is FootingShape.CIRCULAR
+        ):
+            _sq = 1.2
+
+        elif self.footing_shape is FootingShape.RECTANGULAR:
+            _sq = 1 + 0.2 * self.width_2_length_ratio
+
+        else:
+            msg = ""
+            raise TypeError(msg)
+
+        return _sq
+
+    @property
+    def sgamma(self) -> float:
+        """"""
+        _sgamma: float
+
+        if self.footing_shape is FootingShape.STRIP:
+            _sgamma = 1.0
+
+        elif self.footing_shape is FootingShape.SQUARE:
+            _sgamma = 0.8
+
+        elif self.footing_shape is FootingShape.CIRCULAR:
+            _sgamma = 0.6
+
+        elif self.footing_shape is FootingShape.RECTANGULAR:
+            _sgamma = 1 - 0.4 * self.width_2_length_ratio
+
+        else:
+            msg = ""
+            raise TypeError(msg)
+
+        return _sgamma
 
 
+@dataclass
 class hansen_inclination_factors:
-    ...
+    cohesion: float
+    footing_size: FootingSize
+    beta: float
+    total_vertical_load: float
+
+    @property
+    def ic(self) -> float:
+        """"""
+        x1 = (
+            2
+            * self.cohesion
+            * self.footing_size.width
+            * self.footing_size.length
+        )
+        return 1 - self.beta / x1
+
+    @property
+    def iq(self) -> float:
+        """"""
+        return 1 - (1.5 * self.beta) / self.total_vertical_load
+
+    @property
+    def igamma(self) -> float:
+        """"""
+        return self.iq**2
 
 
 class hansen_bearing_capacity:
@@ -276,7 +508,7 @@ class hansen_bearing_capacity:
         cohesion: float,
         soil_unit_weight: float,
         foundation_size: FoundationSize,
-        friction_angle: float,
+        soil_friction_angle: float,
         beta: float,
         total_vertical_load: float,
         footing_shape: FootingShape = FootingShape.SQUARE,
@@ -284,10 +516,24 @@ class hansen_bearing_capacity:
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
-        self.friction_angle = friction_angle
+        self.soil_friction_angle = soil_friction_angle
         self.beta = beta
         self.footing_shape = footing_shape
         self.total_vertical_load = total_vertical_load
+
+        self.bearing_cpty_factors = hansen_bearing_capacity_factors(
+            self.soil_friction_angle
+        )
+        self.depth_factors = hansen_depth_factors(self.foundation_size)
+        self.shape_factors = hansen_shape_factors(
+            self.foundation_size.footing_size, self.footing_shape
+        )
+        self.incl_factors = hansen_inclination_factors(
+            self.cohesion,
+            self.foundation_size.footing_size,
+            self.beta,
+            self.total_vertical_load,
+        )
 
     def __call__(self) -> float:
         return self.ultimate()
@@ -305,47 +551,127 @@ class hansen_bearing_capacity:
     @property
     def nc(self) -> float:
         """"""
-        x1 = 1 / tan(self.friction_angle)
-        x2 = self.nq - 1.0
-
-        return x1 * x2
+        return self.bearing_cpty_factors.nc
 
     @property
     def nq(self) -> float:
         """"""
-        x1 = tan(45 + self.friction_angle / 2) ** 2
-        x2 = exp(PI * tan(self.friction_angle))
-
-        return x1 * x2
+        return self.bearing_cpty_factors.nq
 
     @property
     def ngamma(self) -> float:
         """"""
-        return 1.8 * (self.nq - 1.0) * tan(self.friction_angle)
+        return self.bearing_cpty_factors.ngamma
 
     @property
     def dc(self) -> float:
         """"""
-        x1 = (
-            self.foundation_size.depth
-            / self.foundation_size.footing_size.width
-        )
-
-        return 1 + 0.35 * x1
+        return self.depth_factors.dc
 
     @property
     def dq(self) -> float:
         """"""
-        return self.dc
+        return self.depth_factors.dq
 
     @property
     def dgamma(self) -> float:
         """"""
-        return 1.0
+        return self.depth_factors.dgamma
 
     @property
     def sc(self) -> float:
         """"""
+        return self.shape_factors.sc
+
+    @property
+    def sq(self) -> float:
+        """"""
+        return self.shape_factors.sq
+
+    @property
+    def sgamma(self) -> float:
+        """"""
+        return self.shape_factors.sgamma
+
+    @property
+    def ic(self) -> float:
+        """"""
+        return self.incl_factors.ic
+
+    @property
+    def iq(self) -> float:
+        """"""
+        return self.incl_factors.iq
+
+    @property
+    def igamma(self) -> float:
+        """"""
+        return self.incl_factors.igamma
+
+
+@dataclass
+class vesic_bearing_capacity_factors:
+    soil_friction_angle: float
+
+    @property
+    def nc(self) -> float:
+        """"""
+        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
+
+    @property
+    def nq(self) -> float:
+        """"""
+        x1 = tan(45 + self.soil_friction_angle / 2)
+        x2 = exp(PI * tan(self.soil_friction_angle))
+
+        return (x1**2) * (x2)
+
+    @property
+    def ngamma(self) -> float:
+        """"""
+        return 2 * (self.nq + 1) * tan(self.soil_friction_angle)
+
+
+@dataclass
+class vesic_depth_factors:
+    soil_friction_angle: float
+    foundation_size: FoundationSize
+
+    @property
+    def depth_2_width_ratio(self) -> float:
+        return self.foundation_size.depth_2_width_ratio
+
+    @property
+    def dc(self) -> float:
+        return 1 + 0.4 * self.depth_2_width_ratio
+
+    @property
+    def dq(self) -> float:
+        x1 = 2 * tan(self.soil_friction_angle)
+        x2 = (1 - sin(self.soil_friction_angle)) ** 2
+        x3 = self.depth_2_width_ratio
+
+        return 1 + (x1 * x2 * x3)
+
+    @property
+    def dgamma(self) -> float:
+        return 1.0
+
+
+@dataclass
+class vesic_shape_factors:
+    soil_friction_angle: float
+    footing_size: FootingSize
+    footing_shape: FootingShape
+    nq: float
+    nc: float
+
+    @property
+    def width_2_length_ratio(self) -> float:
+        return self.footing_size.width / self.footing_size.length
+
+    @property
+    def sc(self) -> float:
         _sc: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -355,12 +681,10 @@ class hansen_bearing_capacity:
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sc = 1.3
+            _sc = 1 + (self.nq / self.nc)
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            x1 = self.foundation_size.width / self.foundation_size.length
-
-            _sc = 1 + 0.2 * x1
+            _sc = 1 + self.width_2_length_ratio * (self.nq / self.nc)
 
         else:
             msg = ""
@@ -370,7 +694,6 @@ class hansen_bearing_capacity:
 
     @property
     def sq(self) -> float:
-        """"""
         _sq: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -380,12 +703,10 @@ class hansen_bearing_capacity:
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sq = 1.2
+            _sq = 1 + tan(self.soil_friction_angle)
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            x1 = self.foundation_size.width / self.foundation_size.length
-
-            _sq = 1 + 0.2 * x1
+            _sq = 1 + self.width_2_length_ratio * tan(self.soil_friction_angle)
 
         else:
             msg = ""
@@ -395,21 +716,19 @@ class hansen_bearing_capacity:
 
     @property
     def sgamma(self) -> float:
-        """"""
         _sgamma: float
 
         if self.footing_shape is FootingShape.STRIP:
             _sgamma = 1.0
 
-        elif self.footing_shape is FootingShape.SQUARE:
-            _sgamma = 0.8
-
-        elif self.footing_shape is FootingShape.CIRCULAR:
+        elif (
+            self.footing_shape is FootingShape.SQUARE
+            or self.footing_shape is FootingShape.CIRCULAR
+        ):
             _sgamma = 0.6
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            x1 = self.foundation_size.width / self.foundation_size.length
-            _sgamma = 1 - 0.4 * x1
+            _sgamma = 1 - 0.4 * (self.width_2_length_ratio)
 
         else:
             msg = ""
@@ -417,42 +736,23 @@ class hansen_bearing_capacity:
 
         return _sgamma
 
+
+@dataclass
+class vesic_inclination_factors:
+    soil_friction_angle: float
+    beta: float
+
     @property
     def ic(self) -> float:
-        """"""
-        x1 = (
-            2
-            * self.cohesion
-            * self.foundation_size.width
-            * self.foundation_size.length
-        )
-        return 1 - self.beta / x1
+        return (1 - self.beta / 90) ** 2
 
     @property
     def iq(self) -> float:
-        """"""
-        return 1 - (1.5 * self.beta) / self.total_vertical_load
+        return self.ic
 
     @property
     def igamma(self) -> float:
-        """"""
-        return self.iq**2
-
-
-class vesic_bearing_capacity_factors:
-    ...
-
-
-class vesic_depth_factors:
-    ...
-
-
-class vesic_shape_factors:
-    ...
-
-
-class vesic_inclination_factors:
-    ...
+        return (1 - self.beta / self.soil_friction_angle) ** 2
 
 
 class vesic_bearing_capacity:
@@ -479,16 +779,33 @@ class vesic_bearing_capacity:
         cohesion: float,
         soil_unit_weight: float,
         foundation_size: FoundationSize,
-        friction_angle: float,
+        soil_friction_angle: float,
         beta: float,
         footing_shape: FootingShape = FootingShape.SQUARE,
     ) -> None:
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
-        self.friction_angle = friction_angle
+        self.soil_friction_angle = soil_friction_angle
         self.beta = beta
         self.footing_shape = footing_shape
+
+        self.bearing_cpty_factors = vesic_bearing_capacity_factors(
+            self.soil_friction_angle
+        )
+        self.depth_factors = vesic_depth_factors(
+            self.soil_friction_angle, self.foundation_size
+        )
+        self.shape_factors = vesic_shape_factors(
+            self.soil_friction_angle,
+            self.foundation_size.footing_size,
+            self.footing_shape,
+            self.nq,
+            self.nc,
+        )
+        self.incl_factors = vesic_inclination_factors(
+            self.soil_friction_angle, self.beta
+        )
 
     def __call__(self) -> float:
         return self.ultimate()
@@ -499,124 +816,66 @@ class vesic_bearing_capacity:
         x2 = self.soil_unit_weight * self.foundation_size.depth
         x3 = self.nq * self.sq * self.dq * self.iq
         x4 = self.soil_unit_weight * self.foundation_size.width
-        x5 = self.ngamma * self.sgamma * self.dgamma() * self.igamma
+        x5 = self.ngamma * self.sgamma * self.dgamma * self.igamma
 
         return x1 + (x2 * x3) + (0.5 * x4 * x5)
 
     @property
     def nc(self) -> float:
         """"""
-        return (1 / tan(self.friction_angle)) * (self.nq - 1)
+        return self.bearing_cpty_factors.nc
 
     @property
     def nq(self) -> float:
         """"""
-        x1 = tan(45 + self.friction_angle / 2)
-        x2 = exp(PI * tan(self.friction_angle))
-
-        return (x1**2) * (x2)
+        return self.bearing_cpty_factors.nq
 
     @property
     def ngamma(self) -> float:
         """"""
-        return 2 * (self.nq + 1) * tan(self.friction_angle)
+        return self.bearing_cpty_factors.ngamma
 
     @property
     def dc(self) -> float:
-        x1 = self.foundation_size.depth / self.foundation_size.width
-
-        return 1 + 0.4 * x1
+        """"""
+        return self.depth_factors.dc
 
     @property
     def dq(self) -> float:
-        x1 = 2 * tan(self.friction_angle)
-        x2 = (1 - sin(self.friction_angle)) ** 2
-        x3 = self.foundation_size.depth / self.foundation_size.width
+        """"""
+        return self.depth_factors.dq
 
-        return 1 + (x1 * x2 * x3)
-
-    @staticmethod
-    def dgamma() -> float:
-        return 1.0
+    @property
+    def dgamma(self) -> float:
+        """"""
+        return self.depth_factors.dgamma
 
     @property
     def sc(self) -> float:
-        _sc: float
-
-        if self.footing_shape is FootingShape.STRIP:
-            _sc = 1.0
-
-        elif (
-            self.footing_shape is FootingShape.SQUARE
-            or self.footing_shape is FootingShape.CIRCULAR
-        ):
-            _sc = 1 + (self.nq / self.nc)
-
-        elif self.footing_shape is FootingShape.RECTANGULAR:
-            x1 = self.foundation_size.width / self.foundation_size.length
-
-            _sc = 1 + x1 * (self.nq / self.nc)
-
-        else:
-            msg = ""
-            raise TypeError(msg)
-
-        return _sc
+        """"""
+        return self.shape_factors.sc
 
     @property
     def sq(self) -> float:
-        _sq: float
-
-        if self.footing_shape is FootingShape.STRIP:
-            _sq = 1.0
-
-        elif (
-            self.footing_shape is FootingShape.SQUARE
-            or self.footing_shape is FootingShape.CIRCULAR
-        ):
-            _sq = 1 + tan(self.friction_angle)
-
-        elif self.footing_shape is FootingShape.RECTANGULAR:
-            x1 = self.foundation_size.width / self.foundation_size.length
-            _sq = 1 + x1 * tan(self.friction_angle)
-
-        else:
-            msg = ""
-            raise TypeError(msg)
-
-        return _sq
+        """"""
+        return self.shape_factors.sq
 
     @property
     def sgamma(self) -> float:
-        _sgamma: float
-
-        if self.footing_shape is FootingShape.STRIP:
-            _sgamma = 1.0
-
-        elif (
-            self.footing_shape is FootingShape.SQUARE
-            or self.footing_shape is FootingShape.CIRCULAR
-        ):
-            _sgamma = 0.6
-
-        elif self.footing_shape is FootingShape.RECTANGULAR:
-            x1 = self.foundation_size.width / self.foundation_size.length
-            _sgamma = 1 - 0.4 * (x1)
-
-        else:
-            msg = ""
-            raise TypeError(msg)
-
-        return _sgamma
+        """"""
+        return self.shape_factors.sgamma
 
     @property
     def ic(self) -> float:
-        return (1 - self.beta / 90) ** 2
+        """"""
+        return self.incl_factors.ic
 
     @property
     def iq(self) -> float:
-        return self.ic
+        """"""
+        return self.incl_factors.iq
 
     @property
     def igamma(self) -> float:
-        return (1 - self.beta / self.friction_angle) ** 2
+        """"""
+        return self.incl_factors.igamma
