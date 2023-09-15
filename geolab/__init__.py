@@ -1,24 +1,4 @@
-"""
-geolab
-======
-
-``geolab`` is an open-source software that provides tools for geotechnical engineering,
-including soil classification, bearing capacity analysis, estimation of soil engineering properties,
-settlement analysis, and finite element modelling. It helps engineers work more efficiently and make
-informed decisions about design and construction.
-
-Soil Parameter Estimators
--------------------------
-
-
-Bearing Capacity Analysis
--------------------------
-
-
-Exceptions
-----------
-
-"""
+""""""
 
 import enum
 
@@ -34,7 +14,7 @@ class GeotechEng(enum.IntEnum):
     HOUGH = enum.auto()
     LIAO = enum.auto()
     MEYERHOF = enum.auto()
-    PECK = enum.auto()
+    WOLFF = enum.auto()
     SKEMPTON = enum.auto()
     STROUD = enum.auto()
     TERZAGHI = enum.auto()
