@@ -1,104 +1,64 @@
-# Contributor Covenant Code of Conduct
+# `geolab` Code of Conduct
 
-## Our Pledge
+## Introduction
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone, regardless of age, body
-size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
-nationality, personal appearance, race, religion, or sexual identity
-and orientation.
+Welcome to [Project Name]! We are committed to creating a respectful and inclusive
+community for all contributors. This Code of Conduct outlines our expectations for
+behavior within our community, both online and in-person, as well as the consequences
+for unacceptable behavior.
 
-We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+We expect all participants in our community to adhere to this Code of Conduct. If you
+have any concerns or experience any violations of this Code, please contact the project
+maintainers at <boatengpato.pb@gmail.com>.
 
 ## Our Standards
 
-Examples of behavior that contributes to a positive environment for our
-community include:
+We are dedicated to providing a harassment-free and inclusive experience for everyone,
+regardless of age, gender, gender identity and expression, sexual orientation, disability,
+physical appearance, body size, race, ethnicity, nationality, religion, or any other
+characteristic.
 
-- Demonstrating empathy and kindness toward other people
-- Being respectful of differing opinions, viewpoints, and experiences
-- Giving and gracefully accepting constructive feedback
-- Accepting responsibility and apologizing to those affected by our mistakes,
-  and learning from the experience
-- Focusing on what is best not just for us as individuals, but for the
-  overall community
+Unacceptable behavior includes, but is not limited to:
 
-Examples of unacceptable behavior include:
-
-- The use of sexualized language or imagery, and sexual attention or
-  advances of any kind
-- Trolling, insulting or derogatory comments, and personal or political attacks
-- Public or private harassment
-- Publishing others' private information, such as a physical or email
-  address, without their explicit permission
-- Other conduct which could reasonably be considered inappropriate in a
-  professional setting
-
-## Enforcement Responsibilities
-
-Community leaders are responsible for clarifying and enforcing our standards of
-acceptable behavior and will take appropriate and fair corrective action in
-response to any behavior that they deem inappropriate, threatening, offensive,
-or harmful.
-
-Community leaders have the right and responsibility to remove, edit, or reject
-comments, commits, code, wiki edits, issues, and other contributions that are
-not aligned to this Code of Conduct, and will communicate reasons for moderation
-decisions when appropriate.
-
-## Scope
-
-This Code of Conduct applies within all community spaces, and also applies when
-an individual is officially representing the community in public spaces.
-Examples of representing our community include using an official e-mail address,
-posting via an official social media account, or acting as an appointed
-representative at an online or offline event.
+- **Harassment:** Any form of unwelcome behavior, whether verbal, written, or physical,
+  that intimidates, threatens, or demeans individuals or groups. This includes offensive
+  comments, slurs, and personal attacks.
+- **Hateful Conduct:** Promoting or advocating for discrimination, hatred, or violence
+  against individuals or groups based on any of the characteristics mentioned above.
+- **Disruptive Behavior:** Intentionally disrupting discussions, events, or the community
+  atmosphere, including trolling, spamming, or incitement to do so.
+- **Invasion of Privacy:** Posting private information about others without their consent.
+- **Plagiarism:** Presenting someone else's work, ideas, or code as your own without proper
+  attribution or permission.
+- **Sexual Harassment:** Unwanted sexual advances, comments, or attention. Consent is crucial;
+  if it's not explicitly given, it's not consent.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-<boatengpato.pb@gmail.com>.
-All complaints will be reviewed and investigated promptly and fairly.
+Violations of this Code of Conduct may result in corrective actions, including, but not limited to:
 
-All community leaders are obligated to respect the privacy and security of the
-reporter of any incident.
+- **Verbal Warning:** The project maintainers may issue a private, written warning to
+  the individual(s) involved, explaining the violation.
+- **Temporary Suspension:** In more serious cases or after multiple violations, the
+  individual(s) may be temporarily suspended from community participation.
+- **Permanent Ban:** Repeated or severe violations may result in a permanent ban from the
+  community.
 
-## Enforcement Guidelines
+The project maintainers have the sole discretion to determine the appropriate response to any
+conduct they deem unacceptable.
 
-Community leaders will follow these Community Impact Guidelines in determining
-the consequences for any action they deem in violation of this Code of Conduct:
+## Reporting
 
-### 1. Correction
+If you believe someone is violating this Code of Conduct or have concerns related to the conduct of any
+community member, please contact the project maintainers at <boatengpato.pb@gmail.com>. All reports will
+be treated confidentially.
 
-**Community Impact**: Use of inappropriate language or other behavior deemed
-unprofessional or unwelcome in the community.
+If you are unsure whether a behavior constitutes a violation, or if you are uncomfortable reporting a
+violation, please reach out to us for guidance and support.
 
-**Consequence**: A private, written warning from community leaders, providing
-clarity around the nature of the violation and an explanation of why the
-behavior was inappropriate. A public apology may be requested.
+## Acknowledgment
 
-### 2. Warning
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html)
+and is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-**Community Impact**: A violation through a single incident or series
-of actions.
-
-**Consequence**: A warning with consequences for continued behavior. No
-interaction with the people involved, including unsolicited interaction with
-those enforcing the Code of Conduct, for a specified period of time. This
-includes avoiding interactions in community spaces as well as external channels
-like social media. Violating these terms may lead to a temporary or
-permanent ban.
-
-### 3. Temporary Ban
-
-**Community Impact**: A serious violation of community standards, including
-sustained inappropriate behavior.
-
-**Consequence**: A temporary ban from any sort of interaction or public
-communication with the community for a specified period of time. No public or
-private interaction with the people involved, including unsolicited interaction
-with those enforcing the Code of Conduct, is allowed during this period.
-Violating these terms may lead to a permanent ban.
+Thank you for helping us make `geolab` a welcoming and inclusive community for all!
