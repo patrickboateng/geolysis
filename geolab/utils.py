@@ -1,52 +1,79 @@
 import functools
 import math
-from typing import Callable, Union
+import statistics
+from typing import Any, Callable
 
 from geolab import DECIMAL_PLACES
 
-exp = math.exp
 PI = math.pi
+exp = math.exp
+mean = statistics.mean
+isclose = math.isclose
 
 
 def deg2rad(x: float) -> float:
+    """Convert angle x from degrees to radians."""
     return math.radians(x)
 
 
 def rad2deg(x: float) -> float:
+    """Convert angle x from radians to degrees"""
     return math.degrees(x)
 
 
 def tan(x: float) -> float:
+    """Return the tangent of x (measured in degrees)."""
     return math.tan(deg2rad(x))
 
 
 def sin(x: float) -> float:
+    """Return the sine of x (measured in degrees)."""
     return math.sin(deg2rad(x))
 
 
 def cos(x: float) -> float:
+    """Return the cosine of x (measured in degrees)."""
     return math.cos(deg2rad(x))
 
 
 def arctan(x: float) -> float:
+    """Return the arc tangent (measured in degrees) of x."""
     return rad2deg(math.atan(x))
 
 
 def log10(x: float) -> float:
+    """Return the base 10 logarithm of x."""
     return math.log10(x)
 
 
 def sqrt(x: float) -> float:
+    """Return the square root of x."""
     return math.sqrt(x)
 
 
-CallableOrPrecision = Union[Callable, int]
+def prod(*args: float | int) -> float:
+    """Calculate the product of all the elements in the input iterable.
+
+    The default start value for the product is 1.
+
+    When the iterable is empty, return the start value. This function is
+    intended specifically for use with numeric values and may reject non-
+    numeric types.
+    """
+    return math.prod(args)
 
 
-def round_(precision: CallableOrPrecision):
-    def dec(func, /, *, precision=DECIMAL_PLACES):
+def round_(precision: Callable[..., float] | int):
+    """"""
+
+    def dec(
+        func: Callable[..., float],
+        /,
+        *,
+        precision: int = DECIMAL_PLACES,
+    ) -> Callable[..., float]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> float:
             return round(func(*args, **kwargs), ndigits=precision)
 
         return wrapper
@@ -54,12 +81,8 @@ def round_(precision: CallableOrPrecision):
     if callable(precision):
         return dec(precision)  # return wrapper
 
-    if isinstance(precision, int):
+    if isinstance(precision, int):  # type: ignore
         return functools.partial(dec, precision=precision)  # return decorator
 
     msg = "precision should be a function or an int"
     raise TypeError(msg)
-
-
-def mul(*args) -> float:
-    return math.prod(args)
