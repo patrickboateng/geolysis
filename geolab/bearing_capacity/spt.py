@@ -1,7 +1,7 @@
-import math
+from typing import Iterable
 
 from geolab import ERROR_TOLERANCE, GeotechEng
-from geolab.utils import log10, mul, sqrt
+from geolab.utils import isclose, log10, mean, prod, sqrt
 
 
 class spt_corrections:
@@ -9,7 +9,7 @@ class spt_corrections:
 
 
 
-    :param recorded_spt_nvalue: recorded SPT N-value (blows/300mm)
+    :param recorded_spt_nvalue: recorded SPT N-voalue (blows/300mm)
     :type recorded_spt_nvalue: int
     :param hammer_efficiency: hammer efficiency, defaults to 0.6
     :type hammer_efficiency: float, optional
@@ -29,7 +29,6 @@ class spt_corrections:
 
     def __init__(
         self,
-        recorded_spt_nvalue: int,
         *,
         hammer_efficiency: float = 0.6,
         borehole_diameter_correction: float = 1.0,
@@ -38,7 +37,6 @@ class spt_corrections:
         eop: float = 0.0,
         eng: GeotechEng = GeotechEng.SKEMPTON,
     ):
-        self.recorded_spt_nvalue = recorded_spt_nvalue
         self.hammer_efficiency = hammer_efficiency
         self.borehole_diameter_correction = borehole_diameter_correction
         self.sampler_correction = sampler_correction
@@ -46,32 +44,33 @@ class spt_corrections:
         self.eop = eop
         self.eng = eng
 
-    def __call__(self, recorded_spt_nvalue: float = 0) -> float:
-        if recorded_spt_nvalue:
-            self.recorded_spt_nvalue = recorded_spt_nvalue
+    def n_design(self, recorded_spt_nvalues: Iterable[int]) -> float:
+        """"""
+        spt_corrected_n60s = map(self.spt_n60, recorded_spt_nvalues)
+        spt_corrected_vals = map(self.skempton_opc_1986, spt_corrected_n60s)
 
-        return self.overburden_pressure_spt_correction()
+        return mean(spt_corrected_vals)
 
-    def _skempton_opc(self) -> float:
-        return (2 / (1 + 0.01044 * self.eop)) * self.spt_n60
+    def skempton_opc_1986(self, spt_n60: float) -> float:
+        return (2 / (1 + 0.01044 * self.eop)) * spt_n60
 
-    def _bazaraa_opc(self) -> float:
+    def bazaraa_peck_opc_1969(self, spt_n60: float) -> float:
         corr_spt: float  # corrected spt n-value
 
         std_pressure = 71.8
 
-        if math.isclose(self.eop, std_pressure, rel_tol=ERROR_TOLERANCE):
-            corr_spt = self.spt_n60
+        if isclose(self.eop, std_pressure, rel_tol=ERROR_TOLERANCE):
+            corr_spt = spt_n60
 
         elif self.eop < std_pressure:
-            corr_spt = 4 * self.spt_n60 / (1 + 0.0418 * self.eop)
+            corr_spt = 4 * spt_n60 / (1 + 0.0418 * self.eop)
 
         else:
-            corr_spt = 4 * self.spt_n60 / (3.25 + 0.0104 * self.eop)
+            corr_spt = 4 * spt_n60 / (3.25 + 0.0104 * self.eop)
 
         return corr_spt
 
-    def _gibbs_holtz_opc(self) -> float:
+    def gibbs_holtz_opc_1957(self, spt_n60: float) -> float:
         corr_spt: float
 
         std_pressure = 280
@@ -80,15 +79,15 @@ class spt_corrections:
             msg = f"{self.eop} should be less than or equal to {std_pressure}"
             raise ValueError(msg)
 
-        corr_spt = self.spt_n60 * (350 / (self.eop + 70))
-        spt_ratio = corr_spt / self.spt_n60
+        corr_spt = spt_n60 * (350 / (self.eop + 70))
+        spt_ratio = corr_spt / spt_n60
 
         if 0.45 < spt_ratio < 2.0:
             return corr_spt
 
         return corr_spt / 2 if spt_ratio > 2.0 else corr_spt
 
-    def _peck_opc(self) -> float:
+    def peck_et_al_opc_1974(self, spt_n60: float) -> float:
         std_pressure = 24
 
         if self.eop < std_pressure:
@@ -97,48 +96,55 @@ class spt_corrections:
             )
             raise ValueError(msg)
 
-        return 0.77 * log10(1905 / self.eop) * self.spt_n60
+        return 0.77 * log10(1905 / self.eop) * spt_n60
 
-    def _liao_whitman_opc(self) -> float:
-        return sqrt(100 / self.eop) * self.spt_n60
+    def liao_whitman_opc_1986(self, spt_n60) -> float:
+        return sqrt(100 / self.eop) * spt_n60
 
-    @property
-    def spt_n60(self) -> float:
-        correction = mul(
+    def spt_n60(self, recorded_spt_nvalue: int) -> float:
+        """Return spt N-value corrected for 60% hammer efficiency."""
+        correction = prod(
             self.hammer_efficiency,
             self.borehole_diameter_correction,
             self.sampler_correction,
             self.rod_length_correction,
         )
 
-        return (correction * self.recorded_spt_nvalue) / 0.6
+        return (correction * recorded_spt_nvalue) / 0.6
 
-    def dilatancy_spt_correction(self) -> float:
+    def dilatancy(self, recorded_spt_nvalue: int) -> float:
         """Returns the dilatancy spt correction."""
-        return (
-            self.spt_n60
-            if self.spt_n60 <= 15
-            else 15 + 0.5 * (self.spt_n60 - 15)
-        )
 
-    def overburden_pressure_spt_correction(self) -> float:
+        dsc: float  # dilatancy spt correction
+
+        spt_n60 = self.spt_n60(recorded_spt_nvalue)
+
+        if spt_n60 <= 15:
+            dsc = spt_n60
+        else:
+            dsc = 15 + 0.5 * (spt_n60 - 15)
+
+        return dsc
+
+    def overburden_pressure(self, recorded_spt_nvalue: int) -> float:
         """Returns the overburden pressure spt correction."""
         opc: float
+        spt_n60 = self.spt_n60(recorded_spt_nvalue)
 
         if self.eng is GeotechEng.GIBBS:
-            opc = self._gibbs_holtz_opc()
+            opc = self.gibbs_holtz_opc_1957(spt_n60)
 
         elif self.eng is GeotechEng.BAZARAA:
-            opc = self._bazaraa_opc()
+            opc = self.bazaraa_peck_opc_1969(spt_n60)
 
-        elif self.eng is GeotechEng.PECK:
-            opc = self._peck_opc()
+        elif self.eng is GeotechEng.WOLFF:
+            opc = self.peck_et_al_opc_1974(spt_n60)
 
         elif self.eng is GeotechEng.LIAO:
-            opc = self._liao_whitman_opc()
+            opc = self.liao_whitman_opc_1986(spt_n60)
 
         elif self.eng is GeotechEng.SKEMPTON:
-            opc = self._skempton_opc()
+            opc = self.skempton_opc_1986(spt_n60)
 
         else:
             msg = f"{self.eng} is not a valid type for overburden pressure spt correction"
