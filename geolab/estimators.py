@@ -1,19 +1,8 @@
 """This module provides functions for estimating soil engineering parameters."""
 
-from typing import Any, Optional
-
 from geolab import GeotechEng
 from geolab.exceptions import EngineerTypeError
 from geolab.utils import arctan, round_, sin
-
-
-def check_eng(obj, **kwargs):
-    if "eng" in kwargs:
-        obj.eng = kwargs.get("eng")
-
-
-def error_eng_msg(eng: GeotechEng):
-    return f"{eng} is not a valid type for engineer"
 
 
 class soil_unit_weight:
@@ -26,9 +15,6 @@ class soil_unit_weight:
 
     def __init__(self, spt_n60: float) -> None:
         self.spt_n60 = spt_n60
-
-    def __call__(self) -> float:
-        return self.moist
 
     @property
     @round_
@@ -81,42 +67,38 @@ class compression_index:
         self.void_ratio = void_ratio
         self.eng = eng
 
-    def __call__(self, **kwargs) -> float:
-        return self.estimate(**kwargs)  # type: ignore
-
-    def _terzaghi_peck_compression_idx(self) -> float:
-        return 0.009 * (self.liquid_limit - 10)
-
-    def _skempton_compression_idx(self) -> float:
-        return 0.007 * (self.liquid_limit - 10)
-
-    def _hough_compression_idx(self) -> float:
-        return 0.29 * (self.void_ratio - 0.27)
-
     @round_
-    def estimate(self, **kwargs) -> float:
+    def __call__(self) -> float:
         """Returns the compression index of the soil sample (unitless)"""
-        check_eng(self, **kwargs)
 
         comp_idx: float  # compression index
 
         if self.eng is GeotechEng.SKEMPTON:
-            comp_idx = self._skempton_compression_idx()
+            comp_idx = self.skempton_1994()
 
         elif self.eng is GeotechEng.TERZAGHI:
-            comp_idx = self._terzaghi_peck_compression_idx()
+            comp_idx = self.terzaghi_et_al_1967()
 
         elif self.eng is GeotechEng.HOUGH:
-            comp_idx = self._hough_compression_idx()
+            comp_idx = self.hough_1957()
 
         else:
-            msg = error_eng_msg(self.eng)
+            msg = f"{self.eng} is not a valid type for engineer"
             raise EngineerTypeError(msg)
 
         return comp_idx
 
+    def terzaghi_et_al_1967(self) -> float:
+        return 0.009 * (self.liquid_limit - 10)
 
-class friction_angle:
+    def skempton_1994(self) -> float:
+        return 0.007 * (self.liquid_limit - 10)
+
+    def hough_1957(self) -> float:
+        return 0.29 * (self.void_ratio - 0.27)
+
+
+class soil_friction_angle:
     r"""Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction :math:`\phi` was
@@ -141,44 +123,40 @@ class friction_angle:
 
     def __init__(
         self,
-        spt_n60,
+        spt_n60: float,
         eop: float = 0,
         atm_pressure: float = 0,
-        eng: GeotechEng = GeotechEng.PECK,
+        eng: GeotechEng = GeotechEng.WOLFF,
     ):
         self.spt_n60 = spt_n60
         self.eop = eop
         self.atm_pressure = atm_pressure
         self.eng = eng
 
-    def __call__(self, **kwargs) -> float:
-        return self.estimate(**kwargs)  # type: ignore
-
-    def _peck_et_al_friction_angle(self) -> float:
-        return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
-
-    def _kullhawy_mayne_friction_angle(self) -> float:
-        expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
-        return arctan(expr**0.34)
-
     @round_
-    def estimate(self, **kwargs) -> float:
+    def __call__(self) -> float:
         """Internal angle of friction in degrees"""
-        check_eng(self, **kwargs)
 
         _friction_angle: float
 
-        if self.eng is GeotechEng.PECK:
-            _friction_angle = self._peck_et_al_friction_angle()
+        if self.eng is GeotechEng.WOLFF:
+            _friction_angle = self.wolff_1989()
 
         elif self.eng is GeotechEng.KULLHAWY:
-            _friction_angle = self._kullhawy_mayne_friction_angle()
+            _friction_angle = self.kullhawy_mayne_1990()
 
         else:
-            msg = error_eng_msg(self.eng)
+            msg = f"{self.eng} is not a valid type for engineer"
             raise EngineerTypeError(msg)
 
         return _friction_angle
+
+    def wolff_1989(self) -> float:
+        return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
+
+    def kullhawy_mayne_1990(self) -> float:
+        expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
+        return arctan(expr**0.34)
 
 
 class undrained_shear_strength:
@@ -222,10 +200,10 @@ class undrained_shear_strength:
 
     def __init__(
         self,
-        spt_n60=0,
-        eop=0,
-        plasticity_index=0,
-        k=3.5,
+        spt_n60: float = 0,
+        eop: float = 0,
+        plasticity_index: float = 0,
+        k: float = 3.5,
         eng: GeotechEng = GeotechEng.STROUD,
     ) -> None:
         self.spt_n60 = spt_n60
@@ -234,83 +212,78 @@ class undrained_shear_strength:
         self.k = k
         self.eng = eng
 
-    def __call__(self, **kwargs) -> float:
-        return self.estimate(**kwargs)
+    def __call__(self) -> float:
+        und_shr: float  # undrained shear strength
 
-    def _stroud_undrained_shear_strength(self):
+        if self.eng is GeotechEng.STROUD:
+            und_shr = self.stroud_1974()
+
+        elif self.eng is GeotechEng.SKEMPTON:
+            und_shr = self.skempton_1957()
+
+        else:
+            msg = f"{self.eng} is not a valid type for engineer"
+            raise EngineerTypeError(msg)
+
+        return und_shr
+
+    def stroud_1974(self):
         if not (3.5 <= self.k <= 6.5):
             msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
             raise ValueError(msg)
 
         return self.k * self.spt_n60
 
-    def _skempton_undrained_shear_strength(self):
+    def skempton_1957(self):
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)
 
-    def estimate(self, **kwargs) -> float:
-        check_eng(self, **kwargs)
 
-        und_shr: float  # undrained shear strength
+@round_(precision=2)
+def bowles_soil_elastic_modulus(spt_n60: float) -> float:
+    r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
 
-        if self.eng is GeotechEng.STROUD:
-            und_shr = self._stroud_undrained_shear_strength()
+    .. math::
 
-        elif self.eng is GeotechEng.SKEMPTON:
-            und_shr = self._skempton_undrained_shear_strength()
+        E_s = 320\left(N_{60} + 15 \right)
 
-        else:
-            msg = error_eng_msg(self.eng)
-            raise EngineerTypeError(msg)
+    :Example:
+        >>> soil_elastic_modulus(20)
+        11200
+        >>> soil_elastic_modulus(30)
+        14400
+        >>> soil_elastic_modulus(10)
+        8000
 
-        return und_shr
+    :param spt_n60: spt N-value corrected for 60% hammer efficiency
+    :type spt_n60: float
+    :return: Elastic modulus of the soil :math:`kN/m^2`
+    :rtype: float
+    """
+    return 320 * (spt_n60 + 15)
 
 
-class misc:
-    @staticmethod
-    def soil_elastic_modulus(spt_n60: float) -> float:
-        r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
+@round_(precision=1)
+def rankine_foundation_depth(
+    allowable_bearing_capacity: float,
+    soil_unit_weight: float,
+    friction_angle: float,
+) -> float:
+    r"""Depth of foundation estimated using ``Rankine's`` formula.
 
-        .. math::
+    .. math::
 
-            E_s = 320\left(N_{60} + 15 \right)
+        D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
 
-        :Example:
-            >>> soil_elastic_modulus(20)
-            11200
-            >>> soil_elastic_modulus(30)
-            14400
-            >>> soil_elastic_modulus(10)
-            8000
+    :param allow_bearing_capacity: allowable bearing capacity
+    :type allow_bearing_capaciy: float
+    :param unit_weight_of_soil: unit weight of soil :math:`kN/m^3`
+    :type unit_weight_of_soil: float
+    :param friction_angle: internal angle of friction (degrees)
+    :type friction_angle: float
+    :return: depth of foundation
+    :rtype: float
+    """
+    x1 = allowable_bearing_capacity / soil_unit_weight
+    x2 = (1 - sin(friction_angle)) / (1 + sin(friction_angle))
 
-        :param spt_n60: spt N-value corrected for 60% hammer efficiency
-        :type spt_n60: float
-        :return: Elastic modulus of the soil :math:`kN/m^2`
-        :rtype: float
-        """
-        return 320 * (spt_n60 + 15)
-
-    @staticmethod
-    def foundation_depth(
-        allow_bearing_capacity: float,
-        unit_weight_of_soil: float,
-        friction_angle: float,
-    ) -> float:
-        r"""Depth of foundation estimated using ``Rankine's`` formula.
-
-        .. math::
-
-            D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
-
-        :param allow_bearing_capacity: allowable bearing capacity
-        :type allow_bearing_capaciy: float
-        :param unit_weight_of_soil: unit weight of soil :math:`kN/m^3`
-        :type unit_weight_of_soil: float
-        :param friction_angle: internal angle of friction (degrees)
-        :type friction_angle: float
-        :return: depth of foundation
-        :rtype: float
-        """
-        x1 = allow_bearing_capacity / unit_weight_of_soil
-        x2 = (1 - sin(friction_angle)) / (1 + sin(friction_angle))
-
-        return x1 * (x2**2)
+    return x1 * (x2**2)
