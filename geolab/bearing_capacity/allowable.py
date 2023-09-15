@@ -1,9 +1,8 @@
-import functools
-import statistics
-from typing import Iterable
+def _fd(foundation_depth: float, foundation_width: float) -> float:
+    x1 = foundation_depth / foundation_width
+    fd = 1 + 0.33 * x1  # depth factor
 
-from geolab import GeotechEng
-from geolab.bearing_capacity.spt import spt_corrections
+    return min(fd, 1.33)
 
 
 class meyerhof_bearing_capacity:
@@ -23,41 +22,26 @@ class meyerhof_bearing_capacity:
 
     def __init__(
         self,
-        recorded_spt_nvalues: Iterable[int],
         *,
         foundation_depth: float = 1.5,
         foundation_width: float = 1.5,
         actual_settlement: float = 25.4,
     ) -> None:
-        self.recorded_spt_nvalues = recorded_spt_nvalues
         self.foundation_depth = foundation_depth
         self.foundation_width = foundation_width
         self.actual_settlement = actual_settlement
 
     @property
     def f_d(self) -> float:
-        """"""
-        x1 = self.foundation_depth / self.foundation_width
-        fd = 1 + 0.33 * x1  # depth factor
+        """Return the depth factor."""
 
-        return min(fd, 1.33)
+        return _fd(self.foundation_depth, self.foundation_width)
 
-    @functools.cached_property
-    def n_design(self) -> float:
-        """"""
-        # n_design is computed once per instance
-        skempton_correction = spt_corrections(0, eng=GeotechEng.SKEMPTON)
-
-        spt_corrected_vals = map(
-            skempton_correction, self.recorded_spt_nvalues
-        )
-        return statistics.mean(spt_corrected_vals)
-
-    def allowable_bearing_capacity(self) -> float:
+    def net_allowable(self, n_design: float) -> float:
         """"""
         abc: float  # allowable bearing capacity
 
-        x1 = self.n_design * self.f_d
+        x1 = n_design * self.f_d
         x2 = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
 
         if self.foundation_width <= 1.22:
@@ -68,5 +52,46 @@ class meyerhof_bearing_capacity:
             x4 = 3.28 * self.foundation_width
 
             abc = x1 * x2 * (11.98 * (x3 / x4)) ** 2
+
+        return abc
+
+    def allowable_1956(self, spt_n60: float) -> float:
+        """"""
+        abc: float
+
+        if self.foundation_width <= 1.2:
+            abc = 12 * spt_n60 * self.f_d
+
+        else:
+            x1 = 8 * spt_n60
+            x2 = (self.foundation_width + 0.3) / self.foundation_width
+            abc = x1 * x2**2 * self.f_d
+
+        return abc
+
+
+class bowles_bearing_capacity:
+    def __init__(
+        self,
+        foundation_depth: float,
+        foundation_width: float,
+    ):
+        self.foundation_depth = foundation_depth
+        self.foundation_width = foundation_width
+
+    @property
+    def f_d(self) -> float:
+        """Return the depth factor."""
+
+        return _fd(self.foundation_depth, self.foundation_width)
+
+    def allowable_1977(self, spt_corrected_nvalue: float) -> float:
+        abc: float
+        if self.foundation_width <= 1.2:
+            abc = 20 * spt_corrected_nvalue * self.f_d
+        else:
+            x1 = 12.5 * spt_corrected_nvalue
+            x2 = (self.foundation_width + 0.3) / self.foundation_width
+            abc = x1 * x2**2 * self.f_d
 
         return abc
