@@ -9,3 +9,7 @@ Api Reference
 
     ./soil_classifier/index.rst
     ./bearing_capacity/index.rst
+    estimators
+    utils
+    exceptions
+

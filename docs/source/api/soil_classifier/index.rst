@@ -1,3 +1,5 @@
+.. currentmodule:: geolab.soil_classifier
+
 Soil Classification
 ===================
 

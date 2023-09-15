@@ -1,10 +1,12 @@
+.. currentmodule:: geolab.bearing_capacity.spt
+
 Standard Penetration Test 
 =========================
 
 Energy Correction
 -----------------
 
-``SPT N-value`` corrected for field procedures according to ``Skempton (1986)``.
+``SPT N-value`` corrected for field procedures.
 
 .. math::
 
@@ -19,6 +21,8 @@ Overburden Pressure Correction
 
 Skempton
 ++++++++
+
+This is the correction given by ``Skempton (1986)``.
 
 .. math::
 
@@ -67,6 +71,7 @@ sand. (:cite:author:`2003:arora`, p. 428)
     :math:`\frac{N_c}{N_R}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_R}` is
     greater than 2.0, :math:`N_c` should be divided by 2.0 to obtain the design value used in
     finding the bearing capacity of the soil. (:cite:author:`2003:arora`, p. 428)
+    
 
 Peck, Hansen and Thornburn (1974)
 +++++++++++++++++++++++++++++++++
@@ -106,8 +111,7 @@ Correction of silty fine sands recommended by ``Terzaghi and Peck (1967)`` if
 
     N_c &= N_{60} \, , \, N_{60} \le 15
 
-References
-----------
+.. References
+.. ----------
 
-.. bibliography::
 

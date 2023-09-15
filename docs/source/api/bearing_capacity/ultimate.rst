@@ -11,9 +11,9 @@ respectively.
 
     q_u &= c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.5 \cdot \gamma \cdot B \cdot N_\gamma
 
-    q_u &= 1.2 \cdot c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.4 \cdot \gamma \cdot B \cdot N_\gamma
+    q_u &= 1.3 \cdot c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.4 \cdot \gamma \cdot B \cdot N_\gamma
 
-    q_u &= 1.2 \cdot c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.3 \cdot \gamma \cdot B \cdot N_\gamma
+    q_u &= 1.3 \cdot c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.3 \cdot \gamma \cdot B \cdot N_\gamma
 
 
 Bearing Capacity Factors
