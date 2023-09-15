@@ -23,6 +23,10 @@ class FoundationSize:
     def length(self) -> float:
         return self.footing_size.length
 
+    @property
+    def depth_2_width_ratio(self) -> float:
+        return self.depth / self.width
+
 
 class FootingShape(enum.IntEnum):
     CIRCULAR = enum.auto()
