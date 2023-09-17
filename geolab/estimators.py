@@ -6,10 +6,20 @@ from geolab.utils import arctan, round_, sin
 
 
 class soil_unit_weight:
-    """Calculates the moist, saturated and submerged unit weight of soil
-       sample.
+    """Calculates the moist, saturated and submerged unit weight of a
+    soil sample.
 
-    :param spt_n60: spt N-value corrected for 60% hammer efficiency
+    :Example:
+
+        >>> suw = soil_unit_weight(spt_n60=13)
+        >>> suw.moist
+        17.3
+        >>> suw.saturated
+        18.75
+        >>> suw.submerged
+        8.93
+
+    :param spt_n60: spt N-value corrected for 60% hammer efficiency.
     :type spt_n60: float
     """
 
@@ -19,34 +29,64 @@ class soil_unit_weight:
     @property
     @round_
     def moist(self) -> float:
+        """Returns the ``moist`` unit weight for cohesionless
+        soil (:math:`kN/m^3`).
+        """
         return 16.0 + 0.1 * self.spt_n60
 
     @property
     @round_
     def saturated(self) -> float:
+        """Returns the ``saturated`` unit weight for cohesive
+        soil (:math:`kN/m^3`).
+        """
         return 16.8 + 0.15 * self.spt_n60
 
     @property
     @round_
     def submerged(self) -> float:
+        """Returns the ``submerged`` unit weight of cohesionless
+        soil (:math:`kN/m^3`)."""
         return 8.8 + 0.01 * self.spt_n60
 
 
 class compression_index:
-    r"""The compression index of the soil estimated from ``liquid limit`` or ``void_ratio``.
+    r"""The compression index of soil estimated from ``liquid limit``
+    or ``void_ratio``.
 
-    The available correlations used are defined below; They are in the order ``Skempton (1994)``,
-    ``Terzaghi and Peck (1967)`` and ``Hough (1957)``.
+    The available correlations used are defined below; They are in the
+    order :meth:`~compression_index.skempton_1994`, :meth:`terzaghi_et_al_1967`,
+    and :meth:`hough_1957` respectively.
 
     .. math::
 
-        C_c = 0.007 \left(LL - 10 \right)
+        C_c &= 0.007 \left(LL - 10 \right)
 
-        C_c = 0.009 \left(LL - 10 \right)
+        C_c &= 0.009 \left(LL - 10 \right)
 
-        C_c = 0.29 \left(e_o - 0.27 \right)
+        C_c &= 0.29 \left(e_o - 0.27 \right)
+
+    - :math:`C_c` |rarr| compression index of soil
+    - :math:`LL` |rarr| liquid limit of soil
+    - :math:`e_o` |rarr| void ratio of soil
 
     :Example:
+
+        >>> c_c = compression_index(liquid_limit=35)
+        >>> c_c.skempton_1994()
+        0.175
+        >>> c_c.terzaghi_et_al_1967()
+        0.225
+        >>> c_c() # By default it uses SKEMPTON's correlation
+        0.175
+        >>> c_c = compression_index(liquid_limit=35, eng=GeotechEng.TERZAGHI)
+        >>> c_c() # This uses TERZAGHI's correlation
+        0.225
+        >>> c_c = compression_index(void_ratio=0.78, eng=GeotechEng.HOUGH)
+        >>> c_c()
+        0.148
+        >>> c_c.hough_1957()
+        0.148
 
     :param liquid_limit: water content beyond which soils flows under their own weight (%)
     :type liquid_limit: float
@@ -59,6 +99,7 @@ class compression_index:
 
     def __init__(
         self,
+        *,
         liquid_limit: float = 0.0,
         void_ratio: float = 0.0,
         eng: GeotechEng = GeotechEng.SKEMPTON,
@@ -88,13 +129,22 @@ class compression_index:
 
         return comp_idx
 
+    @round_
     def terzaghi_et_al_1967(self) -> float:
+        """Returns the compression index of the soil using ``Terzaghi's``
+        correlation."""
         return 0.009 * (self.liquid_limit - 10)
 
+    @round_
     def skempton_1994(self) -> float:
+        """Returns the compression index of the soil using ``Skempton's``
+        correlation."""
         return 0.007 * (self.liquid_limit - 10)
 
+    @round_
     def hough_1957(self) -> float:
+        """Returns the compression index of the soil using ``Hough's``
+        correlation."""
         return 0.29 * (self.void_ratio - 0.27)
 
 
@@ -247,11 +297,11 @@ def bowles_soil_elastic_modulus(spt_n60: float) -> float:
         E_s = 320\left(N_{60} + 15 \right)
 
     :Example:
-        >>> soil_elastic_modulus(20)
+        >>> bowles_soil_elastic_modulus(20)
         11200
-        >>> soil_elastic_modulus(30)
+        >>> bowles_soil_elastic_modulus(30)
         14400
-        >>> soil_elastic_modulus(10)
+        >>> bowles_soil_elastic_modulus(10)
         8000
 
     :param spt_n60: spt N-value corrected for 60% hammer efficiency

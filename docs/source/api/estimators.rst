@@ -1,5 +1,7 @@
 .. currentmodule:: geolab.estimators
 
+.. include:: <isonum.txt>
+
 Soil Parameter Estimators
 =========================
 
@@ -11,3 +13,10 @@ Soil Parameter Estimators
     undrained_shear_strength
     bowles_soil_elastic_modulus
     rankine_foundation_depth
+
+
+.. autoclass:: soil_unit_weight
+    :members: 
+
+.. autoclass:: compression_index
+    :members:
