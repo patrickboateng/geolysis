@@ -67,15 +67,6 @@ Some of the features ``geolab`` provides are:
       Want to add to the codebase? Check out the contribution guide.
 
    .. grid-item-card::  
-      :link: microsoft_excel_addin
-      :link-type: doc
-
-      :octicon:`paper-airplane;1em;sd-text-info` Microsoft Excel Addin
-      ^^^
-
-      Learn about the Microsoft Excel addin.
-
-   .. grid-item-card::  
       :link: ideas
       :link-type: doc
 
@@ -93,7 +84,6 @@ Some of the features ``geolab`` provides are:
    user_guide
    api/index
    contributors_guide
-   microsoft_excel_addin
    ideas
 
 .. Indices and tables
