@@ -63,7 +63,7 @@ def prod(*args: float | int) -> float:
     return math.prod(args)
 
 
-def round_(precision: Callable[..., float] | int):
+def round_(precision: Callable[..., float] | int) -> Callable:
     """"""
 
     def dec(
