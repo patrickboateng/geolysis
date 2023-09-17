@@ -6,7 +6,7 @@ Standard Penetration Test
 Energy Correction
 -----------------
 
-``SPT N-value`` corrected for field procedures.
+``SPT N-value`` corrected for field procedures given by ``Skempton (1986)``.
 
 .. math::
 
@@ -21,8 +21,6 @@ Overburden Pressure Correction
 
 Skempton
 ++++++++
-
-This is the correction given by ``Skempton (1986)``.
 
 .. math::
 
