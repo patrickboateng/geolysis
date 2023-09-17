@@ -1,5 +1,3 @@
-""""""
-
 import enum
 
 __version__ = "0.1.0"
@@ -8,6 +6,8 @@ DECIMAL_PLACES = 3
 
 
 class GeotechEng(enum.IntEnum):
+    """Represents a set of ``Geotechnical Engineers``."""
+
     BAZARAA = enum.auto()
     GIBBS = enum.auto()
     HANSEN = enum.auto()
@@ -25,4 +25,7 @@ class GeotechEng(enum.IntEnum):
         return self.name
 
 
+# Make it possible to write geolab.BAZARAA after import geolab
+# import geolab
+# geolab.BAZARAA is GeotechEng.BAZARAA returns True
 globals().update(GeotechEng.__members__)
