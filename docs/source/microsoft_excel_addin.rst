@@ -1,2 +1,0 @@
-Microsoft Excel Addin
-=====================
