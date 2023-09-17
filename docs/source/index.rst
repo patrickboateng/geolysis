@@ -93,7 +93,6 @@ Some of the features ``geolab`` provides are:
    user_guide
    api/index
    contributors_guide
-   microsoft_excel_addin
    ideas
 
 .. Indices and tables
