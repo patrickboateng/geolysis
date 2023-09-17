@@ -8,7 +8,7 @@ from geolab.utils import PI, arctan, cos, deg2rad, exp, sin, tan
 @dataclass
 class terzaghi_bearing_capacity_factors:
     soil_friction_angle: float
-    eng: float
+    eng: GeotechEng = GeotechEng.MEYERHOF
 
     @property
     def nc(self) -> float:
