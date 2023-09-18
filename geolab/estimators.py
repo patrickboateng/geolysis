@@ -29,24 +29,33 @@ class soil_unit_weight:
     @property
     @round_
     def moist(self) -> float:
-        """Returns the ``moist`` unit weight for cohesionless
-        soil (:math:`kN/m^3`).
+        r"""Returns the ``moist`` unit weight for cohesionless soil.
+
+        .. math::
+
+            \gamma_{moist} = 16.0 + 0.1 \cdot N_{60} \rightarrow (kN/m^3)
         """
         return 16.0 + 0.1 * self.spt_n60
 
     @property
     @round_
     def saturated(self) -> float:
-        """Returns the ``saturated`` unit weight for cohesive
-        soil (:math:`kN/m^3`).
+        r"""Returns the ``saturated`` unit weight for cohesive soil.
+
+        .. math::
+
+            \gamma_{sat} = 16.8 + 0.15 \cdot N_{60} \rightarrow (kN/m^3)
         """
         return 16.8 + 0.15 * self.spt_n60
 
     @property
     @round_
     def submerged(self) -> float:
-        """Returns the ``submerged`` unit weight of cohesionless
-        soil (:math:`kN/m^3`)."""
+        r"""Returns the ``submerged`` unit weight of cohesionless soil.
+
+        .. math::
+            \gamma_{submerged} = 8.8 + 0.01 \cdot N_{60} \rightarrow (kN/m^3)
+        """
         return 8.8 + 0.01 * self.spt_n60
 
 
@@ -54,21 +63,8 @@ class compression_index:
     r"""The compression index of soil estimated from ``liquid limit``
     or ``void_ratio``.
 
-    The available correlations used are defined below; They are in the
-    order :meth:`skempton_1994`, :meth:`terzaghi_et_al_1967`,
-    and :meth:`hough_1957` respectively.
-
-    .. math::
-
-        C_c &= 0.007 \left(LL - 10 \right)
-
-        C_c &= 0.009 \left(LL - 10 \right)
-
-        C_c &= 0.29 \left(e_o - 0.27 \right)
-
-    - :math:`C_c` |rarr| compression index of soil
-    - :math:`LL` |rarr| liquid limit of soil
-    - :math:`e_o` |rarr| void ratio of soil
+    The available correlations used are :py:meth:`~compression_index.skempton_1994`,
+    :py:meth:`~compression_index.terzaghi_et_al_1967`, and :meth:`~compression_index.hough_1957`.
 
     :Example:
 
@@ -90,10 +86,11 @@ class compression_index:
 
     :param liquid_limit: water content beyond which soils flows under their own weight (%)
     :type liquid_limit: float
-    :param void_ratio: volume of voids divided by volume of solids (unitless)
+    :param void_ratio: ratio of the volume of voids to the volume of solids (unitless)
     :type void_ratio: float
     :param eng: specifies the type of compression index formula to use. Available
-                values are geolab.SKEMPTON, geolab.TERZAGHI and geolab.HOUGH
+                values are ``GeotechEng.SKEMPTON``, ``GeotechEng.TERZAGHI`` and
+                ``GeotechEng.HOUGH``. Defaults to ``GeotechEng.SKEMPTON``.
     :type eng: GeotechEng
     """
 
@@ -131,20 +128,41 @@ class compression_index:
 
     @round_
     def terzaghi_et_al_1967(self) -> float:
-        """Returns the compression index of the soil using ``Terzaghi's``
-        correlation."""
+        r"""Returns the compression index of the soil using ``Terzaghi's``
+        correlation.
+
+        .. math::
+
+            C_c = 0.009 \left(LL - 10 \right) \rightarrow (unitless)
+
+        - :math:`LL` |rarr| liquid limit of soil
+        """
         return 0.009 * (self.liquid_limit - 10)
 
     @round_
     def skempton_1994(self) -> float:
-        """Returns the compression index of the soil using ``Skempton's``
-        correlation."""
+        r"""Returns the compression index of the soil using ``Skempton's``
+        correlation.
+
+        .. math::
+
+            C_c = 0.007 \left(LL - 10 \right) \rightarrow (unitless)
+
+        - :math:`LL` |rarr| liquid limit of soil
+        """
         return 0.007 * (self.liquid_limit - 10)
 
     @round_
     def hough_1957(self) -> float:
-        """Returns the compression index of the soil using ``Hough's``
-        correlation."""
+        r"""Returns the compression index of the soil using ``Hough's``
+        correlation.
+
+        .. math::
+
+            C_c = 0.29 \left(e_o - 0.27 \right) \rightarrow (unitless)
+
+        - :math:`e_o` |rarr| void ratio of soil
+        """
         return 0.29 * (self.void_ratio - 0.27)
 
 
@@ -152,14 +170,8 @@ class soil_friction_angle:
     r"""Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction (:math:`\phi`)
-    was determined from the minimum value from ``Peck, Hanson and Thornburn (1974)``
-    and ``Kullhawy and Mayne (1990)`` respectively. The correlations are shown below.
-
-    .. math::
-
-        \phi &= 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2
-
-        \phi &= \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3\left(\dfrac{\sigma_o}{P_a}\right)} \right]^{0.34}
+    was determined from the minimum value from :py:meth:`~soil_friction_angle.wolff_1989` 
+    and :py:meth:`~soil_friction_angle.kullhawy_mayne_1990`.
 
     :Example:
 
@@ -187,6 +199,10 @@ class soil_friction_angle:
     :type eop: float, optional
     :param atm_pressure: atmospheric pressure :math:`kN/m^2`, defaults to 0
     :type atm_pressure: float, optional
+    :param eng: specifies the type of soil friction angle formula to use. Available
+                values are ``GeotechEng.WOLFF`` and ``GeotechEng.KULLHAWY``. Defaults to 
+                ``GeotechEng.WOLFF``.
+    :type eng: GeotechEng
     """
 
     def __init__(
@@ -222,19 +238,35 @@ class soil_friction_angle:
 
     @round_
     def wolff_1989(self) -> float:
-        """Returns the internal angle of friction using ``Wolff's`` correlation."""
+        r"""Returns the internal angle of friction using ``Wolff's`` correlation
+        for granular soils (degrees).
+
+        .. math::
+
+            \phi = 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2 \rightarrow (degrees)
+        """
         return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
 
     @round_
     def kullhawy_mayne_1990(self) -> float:
-        """Returns the internal angle of friction using ``Kullhawy & Mayne``
-        correlation."""
+        r"""Returns the internal angle of friction using ``Kullhawy & Mayne``
+        correlation for cohesionless soils (degrees).
+
+        .. math::
+
+            \phi = \tan^{-1}\left[\dfrac{N_{60}}
+                    {12.2 + 20.3 \cdot \left(\dfrac{\sigma_o}{P_a}\right)}
+                    \right]^{0.34} \rightarrow (degrees)
+
+        - :math:`\sigma_o \rightarrow` effective overburden pressure (:math:`kN/m^3`)
+        - :math:`P_a \rightarrow` atmospheric pressure in the same unit as :math:`\sigma_o`
+        """
         expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
         return arctan(expr**0.34)
 
 
 class undrained_shear_strength:
-    r"""Undrained shear strength.
+    r"""Undrained shear strength of soil.
 
     The available correlations used are defined below;
 
@@ -266,10 +298,6 @@ class undrained_shear_strength:
     :param eng: specifies the type of undrained shear strength formula to use. Available values are
                 geolab.STROUD and geolab.SKEMPTON, defaults to GeotechEng.STROUD
     :type eng: GeotechEng, optional
-
-    :References:
-
-        .. bibliography::
     """
 
     def __init__(
