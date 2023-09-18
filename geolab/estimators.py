@@ -55,7 +55,7 @@ class compression_index:
     or ``void_ratio``.
 
     The available correlations used are defined below; They are in the
-    order :meth:`~compression_index.skempton_1994`, :meth:`terzaghi_et_al_1967`,
+    order :meth:`skempton_1994`, :meth:`terzaghi_et_al_1967`,
     and :meth:`hough_1957` respectively.
 
     .. math::
@@ -151,28 +151,47 @@ class compression_index:
 class soil_friction_angle:
     r"""Estimation of the internal angle of friction using spt_n60.
 
-    For cohesionless soils the coefficient of internal friction :math:`\phi` was
-    determined from the minimum value from ``Peck, Hanson and Thornburn (1974)``
+    For cohesionless soils the coefficient of internal friction (:math:`\phi`)
+    was determined from the minimum value from ``Peck, Hanson and Thornburn (1974)``
     and ``Kullhawy and Mayne (1990)`` respectively. The correlations are shown below.
 
     .. math::
 
-        \phi = 27.1 + 0.3 \times N_{60} - 0.00054 \times (N_{60})^2
+        \phi &= 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2
 
-        \phi = \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3(\frac{\sigma_o}{P_a})} \right]^0.34
+        \phi &= \tan^{-1}\left[\dfrac{N_{60}}{12.2 + 20.3\left(\dfrac{\sigma_o}{P_a}\right)} \right]^{0.34}
 
     :Example:
 
+        >>> sfa = soil_friction_angle(spt_n60=50)
+        >>> sfa.wolff_1989()
+        40.75
+        >>> sfa() # By default it uses WOLFF's correlation
+        40.75
+        >>> sfa.spt_n60 = 40
+        >>> sfa()
+        38.236
+        >>> sfa = soil_friction_angle(spt_n60=40, eop=103.8, atm_pressure=101.325,\
+        ... eng=GeotechEng.KULLHAWY)
+        >>> sfa()
+        46.874
+        >>> sfa.kullhawy_mayne_1990()
+        46.874
+        >>> sfa.spt_n60 = 50
+        >>> sfa()
+        49.035
+
     :param spt_n60: spt N-value corrected for 60% hammer efficiency
     :type spt_n60: float
-    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to None
+    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to 0
     :type eop: float, optional
-    :param atm_pressure: atmospheric pressure :math:`kN/m^2`, defaults to None
+    :param atm_pressure: atmospheric pressure :math:`kN/m^2`, defaults to 0
     :type atm_pressure: float, optional
     """
 
     def __init__(
         self,
+        *,
         spt_n60: float,
         eop: float = 0,
         atm_pressure: float = 0,
@@ -185,7 +204,7 @@ class soil_friction_angle:
 
     @round_
     def __call__(self) -> float:
-        """Internal angle of friction in degrees"""
+        """Returns the internal angle of friction (degrees)."""
 
         _friction_angle: float
 
@@ -201,10 +220,15 @@ class soil_friction_angle:
 
         return _friction_angle
 
+    @round_
     def wolff_1989(self) -> float:
+        """Returns the internal angle of friction using ``Wolff's`` correlation."""
         return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
 
+    @round_
     def kullhawy_mayne_1990(self) -> float:
+        """Returns the internal angle of friction using ``Kullhawy & Mayne``
+        correlation."""
         expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
         return arctan(expr**0.34)
 

@@ -20,3 +20,6 @@ Soil Parameter Estimators
 
 .. autoclass:: compression_index
     :members:
+
+.. autoclass:: soil_friction_angle
+    :members:
