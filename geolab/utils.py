@@ -11,42 +11,42 @@ mean = statistics.mean
 isclose = math.isclose
 
 
-def deg2rad(x: float) -> float:
+def deg2rad(x: float, /) -> float:
     """Convert angle x from degrees to radians."""
     return math.radians(x)
 
 
-def rad2deg(x: float) -> float:
+def rad2deg(x: float, /) -> float:
     """Convert angle x from radians to degrees"""
     return math.degrees(x)
 
 
-def tan(x: float) -> float:
+def tan(x: float, /) -> float:
     """Return the tangent of x (measured in degrees)."""
     return math.tan(deg2rad(x))
 
 
-def sin(x: float) -> float:
+def sin(x: float, /) -> float:
     """Return the sine of x (measured in degrees)."""
     return math.sin(deg2rad(x))
 
 
-def cos(x: float) -> float:
+def cos(x: float, /) -> float:
     """Return the cosine of x (measured in degrees)."""
     return math.cos(deg2rad(x))
 
 
-def arctan(x: float) -> float:
+def arctan(x: float, /) -> float:
     """Return the arc tangent (measured in degrees) of x."""
     return rad2deg(math.atan(x))
 
 
-def log10(x: float) -> float:
+def log10(x: float, /) -> float:
     """Return the base 10 logarithm of x."""
     return math.log10(x)
 
 
-def sqrt(x: float) -> float:
+def sqrt(x: float, /) -> float:
     """Return the square root of x."""
     return math.sqrt(x)
 
@@ -64,7 +64,21 @@ def prod(*args: float | int) -> float:
 
 
 def round_(precision: Callable[..., float] | int) -> Callable:
-    """"""
+    """
+    A decorator that rounds the result of a function to a specified number of
+    decimal places.
+
+    This decorator can be used with functions that return a float.
+
+    :param precision: The number of decimal places to round to. It can be an
+                      integer or a function that returns a float.
+    :type precision: Callable[..., float] | int
+
+    :return: A decorator that rounds the result of the wrapped function.
+    :rtype: Callable[..., float]
+
+    :raises TypeError: If precision is neither a function nor an integer.
+    """
 
     def dec(
         func: Callable[..., float],
@@ -72,8 +86,22 @@ def round_(precision: Callable[..., float] | int) -> Callable:
         *,
         precision: int = DECIMAL_PLACES,
     ) -> Callable[..., float]:
+        """
+        The inner decorator function that returns the wrapper function that
+        performs the rounding.
+        """
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> float:
+            """
+            The wrapper function that performs the rounding operation.
+
+            :param args: Positional arguments to pass to the wrapped function.
+            :param kwargs: Keyword arguments to pass to the wrapped function.
+
+            :return: The rounded result.
+            :rtype: float
+            """
             return round(func(*args, **kwargs), ndigits=precision)
 
         return wrapper
