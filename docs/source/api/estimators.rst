@@ -26,3 +26,8 @@ Soil Parameter Estimators
 
 .. autoclass:: undrained_shear_strength
     :members:
+
+.. autofunction:: bowles_soil_elastic_modulus
+
+.. autofunction:: rankine_foundation_depth
+    

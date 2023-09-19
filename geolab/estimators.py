@@ -381,13 +381,15 @@ class undrained_shear_strength:
 
 @round_(precision=2)
 def bowles_soil_elastic_modulus(spt_n60: float) -> float:
-    r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
+    r"""
+    Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
 
     .. math::
 
-        E_s = 320\left(N_{60} + 15 \right)
+        E_s = 320\left(N_{60} + 15 \right) \rightarrow (kN/m^2)
 
     :Example:
+
         >>> bowles_soil_elastic_modulus(20)
         11200
         >>> bowles_soil_elastic_modulus(30)
@@ -409,13 +411,20 @@ def rankine_foundation_depth(
     soil_unit_weight: float,
     friction_angle: float,
 ) -> float:
-    r"""Depth of foundation estimated using ``Rankine's`` formula.
+    r"""
+    Depth of foundation estimated using ``Rankine's`` formula.
 
     .. math::
 
         D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
+        \rightarrow (m)
 
-    :param allow_bearing_capacity: allowable bearing capacity
+    :Example:
+
+        >>> rankine_foundation_depth(350, 18, 35)
+        1.4
+
+    :param allow_bearing_capacity: allowable bearing capacity :math:`kN/m^2`
     :type allow_bearing_capaciy: float
     :param unit_weight_of_soil: unit weight of soil :math:`kN/m^3`
     :type unit_weight_of_soil: float
