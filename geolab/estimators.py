@@ -6,8 +6,9 @@ from geolab.utils import arctan, round_, sin
 
 
 class soil_unit_weight:
-    """Calculates the moist, saturated and submerged unit weight of a
-    soil sample.
+    """
+    Calculates the moist, saturated and submerged unit weight of a soil
+    sample.
 
     :Example:
 
@@ -29,7 +30,8 @@ class soil_unit_weight:
     @property
     @round_
     def moist(self) -> float:
-        r"""Returns the ``moist`` unit weight for cohesionless soil.
+        r"""
+        Returns the ``moist`` unit weight for cohesionless soil.
 
         .. math::
 
@@ -40,7 +42,8 @@ class soil_unit_weight:
     @property
     @round_
     def saturated(self) -> float:
-        r"""Returns the ``saturated`` unit weight for cohesive soil.
+        r"""
+        Returns the ``saturated`` unit weight for cohesive soil.
 
         .. math::
 
@@ -51,7 +54,8 @@ class soil_unit_weight:
     @property
     @round_
     def submerged(self) -> float:
-        r"""Returns the ``submerged`` unit weight of cohesionless soil.
+        r"""
+        Returns the ``submerged`` unit weight of cohesionless soil.
 
         .. math::
             \gamma_{submerged} = 8.8 + 0.01 \cdot N_{60} \rightarrow (kN/m^3)
@@ -60,8 +64,8 @@ class soil_unit_weight:
 
 
 class compression_index:
-    r"""The compression index of soil estimated from ``liquid limit``
-    or ``void_ratio``.
+    r"""
+    The compression index of soil estimated from ``liquid limit`` or ``void ratio``.
 
     The available correlations used are :py:meth:`~compression_index.skempton_1994`,
     :py:meth:`~compression_index.terzaghi_et_al_1967`, and :meth:`~compression_index.hough_1957`.
@@ -107,7 +111,7 @@ class compression_index:
 
     @round_
     def __call__(self) -> float:
-        """Returns the compression index of the soil sample (unitless)"""
+        # Returns the compression index of the soil sample (unitless)
 
         comp_idx: float  # compression index
 
@@ -128,8 +132,8 @@ class compression_index:
 
     @round_
     def terzaghi_et_al_1967(self) -> float:
-        r"""Returns the compression index of the soil using ``Terzaghi's``
-        correlation.
+        r"""
+        Returns the compression index of the soil using ``Terzaghi's`` correlation.
 
         .. math::
 
@@ -141,8 +145,8 @@ class compression_index:
 
     @round_
     def skempton_1994(self) -> float:
-        r"""Returns the compression index of the soil using ``Skempton's``
-        correlation.
+        r"""
+        Returns the compression index of the soil using ``Skempton's`` correlation.
 
         .. math::
 
@@ -154,8 +158,8 @@ class compression_index:
 
     @round_
     def hough_1957(self) -> float:
-        r"""Returns the compression index of the soil using ``Hough's``
-        correlation.
+        r"""
+        Returns the compression index of the soil using ``Hough's`` correlation.
 
         .. math::
 
@@ -167,7 +171,8 @@ class compression_index:
 
 
 class soil_friction_angle:
-    r"""Estimation of the internal angle of friction using spt_n60.
+    r"""
+    Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction (:math:`\phi`)
     was determined from the minimum value from :py:meth:`~soil_friction_angle.wolff_1989` 
@@ -220,7 +225,7 @@ class soil_friction_angle:
 
     @round_
     def __call__(self) -> float:
-        """Returns the internal angle of friction (degrees)."""
+        # Returns the internal angle of friction (degrees)
 
         _friction_angle: float
 
@@ -238,7 +243,8 @@ class soil_friction_angle:
 
     @round_
     def wolff_1989(self) -> float:
-        r"""Returns the internal angle of friction using ``Wolff's`` correlation
+        r"""
+        Returns the internal angle of friction using ``Wolff's`` correlation
         for granular soils (degrees).
 
         .. math::
@@ -249,8 +255,9 @@ class soil_friction_angle:
 
     @round_
     def kullhawy_mayne_1990(self) -> float:
-        r"""Returns the internal angle of friction using ``Kullhawy & Mayne``
-        correlation for cohesionless soils (degrees).
+        r"""
+        Returns the internal angle of friction using ``Kullhawy & Mayne`` correlation
+        for cohesionless soils (degrees).
 
         .. math::
 
@@ -266,42 +273,44 @@ class soil_friction_angle:
 
 
 class undrained_shear_strength:
-    r"""Undrained shear strength of soil.
+    r"""
+    Undrained shear strength of soil.
 
-    The available correlations used are defined below;
+    The available correlations used are :py:meth:`~undrained_shear_strength.stroud_1974`
+    and :py:meth:`~undrained_shear_strength.skempton_1957`.
 
-    .. math::
+    :Example:
 
-        Stroud (1974) \, \rightarrow C_u = K \times N_{60}
+        >>> uss = undrained_shear_strength(spt_n60=40)
+        >>> uss()
+        140.0
+        >>> uss.stroud_1974()
+        140.0
+        >>> uss = undrained_shear_strength(spt_n60=40, eop=108.3,\
+        ... plasticity_index=12, eng=GeotechEng.SKEMPTON)
+        >>> uss()
+        16.722
+        >>> uss.skempton_1957()
+        16.722
 
-        Skempton (1957) \, \rightarrow \dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \times PI
-
-    The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay. ``Skempton``
-    suggested that a similar constant ratio exists between the undrained shear strength
-    of normally consolidated natural deposits and the effective overburden pressure.
-    It has been established that the ratio :math:`\frac{C_u}{\sigma_o}` is constant provided the
-    plasticity index (PI) of the soil remains constant.
-
-    The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained test on
-    undisturbed samples is generally greater than actual value because of anisotropic consolidation
-    in the field. The actual value is best determined by `in-situ shear vane test`.
-    (:cite:author:`2003:arora`, p. 330)
-
-    :param spt_n60: SPT N-value corrected for 60% hammer efficiency, defaults to None
+    :param spt_n60: SPT N-value corrected for 60% hammer efficiency, defaults to 0
     :type spt_n60: Optional[float], optional
-    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to None
+    :param eop: effective overburden pressure :math:`kN/m^2`, defaults to 0
     :type eop: Optional[float], optional
-    :param plasticity_index: range of water content over which soil remains in plastic condition, defaults to None
+    :param plasticity_index: range of water content over which soil remains in plastic
+                             condition, defaults to 0
     :type plasticity_index: Optional[float], optional
     :param k: stroud parameter, defaults to 3.5
     :type k: float, optional
-    :param eng: specifies the type of undrained shear strength formula to use. Available values are
-                geolab.STROUD and geolab.SKEMPTON, defaults to GeotechEng.STROUD
+    :param eng: specifies the type of undrained shear strength formula to use. Available
+                values are ``GeotechEng.STROUD`` and ``GeotechEng.SKEMPTON``, defaults to
+                ``GeotechEng.STROUD``
     :type eng: GeotechEng, optional
     """
 
     def __init__(
         self,
+        *,
         spt_n60: float = 0,
         eop: float = 0,
         plasticity_index: float = 0,
@@ -329,14 +338,44 @@ class undrained_shear_strength:
 
         return und_shr
 
+    @round_
     def stroud_1974(self):
+        r"""
+        Returns the undrained shear strength using ``Stroud's`` correlation.
+
+        .. math::
+
+            C_u = K \times N_{60}
+
+            3.5 \le K \le 6.5
+        """
         if not (3.5 <= self.k <= 6.5):
             msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
             raise ValueError(msg)
 
         return self.k * self.spt_n60
 
+    @round_
     def skempton_1957(self):
+        r"""
+        Returns the undrained shear strength using ``Skempton's`` correlation.
+
+        .. math::
+
+            \dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \cdot PI
+
+        - :math:`\sigma_o \rightarrow` effective overburden pressure (:math:`kN/m^2`)
+
+        The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay. ``Skempton``
+        suggested that a similar constant ratio exists between the undrained shear strength
+        of normally consolidated natural deposits and the effective overburden pressure.
+        It has been established that the ratio :math:`\frac{C_u}{\sigma_o}` is constant
+        provided the plasticity index (PI) of the soil remains constant.
+
+        The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained
+        test on undisturbed samples is generally greater than actual value because of anisotropic
+        consolidation in the field. The actual value is best determined by `in-situ shear vane test`.
+        """
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)
 
 

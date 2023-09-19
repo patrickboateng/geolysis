@@ -23,3 +23,6 @@ Soil Parameter Estimators
 
 .. autoclass:: soil_friction_angle
     :members:
+
+.. autoclass:: undrained_shear_strength
+    :members:
