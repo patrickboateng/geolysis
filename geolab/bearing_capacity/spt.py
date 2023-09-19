@@ -52,7 +52,8 @@ class spt_corrections:
         return mean(spt_corrected_vals)
 
     def skempton_opc_1986(self, spt_n60: float) -> float:
-        return (2 / (1 + 0.01044 * self.eop)) * spt_n60
+        corr_spt = (2 / (1 + 0.01044 * self.eop)) * spt_n60
+        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
 
     def bazaraa_peck_opc_1969(self, spt_n60: float) -> float:
         corr_spt: float  # corrected spt n-value
@@ -68,7 +69,7 @@ class spt_corrections:
         else:
             corr_spt = 4 * spt_n60 / (3.25 + 0.0104 * self.eop)
 
-        return corr_spt
+        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
 
     def gibbs_holtz_opc_1957(self, spt_n60: float) -> float:
         corr_spt: float
@@ -85,7 +86,9 @@ class spt_corrections:
         if 0.45 < spt_ratio < 2.0:
             return corr_spt
 
-        return corr_spt / 2 if spt_ratio > 2.0 else corr_spt
+        corr_spt = corr_spt / 2 if spt_ratio > 2.0 else corr_spt
+
+        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
 
     def peck_et_al_opc_1974(self, spt_n60: float) -> float:
         std_pressure = 24
@@ -96,10 +99,13 @@ class spt_corrections:
             )
             raise ValueError(msg)
 
-        return 0.77 * log10(1905 / self.eop) * spt_n60
+        corr_spt = 0.77 * log10(1905 / self.eop) * spt_n60
+
+        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
 
     def liao_whitman_opc_1986(self, spt_n60) -> float:
-        return sqrt(100 / self.eop) * spt_n60
+        corr_spt = sqrt(100 / self.eop) * spt_n60
+        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
 
     def spt_n60(self, recorded_spt_nvalue: int) -> float:
         """Return spt N-value corrected for 60% hammer efficiency."""
