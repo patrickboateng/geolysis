@@ -7,8 +7,6 @@ from geolab.utils import isclose, log10, mean, prod, sqrt
 class spt_corrections:
     r"""SPT N-value Overburden Pressure and Dilatancy Correction.
 
-
-
     :param recorded_spt_nvalue: recorded SPT N-voalue (blows/300mm)
     :type recorded_spt_nvalue: int
     :param hammer_efficiency: hammer efficiency, defaults to 0.6
@@ -53,7 +51,7 @@ class spt_corrections:
 
     def skempton_opc_1986(self, spt_n60: float) -> float:
         corr_spt = (2 / (1 + 0.01044 * self.eop)) * spt_n60
-        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
+        return self._opc(corr_spt, spt_n60)
 
     def bazaraa_peck_opc_1969(self, spt_n60: float) -> float:
         corr_spt: float  # corrected spt n-value
@@ -69,7 +67,7 @@ class spt_corrections:
         else:
             corr_spt = 4 * spt_n60 / (3.25 + 0.0104 * self.eop)
 
-        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
+        return self._opc(corr_spt, spt_n60)
 
     def gibbs_holtz_opc_1957(self, spt_n60: float) -> float:
         corr_spt: float
@@ -88,7 +86,7 @@ class spt_corrections:
 
         corr_spt = corr_spt / 2 if spt_ratio > 2.0 else corr_spt
 
-        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
+        return self._opc(corr_spt, spt_n60)
 
     def peck_et_al_opc_1974(self, spt_n60: float) -> float:
         std_pressure = 24
@@ -101,11 +99,11 @@ class spt_corrections:
 
         corr_spt = 0.77 * log10(1905 / self.eop) * spt_n60
 
-        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
+        return self._opc(corr_spt, spt_n60)
 
     def liao_whitman_opc_1986(self, spt_n60) -> float:
         corr_spt = sqrt(100 / self.eop) * spt_n60
-        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
+        return self._opc(corr_spt, spt_n60)
 
     def spt_n60(self, recorded_spt_nvalue: int) -> float:
         """Return spt N-value corrected for 60% hammer efficiency."""
@@ -157,3 +155,7 @@ class spt_corrections:
             raise TypeError(msg)
 
         return opc
+
+    @staticmethod
+    def _opc(corr_spt: float, spt_n60: float) -> float:
+        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
