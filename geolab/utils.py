@@ -17,7 +17,7 @@ def deg2rad(x: float, /) -> float:
 
 
 def rad2deg(x: float, /) -> float:
-    """Convert angle x from radians to degrees"""
+    """Convert angle x from radians to degrees."""
     return math.degrees(x)
 
 
@@ -52,7 +52,8 @@ def sqrt(x: float, /) -> float:
 
 
 def prod(*args: float | int) -> float:
-    """Calculate the product of all the elements in the input iterable.
+    """
+    Calculate the product of all the elements in the input iterable.
 
     The default start value for the product is 1.
 
@@ -86,22 +87,11 @@ def round_(precision: Callable[..., float] | int) -> Callable:
         *,
         precision: int = DECIMAL_PLACES,
     ) -> Callable[..., float]:
-        """
-        The inner decorator function that returns the wrapper function that
-        performs the rounding.
-        """
+        # The inner decorator function that returns the wrapper function that
+        # performs the rounding.
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> float:
-            """
-            The wrapper function that performs the rounding operation.
-
-            :param args: Positional arguments to pass to the wrapped function.
-            :param kwargs: Keyword arguments to pass to the wrapped function.
-
-            :return: The rounded result.
-            :rtype: float
-            """
             return round(func(*args, **kwargs), ndigits=precision)
 
         return wrapper
