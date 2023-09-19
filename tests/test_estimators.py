@@ -5,6 +5,7 @@ from geolab.estimators import (
     rankine_foundation_depth,
     soil_friction_angle,
     soil_unit_weight,
+    undrained_shear_strength,
 )
 from geolab.exceptions import EngineerTypeError
 
@@ -46,3 +47,24 @@ def test_soil_unit_weight():
     assert suw.moist == pytest.approx(17.3, ERROR_TOLERANCE)
     assert suw.saturated == pytest.approx(18.75, ERROR_TOLERANCE)
     assert suw.submerged == pytest.approx(8.93, ERROR_TOLERANCE)
+
+
+def test_undrained_shear_strength():
+    uss = undrained_shear_strength(spt_n60=40)
+    exp = 140
+    assert uss() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert uss.stroud_1974() == pytest.approx(exp, ERROR_TOLERANCE)
+
+    uss = undrained_shear_strength(
+        spt_n60=40,
+        eop=108.3,
+        plasticity_index=12,
+        eng=GeotechEng.SKEMPTON,
+    )
+    exp = 16.722
+    assert uss() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert uss.skempton_1957() == pytest.approx(exp, ERROR_TOLERANCE)
+
+    with pytest.raises(EngineerTypeError):
+        uss = undrained_shear_strength(spt_n60=30, eng=GeotechEng.LIAO)
+        uss()
