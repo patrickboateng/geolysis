@@ -55,7 +55,7 @@ class AtterbergLimits:
     @property
     @round_(precision=2)
     def A_line(self) -> float:
-        r"""Calculates the ``A-line``.
+        r"""Returns the ``A-line``.
 
         .. math::
 
