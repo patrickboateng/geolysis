@@ -1,11 +1,14 @@
 """This module provides functions for estimating soil engineering parameters."""
 
+from dataclasses import dataclass
+
 from geolab import GeotechEng
 from geolab.exceptions import EngineerTypeError
 from geolab.utils import arctan, round_, sin
 
 
-class soil_unit_weight:
+@dataclass
+class SoilUnitWeight:
     """
     Calculates the moist, saturated and submerged unit weight of a soil
     sample.
@@ -24,8 +27,7 @@ class soil_unit_weight:
     :type spt_n60: float
     """
 
-    def __init__(self, spt_n60: float) -> None:
-        self.spt_n60 = spt_n60
+    spt_n60: float
 
     @property
     @round_
@@ -63,7 +65,7 @@ class soil_unit_weight:
         return 8.8 + 0.01 * self.spt_n60
 
 
-class compression_index:
+class CompressionIndex:
     r"""
     The compression index of soil estimated from ``liquid limit`` or ``void ratio``.
 
@@ -170,7 +172,7 @@ class compression_index:
         return 0.29 * (self.void_ratio - 0.27)
 
 
-class soil_friction_angle:
+class SoilFrictionAngle:
     r"""
     Estimation of the internal angle of friction using spt_n60.
 
@@ -272,7 +274,7 @@ class soil_friction_angle:
         return arctan(expr**0.34)
 
 
-class undrained_shear_strength:
+class UndrainedShearStrength:
     r"""
     Undrained shear strength of soil.
 
@@ -351,11 +353,11 @@ class undrained_shear_strength:
 
         :raises ValueError: If ``k`` is not in the specified range.
         """
-        if not (3.5 <= self.k <= 6.5):
-            msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
-            raise ValueError(msg)
+        if 3.5 <= self.k <= 6.5:
+            return self.k * self.spt_n60
 
-        return self.k * self.spt_n60
+        msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
+        raise ValueError(msg)
 
     @round_
     def skempton_1957(self):
@@ -368,15 +370,17 @@ class undrained_shear_strength:
 
         - :math:`\sigma_o \rightarrow` effective overburden pressure (:math:`kN/m^2`)
 
-        The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay. ``Skempton``
-        suggested that a similar constant ratio exists between the undrained shear strength
-        of normally consolidated natural deposits and the effective overburden pressure.
-        It has been established that the ratio :math:`\frac{C_u}{\sigma_o}` is constant
-        provided the plasticity index (PI) of the soil remains constant.
+        The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay.
+        ``Skempton`` suggested that a similar constant ratio exists between the
+        undrained shear strength of normally consolidated natural deposits and
+        the effective overburden pressure. It has been established that the ratio
+        :math:`\frac{C_u}{\sigma_o}` is constant provided the plasticity index (PI)
+        of the soil remains constant.
 
-        The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a consolidated-undrained
-        test on undisturbed samples is generally greater than actual value because of anisotropic
-        consolidation in the field. The actual value is best determined by `in-situ shear vane test`.
+        The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a
+        consolidated-undrained test on undisturbed samples is generally greater than
+        actual value because of anisotropic consolidation in the field. The actual
+        value is best determined by `in-situ shear vane test`.
         """
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)
 
@@ -437,7 +441,7 @@ def rankine_foundation_depth(
     :return: depth of foundation
     :rtype: float
     """
-    x1 = allowable_bearing_capacity / soil_unit_weight
-    x2 = (1 - sin(soil_friction_angle)) / (1 + sin(soil_friction_angle))
+    x_1 = allowable_bearing_capacity / soil_unit_weight
+    x_2 = (1 - sin(soil_friction_angle)) / (1 + sin(soil_friction_angle))
 
-    return x1 * (x2**2)
+    return x_1 * (x_2**2)
