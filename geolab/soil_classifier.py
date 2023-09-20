@@ -1,9 +1,9 @@
-r"""This module provides the implementations for ``USCS`` and ``AASHTO`` classification.
-
+"""
+This module provides the implementations for ``USCS`` and ``AASHTO`` classification.
 """
 
 import math
-from typing import Optional
+from dataclasses import KW_ONLY, dataclass
 
 from geolab import ERROR_TOLERANCE, exceptions
 from geolab.utils import round_
@@ -37,20 +37,34 @@ def _check_plasticity_idx(
         raise exceptions.PIValueError(msg)
 
 
+@dataclass
 class AtterbergLimits:
-    """Atterberg Limits."""
+    """
+    A dataclass for Atterberg Limits.
 
-    def __init__(
-        self,
-        liquid_limit: float,
-        plastic_limit: float,
-        plasticity_index: float,
-    ):
-        _check_plasticity_idx(liquid_limit, plastic_limit, plasticity_index)
+    :param liquid_limit: Water content beyond which soils flows under their
+                         own weight (%)
+    :type liquid_limit: float
+    :param plastic_limit: Water content at which plastic deformation can be
+                          initiated (%)
+    :type plastic_limit: float
+    :param plasticity_index: Range of water content over which soil remains in
+                             plastic condition (%)
+    :type plasticity_index: float
 
-        self.liquid_limit = liquid_limit
-        self.plastic_limit = plastic_limit
-        self.plasticity_index = plasticity_index
+    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
+    """
+
+    liquid_limit: float
+    plastic_limit: float
+    plasticity_index: float
+
+    def __post_init__(self):
+        _check_plasticity_idx(
+            self.liquid_limit,
+            self.plastic_limit,
+            self.plasticity_index,
+        )
 
     @property
     @round_(precision=2)
@@ -60,7 +74,6 @@ class AtterbergLimits:
         .. math::
 
             0.73 \left(LL - 20 \right)
-
         """
         return 0.73 * (self.liquid_limit - 20)
 
@@ -78,33 +91,44 @@ class AtterbergLimits:
         return math.isclose(self.plasticity_index, self.A_line)
 
 
+@dataclass
 class PSD:
-    """Particle Size Distribution."""
+    """
+    A dataclass for Particle Size Distribution.
 
-    def __init__(
-        self,
-        fines: float,
-        sand: float,
-        gravel: float,
-        d10: float = 0,
-        d30: float = 0,
-        d60: float = 0,
-    ) -> None:
-        _check_size_distribution(fines, sand, gravel)
+    :param fines: Percentage of fines in soil sample (%)
+    :type fines: float
+    :param sand: Percentage of sand in soil sample (%)
+    :type sand: float
+    :param gravel: Percentage of gravel in soil sample (%)
+    :type gravel: float
+    :param d10: Diameter at which 30% of the soil by weight is finer
+    :type d10: float
+    :param d30: Diameter at which 30% of the soil by weight is finer
+    :type d30: float
+    :param d60: Diameter at which 60% of the soil by weight is finer
+    :type d60: float
 
-        self.fines = fines
-        self.sand = sand
-        self.gravel = gravel
-        self.d10 = d10
-        self.d30 = d30
-        self.d60 = d60
+    :raises exceptions.PSDValueError: Raised when soil aggregates does not
+                                      approximately sum to 100%
+    """
+
+    fines: float
+    sand: float
+    gravel: float
+    d10: float = 0
+    d30: float = 0
+    d60: float = 0
+
+    def __post_init__(self):
+        _check_size_distribution(self.fines, self.sand, self.gravel)
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
         return all((self.d10, self.d30, self.d60))
 
     def grade(self, coarse_soil: str) -> str:
-        """Returns the grading of the soil sample."""
+        """Returns the grade of the soil sample."""
         soil_grade: str
 
         # Gravel
@@ -154,31 +178,29 @@ class PSD:
         return self.d60 / self.d10
 
 
+@dataclass
 class AASHTO:
-    """American Association of State Highway and Transportation Officials (``AASHTO``)
-    classification system.
+    """
+    American Association of State Highway and Transportation Officials
+    (``AASHTO``) classification system.
 
-    The AASHTO Classification system categorizes soils for highways based on
-    Particle Size Distribution and plasticity characteristics. It classifies
+    The AASHTO Classification system categorizes soils for highways based
+    on Particle Size Distribution and plasticity characteristics. It classifies
     both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
     with subgroups, along with a separate category (A8) for organic soils.
 
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :param liquid_limit: Water content beyond which soils flows under their
+                         own weight (%)
     :type liquid_limit: float
-    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+    :param plasticity_index: Range of water content over which soil remains in
+                             plastic condition (%)
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
     """
 
-    def __init__(
-        self,
-        liquid_limit: float,
-        plasticity_index: float,
-        fines: float,
-    ) -> None:
-        self.liquid_limit = liquid_limit
-        self.plasticity_index = plasticity_index
-        self.fines = fines
+    liquid_limit: float
+    plasticity_index: float
+    fines: float
 
     @round_(precision=0)
     def group_index(self) -> float:
@@ -237,22 +259,27 @@ class AASHTO:
         return clf
 
 
+@dataclass
 class USCS:
-    """Unified Soil Classification System (``USCS``).
+    """
+    Unified Soil Classification System (``USCS``).
 
-    The Unified Soil Classification System, initially developed by Casagrande in 1948
-    and later modified in 1952, is widely utilized in engineering projects involving soils.
-    It is the most popular system for soil classification and is similar to Casagrande's
-    Classification System. The system relies on Particle Size Distribution and Atterberg Limits
-    for classification. Soils are categorized into three main groups: coarse-grained, fine-grained,
-    and highly organic soils. Additionally, the system has been adopted by the American Society for
-    Testing and Materials (``ASTM``).
+    The Unified Soil Classification System, initially developed by Casagrande
+    in 1948 and later modified in 1952, is widely utilized in engineering
+    projects involving soils. It is the most popular system for soil classification
+    and is similar to Casagrande's Classification System. The system relies on
+    Particle Size Distribution and Atterberg Limits for classification. Soils are
+    categorized into three main groups: coarse-grained, fine-grained, and highly
+    organic soils. Additionally, the system has been adopted by the American Society
+    for Testing and Materials (``ASTM``).
 
-    :param liquid_limit: Water content beyond which soils flows under their own weight (%)
+    :param liquid_limit: Water content beyond which soils flows under their own
+                         weight (%)
     :type liquid_limit: float
     :param plastic_limit: Water content at which plastic deformation can be initiated (%)
     :type plastic_limit: float
-    :param plasticity_index: Range of water content over which soil remains in plastic condition (%)
+    :param plasticity_index: Range of water content over which soil remains in
+                             plastic condition (%)
     :type plasticity_index: float
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
@@ -266,31 +293,39 @@ class USCS:
     :type d30: float
     :param d60: Diameter at which 60% of the soil by weight is finer
     :type d60: float
+
     :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately sum to 100%
+    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately
+                                      sum to 100%
     """
 
-    def __init__(
-        self,
-        liquid_limit: float,
-        plastic_limit: float,
-        plasticity_index: float,
-        fines: float,
-        sand: float,
-        gravel: float,
-        *,
-        d10: float = 0,
-        d30: float = 0,
-        d60: float = 0,
-        organic: Optional[bool] = False,
-    ) -> None:
+    liquid_limit: float
+    plastic_limit: float
+    plasticity_index: float
+    fines: float
+    sand: float
+    gravel: float
+
+    _: KW_ONLY
+    d10: float = 0
+    d30: float = 0
+    d60: float = 0
+    organic: bool = False
+
+    def __post_init__(self):
         self.atterberg_limits = AtterbergLimits(
-            liquid_limit,
-            plastic_limit,
-            plasticity_index,
+            self.liquid_limit,
+            self.plastic_limit,
+            self.plasticity_index,
         )
-        self.psd = PSD(fines, sand, gravel, d10, d30, d60)
-        self.organic = organic
+        self.psd = PSD(
+            self.fines,
+            self.sand,
+            self.gravel,
+            self.d10,
+            self.d30,
+            self.d60,
+        )
 
     def _dual_soil_classifier(self, coarse_soil: str) -> str:
         _soil_grd = self.psd.grade(coarse_soil)
