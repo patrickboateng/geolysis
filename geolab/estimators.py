@@ -348,6 +348,8 @@ class undrained_shear_strength:
             C_u = K \times N_{60}
 
             3.5 \le K \le 6.5
+
+        :raises ValueError: If ``k`` is not in the specified range.
         """
         if not (3.5 <= self.k <= 6.5):
             msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
