@@ -45,17 +45,14 @@ aashto_class_test_data = [
 ]
 
 
-def test_PSD():
+def test_PSDValueError():
     with pytest.raises(PSDValueError):
         PSD(30, 30, 30)
 
 
-def test_PI():
+def test_PIValueError():
     with pytest.raises(PIValueError):
-        atterberg_limits = AtterbergLimits(30, 10, 10)
-        psd = PSD(30, 30, 40)
-        AASHTO(atterberg_limits, fines=30).classify()
-        USCS(atterberg_limits, psd).classify()
+        AtterbergLimits(30, 10, 10)
 
 
 @pytest.mark.parametrize("soil_params,classification", aashto_class_test_data)
