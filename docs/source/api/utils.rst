@@ -16,3 +16,5 @@ Utility Functions
     sqrt
     prod
     round_
+
+.. autodecorator:: round_
