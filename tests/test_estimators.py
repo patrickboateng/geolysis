@@ -12,7 +12,7 @@ from geolab.exceptions import EngineerTypeError
 
 def test_foundation_depth():
     assert rankine_foundation_depth(
-        350, 18, friction_angle=35
+        350, 18, soil_friction_angle=35
     ) == pytest.approx(1.4, ERROR_TOLERANCE)
 
 
