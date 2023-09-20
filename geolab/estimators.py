@@ -70,7 +70,7 @@ class CompressionIndex:
     The compression index of soil estimated from ``liquid limit`` or ``void ratio``.
 
     The available correlations used are :py:meth:`~compression_index.skempton_1994`,
-    :py:meth:`~compression_index.terzaghi_et_al_1967`, and :meth:`~compression_index.hough_1957`.
+    :py:meth:`terzaghi_et_al_1967`, and :meth:`hough_1957`.
 
     :Example:
 
@@ -177,8 +177,8 @@ class SoilFrictionAngle:
     Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction (:math:`\phi`)
-    was determined from the minimum value from :py:meth:`~soil_friction_angle.wolff_1989` 
-    and :py:meth:`~soil_friction_angle.kullhawy_mayne_1990`.
+    was determined from the minimum value from :py:meth:`wolff_1989` and 
+    :py:meth:`kullhawy_mayne_1990`.
 
     :Example:
 
@@ -278,8 +278,8 @@ class UndrainedShearStrength:
     r"""
     Undrained shear strength of soil.
 
-    The available correlations used are :py:meth:`~undrained_shear_strength.stroud_1974`
-    and :py:meth:`~undrained_shear_strength.skempton_1957`.
+    The available correlations used are :py:meth:`stroud_1974` and 
+    :py:meth:`skempton_1957`.
 
     :Example:
 
