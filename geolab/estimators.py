@@ -210,6 +210,8 @@ class SoilFrictionAngle:
                 values are ``GeotechEng.WOLFF`` and ``GeotechEng.KULLHAWY``. Defaults to 
                 ``GeotechEng.WOLFF``.
     :type eng: GeotechEng
+
+    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
 
     def __init__(
@@ -225,6 +227,10 @@ class SoilFrictionAngle:
         self.atm_pressure = atm_pressure
         self.eng = eng
 
+        if self.eng not in {GeotechEng.WOLFF, GeotechEng.KULLHAWY}:
+            msg = f"{self.eng} is not a valid type for {type(self)} Engineer"
+            raise EngineerTypeError(msg)
+
     @round_
     def __call__(self) -> float:
         # Returns the internal angle of friction (degrees)
@@ -234,12 +240,8 @@ class SoilFrictionAngle:
         if self.eng is GeotechEng.WOLFF:
             _friction_angle = self.wolff_1989()
 
-        elif self.eng is GeotechEng.KULLHAWY:
-            _friction_angle = self.kullhawy_mayne_1990()
-
         else:
-            msg = f"{self.eng} is not a valid type for engineer"
-            raise EngineerTypeError(msg)
+            _friction_angle = self.kullhawy_mayne_1990()
 
         return _friction_angle
 
@@ -308,6 +310,8 @@ class UndrainedShearStrength:
                 values are ``GeotechEng.STROUD`` and ``GeotechEng.SKEMPTON``, defaults to
                 ``GeotechEng.STROUD``
     :type eng: GeotechEng, optional
+
+    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
 
     def __init__(
@@ -325,18 +329,18 @@ class UndrainedShearStrength:
         self.k = k
         self.eng = eng
 
+        if self.eng not in {GeotechEng.STROUD, GeotechEng.SKEMPTON}:
+            msg = f"{self.eng} is not a valid type for {type(self)} engineer"
+            raise EngineerTypeError(msg)
+
     def __call__(self) -> float:
         und_shr: float  # undrained shear strength
 
         if self.eng is GeotechEng.STROUD:
             und_shr = self.stroud_1974()
 
-        elif self.eng is GeotechEng.SKEMPTON:
-            und_shr = self.skempton_1957()
-
         else:
-            msg = f"{self.eng} is not a valid type for engineer"
-            raise EngineerTypeError(msg)
+            und_shr = self.skempton_1957()
 
         return und_shr
 
