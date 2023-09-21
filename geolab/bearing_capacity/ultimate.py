@@ -44,7 +44,7 @@ class terzaghi_bearing_capacity_factors:
         return _ngamma
 
 
-class terzaghi_bearing_capacity:
+class TerzaghiBearingCapacity:
     r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``,
     ``square footing`` and ``circular footing``.
 
@@ -236,7 +236,7 @@ class meyerhof_inclination_factors:
         return (1 - self.beta / self.soil_friction_angle) ** 2
 
 
-class meyerhof_bearing_capacity:
+class MeyerhofBearingCapacity:
     def __init__(
         self,
         cohesion: float,
@@ -487,7 +487,7 @@ class hansen_inclination_factors:
         return self.iq**2
 
 
-class hansen_bearing_capacity:
+class HansenBearingCapacity:
     r"""Ultimate bearing capacity according to ``Hansen``.
 
     :param cohesion: Cohesion of foundation soil :math:`(kN/m^2)`
@@ -755,7 +755,7 @@ class vesic_inclination_factors:
         return (1 - self.beta / self.soil_friction_angle) ** 2
 
 
-class vesic_bearing_capacity:
+class VesicBearingCapacity:
     r"""Ultimate bearing capacity according to ``Vesic``.
 
     :param cohesion: Cohesion of foundation soil :math:`(kN/m^2)`
