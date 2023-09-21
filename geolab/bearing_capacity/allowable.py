@@ -1,11 +1,14 @@
+from geolab.exceptions import AllowableSettlementError
+
+
 def _fd(foundation_depth: float, foundation_width: float) -> float:
-    x1 = foundation_depth / foundation_width
-    fd = 1 + 0.33 * x1  # depth factor
+    x_1 = foundation_depth / foundation_width
+    fd = 1 + 0.33 * x_1  # depth factor
 
     return min(fd, 1.33)
 
 
-class meyerhof_bearing_capacity:
+class MeyerhofBearingCapacity:
     r"""Meyerhoff Bearing Capacity.
 
     :param recorded_spt_nvalues: list of recorded SPT N-values
@@ -38,20 +41,29 @@ class meyerhof_bearing_capacity:
         return _fd(self.foundation_depth, self.foundation_width)
 
     def net_allowable(self, n_design: float) -> float:
-        """"""
+        """
+        :raises AllowableSettlementError: If actual settlement is greater than
+                                          allowable settement
+        """
+
+        if self.actual_settlement > self.ALLOWABLE_SETTLEMENT:
+            msg = f"Settlement: {self.actual_settlement}should be less than \
+                  Allowable Settlement: {self.ALLOWABLE_SETTLEMENT}"
+            raise AllowableSettlementError(msg)
+
         abc: float  # allowable bearing capacity
 
-        x1 = n_design * self.f_d
-        x2 = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
+        x_1 = n_design * self.f_d
+        x_2 = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
 
         if self.foundation_width <= 1.22:
-            abc = 19.16 * x1 * x2
+            abc = 19.16 * x_1 * x_2
 
         else:
-            x3 = 3.28 * self.foundation_width + 1
-            x4 = 3.28 * self.foundation_width
+            x_3 = 3.28 * self.foundation_width + 1
+            x_4 = 3.28 * self.foundation_width
 
-            abc = x1 * x2 * (11.98 * (x3 / x4)) ** 2
+            abc = x_1 * x_2 * (11.98 * (x_3 / x_4)) ** 2
 
         return abc
 
@@ -63,14 +75,14 @@ class meyerhof_bearing_capacity:
             abc = 12 * spt_n60 * self.f_d
 
         else:
-            x1 = 8 * spt_n60
-            x2 = (self.foundation_width + 0.3) / self.foundation_width
-            abc = x1 * x2**2 * self.f_d
+            x_1 = 8 * spt_n60
+            x_2 = (self.foundation_width + 0.3) / self.foundation_width
+            abc = x_1 * x_2**2 * self.f_d
 
         return abc
 
 
-class bowles_bearing_capacity:
+class BowlesBearingCapacity:
     def __init__(
         self,
         foundation_depth: float,
@@ -90,8 +102,8 @@ class bowles_bearing_capacity:
         if self.foundation_width <= 1.2:
             abc = 20 * spt_corrected_nvalue * self.f_d
         else:
-            x1 = 12.5 * spt_corrected_nvalue
-            x2 = (self.foundation_width + 0.3) / self.foundation_width
-            abc = x1 * x2**2 * self.f_d
+            x_1 = 12.5 * spt_corrected_nvalue
+            x_2 = (self.foundation_width + 0.3) / self.foundation_width
+            abc = x_1 * x_2**2 * self.f_d
 
         return abc
