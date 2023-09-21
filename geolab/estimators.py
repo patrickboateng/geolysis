@@ -98,6 +98,8 @@ class CompressionIndex:
                 values are ``GeotechEng.SKEMPTON``, ``GeotechEng.TERZAGHI`` and
                 ``GeotechEng.HOUGH``. Defaults to ``GeotechEng.SKEMPTON``.
     :type eng: GeotechEng
+
+    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
 
     def __init__(
@@ -111,7 +113,14 @@ class CompressionIndex:
         self.void_ratio = void_ratio
         self.eng = eng
 
-    @round_
+        if self.eng not in {
+            GeotechEng.SKEMPTON,
+            GeotechEng.TERZAGHI,
+            GeotechEng.HOUGH,
+        }:
+            msg = f"{self.eng} is not a valid type for {type(self)} engineer"
+            raise EngineerTypeError(msg)
+
     def __call__(self) -> float:
         # Returns the compression index of the soil sample (unitless)
 
@@ -123,12 +132,8 @@ class CompressionIndex:
         elif self.eng is GeotechEng.TERZAGHI:
             comp_idx = self.terzaghi_et_al_1967()
 
-        elif self.eng is GeotechEng.HOUGH:
-            comp_idx = self.hough_1957()
-
         else:
-            msg = f"{self.eng} is not a valid type for engineer"
-            raise EngineerTypeError(msg)
+            comp_idx = self.hough_1957()
 
         return comp_idx
 
@@ -231,7 +236,6 @@ class SoilFrictionAngle:
             msg = f"{self.eng} is not a valid type for {type(self)} Engineer"
             raise EngineerTypeError(msg)
 
-    @round_
     def __call__(self) -> float:
         # Returns the internal angle of friction (degrees)
 
