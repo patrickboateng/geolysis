@@ -212,10 +212,10 @@ class AASHTO:
 
             GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
         """
-        x_1 = 0 if (x := self.fines - 35) < 0 else min(x, 40)
-        x_2 = 0 if (x := self.liquid_limit - 40) < 0 else min(x, 20)
-        x_3 = 0 if (x := self.fines - 15) < 0 else min(x, 40)
-        x_4 = 0 if (x := self.plasticity_index - 10) < 0 else min(x, 20)
+        x_1 = 0 if (x_0 := self.fines - 35) < 0 else min(x_0, 40)
+        x_2 = 0 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
+        x_3 = 0 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
+        x_4 = 0 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
         grp_idx = x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
 
         return 0.0 if grp_idx <= 0 else grp_idx
