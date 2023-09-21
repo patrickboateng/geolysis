@@ -32,8 +32,7 @@ def test_soil_friction_angle():
     assert sfa.kullhawy_mayne_1990() == pytest.approx(exp, ERROR_TOLERANCE)
 
     with pytest.raises(EngineerTypeError):
-        sfa = SoilFrictionAngle(spt_n60=35, eng=GeotechEng.BAZARAA)
-        sfa()
+        SoilFrictionAngle(spt_n60=35, eng=GeotechEng.BAZARAA)
 
 
 def test_soil_unit_weight():
@@ -60,8 +59,7 @@ def test_undrained_shear_strength():
     assert uss.skempton_1957() == pytest.approx(exp, ERROR_TOLERANCE)
 
     with pytest.raises(EngineerTypeError):
-        uss = UndrainedShearStrength(spt_n60=30, eng=GeotechEng.LIAO)
-        uss()
+        UndrainedShearStrength(spt_n60=30, eng=GeotechEng.LIAO)
 
 
 def test_foundation_depth():
