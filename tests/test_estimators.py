@@ -2,12 +2,25 @@ import pytest
 
 from geolab import ERROR_TOLERANCE, GeotechEng
 from geolab.estimators import (
+    CompressionIndex,
     SoilFrictionAngle,
     SoilUnitWeight,
     UndrainedShearStrength,
     rankine_foundation_depth,
 )
 from geolab.exceptions import EngineerTypeError
+
+
+def test_compression_index():
+    c_c = CompressionIndex(liquid_limit=35)
+    assert c_c.skempton_1994() == pytest.approx(0.175, ERROR_TOLERANCE)
+    assert c_c.terzaghi_et_al_1967() == pytest.approx(0.225, ERROR_TOLERANCE)
+
+    c_c = CompressionIndex(void_ratio=0.78, eng=GeotechEng.HOUGH)
+    assert c_c.hough_1957() == pytest.approx(0.148, ERROR_TOLERANCE)
+
+    with pytest.raises(EngineerTypeError):
+        CompressionIndex(liquid_limit=40, eng=GeotechEng.GIBBS)
 
 
 def test_soil_friction_angle():
