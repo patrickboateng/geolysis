@@ -7,24 +7,24 @@ Soil Parameter Estimators
 
 .. autosummary:: 
 
-    soil_unit_weight
-    compression_index
-    soil_friction_angle
-    undrained_shear_strength
+    SoilUnitWeight
+    CompressionIndex
+    SoilFrictionAngle
+    UndrainedShearStrength
     bowles_soil_elastic_modulus
     rankine_foundation_depth
 
 
-.. autoclass:: soil_unit_weight
+.. autoclass:: SoilUnitWeight
     :members: 
 
-.. autoclass:: compression_index
+.. autoclass:: CompressionIndex
     :members:
 
-.. autoclass:: soil_friction_angle
+.. autoclass:: SoilFrictionAngle
     :members:
 
-.. autoclass:: undrained_shear_strength
+.. autoclass:: UndrainedShearStrength
     :members:
 
 .. autofunction:: bowles_soil_elastic_modulus
