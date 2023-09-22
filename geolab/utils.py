@@ -71,6 +71,17 @@ def round_(precision: Callable[..., float] | int) -> Callable:
 
     This decorator can be used with functions that return a float.
 
+    .. code::
+
+        from math import pi
+
+        from geolab.utils import round_
+
+        @round_(precision=3)
+        def area_of_circle(radius: float) -> float:
+            return pi * radius**2
+
+
     :param precision: The number of decimal places to round to. It can be an
                       integer or a function that returns a float.
     :type precision: Callable[..., float] | int
