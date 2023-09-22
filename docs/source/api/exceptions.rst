@@ -7,6 +7,5 @@ Exceptions
 
     PSDValueError
     PIValueError
-    SoilTypeError
     AllowableSettlementError
     EngineerTypeError
