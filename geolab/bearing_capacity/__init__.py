@@ -1,7 +1,7 @@
 """This module provides functions for bearing capacity analysis."""
 
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(slots=True)
@@ -16,16 +16,13 @@ class FootingSize:
 
 @dataclass(slots=True)
 class FoundationSize:
-    footing_size: FootingSize
+    width: float
+    length: float
     depth: float
+    footing_size: FootingSize = field(init=False, repr=False)
 
-    @property
-    def width(self) -> float:
-        return self.footing_size.width
-
-    @property
-    def length(self) -> float:
-        return self.footing_size.length
+    def __post_init__(self):
+        self.footing_size = FootingSize(self.width, self.length)
 
     @property
     def depth_2_width_ratio(self) -> float:
