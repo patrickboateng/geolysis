@@ -31,7 +31,6 @@ design and build better projects with confidence.
 ## Table of Contents
 
 - [Installation](#installation)
-  - [How to Install the Microsoft Excel Addin](#how-to-install-the-microsoft-excel-addin)
 - [Usage Example](#usage-example)
 - [Release History](#release-history)
 - [Code of Conduct](#code-of-conduct)
@@ -50,10 +49,6 @@ _This install does not work yet. Project is still under **rapid** development_
 pip install geolab
 
 ```
-
-### How to Install the Microsoft Excel Addin
-
-The installation procedure can be found [**here**](./geolab-excel-addin/README.md/#installation)
 
 ## Usage example
 
