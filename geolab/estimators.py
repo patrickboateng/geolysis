@@ -1,4 +1,6 @@
-"""This module provides functions for estimating soil engineering parameters."""
+"""
+This module provides functions for estimating soil engineering parameters.
+"""
 
 from dataclasses import dataclass
 
@@ -10,8 +12,8 @@ from geolab.utils import arctan, round_, sin
 @dataclass
 class SoilUnitWeight:
     """
-    Calculates the moist, saturated and submerged unit weight of a soil
-    sample.
+    Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight of
+    soil sample.
 
     :Example:
 
@@ -67,7 +69,8 @@ class SoilUnitWeight:
 
 class CompressionIndex:
     r"""
-    The compression index of soil estimated from ``liquid limit`` or ``void ratio``.
+    The compression index of soil estimated from ``liquid limit`` or ``void
+    ratio``.
 
     The available correlations used are :py:meth:`~compression_index.skempton_1994`,
     :py:meth:`terzaghi_et_al_1967`, and :meth:`hough_1957`.
@@ -140,7 +143,8 @@ class CompressionIndex:
     @round_
     def terzaghi_et_al_1967(self) -> float:
         r"""
-        Returns the compression index of the soil using ``Terzaghi's`` correlation.
+        Returns the compression index of the soil using ``Terzaghi's``
+        correlation.
 
         .. math::
 
@@ -153,7 +157,8 @@ class CompressionIndex:
     @round_
     def skempton_1994(self) -> float:
         r"""
-        Returns the compression index of the soil using ``Skempton's`` correlation.
+        Returns the compression index of the soil using ``Skempton's``
+        correlation.
 
         .. math::
 
@@ -166,7 +171,8 @@ class CompressionIndex:
     @round_
     def hough_1957(self) -> float:
         r"""
-        Returns the compression index of the soil using ``Hough's`` correlation.
+        Returns the compression index of the soil using ``Hough's``
+        correlation.
 
         .. math::
 
@@ -264,8 +270,8 @@ class SoilFrictionAngle:
     @round_
     def kullhawy_mayne_1990(self) -> float:
         r"""
-        Returns the internal angle of friction using ``Kullhawy & Mayne`` correlation
-        for cohesionless soils (degrees).
+        Returns the internal angle of friction using ``Kullhawy & Mayne``
+        correlation for cohesionless soils (degrees).
 
         .. math::
 
