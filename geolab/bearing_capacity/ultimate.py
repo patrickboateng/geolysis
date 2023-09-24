@@ -2,33 +2,36 @@ from dataclasses import dataclass
 
 from geolab import GeotechEng
 from geolab.bearing_capacity import FootingShape, FootingSize, FoundationSize
-from geolab.utils import PI, arctan, cos, deg2rad, exp, sin, tan
+from geolab.utils import PI, arctan, cos, deg2rad, exp, round_, sin, tan
 
 
 @dataclass
-class terzaghi_bearing_capacity_factors:
+class TerzaghiBearingCapacityFactors:
     soil_friction_angle: float
     eng: GeotechEng = GeotechEng.MEYERHOF
 
     @property
+    @round_(precision=2)
     def nc(self) -> float:
-        """Returns ``Terzaghi`` bearing capacity factor :math:`N_c`."""
-        x1 = 1 / tan(self.soil_friction_angle)
-        x2 = self.nq - 1
+        """Return ``Terzaghi`` bearing capacity factor :math:`N_c`."""
+        x_1 = 1 / tan(self.soil_friction_angle)
+        x_2 = self.nq - 1
 
-        return x1 * x2
+        return x_1 * x_2
 
     @property
+    @round_(precision=2)
     def nq(self) -> float:
-        """Returns ``Terzaghi`` bearing capacity factor :math:`N_q`."""
-        x1 = (3 * PI) / 2 - deg2rad(self.soil_friction_angle)
-        x2 = 2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2)
+        """Return ``Terzaghi`` bearing capacity factor :math:`N_q`."""
+        x_1 = (3 * PI) / 2 - deg2rad(self.soil_friction_angle)
+        x_2 = 2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2)
 
-        return exp(x1 * tan(self.soil_friction_angle)) / x2
+        return exp(x_1 * tan(self.soil_friction_angle)) / x_2
 
     @property
+    @round_(precision=2)
     def ngamma(self) -> float:
-        r"""Returns ``Terzaghi`` bearing capacity factor :math:`N_\gamma`."""
+        r"""Return ``Terzaghi`` bearing capacity factor :math:`N_\gamma`."""
         _ngamma: float
 
         if self.eng is GeotechEng.MEYERHOF:
@@ -73,14 +76,21 @@ class TerzaghiBearingCapacity:
         soil_unit_weight: float,
         foundation_size: FoundationSize,
         eng: GeotechEng = GeotechEng.MEYERHOF,
+        local_shear: bool = False,
     ) -> None:
-        self.cohesion = cohesion
+        if local_shear:
+            self.cohesion = (2 / 3) * cohesion
+            self.soil_friction_angle = arctan(
+                (2 / 3) * tan(soil_friction_angle)
+            )
+        else:
+            self.cohesion = cohesion
+            self.soil_friction_angle = soil_friction_angle
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
-        self.soil_friction_angle = soil_friction_angle
         self.eng = eng
 
-        self.bcf = terzaghi_bearing_capacity_factors(
+        self.bcf = TerzaghiBearingCapacityFactors(
             self.soil_friction_angle, self.eng
         )
 
@@ -91,6 +101,7 @@ class TerzaghiBearingCapacity:
 
         return x1 + x2 + 0.5 * x3
 
+    @round_
     def ultimate_4_square_footing(self) -> float:
         x1 = 1.3 * self.cohesion * self.nc
         x2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
