@@ -52,3 +52,7 @@ wrap-descriptions = 79
 pre-summary-newline = true
 make-summary-multi-line = true
 close-quotes-on-newline = true
+
+[tool.pydocstyle]
+# convention = "pep257"
+ignore = ["D107", "D200"]
