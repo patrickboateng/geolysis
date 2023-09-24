@@ -135,12 +135,12 @@ class meyerhof_bearing_capacity_factors:
 
     @property
     def nc(self) -> float:
-        """Returns ``Meyerhof`` bearing capacity factor :math:`N_c`."""
+        """Return ``Meyerhof`` bearing capacity factor :math:`N_c`."""
         return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
 
     @property
     def nq(self) -> float:
-        """Returns ``Meyerhof`` bearing capacity factor :math:`N_q`."""
+        """Return ``Meyerhof`` bearing capacity factor :math:`N_q`."""
         x1 = tan(45 + self.soil_friction_angle / 2) ** 2
         x2 = exp(PI * tan(self.soil_friction_angle))
 
@@ -148,7 +148,7 @@ class meyerhof_bearing_capacity_factors:
 
     @property
     def ngamma(self) -> float:
-        r"""Returns ``Meyerhof`` bearing capacity factor :math:`N_\gamma`."""
+        r"""Return ``Meyerhof`` bearing capacity factor :math:`N_\gamma`."""
         return 2 * (self.nq + 1) * tan(self.soil_friction_angle)
 
 
@@ -163,7 +163,7 @@ class meyerhof_depth_factors:
 
     @property
     def dc(self) -> float:
-        """Returns ``Meyerhof`` depth factor :math:`d_c`."""
+        """Return ``Meyerhof`` depth factor :math:`d_c`."""
         _dc: float
 
         if self.depth_2_width_ratio <= 1:
@@ -177,7 +177,7 @@ class meyerhof_depth_factors:
 
     @property
     def dq(self) -> float:
-        """Returns ``Meyerhof`` depth factor :math:`d_q`."""
+        """Return ``Meyerhof`` depth factor :math:`d_q`."""
         _dq: float
 
         x2 = (1 - sin(self.soil_friction_angle)) ** 2
@@ -195,7 +195,7 @@ class meyerhof_depth_factors:
 
     @property
     def dgamma(self) -> float:
-        r"""Returns ``Meyerhof`` depth factor :math:`d_\gamma`."""
+        r"""Return ``Meyerhof`` depth factor :math:`d_\gamma`."""
         return 1
 
 
@@ -212,17 +212,17 @@ class meyerhof_shape_factors:
 
     @property
     def sc(self) -> float:
-        """Returns ``Meyerhof`` shape factor :math:`s_c`."""
+        """Return ``Meyerhof`` shape factor :math:`s_c`."""
         return 1 + self.width_2_length_ratio * (self.nq / self.nc)
 
     @property
     def sq(self) -> float:
-        """Returns ``Meyerhof`` shape factor :math:`s_q`."""
+        """Return ``Meyerhof`` shape factor :math:`s_q`."""
         return 1 + self.width_2_length_ratio * tan(self.soil_friction_angle)
 
     @property
     def sgamma(self) -> float:
-        r"""Returns ``Meyerhof`` shape factor :math:`s_\gamma`."""
+        r"""Return ``Meyerhof`` shape factor :math:`s_\gamma`."""
         return 1 - 0.4 * self.width_2_length_ratio
 
 
@@ -233,17 +233,17 @@ class meyerhof_inclination_factors:
 
     @property
     def ic(self) -> float:
-        """Returns ``Meyerhof`` inclination factor :math:`i_c`."""
+        """Return ``Meyerhof`` inclination factor :math:`i_c`."""
         return (1 - self.beta / 90) ** 2
 
     @property
     def iq(self) -> float:
-        """Returns ``Meyerhof`` inclination factor :math:`i_q`."""
+        """Return ``Meyerhof`` inclination factor :math:`i_q`."""
         return self.ic
 
     @property
     def igamma(self) -> float:
-        r"""Returns ``Meyerhof`` inclination factor :math:`i_\gamma`."""
+        r"""Return ``Meyerhof`` inclination factor :math:`i_\gamma`."""
         return (1 - self.beta / self.soil_friction_angle) ** 2
 
 
@@ -282,7 +282,7 @@ class MeyerhofBearingCapacity:
         return self.ultimate()
 
     def ultimate(self) -> float:
-        r"""Returns the ultimate bearing capacity according to ``Hansen``."""
+        r"""Return the ultimate bearing capacity according to ``Hansen``."""
         x1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
         x2 = self.soil_unit_weight * self.foundation_size.depth
         x3 = self.nq * self.sq * self.dq * self.iq
@@ -346,7 +346,7 @@ class hansen_bearing_capacity_factors:
 
     @property
     def nc(self) -> float:
-        """Returns ``Hansen`` bearing capacity factor :math:`N_c`."""
+        """Return ``Hansen`` bearing capacity factor :math:`N_c`."""
         x1 = 1 / tan(self.soil_friction_angle)
         x2 = self.nq - 1.0
 
@@ -354,7 +354,7 @@ class hansen_bearing_capacity_factors:
 
     @property
     def nq(self) -> float:
-        """Returns ``Hansen`` bearing capacity factor :math:`N_q`."""
+        """Return ``Hansen`` bearing capacity factor :math:`N_q`."""
         x1 = tan(45 + self.soil_friction_angle / 2) ** 2
         x2 = exp(PI * tan(self.soil_friction_angle))
 
@@ -362,7 +362,7 @@ class hansen_bearing_capacity_factors:
 
     @property
     def ngamma(self) -> float:
-        r"""Returns ``Hansen`` bearing capacity factor :math:`N_\gamma`."""
+        r"""Return ``Hansen`` bearing capacity factor :math:`N_\gamma`."""
         return 1.8 * (self.nq - 1.0) * tan(self.soil_friction_angle)
 
 
@@ -376,17 +376,17 @@ class hansen_depth_factors:
 
     @property
     def dc(self) -> float:
-        """Returns ``Hansen`` depth factor :math:`d_c`."""
+        """Return ``Hansen`` depth factor :math:`d_c`."""
         return 1 + 0.35 * self.depth_2_width_ratio
 
     @property
     def dq(self) -> float:
-        """Returns ``Hansen`` depth factor :math:`d_q`."""
+        """Return ``Hansen`` depth factor :math:`d_q`."""
         return self.dc
 
     @property
     def dgamma(self) -> float:
-        r"""Returns ``Hansen`` depth factor :math:`d_\gamma`."""
+        r"""Return ``Hansen`` depth factor :math:`d_\gamma`."""
         return 1.0
 
 
@@ -401,7 +401,7 @@ class hansen_shape_factors:
 
     @property
     def sc(self) -> float:
-        """Returns ``Hansen`` shape factor :math:`s_c`."""
+        """Return ``Hansen`` shape factor :math:`s_c`."""
         _sc: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -424,7 +424,7 @@ class hansen_shape_factors:
 
     @property
     def sq(self) -> float:
-        """Returns ``Hansen`` shape factor :math:`s_q`."""
+        """Return ``Hansen`` shape factor :math:`s_q`."""
         _sq: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -447,7 +447,7 @@ class hansen_shape_factors:
 
     @property
     def sgamma(self) -> float:
-        r"""Returns ``Hansen`` shape factor :math:`s_\gamma`."""
+        r"""Return ``Hansen`` shape factor :math:`s_\gamma`."""
         _sgamma: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -478,7 +478,7 @@ class hansen_inclination_factors:
 
     @property
     def ic(self) -> float:
-        """Returns ``Hansen`` inclination factor :math:`i_c`."""
+        """Return ``Hansen`` inclination factor :math:`i_c`."""
         x1 = (
             2
             * self.cohesion
@@ -489,12 +489,12 @@ class hansen_inclination_factors:
 
     @property
     def iq(self) -> float:
-        """Returns ``Hansen`` inclination factor :math:`i_q`."""
+        """Return ``Hansen`` inclination factor :math:`i_q`."""
         return 1 - (1.5 * self.beta) / self.total_vertical_load
 
     @property
     def igamma(self) -> float:
-        r"""Returns ``Hansen`` inclination factor :math:`i_\gamma`."""
+        r"""Return ``Hansen`` inclination factor :math:`i_\gamma`."""
         return self.iq**2
 
 
@@ -553,7 +553,7 @@ class HansenBearingCapacity:
         return self.ultimate()
 
     def ultimate(self) -> float:
-        """Returns the ultimate bearing capacity according to ``Hansen``."""
+        """Return the ultimate bearing capacity according to ``Hansen``."""
         x1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
         x2 = self.soil_unit_weight * self.foundation_size.depth
         x3 = self.nq * self.sq * self.dq * self.iq
@@ -617,12 +617,12 @@ class vesic_bearing_capacity_factors:
 
     @property
     def nc(self) -> float:
-        """Returns ``Vesic`` bearing capacity factor :math:`N_c`."""
+        """Return ``Vesic`` bearing capacity factor :math:`N_c`."""
         return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
 
     @property
     def nq(self) -> float:
-        """Returns ``Vesic`` bearing capacity factor :math:`N_q`."""
+        """Return ``Vesic`` bearing capacity factor :math:`N_q`."""
         x1 = tan(45 + self.soil_friction_angle / 2)
         x2 = exp(PI * tan(self.soil_friction_angle))
 
@@ -630,7 +630,7 @@ class vesic_bearing_capacity_factors:
 
     @property
     def ngamma(self) -> float:
-        r"""Returns ``Vesic`` bearing capacity factor :math:`N_\gamma`."""
+        r"""Return ``Vesic`` bearing capacity factor :math:`N_\gamma`."""
         return 2 * (self.nq + 1) * tan(self.soil_friction_angle)
 
 
@@ -645,12 +645,12 @@ class vesic_depth_factors:
 
     @property
     def dc(self) -> float:
-        """Returns ``Vesic`` depth factor :math:`d_c`."""
+        """Return ``Vesic`` depth factor :math:`d_c`."""
         return 1 + 0.4 * self.depth_2_width_ratio
 
     @property
     def dq(self) -> float:
-        """Returns ``Vesic`` depth factor :math:`d_q`."""
+        """Return ``Vesic`` depth factor :math:`d_q`."""
         x1 = 2 * tan(self.soil_friction_angle)
         x2 = (1 - sin(self.soil_friction_angle)) ** 2
         x3 = self.depth_2_width_ratio
@@ -659,7 +659,7 @@ class vesic_depth_factors:
 
     @property
     def dgamma(self) -> float:
-        r"""Returns ``Vesic`` depth factor :math:`d_\gamma`."""
+        r"""Return ``Vesic`` depth factor :math:`d_\gamma`."""
         return 1.0
 
 
@@ -677,7 +677,7 @@ class vesic_shape_factors:
 
     @property
     def sc(self) -> float:
-        """Returns ``Vesic`` shape factor :math:`s_c`."""
+        """Return ``Vesic`` shape factor :math:`s_c`."""
         _sc: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -700,7 +700,7 @@ class vesic_shape_factors:
 
     @property
     def sq(self) -> float:
-        """Returns ``Vesic`` shape factor :math:`s_q`."""
+        """Return ``Vesic`` shape factor :math:`s_q`."""
         _sq: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -723,7 +723,7 @@ class vesic_shape_factors:
 
     @property
     def sgamma(self) -> float:
-        r"""Returns ``Vesic`` shape factor :math:`s_\gamma`."""
+        r"""Return ``Vesic`` shape factor :math:`s_\gamma`."""
         _sgamma: float
 
         if self.footing_shape is FootingShape.STRIP:
@@ -752,17 +752,17 @@ class vesic_inclination_factors:
 
     @property
     def ic(self) -> float:
-        """Returns ``Vesic`` inclination factor :math:`i_c`."""
+        """Return ``Vesic`` inclination factor :math:`i_c`."""
         return (1 - self.beta / 90) ** 2
 
     @property
     def iq(self) -> float:
-        """Returns ``Vesic`` inclination factor :math:`i_q`."""
+        """Return ``Vesic`` inclination factor :math:`i_q`."""
         return self.ic
 
     @property
     def igamma(self) -> float:
-        r"""Returns ``Vesic`` inclination factor :math:`i_\gamma`."""
+        r"""Return ``Vesic`` inclination factor :math:`i_\gamma`."""
         return (1 - self.beta / self.soil_friction_angle) ** 2
 
 
@@ -822,7 +822,7 @@ class VesicBearingCapacity:
         return self.ultimate()
 
     def ultimate(self) -> float:
-        r"""Returns the ultimate bearing capacity according to ``Hansen``."""
+        r"""Return the ultimate bearing capacity according to ``Hansen``."""
         x1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
         x2 = self.soil_unit_weight * self.foundation_size.depth
         x3 = self.nq * self.sq * self.dq * self.iq
