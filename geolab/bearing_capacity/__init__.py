@@ -3,6 +3,8 @@
 import enum
 from dataclasses import dataclass, field
 
+from geolab.utils import PI
+
 
 @dataclass(slots=True)
 class FootingSize:
@@ -30,7 +32,7 @@ class FoundationSize:
 
     @property
     def width_2_length_ratio(self) -> float:
-        return self.footing_size.width_2_length_ratio
+        return self.width / self.length
 
 
 class FootingShape(enum.IntEnum):
