@@ -1,14 +1,21 @@
+"""
+This module provides classes for SPT Data Analysis.
+"""
 from typing import Iterable
 
 from geolab import ERROR_TOLERANCE, GeotechEng
-from geolab.utils import isclose, log10, mean, prod, sqrt
+from geolab.utils import isclose, log10, prod, round_, sqrt
 
 
-class spt_corrections:
-    r"""SPT N-value Overburden Pressure and Dilatancy Correction.
+class SPTCorrections:
+    r"""
+    Standard Penetration Test N-value correction for **Overburden Pressure**
+    and **Dilatancy**.
 
-    :param recorded_spt_nvalue: recorded SPT N-voalue (blows/300mm)
-    :type recorded_spt_nvalue: int
+    The available overburden pressure corrections are :py:meth:`skempton_opc_1986`,
+    :py:meth:`bazaraa_peck_opc_1969`, :py:meth:`gibbs_holtz_opc_1957`,
+    :py:meth:`peck_et_al_opc_1974`, and :py:meth:`liao_whitman_opc_1986`.
+
     :param hammer_efficiency: hammer efficiency, defaults to 0.6
     :type hammer_efficiency: float, optional
     :param borehole_diameter_correction: borehole diameter correction, defaults to 1.0
@@ -20,9 +27,11 @@ class spt_corrections:
     :param eop: effective overburden pressure :math:`kN/m^2`
     :type eop: float
     :param eng: specifies the type of overburden pressure correction formula to use.
-                Available values are geolab.GIBBS, geolab.BAZARAA, geolab.PECK, geolab.LIAO,
-                and geolab.SKEMPTON
+                Available values are ``GeotechEng.GIBBS``, ``GeotechEng.BAZARAA``,
+                ``GeotechEng.PECK``, ``GeotechEng.LIAO``, and ``GeotechEng.SKEMPTON``
     :type eng: GeotechEng
+
+    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
 
     def __init__(
@@ -42,12 +51,49 @@ class spt_corrections:
         self.eop = eop
         self.eng = eng
 
-    def n_design(self, recorded_spt_nvalues: Iterable[int]) -> float:
-        """"""
-        spt_corrected_n60s = map(self.spt_n60, recorded_spt_nvalues)
-        spt_corrected_vals = map(self.skempton_opc_1986, spt_corrected_n60s)
+    @round_(precision=2)
+    def n_design(self, corrected_spt_nvalues: Iterable[float]) -> float:
+        r"""
+        Returns the weighted average of the corrected SPT N-values in the
+        foundation influence zone.
 
-        return mean(spt_corrected_vals)
+        influence zone = :math:`D_f + 2B` or to a depth up to which soil types
+        are approximately the same.
+
+        B = width of foundation
+
+        .. math::
+
+            N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n} \frac{1}{i^2}}
+
+        - :math:`n \rightarrow` number of layers in the influence zone.
+        - :math:`N_i \rightarrow` corrected N-value at ith layer from the footing base.
+
+        .. note::
+
+            Alternatively, for ease in calculation, the lowest N-value from the influence
+            zone can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+
+        :param corrected_spt_nvalues: Corrected SPT N-values
+        :type corrected_spt_nvalues: Iterable[float]
+        """
+
+        if not len(corrected_spt_nvalues):  # type: ignore
+            return 0.0
+
+        total = 0.0
+        total_weights = 0.0
+
+        for idx, corrected_spt_nvalue in enumerate(
+            corrected_spt_nvalues, start=1
+        ):
+            idx_weight = 1 / idx**2
+            total += idx_weight * corrected_spt_nvalue
+            total_weights += idx_weight
+
+        _n_design = total / total_weights
+
+        return _n_design
 
     def skempton_opc_1986(self, spt_n60: float) -> float:
         corr_spt = (2 / (1 + 0.01044 * self.eop)) * spt_n60
@@ -106,7 +152,9 @@ class spt_corrections:
         return self._opc(corr_spt, spt_n60)
 
     def spt_n60(self, recorded_spt_nvalue: int) -> float:
-        """Return spt N-value corrected for 60% hammer efficiency."""
+        """
+        Return SPT N-value corrected for 60% hammer efficiency.
+        """
         correction = prod(
             self.hammer_efficiency,
             self.borehole_diameter_correction,
@@ -117,7 +165,9 @@ class spt_corrections:
         return (correction * recorded_spt_nvalue) / 0.6
 
     def dilatancy(self, recorded_spt_nvalue: int) -> float:
-        """Returns the dilatancy spt correction."""
+        """
+        Returns the dilatancy spt correction.
+        """
 
         dsc: float  # dilatancy spt correction
 
@@ -131,7 +181,9 @@ class spt_corrections:
         return dsc
 
     def overburden_pressure(self, recorded_spt_nvalue: int) -> float:
-        """Returns the overburden pressure spt correction."""
+        """
+        Returns the overburden pressure spt correction.
+        """
         opc: float
         spt_n60 = self.spt_n60(recorded_spt_nvalue)
 
