@@ -112,4 +112,3 @@ Correction of silty fine sands recommended by ``Terzaghi and Peck (1967)`` if
 .. References
 .. ----------
 
-
