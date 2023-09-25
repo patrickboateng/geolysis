@@ -49,7 +49,7 @@ style = "sphinx"
 black = true
 wrap-summaries = 79
 wrap-descriptions = 79
-pre-summary-newline = true
+# pre-summary-newline = true
 make-summary-multi-line = true
 close-quotes-on-newline = true
 
