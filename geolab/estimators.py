@@ -1,5 +1,27 @@
-"""
+"""Soil Engineering Parameter Estimators (:mod:`geolab.estimators`) .
+
 This module provides functions for estimating soil engineering parameters.
+
+Classes
+-------
+
+.. autosummary::
+    :toctree:
+
+    SoilUnitWeight
+    CompressionIndex
+    SoilFrictionAngle
+    UndrainedShearStrength
+
+
+Functions
+---------
+
+.. autosummary::
+    :toctree:
+
+    bowles_soil_elastic_modulus
+    rankine_foundation_depth
 """
 
 from dataclasses import dataclass
@@ -11,13 +33,12 @@ from geolab.utils import arctan, round_, sin
 
 @dataclass
 class SoilUnitWeight:
-    """
-    Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight of
+    """Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight of
     soil sample.
 
     :Example:
-
-        >>> suw = soil_unit_weight(spt_n60=13)
+        >>> from geolab.estimators import SoilUnitWeight
+        >>> suw = SoilUnitWeight(spt_n60=13)
         >>> suw.moist
         17.3
         >>> suw.saturated
@@ -34,8 +55,7 @@ class SoilUnitWeight:
     @property
     @round_
     def moist(self) -> float:
-        r"""
-        Returns the ``moist`` unit weight for cohesionless soil.
+        r"""Return the ``moist`` unit weight for cohesionless soil.
 
         .. math::
 
@@ -46,8 +66,7 @@ class SoilUnitWeight:
     @property
     @round_
     def saturated(self) -> float:
-        r"""
-        Returns the ``saturated`` unit weight for cohesive soil.
+        r"""Return the ``saturated`` unit weight for cohesive soil.
 
         .. math::
 
@@ -58,18 +77,17 @@ class SoilUnitWeight:
     @property
     @round_
     def submerged(self) -> float:
-        r"""
-        Returns the ``submerged`` unit weight of cohesionless soil.
+        r"""Return the ``submerged`` unit weight of cohesionless soil.
 
         .. math::
+
             \gamma_{submerged} = 8.8 + 0.01 \cdot N_{60} \rightarrow (kN/m^3)
         """
         return 8.8 + 0.01 * self.spt_n60
 
 
 class CompressionIndex:
-    r"""
-    The compression index of soil estimated from ``liquid limit`` or ``void
+    r"""The compression index of soil estimated from ``liquid limit`` or ``void
     ratio``.
 
     The available correlations used are :py:meth:`~compression_index.skempton_1994`,
@@ -77,17 +95,18 @@ class CompressionIndex:
 
     :Example:
 
-        >>> c_c = compression_index(liquid_limit=35)
+        >>> from geolab.estimators import CompressionIndex
+        >>> c_c = CompressionIndex(liquid_limit=35)
         >>> c_c.skempton_1994()
         0.175
         >>> c_c.terzaghi_et_al_1967()
         0.225
         >>> c_c() # By default it uses SKEMPTON's correlation
         0.175
-        >>> c_c = compression_index(liquid_limit=35, eng=GeotechEng.TERZAGHI)
+        >>> c_c = CompressionIndex(liquid_limit=35, eng=GeotechEng.TERZAGHI)
         >>> c_c() # This uses TERZAGHI's correlation
         0.225
-        >>> c_c = compression_index(void_ratio=0.78, eng=GeotechEng.HOUGH)
+        >>> c_c = CompressionIndex(void_ratio=0.78, eng=GeotechEng.HOUGH)
         >>> c_c()
         0.148
         >>> c_c.hough_1957()
@@ -142,8 +161,7 @@ class CompressionIndex:
 
     @round_
     def terzaghi_et_al_1967(self) -> float:
-        r"""
-        Returns the compression index of the soil using ``Terzaghi's``
+        r"""Return the compression index of the soil using ``Terzaghi's``
         correlation.
 
         .. math::
@@ -156,8 +174,7 @@ class CompressionIndex:
 
     @round_
     def skempton_1994(self) -> float:
-        r"""
-        Returns the compression index of the soil using ``Skempton's``
+        r"""Return the compression index of the soil using ``Skempton's``
         correlation.
 
         .. math::
@@ -170,8 +187,7 @@ class CompressionIndex:
 
     @round_
     def hough_1957(self) -> float:
-        r"""
-        Returns the compression index of the soil using ``Hough's``
+        r"""Return the compression index of the soil using ``Hough's``
         correlation.
 
         .. math::
@@ -184,8 +200,7 @@ class CompressionIndex:
 
 
 class SoilFrictionAngle:
-    r"""
-    Estimation of the internal angle of friction using spt_n60.
+    r"""Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction (:math:`\phi`)
     was determined from the minimum value from :py:meth:`wolff_1989` and 
@@ -193,7 +208,8 @@ class SoilFrictionAngle:
 
     :Example:
 
-        >>> sfa = soil_friction_angle(spt_n60=50)
+        >>> from geolab.estimators import SoilFrictionAngle
+        >>> sfa = SoilFrictionAngle(spt_n60=50)
         >>> sfa.wolff_1989()
         40.75
         >>> sfa() # By default it uses WOLFF's correlation
@@ -201,7 +217,7 @@ class SoilFrictionAngle:
         >>> sfa.spt_n60 = 40
         >>> sfa()
         38.236
-        >>> sfa = soil_friction_angle(spt_n60=40, eop=103.8, atm_pressure=101.325,\
+        >>> sfa = SoilFrictionAngle(spt_n60=40, eop=103.8, atm_pressure=101.325,\
         ... eng=GeotechEng.KULLHAWY)
         >>> sfa()
         46.874
@@ -257,8 +273,7 @@ class SoilFrictionAngle:
 
     @round_
     def wolff_1989(self) -> float:
-        r"""
-        Returns the internal angle of friction using ``Wolff's`` correlation
+        r"""Return the internal angle of friction using ``Wolff's`` correlation
         for granular soils (degrees).
 
         .. math::
@@ -269,8 +284,7 @@ class SoilFrictionAngle:
 
     @round_
     def kullhawy_mayne_1990(self) -> float:
-        r"""
-        Returns the internal angle of friction using ``Kullhawy & Mayne``
+        r"""Return the internal angle of friction using ``Kullhawy & Mayne``
         correlation for cohesionless soils (degrees).
 
         .. math::
@@ -287,20 +301,20 @@ class SoilFrictionAngle:
 
 
 class UndrainedShearStrength:
-    r"""
-    Undrained shear strength of soil.
+    r"""Undrained shear strength of soil.
 
     The available correlations used are :py:meth:`stroud_1974` and 
     :py:meth:`skempton_1957`.
 
     :Example:
 
-        >>> uss = undrained_shear_strength(spt_n60=40)
+        >>> from geolab.estimators import UndrainedShearStrength
+        >>> uss = UndrainedShearStrength(spt_n60=40)
         >>> uss()
         140.0
         >>> uss.stroud_1974()
         140.0
-        >>> uss = undrained_shear_strength(spt_n60=40, eop=108.3,\
+        >>> uss = UndrainedShearStrength(spt_n60=40, eop=108.3,\
         ... plasticity_index=12, eng=GeotechEng.SKEMPTON)
         >>> uss()
         16.722
@@ -356,8 +370,7 @@ class UndrainedShearStrength:
 
     @round_
     def stroud_1974(self):
-        r"""
-        Returns the undrained shear strength using ``Stroud's`` correlation.
+        r"""Return the undrained shear strength using ``Stroud's`` correlation.
 
         .. math::
 
@@ -375,8 +388,8 @@ class UndrainedShearStrength:
 
     @round_
     def skempton_1957(self):
-        r"""
-        Returns the undrained shear strength using ``Skempton's`` correlation.
+        r"""Return the undrained shear strength using ``Skempton's``
+        correlation.
 
         .. math::
 
@@ -401,8 +414,7 @@ class UndrainedShearStrength:
 
 @round_(precision=2)
 def bowles_soil_elastic_modulus(spt_n60: float) -> float:
-    r"""
-    Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
+    r"""Elastic modulus of soil estimated from ``Joseph Bowles`` correlation.
 
     .. math::
 
@@ -410,6 +422,7 @@ def bowles_soil_elastic_modulus(spt_n60: float) -> float:
 
     :Example:
 
+        >>> from geolab.estimators import bowles_soil_elastic_modulus
         >>> bowles_soil_elastic_modulus(20)
         11200
         >>> bowles_soil_elastic_modulus(30)
@@ -432,8 +445,7 @@ def rankine_foundation_depth(
     soil_unit_weight: float,
     soil_friction_angle: float,
 ) -> float:
-    r"""
-    Depth of foundation estimated using ``Rankine's`` formula.
+    r"""Depth of foundation estimated using ``Rankine's`` formula.
 
     .. math::
 
@@ -442,6 +454,7 @@ def rankine_foundation_depth(
 
     :Example:
 
+        >>> from geolab.estimators import rankine_foundation_depth
         >>> rankine_foundation_depth(350, 18, 35)
         1.4
 
