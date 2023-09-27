@@ -3,10 +3,10 @@ import pytest
 from geolab import ERROR_TOLERANCE
 from geolab.bearing_capacity import FoundationSize
 from geolab.bearing_capacity.ultimate import (
+    HansenBearingCapacityFactors,
     TerzaghiBearingCapacity,
     TerzaghiBearingCapacityFactors,
-    hansen_bearing_capacity_factors,
-    vesic_bearing_capacity_factors,
+    VesicBearingCapacityFactors,
 )
 
 
@@ -62,12 +62,6 @@ class TestTerzaghiBearingCapacity:
             == pytest.approx(408.11, ERROR_TOLERANCE)
         )
 
-    # def test_ultimate_4_circular_footing(self):
-    #     ...
-
-    # def test_ultimate_4_strip_footing(self):
-    #     ...
-
 
 @pytest.mark.parametrize(
     "soil_friction_angle,bcf",
@@ -96,7 +90,7 @@ def test_terzaghi_bcf(soil_friction_angle: float, bcf: dict):
     ],
 )
 def test_hansen_bcf(soil_friction_angle: float, bcf: dict):
-    hbcf = hansen_bearing_capacity_factors(soil_friction_angle)
+    hbcf = HansenBearingCapacityFactors(soil_friction_angle)
     assert hbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
     assert hbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
     assert hbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
@@ -112,7 +106,7 @@ def test_hansen_bcf(soil_friction_angle: float, bcf: dict):
     ],
 )
 def test_vesic_bcf(soil_friction_angle: float, bcf: dict):
-    vbcf = vesic_bearing_capacity_factors(soil_friction_angle)
+    vbcf = VesicBearingCapacityFactors(soil_friction_angle)
     assert vbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
     assert vbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
     assert vbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
