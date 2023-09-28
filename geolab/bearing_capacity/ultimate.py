@@ -86,11 +86,12 @@ class TerzaghiBearingCapacity:
         else:
             self.cohesion = cohesion
             self.soil_friction_angle = soil_friction_angle
+
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
         self.eng = eng
 
-        self.bcf = TerzaghiBearingCapacityFactors(
+        self.bearing_cpty_factors = TerzaghiBearingCapacityFactors(
             self.soil_friction_angle, self.eng
         )
 
@@ -118,15 +119,15 @@ class TerzaghiBearingCapacity:
 
     @property
     def nc(self) -> float:
-        return self.bcf.nc
+        return self.bearing_cpty_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.bcf.nq
+        return self.bearing_cpty_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.bcf.ngamma
+        return self.bearing_cpty_factors.ngamma
 
 
 class MeyerhofBearingCapacityFactors:
