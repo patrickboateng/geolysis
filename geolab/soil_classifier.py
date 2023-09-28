@@ -1,5 +1,6 @@
 """
-This module provides the implementations for ``USCS`` and ``AASHTO`` classification.
+This module provides the implementations for ``USCS`` and ``AASHTO``
+classification.
 """
 
 import math
@@ -39,8 +40,7 @@ def _check_plasticity_idx(
 
 @dataclass
 class AtterbergLimits:
-    """
-    A dataclass for Atterberg Limits.
+    """A dataclass for Atterberg Limits.
 
     :param liquid_limit: Water content beyond which soils flows under their
                          own weight (%)
@@ -79,22 +79,27 @@ class AtterbergLimits:
 
     @property
     def fine_soil(self) -> str:
-        """Returns the type of fine soil."""
+        """
+        Returns the type of fine soil.
+        """
         return CLAY if self.above_A_line() else SILT
 
     def above_A_line(self) -> bool:
-        """Checks if the soil sample is above A-Line."""
+        """
+        Checks if the soil sample is above A-Line.
+        """
         return self.plasticity_index > self.A_line
 
     def limit_plot_in_hatched_zone(self) -> bool:
-        """Checks if soil sample plot in the hatched zone."""
+        """
+        Checks if soil sample plot in the hatched zone.
+        """
         return math.isclose(self.plasticity_index, self.A_line)
 
 
 @dataclass
 class PSD:
-    """
-    A dataclass for Particle Size Distribution.
+    """A dataclass for Particle Size Distribution.
 
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
@@ -108,9 +113,8 @@ class PSD:
     :type d30: float
     :param d60: Diameter at which 60% of the soil by weight is finer
     :type d60: float
-
     :raises exceptions.PSDValueError: Raised when soil aggregates does not
-                                      approximately sum to 100%
+        approximately sum to 100%
     """
 
     fines: float
@@ -124,11 +128,15 @@ class PSD:
         _check_size_distribution(self.fines, self.sand, self.gravel)
 
     def has_particle_sizes(self) -> bool:
-        """Checks if soil sample has particle sizes."""
+        """
+        Checks if soil sample has particle sizes.
+        """
         return all((self.d10, self.d30, self.d60))
 
     def grade(self, coarse_soil: str) -> str:
-        """Returns the grade of the soil sample."""
+        """
+        Returns the grade of the soil sample.
+        """
         soil_grade: str
 
         # Gravel
@@ -180,20 +188,19 @@ class PSD:
 
 @dataclass
 class AASHTO:
-    """
-    American Association of State Highway and Transportation Officials
+    """American Association of State Highway and Transportation Officials
     (``AASHTO``) classification system.
 
-    The AASHTO Classification system categorizes soils for highways based
-    on Particle Size Distribution and plasticity characteristics. It classifies
-    both coarse-grained and fine-grained soils into eight main groups (A1 to A7)
-    with subgroups, along with a separate category (A8) for organic soils.
+    The AASHTO Classification system categorizes soils for highways based on
+    Particle Size Distribution and plasticity characteristics. It classifies
+    both coarse-grained and fine-grained soils into eight main groups (A1 to
+    A7) with subgroups, along with a separate category (A8) for organic soils.
 
-    :param liquid_limit: Water content beyond which soils flows under their
-                         own weight (%)
+    :param liquid_limit: Water content beyond which soils flows under their own
+        weight (%)
     :type liquid_limit: float
     :param plasticity_index: Range of water content over which soil remains in
-                             plastic condition (%)
+        plastic condition (%)
     :param fines: Percentage of fines in soil sample (%)
     :type fines: float
     """
@@ -221,7 +228,9 @@ class AASHTO:
         return 0.0 if grp_idx <= 0 else grp_idx
 
     def classify(self) -> str:
-        """Returns the AASHTO classification of the soil sample."""
+        """
+        Returns the AASHTO classification of the soil sample.
+        """
         clf: str  # soil classification
         grp_idx = self.group_index()
         grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
@@ -261,8 +270,7 @@ class AASHTO:
 
 @dataclass
 class USCS:
-    """
-    Unified Soil Classification System (``USCS``).
+    """Unified Soil Classification System (``USCS``).
 
     The Unified Soil Classification System, initially developed by Casagrande
     in 1948 and later modified in 1952, is widely utilized in engineering
@@ -409,7 +417,9 @@ class USCS:
         return clf
 
     def classify(self) -> str:
-        """Returns the ``USCS`` classification of the soil."""
+        """
+        Returns the ``USCS`` classification of the soil.
+        """
         if self.psd.fines < 50:
             # Coarse grained, Run Sieve Analysis
             if self.psd.gravel > self.psd.sand:
