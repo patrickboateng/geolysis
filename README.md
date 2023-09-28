@@ -8,12 +8,7 @@
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 ![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
 
-<!-- [![style guide](https://img.shields.io/badge/%20style-google-3666d6.svg?style=flat-square)](https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings) -->
-
-<!-- ![downloads](https://img.shields.io/pypi/dm/geolab?style=flat-square) -->
-
-`geolab` is an open-source software for geotechnical engineering that offers a suite of
-powerful tools and features for soil analysis and modeling. It provides soil classification based
+`geolab` offers a suite of powerful tools and features for soil analysis and modeling. It provides soil classification based
 on both USCS and AASHTO standards, bearing capacity analysis, estimation of soil engineering properties,
 settlement analysis, and finite element modeling. The software assists geotechnical engineers in their
 day-to-day work, enabling them to perform a wide range of tasks with ease and make informed decisions
@@ -42,7 +37,8 @@ design and build better projects with confidence.
 
 ## Installation
 
-_This install does not work yet. Project is still under **rapid** development_
+> [!NOTE]
+> _This install does not work yet. Project is still under **rapid** development_
 
 ```shell
 
@@ -52,21 +48,20 @@ pip install geolab
 
 ## Usage example
 
-### Soil Classification
-
 ```python
 
-```
-
-### Bearing Capacity Analysis
-
-```python
-
-```
-
-### Estimating Soil Engineering Parameters
-
-```python
+>>> from geolab.soil_classifier import AASHTO, USCS
+>>> aashto_classifier = AASHTO(liquid_limit=37.7, plasticity_index=13.9, fines=47.44)
+>>> aashto_classifier.classify()
+'A-6(4)'
+>>> uscs_classifier = USCS(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13,
+...                        fines=47.88, sand=37.84, gravel=14.28) # single classification
+>>> uscs_classifier.classify()
+'SC'
+>>> uscs_classifier = USCS(liquid_limit=30.8, plastic_limit=20.7, plasticity_index=10.1,
+...                       fines=10.29, sand=81.89, gravel=7.83, d10=0.07, d30=0.3, d60=0.8) # dual classification
+>>> uscs_classifier.classify()
+'SW-SC'
 
 ```
 
