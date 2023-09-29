@@ -94,7 +94,8 @@ license.
 - **Email**: <boatengpato.pb@gmail.com>,
 - **LinkedIn**: <https://linkedin.com/in/patrickboateng/>
 
-_For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>_
+> [!TIP]
+> For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>
 
 ## Project Links
 
