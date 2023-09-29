@@ -2,13 +2,7 @@
 
 `geolab` is an open-source software for geotechnical engineering analysis and modelling.
 
-<!-- [![pypi](https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/user/Pato546/)
-![license](https://img.shields.io/pypi/l/geolab?style=flat-square)
-[![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
-![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336) -->
-
-<p align="left">
+<p align="center">
     <a href="https://pypi.org/user/Pato546/">
         <img src="https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white" alt="pypi">
     </a>
@@ -18,8 +12,8 @@
     <a href="https://pycqa.github.io/isort/">
         <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336" alt="isort">
     </a>
-    <a href="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
-        <img src="https://github.com/psf/black" alt="black">
+    <a href="https://github.com/psf/black">
+        <img src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square" alt="black">
     </a>
     <a href="">
         <img src="https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336" alt="repo size">
