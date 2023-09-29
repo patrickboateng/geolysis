@@ -2,11 +2,29 @@
 
 `geolab` is an open-source software for geotechnical engineering analysis and modelling.
 
-[![pypi](https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/user/Pato546/)
+<!-- [![pypi](https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/user/Pato546/)
 ![license](https://img.shields.io/pypi/l/geolab?style=flat-square)
 [![isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
-![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336)
+![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336) -->
+
+<p align="left">
+    <a href="https://pypi.org/user/Pato546/">
+        <img src="https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white" alt="pypi">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/pypi/l/geolab?style=flat-square" alt="license">
+    </a>
+    <a href="https://pycqa.github.io/isort/">
+        <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336" alt="isort">
+    </a>
+    <a href="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square">
+        <img src="https://github.com/psf/black" alt="black">
+    </a>
+    <a href="">
+        <img src="https://img.shields.io/github/repo-size/patrickboateng/geolab?style=flat-square&labelColor=ef8336" alt="repo size">
+    </a>
+</p>
 
 `geolab` offers a suite of powerful tools and features for soil analysis and
 modeling. It provides soil classification based on both USCS and AASHTO
@@ -20,9 +38,11 @@ to design and build better projects with confidence.
 ## Features
 
 - Provides soil classification based on `USCS` and `AASHTO` standards.
-- Bearing capacity analysis can be performed, both from results obtained from **laboratory** or **field**.
+- Bearing capacity analysis can be performed, both from results obtained from
+  **laboratory** or **field**.
 - Estimates important soil engineering properties.
-- Settlement analysis tools to predict and model soil settlements under various loads and conditions.
+- Settlement analysis tools to predict and model soil settlements under various
+  loads and conditions.
 - Supports finite element modeling of soil behaviour under different conditions.
 
 ## Table of Contents
@@ -76,25 +96,27 @@ Check the [CHANGELOG](./CHANGELOG.md) for release history.
 
 ## Code of Conduct
 
-This project has a [Code of Conduct](./CODE_OF_CONDUCT.md) that we expect all contributors
-to adhere to. Please read and follow it when participating in this project.
+This project has a [Code of Conduct](./CODE_OF_CONDUCT.md) that we expect all
+contributors to adhere to. Please read and follow it when participating in this
+project.
 
 ## Contributing
 
-See [CONTRIBUTING](docs/CONTRIBUTING.md#how-to-contribute) for more information on contributing.
+See [CONTRIBUTING](docs/CONTRIBUTING.md#how-to-contribute) for more information
+on contributing.
 
 ## License
 
-Distributed under the `MIT license`. See [LICENSE](./LICENSE.txt) for more information. By using,
-distributing, or contributing to this project, you agree to the terms and conditions of this
-license.
+Distributed under the `MIT license`. See [LICENSE](./LICENSE.txt) for more
+information. By using, distributing, or contributing to this project, you agree
+to the terms and conditions of this license.
 
 ## Contact Information
 
 - **Email**: <boatengpato.pb@gmail.com>,
 - **LinkedIn**: <https://linkedin.com/in/patrickboateng/>
 
-> [!TIP]
+> [!IMPORTANT]
 > For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>
 
 ## Project Links
