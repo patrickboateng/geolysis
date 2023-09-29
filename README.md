@@ -36,7 +36,8 @@ design and build better projects with confidence.
 
 ## Installation
 
-> [!NOTE] > _This install does not work yet. Project is still under **rapid** development_
+> [!NOTE]
+> This install does not work yet. Project is still under **rapid** development
 
 ```shell
 
