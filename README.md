@@ -90,7 +90,7 @@ Check the [CHANGELOG](./CHANGELOG.md) for release history.
 
 ## Code of Conduct
 
-This project has a [Code of Conduct](./CODE_OF_CONDUCT.md) that we expect all
+This project has a [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md) that we expect all
 contributors to adhere to. Please read and follow it when participating in this
 project.
 
