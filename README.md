@@ -52,7 +52,7 @@ to design and build better projects with confidence.
 
 ## Installation
 
-> [!NOTE]
+> [!WARNING]
 > This install does not work yet. Project is still under **rapid** development
 
 ```shell
