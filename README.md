@@ -21,7 +21,7 @@
 </p>
 
 `geolab` offers powerful tools and features for soil mechanics and modeling. It
-provides soil classification based on USCS and AASHTO standards, bearing
+provides soil classification based on `USCS` and `AASHTO` standards, bearing
 capacity analysis, estimation of soil engineering properties, settlement
 analysis, and finite element modeling. The software assists geotechnical
 engineers in their day-to-day work, enabling them to efficiently perform a wide
