@@ -1,15 +1,59 @@
 """
 This module provides classes for SPT Data Analysis.
 """
-from typing import Iterable
+from typing import Sequence
 
 from geolab import ERROR_TOLERANCE, GeotechEng
 from geolab.utils import isclose, log10, prod, round_, sqrt
 
 
+@round_(precision=2)
+def n_design(corrected_spt_nvalues: Sequence[float]) -> float:
+    r"""Returns the weighted average of the corrected SPT N-values in the
+    foundation influence zone.
+
+    influence zone = :math:`D_f + 2B` or to a depth up to which soil types
+    are approximately the same.
+
+    B = width of foundation
+
+    .. math::
+
+        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n} \frac{1}{i^2}}
+
+    - :math:`n \rightarrow` number of layers in the influence zone.
+    - :math:`N_i \rightarrow` corrected N-value at ith layer from the footing base.
+
+    .. note::
+
+        Alternatively, for ease in calculation, the lowest N-value from the influence
+        zone can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+
+    :param corrected_spt_nvalues: Corrected SPT N-values
+    :type corrected_spt_nvalues: Sequence[float]
+
+    :return: weighted average of corrected SPT N-values
+    :rtype: float
+    """
+
+    if len(corrected_spt_nvalues) == 0:
+        return 0.0
+
+    total = 0.0
+    total_weights = 0.0
+
+    for idx, corrected_spt_nvalue in enumerate(corrected_spt_nvalues, start=1):
+        idx_weight = 1 / idx**2
+        total += idx_weight * corrected_spt_nvalue
+        total_weights += idx_weight
+
+    _n_design = total / total_weights
+
+    return _n_design
+
+
 class SPTCorrections:
-    r"""
-    Standard Penetration Test N-value correction for **Overburden Pressure**
+    r"""Standard Penetration Test N-value correction for **Overburden Pressure**
     and **Dilatancy**.
 
     The available overburden pressure corrections are :py:meth:`skempton_opc_1986`,
@@ -50,50 +94,6 @@ class SPTCorrections:
         self.rod_length_correction = rod_length_correction
         self.eop = eop
         self.eng = eng
-
-    @round_(precision=2)
-    def n_design(self, corrected_spt_nvalues: Iterable[float]) -> float:
-        r"""
-        Returns the weighted average of the corrected SPT N-values in the
-        foundation influence zone.
-
-        influence zone = :math:`D_f + 2B` or to a depth up to which soil types
-        are approximately the same.
-
-        B = width of foundation
-
-        .. math::
-
-            N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n} \frac{1}{i^2}}
-
-        - :math:`n \rightarrow` number of layers in the influence zone.
-        - :math:`N_i \rightarrow` corrected N-value at ith layer from the footing base.
-
-        .. note::
-
-            Alternatively, for ease in calculation, the lowest N-value from the influence
-            zone can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
-
-        :param corrected_spt_nvalues: Corrected SPT N-values
-        :type corrected_spt_nvalues: Iterable[float]
-        """
-
-        if not len(corrected_spt_nvalues):  # type: ignore
-            return 0.0
-
-        total = 0.0
-        total_weights = 0.0
-
-        for idx, corrected_spt_nvalue in enumerate(
-            corrected_spt_nvalues, start=1
-        ):
-            idx_weight = 1 / idx**2
-            total += idx_weight * corrected_spt_nvalue
-            total_weights += idx_weight
-
-        _n_design = total / total_weights
-
-        return _n_design
 
     def skempton_opc_1986(self, spt_n60: float) -> float:
         corr_spt = (2 / (1 + 0.01044 * self.eop)) * spt_n60
