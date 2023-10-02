@@ -48,8 +48,8 @@ class TerzaghiBearingCapacityFactors:
 
 
 class TerzaghiBearingCapacity:
-    r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip footing``,
-    ``square footing`` and ``circular footing``.
+    r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip
+    footing``, ``square footing`` and ``circular footing``.
 
     :Example:
 
@@ -96,6 +96,7 @@ class TerzaghiBearingCapacity:
         )
 
     def ultimate_4_strip_footing(self) -> float:
+        """Return ultimate bearing capacity of strip footings."""
         x_1 = self.cohesion * self.nc
         x_2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
         x_3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
@@ -104,6 +105,7 @@ class TerzaghiBearingCapacity:
 
     @round_
     def ultimate_4_square_footing(self) -> float:
+        """Return ultimate bearing capacity for square footings."""
         x_1 = 1.3 * self.cohesion * self.nc
         x_2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
         x_3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
@@ -111,6 +113,7 @@ class TerzaghiBearingCapacity:
         return x_1 + x_2 + 0.4 * x_3
 
     def ultimate_4_circular_footing(self) -> float:
+        """Return ultimate bearing capacity for circular footing."""
         x_1 = 1.3 * self.cohesion * self.nc
         x_2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
         x_3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
@@ -509,13 +512,13 @@ class HansenBearingCapacity:
     :param foundation_size: Size of foundation
     :param friction_angle: Internal angle of friction (degrees)
     :type friction_angle: float
-    :param beta: Inclination of the load on the foundation with respect to the vertical (degrees)
+    :param beta: Inclination of the load on the foundation with respect to the
+        vertical (degrees)
     :type beta: float
     :param total_vertical_load: Total vertical load on foundation
     :type total_vertical_load: float
     :param footing_shape: Shape of the footing
     :type footing_shape: float
-
     """
 
     def __init__(
