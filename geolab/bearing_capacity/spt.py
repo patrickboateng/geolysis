@@ -1,6 +1,4 @@
-"""
-This module provides classes for SPT Data Analysis.
-"""
+"""This module provides classes for SPT Data Analysis."""
 from typing import Sequence
 
 from geolab import ERROR_TOLERANCE, GeotechEng
@@ -29,7 +27,7 @@ def n_design(corrected_spt_nvalues: Sequence[float]) -> float:
         Alternatively, for ease in calculation, the lowest N-value from the influence
         zone can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
 
-    :param corrected_spt_nvalues: Corrected SPT N-values
+    :param corrected_spt_nvalues: Corrected SPT N-values in the foundation influence zone
     :type corrected_spt_nvalues: Sequence[float]
 
     :return: weighted average of corrected SPT N-values
@@ -152,9 +150,7 @@ class SPTCorrections:
         return self._opc(corr_spt, spt_n60)
 
     def spt_n60(self, recorded_spt_nvalue: int) -> float:
-        """
-        Return SPT N-value corrected for 60% hammer efficiency.
-        """
+        """Return SPT N-value corrected for 60% hammer efficiency."""
         correction = prod(
             self.hammer_efficiency,
             self.borehole_diameter_correction,
@@ -165,9 +161,7 @@ class SPTCorrections:
         return (correction * recorded_spt_nvalue) / 0.6
 
     def dilatancy(self, recorded_spt_nvalue: int) -> float:
-        """
-        Returns the dilatancy spt correction.
-        """
+        """Returns the dilatancy spt correction."""
 
         dsc: float  # dilatancy spt correction
 
@@ -181,9 +175,7 @@ class SPTCorrections:
         return dsc
 
     def overburden_pressure(self, recorded_spt_nvalue: int) -> float:
-        """
-        Returns the overburden pressure spt correction.
-        """
+        """Returns the overburden pressure spt correction."""
         opc: float
         spt_n60 = self.spt_n60(recorded_spt_nvalue)
 
