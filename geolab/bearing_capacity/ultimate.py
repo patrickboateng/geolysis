@@ -71,6 +71,7 @@ class TerzaghiBearingCapacity:
 
     def __init__(
         self,
+        *,
         cohesion: float,
         soil_friction_angle: float,
         soil_unit_weight: float,

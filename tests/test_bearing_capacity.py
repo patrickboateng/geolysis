@@ -13,13 +13,18 @@ from geolab.bearing_capacity.ultimate import (
 class TestTerzaghiBearingCapacity:
     @classmethod
     def setup_class(cls):
-        fs_general_shear = FoundationSize(1.068, 1.068, 1.2)
-        fs_local_shear = FoundationSize(1.715, 1.715, 1.2)
         cls.tbc_general_shear = TerzaghiBearingCapacity(
-            16, 27, 18.5, fs_general_shear
+            cohesion=16,
+            soil_friction_angle=27,
+            soil_unit_weight=18.5,
+            foundation_size=FoundationSize(1.068, 1.068, 1.2),
         )
         cls.tbc_local_shear = TerzaghiBearingCapacity(
-            16, 27, 18.5, fs_local_shear, local_shear=True
+            cohesion=16,
+            soil_friction_angle=27,
+            soil_unit_weight=18.5,
+            foundation_size=FoundationSize(1.715, 1.715, 1.2),
+            local_shear=True,
         )
 
     @classmethod
@@ -52,7 +57,6 @@ class TestTerzaghiBearingCapacity:
         )
 
     def test_ultimate_4_square_footing(self):
-        print(self.tbc_local_shear.ultimate_4_square_footing())
         assert (
             self.tbc_general_shear.ultimate_4_square_footing()
             == pytest.approx(1052.85, ERROR_TOLERANCE)
