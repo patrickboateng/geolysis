@@ -4,16 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "civnovate-geolab"
+description = "geolab is an opensource software for geotechnical engineering analysis and modeling."
+readme = {file = "README.md", content-type = "text/markdown"}
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.10"
+keywords = [
+    "finite-element-analysis", 
+    "geotechnical-engineering", 
+    "soil-classification", 
+    "settlement-analysis", 
+    "bearing-capacity-analysis",
+]
 authors = [
     {name="Patrick Boateng", email="boatengpato.pb@gmail.com"}
 ]
 maintainers = [
     {name = "Patrick Boateng", email = "boatengpato.pb@gmail.com"}
 ]
-description = "geolab is an opensource software for geotechnical engineering analysis and modeling."
-readme = {file = "README.md", content-type = "text/markdown"}
-license = { file = "LICENSE.txt" }
-requires-python = ">=3.10"
 dependencies = []
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -38,8 +45,11 @@ version = {attr = "geolab.__version__"}
 Repository = "https://github.com/patrickboateng/geolab"
 Changelog = "https://github.com/patrickboateng/geolab/blob/main/CHANGELOG.md"
 
-[tool.setuptools]
-packages = ["geolab"]
+[tool.setuptools.packages.find]
+where = ["."]  
+include = ["geolab*"] 
+exclude = ["tests*"]  
+namespaces = false
 
 [project.optional-dependencies]
 dev = ["wheel", "black", "pytest", "mypy"]
