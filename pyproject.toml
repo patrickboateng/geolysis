@@ -3,23 +3,29 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "geolab"
-version = "0.1.0"
+name = "civnovate-geolab"
 authors = [{name="Patrick Boateng", email="boatengpato.pb@gmail.com"}]
-description = ""
-readme = "README.md"
+description = "geolab is an opensource software for geotechnical engineering analysis and modeling."
+readme = {file = "README.md", content-type = "text/markdown"}
 license = { file = "LICENSE.txt" }
 requires-python = ">=3.10"
 dependencies = []
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Natural Language :: English",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Intended Audience :: End Users/Desktop",
+    "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
 ]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "geolab.__version__"}
 
 [project.urls]
 "Homepage" = "https://github.com/patrickboateng/geolab"
