@@ -4,7 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "civnovate-geolab"
-authors = [{name="Patrick Boateng", email="boatengpato.pb@gmail.com"}]
+authors = [
+    {name="Patrick Boateng", email="boatengpato.pb@gmail.com"}
+]
+maintainers = [
+    {name = "Patrick Boateng", email = "boatengpato.pb@gmail.com"}
+]
 description = "geolab is an opensource software for geotechnical engineering analysis and modeling."
 readme = {file = "README.md", content-type = "text/markdown"}
 license = { file = "LICENSE.txt" }
@@ -28,7 +33,10 @@ dynamic = ["version"]
 version = {attr = "geolab.__version__"}
 
 [project.urls]
-"Homepage" = "https://github.com/patrickboateng/geolab"
+# Homepage = "https://github.com/patrickboateng/geolab"
+# Documentation = "https://readthedocs.org"
+Repository = "https://github.com/patrickboateng/geolab"
+Changelog = "https://github.com/patrickboateng/geolab/blob/main/CHANGELOG.md"
 
 [tool.setuptools]
 packages = ["geolab"]
