@@ -99,24 +99,25 @@ Ultimate Bearing Capacity example:
 
 ## Release History
 
-Check the [CHANGELOG](./CHANGELOG.md) for release history.
+Check the [CHANGELOG](https://github.com/patrickboateng/geolab/blob/main/CHANGELOG.md)
+for release history.
 
 ## Code of Conduct
 
-This project has a [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md) that we expect all
-contributors to adhere to. Please read and follow it when participating in this
-project.
+This project has a [CODE_OF_CONDUCT](https://github.com/patrickboateng/geolab/blob/main/CODE_OF_CONDUCT.md)
+that we expect all contributors to adhere to. Please read and follow it when
+participating in this project.
 
 ## Contributing
 
-See [CONTRIBUTING](docs/CONTRIBUTING.md#how-to-contribute) for more information
-on contributing.
+See [CONTRIBUTING](https://github.com/patrickboateng/geolab/blob/main/docs/CONTRIBUTING.md#how-to-contribute)
+for more information on contributing.
 
 ## License
 
-Distributed under the `MIT license`. See [LICENSE](./LICENSE.txt) for more
-information. By using, distributing, or contributing to this project, you agree
-to the terms and conditions of this license.
+Distributed under the `MIT license`. See [LICENSE](https://github.com/patrickboateng/geolab/blob/main/LICENSE.txt)
+for more information. By using, distributing, or contributing to this project,
+you agree to the terms and conditions of this license.
 
 ## Contact Information
 
