@@ -52,8 +52,7 @@ def sqrt(x: float, /) -> float:
 
 
 def prod(*args: float | int) -> float:
-    """
-    Calculate the product of all the elements in the input iterable.
+    """Calculate the product of all the elements in the input iterable.
 
     The default start value for the product is 1.
 
@@ -65,9 +64,8 @@ def prod(*args: float | int) -> float:
 
 
 def round_(precision: Callable[..., float] | int) -> Callable:
-    """
-    A decorator that rounds the result of a function to a specified number of
-    decimal places.
+    """A decorator that rounds the result of a function to a specified number
+    of decimal places.
 
     This decorator can be used with functions that return a float.
 

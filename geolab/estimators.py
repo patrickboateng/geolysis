@@ -1,4 +1,4 @@
-"""Soil Engineering Parameter Estimators (:mod:`geolab.estimators`) .
+"""Soil Engineering Parameter Estimators (:mod:`geolab.estimators`).
 
 This module provides functions for estimating soil engineering parameters.
 
@@ -388,7 +388,8 @@ class UndrainedShearStrength:
 
     @round_
     def skempton_1957(self):
-        r"""Return the undrained shear strength using ``Skempton's`` correlation.
+        r"""Return the undrained shear strength using ``Skempton's``
+        correlation.
 
         .. math::
 
