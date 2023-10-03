@@ -1,6 +1,6 @@
 # geolab
 
-`geolab` is an open-source software for geotechnical engineering analysis and modelling.
+`geolab` is an open-source software for geotechnical engineering analysis and modeling.
 
 <p align="center">
     <a href="https://pypi.org/user/Pato546/">
@@ -43,15 +43,17 @@ build better projects.
 ## Installation
 
 > [!WARNING]
-> This install does not work yet. Project is still under **rapid** development
+> Project is still under development.
 
 ```shell
 
-pip install geolab
+pip install civnovate-geolab
 
 ```
 
 ## Usage example
+
+Soil Classification example:
 
 ```python
 
@@ -97,11 +99,10 @@ to the terms and conditions of this license.
 
 ## Contact Information
 
-- **Email**: <boatengpato.pb@gmail.com>,
 - **LinkedIn**: <https://linkedin.com/in/patrickboateng/>
 
 > [!IMPORTANT]
-> For questions or comments about `geolab`, please contact <boatengpato.pb@gmail.com>
+> For questions or comments about `geolab`, please contact <https://linkedin.com/in/patrickboateng/>
 
 ## Project Links
 
