@@ -5,21 +5,21 @@ ERROR_TOLERANCE = 0.01
 DECIMAL_PLACES = 3
 
 
-class GeotechEng(enum.IntEnum):
+class GeotechEng(enum.IntFlag):
     """Represents a set of ``Geotechnical Engineers``."""
 
-    BAZARAA = enum.auto()
-    GIBBS = enum.auto()
-    HANSEN = enum.auto()
-    HOUGH = enum.auto()
-    LIAO = enum.auto()
-    MEYERHOF = enum.auto()
-    WOLFF = enum.auto()
-    SKEMPTON = enum.auto()
-    STROUD = enum.auto()
-    TERZAGHI = enum.auto()
-    VESIC = enum.auto()
-    KULLHAWY = enum.auto()
+    BAZARAA = 1
+    GIBBS = 2
+    HANSEN = 4
+    HOUGH = 8
+    KULLHAWY = 16
+    LIAO = 32
+    MEYERHOF = 64
+    SKEMPTON = 128
+    STROUD = 256
+    TERZAGHI = 512
+    VESIC = 1024
+    WOLFF = 2048
 
     def __str__(self) -> str:
         return self.name

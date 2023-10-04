@@ -3,8 +3,6 @@
 import enum
 from dataclasses import dataclass, field
 
-from geolab.utils import PI
-
 
 @dataclass(slots=True)
 class FootingSize:
@@ -35,11 +33,11 @@ class FoundationSize:
         return self.width / self.length
 
 
-class FootingShape(enum.IntEnum):
-    CIRCULAR = enum.auto()
-    RECTANGULAR = enum.auto()
-    SQUARE = enum.auto()
-    STRIP = enum.auto()
+class FootingShape(enum.IntFlag):
+    CIRCULAR = 1
+    RECTANGULAR = 2
+    SQUARE = 4
+    STRIP = 8
 
     def __str__(self) -> str:
         return self.name
