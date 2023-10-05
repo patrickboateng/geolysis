@@ -13,11 +13,17 @@ from geolab.bearing_capacity.ultimate import (
 class TestTerzaghiBearingCapacity:
     @classmethod
     def setup_class(cls):
-        cls.tbc_general_shear = TerzaghiBearingCapacity(
+        cls.tbc_1 = TerzaghiBearingCapacity(
             cohesion=16,
             soil_friction_angle=27,
             soil_unit_weight=18.5,
             foundation_size=FoundationSize(1.068, 1.068, 1.2),
+        )
+        cls.tbc_2 = TerzaghiBearingCapacity(
+            cohesion=30,
+            soil_friction_angle=30,
+            soil_unit_weight=18,
+            foundation_size=FoundationSize(2, 2, 1.5),
         )
         cls.tbc_local_shear = TerzaghiBearingCapacity(
             cohesion=16,
@@ -32,21 +38,18 @@ class TestTerzaghiBearingCapacity:
         ...
 
     def test_nc(self):
-        assert self.tbc_general_shear.nc == pytest.approx(
-            29.24, ERROR_TOLERANCE
-        )
+        assert self.tbc_1.nc == pytest.approx(29.24, ERROR_TOLERANCE)
+        assert self.tbc_2.nc == pytest.approx(37.16, ERROR_TOLERANCE)
         assert self.tbc_local_shear.nc == pytest.approx(16.21, ERROR_TOLERANCE)
 
     def test_nq(self):
-        assert self.tbc_general_shear.nq == pytest.approx(
-            15.9, ERROR_TOLERANCE
-        )
+        assert self.tbc_1.nq == pytest.approx(15.9, ERROR_TOLERANCE)
+        assert self.tbc_2.nq == pytest.approx(22.46, ERROR_TOLERANCE)
         assert self.tbc_local_shear.nq == pytest.approx(6.54, ERROR_TOLERANCE)
 
     def test_ngamma(self):
-        assert self.tbc_general_shear.ngamma == pytest.approx(
-            11.6, ERROR_TOLERANCE
-        )
+        assert self.tbc_1.ngamma == pytest.approx(11.6, ERROR_TOLERANCE)
+        assert self.tbc_2.ngamma == pytest.approx(19.13, ERROR_TOLERANCE)
         assert self.tbc_local_shear.ngamma == pytest.approx(
             2.73, ERROR_TOLERANCE
         )
@@ -57,9 +60,11 @@ class TestTerzaghiBearingCapacity:
         )
 
     def test_ultimate_4_square_footing(self):
-        assert (
-            self.tbc_general_shear.ultimate_4_square_footing()
-            == pytest.approx(1052.85, ERROR_TOLERANCE)
+        assert self.tbc_1.ultimate_4_square_footing() == pytest.approx(
+            1052.85, ERROR_TOLERANCE
+        )
+        assert self.tbc_2.ultimate_4_square_footing() == pytest.approx(
+            2331.13, ERROR_TOLERANCE
         )
         assert (
             self.tbc_local_shear.ultimate_4_square_footing()
