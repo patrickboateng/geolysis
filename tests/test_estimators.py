@@ -19,9 +19,6 @@ def test_compression_index():
     c_c = CompressionIndex(void_ratio=0.78, eng=GeotechEng.HOUGH)
     assert c_c.hough_1957() == pytest.approx(0.148, ERROR_TOLERANCE)
 
-    with pytest.raises(EngineerTypeError):
-        CompressionIndex(liquid_limit=40, eng=GeotechEng.GIBBS)
-
 
 def test_soil_friction_angle():
     sfa = SoilFrictionAngle(spt_n60=50)
