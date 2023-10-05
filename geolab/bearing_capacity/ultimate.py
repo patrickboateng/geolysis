@@ -96,30 +96,40 @@ class TerzaghiBearingCapacity:
             self.soil_friction_angle, self.eng
         )
 
+    @property
+    def _x_1(self) -> float:
+        return self.cohesion * self.nc
+
+    @property
+    def _x_2(self) -> float:
+        return self.soil_unit_weight * self.foundation_size.depth * self.nq
+
+    @property
+    def _x_3(self) -> float:
+        return self.soil_unit_weight * self.foundation_size.width * self.ngamma
+
+    @round_
     def ultimate_4_strip_footing(self) -> float:
         """Return ultimate bearing capacity of strip footings."""
-        x_1 = self.cohesion * self.nc
-        x_2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
-        x_3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
-
-        return x_1 + x_2 + 0.5 * x_3
+        return self._x_1 + self._x_2 + 0.5 * self._x_3
 
     @round_
     def ultimate_4_square_footing(self) -> float:
         """Return ultimate bearing capacity for square footings."""
-        x_1 = 1.3 * self.cohesion * self.nc
-        x_2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
-        x_3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
+        return 1.3 * self._x_1 + self._x_2 + 0.4 * self._x_3
 
-        return x_1 + x_2 + 0.4 * x_3
-
+    @round_
     def ultimate_4_circular_footing(self) -> float:
         """Return ultimate bearing capacity for circular footing."""
-        x_1 = 1.3 * self.cohesion * self.nc
-        x_2 = self.soil_unit_weight * self.foundation_size.depth * self.nq
-        x_3 = self.soil_unit_weight * self.foundation_size.width * self.ngamma
+        return 1.3 * self._x_1 + self._x_2 + 0.3 * self._x_3
 
-        return x_1 + x_2 + 0.3 * x_3
+    @round_
+    def ultimate_4_rectangular_footing(self) -> float:
+        footing_size = self.foundation_size.footing_size
+        a = 1 + 0.3 * (footing_size.width / footing_size.length)
+        b = 0.5 * (1 - 0.2 * footing_size.width / footing_size.length)
+
+        return a * self._x_1 + self._x_2 + b * self._x_3
 
     @property
     def nc(self) -> float:
