@@ -45,12 +45,6 @@ build better projects.
 > [!WARNING]
 > Project is still under development.
 
-```shell
-
-pip install civnovate-geolab
-
-```
-
 ## Usage example
 
 Soil Classification example:
