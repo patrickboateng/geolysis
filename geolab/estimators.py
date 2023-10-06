@@ -1,4 +1,11 @@
-"""Soil Engineering Parameter Estimators (:mod:`geolab.estimators`).
+"""
+.. currentmodule:: geolab.estimators
+
+.. include:: <isonum.txt>
+
+=================================================================
+Soil Engineering Parameter Estimators (:mod:`geolab.estimators`).
+=================================================================
 
 This module provides functions for estimating soil engineering parameters.
 
@@ -129,16 +136,24 @@ class CompressionIndex:
     def __call__(self) -> dict:
         # Returns the compression index of the soil sample (unitless)
 
-        comp_idx: dict = {}  # compression index
+        comp_idx: dict[GeotechEng, float] = {}  # compression index
+        is_engineer: bool = False
 
         if self.liquid_limit and self.eng & GeotechEng.SKEMPTON:
             comp_idx[GeotechEng.SKEMPTON] = self.skempton_1994()
+            is_engineer = True
 
         if self.liquid_limit and self.eng & GeotechEng.TERZAGHI:
             comp_idx[GeotechEng.TERZAGHI] = self.terzaghi_et_al_1967()
+            is_engineer = True
 
         if self.void_ratio and self.eng & GeotechEng.HOUGH:
             comp_idx[GeotechEng.HOUGH] = self.hough_1957()
+            is_engineer = True
+
+        if not is_engineer:
+            msg = f"{self.eng} is not a valid type for {type(self)}"
+            raise EngineerTypeError(msg)
 
         return comp_idx
 
@@ -195,20 +210,13 @@ class SoilFrictionAngle:
         >>> sfa = SoilFrictionAngle(spt_n60=50)
         >>> sfa.wolff_1989()
         40.75
-        >>> sfa() # By default it uses WOLFF's correlation
-        40.75
-        >>> sfa.spt_n60 = 40
-        >>> sfa()
+        >>> sfa = SoilFrictionAngle(spt_n60=40)
+        >>> sfa.wolff_1989()
         38.236
         >>> sfa = SoilFrictionAngle(spt_n60=40, eop=103.8, atm_pressure=101.325,\
         ... eng=GeotechEng.KULLHAWY)
-        >>> sfa()
-        46.874
         >>> sfa.kullhawy_mayne_1990()
         46.874
-        >>> sfa.spt_n60 = 50
-        >>> sfa()
-        49.035
 
     :param spt_n60: spt N-value corrected for 60% hammer efficiency
     :type spt_n60: float
@@ -230,27 +238,30 @@ class SoilFrictionAngle:
         spt_n60: float,
         eop: float = 0,
         atm_pressure: float = 0,
-        eng: GeotechEng = GeotechEng.WOLFF,
+        eng: GeotechEng = GeotechEng.WOLFF | GeotechEng.KULLHAWY,
     ):
         self.spt_n60 = spt_n60
         self.eop = eop
         self.atm_pressure = atm_pressure
         self.eng = eng
 
-        if self.eng not in {GeotechEng.WOLFF, GeotechEng.KULLHAWY}:
-            msg = f"{self.eng} is not a valid type for {type(self)} Engineer"
-            raise EngineerTypeError(msg)
-
-    def __call__(self) -> float:
+    def __call__(self) -> dict:
         # Returns the internal angle of friction (degrees)
 
-        _friction_angle: float
+        _friction_angle: dict[GeotechEng, float] = {}
+        is_engineer: bool = False
 
-        if self.eng is GeotechEng.WOLFF:
-            _friction_angle = self.wolff_1989()
+        if self.eng & GeotechEng.WOLFF:
+            _friction_angle[GeotechEng.WOLFF] = self.wolff_1989()
+            is_engineer = True
 
-        else:
-            _friction_angle = self.kullhawy_mayne_1990()
+        if self.eop and self.atm_pressure and self.eng & GeotechEng.WOLFF:
+            _friction_angle[GeotechEng.KULLHAWY] = self.kullhawy_mayne_1990()
+            is_engineer = True
+
+        if not is_engineer:
+            msg = f"{self.eng} is not a valid type for {type(self)}"
+            raise EngineerTypeError(msg)
 
         return _friction_angle
 
@@ -261,7 +272,7 @@ class SoilFrictionAngle:
 
         .. math::
 
-            \phi = 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2 \rightarrow (degrees)
+            \phi = 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2 |rarr| (degrees)
         """
         return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
 
@@ -279,8 +290,8 @@ class SoilFrictionAngle:
         - :math:`\sigma_o \rightarrow` effective overburden pressure (:math:`kN/m^3`)
         - :math:`P_a \rightarrow` atmospheric pressure in the same unit as :math:`\sigma_o`
         """
-        expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
-        return arctan(expr**0.34)
+        x_1 = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
+        return arctan(x_1**0.34)
 
 
 class UndrainedShearStrength:
