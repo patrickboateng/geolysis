@@ -2,8 +2,7 @@
 
 This module provides functions for estimating soil engineering parameters.
 
-Classes
--------
+This module exports the following classes:
 
 .. autosummary::
     :toctree:
@@ -13,9 +12,7 @@ Classes
     SoilFrictionAngle
     UndrainedShearStrength
 
-
-Functions
----------
+This module exports the following functions:
 
 .. autosummary::
     :toctree:
@@ -23,7 +20,6 @@ Functions
     bowles_soil_elastic_modulus
     rankine_foundation_depth
 """
-
 from dataclasses import dataclass
 
 from geolab import GeotechEng
@@ -96,20 +92,13 @@ class CompressionIndex:
     :Example:
 
         >>> from geolab.estimators import CompressionIndex
-        >>> c_c = CompressionIndex(liquid_limit=35)
-        >>> c_c.skempton_1994()
+        >>> compression_index = CompressionIndex(liquid_limit=35)
+        >>> compression_index.skempton_1994()
         0.175
-        >>> c_c.terzaghi_et_al_1967()
+        >>> compression_index.terzaghi_et_al_1967()
         0.225
-        >>> c_c() # By default it uses SKEMPTON's correlation
-        0.175
-        >>> c_c = CompressionIndex(liquid_limit=35, eng=GeotechEng.TERZAGHI)
-        >>> c_c() # This uses TERZAGHI's correlation
-        0.225
-        >>> c_c = CompressionIndex(void_ratio=0.78, eng=GeotechEng.HOUGH)
-        >>> c_c()
-        0.148
-        >>> c_c.hough_1957()
+        >>> compression_index = CompressionIndex(void_ratio=0.78)
+        >>> compression_index.hough_1957()
         0.148
 
     :param liquid_limit: water content beyond which soils flows under their own weight (%)
@@ -129,33 +118,27 @@ class CompressionIndex:
         *,
         liquid_limit: float = 0.0,
         void_ratio: float = 0.0,
-        eng: GeotechEng = GeotechEng.SKEMPTON,
+        eng: GeotechEng = GeotechEng.SKEMPTON
+        | GeotechEng.TERZAGHI
+        | GeotechEng.HOUGH,
     ) -> None:
         self.liquid_limit = liquid_limit
         self.void_ratio = void_ratio
         self.eng = eng
 
-        if self.eng not in {
-            GeotechEng.SKEMPTON,
-            GeotechEng.TERZAGHI,
-            GeotechEng.HOUGH,
-        }:
-            msg = f"{self.eng} is not a valid type for {type(self)} engineer"
-            raise EngineerTypeError(msg)
-
-    def __call__(self) -> float:
+    def __call__(self) -> dict:
         # Returns the compression index of the soil sample (unitless)
 
-        comp_idx: float  # compression index
+        comp_idx: dict = {}  # compression index
 
-        if self.eng is GeotechEng.SKEMPTON:
-            comp_idx = self.skempton_1994()
+        if self.liquid_limit and self.eng & GeotechEng.SKEMPTON:
+            comp_idx[GeotechEng.SKEMPTON] = self.skempton_1994()
 
-        elif self.eng is GeotechEng.TERZAGHI:
-            comp_idx = self.terzaghi_et_al_1967()
+        if self.liquid_limit and self.eng & GeotechEng.TERZAGHI:
+            comp_idx[GeotechEng.TERZAGHI] = self.terzaghi_et_al_1967()
 
-        else:
-            comp_idx = self.hough_1957()
+        if self.void_ratio and self.eng & GeotechEng.HOUGH:
+            comp_idx[GeotechEng.HOUGH] = self.hough_1957()
 
         return comp_idx
 
