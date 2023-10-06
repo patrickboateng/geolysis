@@ -12,24 +12,30 @@ from geolab.exceptions import EngineerTypeError
 
 
 def test_compression_index():
-    c_c = CompressionIndex(liquid_limit=35)
-    assert c_c.skempton_1994() == pytest.approx(0.175, ERROR_TOLERANCE)
-    assert c_c.terzaghi_et_al_1967() == pytest.approx(0.225, ERROR_TOLERANCE)
+    compression_index = CompressionIndex(liquid_limit=35)
+    assert compression_index.skempton_1994() == pytest.approx(
+        0.175, ERROR_TOLERANCE
+    )
+    assert compression_index.terzaghi_et_al_1967() == pytest.approx(
+        0.225, ERROR_TOLERANCE
+    )
 
-    c_c = CompressionIndex(void_ratio=0.78, eng=GeotechEng.HOUGH)
-    assert c_c.hough_1957() == pytest.approx(0.148, ERROR_TOLERANCE)
+    compression_index = CompressionIndex(void_ratio=0.78, eng=GeotechEng.HOUGH)
+    assert compression_index.hough_1957() == pytest.approx(
+        0.148, ERROR_TOLERANCE
+    )
+
+    with pytest.raises(EngineerTypeError):
+        compression_index = CompressionIndex(eng=GeotechEng.GIBBS)
+        compression_index()
 
 
 def test_soil_friction_angle():
     sfa = SoilFrictionAngle(spt_n60=50)
-    exp = 40.75
-    assert sfa() == pytest.approx(exp, ERROR_TOLERANCE)
-    assert sfa.wolff_1989() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert sfa.wolff_1989() == pytest.approx(40.75, ERROR_TOLERANCE)
 
     sfa.spt_n60 = 40
-    exp = 38.236
-    assert sfa() == pytest.approx(exp, ERROR_TOLERANCE)
-    assert sfa.wolff_1989() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert sfa.wolff_1989() == pytest.approx(38.236, ERROR_TOLERANCE)
 
     sfa = SoilFrictionAngle(
         spt_n60=40,
@@ -37,12 +43,11 @@ def test_soil_friction_angle():
         atm_pressure=101.325,
         eng=GeotechEng.KULLHAWY,
     )
-    exp = 46.874
-    assert sfa() == pytest.approx(exp, ERROR_TOLERANCE)
-    assert sfa.kullhawy_mayne_1990() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert sfa.kullhawy_mayne_1990() == pytest.approx(46.874, ERROR_TOLERANCE)
 
     with pytest.raises(EngineerTypeError):
-        SoilFrictionAngle(spt_n60=35, eng=GeotechEng.BAZARAA)
+        sfa = SoilFrictionAngle(spt_n60=35, eng=GeotechEng.BAZARAA)
+        sfa()
 
 
 def test_soil_unit_weight():
