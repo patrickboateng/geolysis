@@ -133,10 +133,10 @@ class CompressionIndex:
         self.void_ratio = void_ratio
         self.eng = eng
 
-    def __call__(self) -> dict:
+    def __call__(self) -> dict[GeotechEng, float]:
         # Returns the compression index of the soil sample (unitless)
 
-        comp_idx: dict[GeotechEng, float] = {}  # compression index
+        comp_idx = {}  # compression index
         is_engineer: bool = False
 
         if self.liquid_limit and self.eng & GeotechEng.SKEMPTON:
@@ -164,7 +164,7 @@ class CompressionIndex:
 
         .. math::
 
-            C_c = 0.009 \left(LL - 10 \right) \rightarrow (unitless)
+            C_c = 0.009 \left(LL - 10 \right) |rarr| (unitless)
 
         - :math:`LL` |rarr| liquid limit of soil
         """
@@ -190,7 +190,7 @@ class CompressionIndex:
 
         .. math::
 
-            C_c = 0.29 \left(e_o - 0.27 \right) \rightarrow (unitless)
+            C_c = 0.29 \left(e_o - 0.27 \right) |rarr| (unitless)
 
         - :math:`e_o` |rarr| void ratio of soil
         """
