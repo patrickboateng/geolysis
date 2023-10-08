@@ -1,3 +1,20 @@
+"""
+.. currentmodule:: geolab.exceptions
+
+=====================================
+Exceptions (:mod:`geolab.exceptions`)
+=====================================
+
+.. autosummary:: 
+
+    PSDValueError
+    PIValueError
+    AllowableSettlementError
+    EngineerTypeError
+
+"""
+
+
 class PSDValueError(ArithmeticError):
     """Exception raised when soil aggregates does not approximately sum to
     100%.
