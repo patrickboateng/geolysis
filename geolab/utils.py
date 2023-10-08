@@ -1,3 +1,28 @@
+""""
+.. currentmodule:: geolab.utils
+
+======================================
+Utility Function (:mod:`geolab.utils`)
+======================================
+
+.. autosummary:: 
+
+    exp
+    deg2rad
+    rad2deg
+    tan
+    sin
+    cos
+    arctan
+    log10
+    sqrt
+    prod
+    round_
+
+.. autodecorator:: round_
+
+"""
+
 import functools
 import math
 import statistics
