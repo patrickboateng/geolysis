@@ -1,31 +1,49 @@
 """
 .. currentmodule:: geolab.estimators
 
-.. include:: <isonum.txt>
-
 =================================================================
 Soil Engineering Parameter Estimators (:mod:`geolab.estimators`).
 =================================================================
 
 This module provides functions for estimating soil engineering parameters.
 
-This module exports the following classes:
-
-.. autosummary::
-    :toctree:
+.. autosummary:: 
 
     SoilUnitWeight
     CompressionIndex
     SoilFrictionAngle
     UndrainedShearStrength
-
-This module exports the following functions:
-
-.. autosummary::
-    :toctree:
-
     bowles_soil_elastic_modulus
     rankine_foundation_depth
+
+---
+
+.. autoclass:: SoilUnitWeight
+    :members: 
+
+---
+
+.. autoclass:: CompressionIndex
+    :members:
+
+---
+
+.. autoclass:: SoilFrictionAngle
+    :members:
+
+---
+
+.. autoclass:: UndrainedShearStrength
+    :members:
+
+---
+
+.. autofunction:: bowles_soil_elastic_modulus
+
+---
+
+.. autofunction:: rankine_foundation_depth
+ 
 """
 from dataclasses import dataclass
 
@@ -40,6 +58,7 @@ class SoilUnitWeight:
     soil sample.
 
     :Example:
+
         >>> from geolab.estimators import SoilUnitWeight
         >>> suw = SoilUnitWeight(spt_n60=13)
         >>> suw.moist
@@ -164,9 +183,9 @@ class CompressionIndex:
 
         .. math::
 
-            C_c = 0.009 \left(LL - 10 \right) |rarr| (unitless)
+            C_c = 0.009 \left(LL - 10 \right) \rightarrow (unitless)
 
-        - :math:`LL` |rarr| liquid limit of soil
+        - :math:`LL` \rightarrow liquid limit of soil
         """
         return 0.009 * (self.liquid_limit - 10)
 
@@ -179,7 +198,7 @@ class CompressionIndex:
 
             C_c = 0.007 \left(LL - 10 \right) \rightarrow (unitless)
 
-        - :math:`LL` |rarr| liquid limit of soil
+        - :math:`LL` \rightarrow liquid limit of soil
         """
         return 0.007 * (self.liquid_limit - 10)
 
@@ -190,9 +209,9 @@ class CompressionIndex:
 
         .. math::
 
-            C_c = 0.29 \left(e_o - 0.27 \right) |rarr| (unitless)
+            C_c = 0.29 \left(e_o - 0.27 \right) \rightarrow (unitless)
 
-        - :math:`e_o` |rarr| void ratio of soil
+        - :math:`e_o` \rightarrow void ratio of soil
         """
         return 0.29 * (self.void_ratio - 0.27)
 
@@ -245,10 +264,10 @@ class SoilFrictionAngle:
         self.atm_pressure = atm_pressure
         self.eng = eng
 
-    def __call__(self) -> dict:
+    def __call__(self) -> dict[GeotechEng, float]:
         # Returns the internal angle of friction (degrees)
 
-        _friction_angle: dict[GeotechEng, float] = {}
+        _friction_angle = {}
         is_engineer: bool = False
 
         if self.eng & GeotechEng.WOLFF:
@@ -272,7 +291,7 @@ class SoilFrictionAngle:
 
         .. math::
 
-            \phi = 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2 |rarr| (degrees)
+            \phi = 27.1 + 0.3 \cdot N_{60} - 0.00054 \cdot (N_{60})^2 \rightarrow (degrees)
         """
         return 27.1 + (0.3 * self.spt_n60) - (0.00054 * (self.spt_n60**2))
 
@@ -304,14 +323,10 @@ class UndrainedShearStrength:
 
         >>> from geolab.estimators import UndrainedShearStrength
         >>> uss = UndrainedShearStrength(spt_n60=40)
-        >>> uss()
-        140.0
         >>> uss.stroud_1974()
         140.0
         >>> uss = UndrainedShearStrength(spt_n60=40, eop=108.3,\
         ... plasticity_index=12, eng=GeotechEng.SKEMPTON)
-        >>> uss()
-        16.722
         >>> uss.skempton_1957()
         16.722
 
@@ -339,7 +354,7 @@ class UndrainedShearStrength:
         eop: float = 0,
         plasticity_index: float = 0,
         k: float = 3.5,
-        eng: GeotechEng = GeotechEng.STROUD,
+        eng: GeotechEng = GeotechEng.STROUD | GeotechEng.SKEMPTON,
     ) -> None:
         self.spt_n60 = spt_n60
         self.eop = eop
@@ -347,18 +362,25 @@ class UndrainedShearStrength:
         self.k = k
         self.eng = eng
 
-        if self.eng not in {GeotechEng.STROUD, GeotechEng.SKEMPTON}:
-            msg = f"{self.eng} is not a valid type for {type(self)} engineer"
+    def __call__(self) -> dict[GeotechEng, float]:
+        und_shr = {}  # undrained shear strength
+        is_engineer = False
+
+        if self.spt_n60 and self.eng & GeotechEng.STROUD:
+            und_shr[GeotechEng.STROUD] = self.stroud_1974()
+            is_engineer = True
+
+        if (
+            self.eop
+            and self.plasticity_index
+            and self.eng & GeotechEng.SKEMPTON
+        ):
+            und_shr[GeotechEng.SKEMPTON] = self.skempton_1957()
+            is_engineer = True
+
+        if not is_engineer:
+            msg = f"{self.eng} is not a valid type for {type(self)}"
             raise EngineerTypeError(msg)
-
-    def __call__(self) -> float:
-        und_shr: float  # undrained shear strength
-
-        if self.eng is GeotechEng.STROUD:
-            und_shr = self.stroud_1974()
-
-        else:
-            und_shr = self.skempton_1957()
 
         return und_shr
 
