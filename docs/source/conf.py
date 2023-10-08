@@ -23,9 +23,10 @@ release = geolab.__version__
 
 extensions = [
     "sphinx.ext.doctest",
-    "sphinxcontrib.bibtex",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.mathjax",
+    "sphinxcontrib.bibtex",
     "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
@@ -34,10 +35,12 @@ extensions = [
 templates_path = ["_templates"]
 exclude_patterns = []
 
+rst_prolog = """.. include:: <isonum.txt>"""
+
 # -- References ------------------------------
 # https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html
 
-bibtex_bibfiles = ["refs.bib"]
+bibtex_bibfiles = ["./refs.bib"]
 bibtex_default_style = "unsrt"
 
 # -- Options for HTML output -------------------------------------------------
@@ -56,3 +59,5 @@ html_theme_options = {
         },
     ],
 }
+
+mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
