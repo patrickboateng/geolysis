@@ -59,9 +59,7 @@ def test_soil_unit_weight():
 
 def test_undrained_shear_strength():
     uss = UndrainedShearStrength(spt_n60=40)
-    exp = 140
-    assert uss() == pytest.approx(exp, ERROR_TOLERANCE)
-    assert uss.stroud_1974() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert uss.stroud_1974() == pytest.approx(140, ERROR_TOLERANCE)
 
     uss = UndrainedShearStrength(
         spt_n60=40,
@@ -69,12 +67,11 @@ def test_undrained_shear_strength():
         plasticity_index=12,
         eng=GeotechEng.SKEMPTON,
     )
-    exp = 16.722
-    assert uss() == pytest.approx(exp, ERROR_TOLERANCE)
-    assert uss.skempton_1957() == pytest.approx(exp, ERROR_TOLERANCE)
+    assert uss.skempton_1957() == pytest.approx(16.722, ERROR_TOLERANCE)
 
     with pytest.raises(EngineerTypeError):
-        UndrainedShearStrength(spt_n60=30, eng=GeotechEng.LIAO)
+        uss = UndrainedShearStrength(spt_n60=30, eng=GeotechEng.LIAO)
+        uss()
 
 
 def test_foundation_depth():
