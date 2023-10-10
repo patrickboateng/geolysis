@@ -28,7 +28,9 @@ class GeotechEng(enum.IntFlag):
         return self.__str__()
 
 
-# Make it possible to write geolab.BAZARAA after import geolab
+# Make it possible to write geolab.BAZARAA after importing
+# or running geolab.
 # import geolab
+# from geolab import GeotechEng
 # geolab.BAZARAA is GeotechEng.BAZARAA returns True
 globals().update(GeotechEng.__members__)
