@@ -36,12 +36,26 @@ class MeyerhofBearingCapacity:
 
     @property
     def f_d(self) -> float:
-        """Return the depth factor."""
+        r"""Return the depth factor.
+
+        .. math::
+
+            f_d = 1 + 0.33 \cdot \frac{D_f}{B}
+
+        """
 
         return _fd(self.foundation_depth, self.foundation_width)
 
     def net_allowable(self, n_design: float) -> float:
-        """
+        r"""Return the net allowable bearing capacity.
+
+        .. math::
+
+            q_{a(net)} &= 19.16 \cdot N_{des} \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \le 1.22
+
+            q_{a(net)} &= 11.98 \cdot N_{des} \cdot \left(\dfrac{3.28B + 1}{3.28B} \right)^2 \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \gt 1.22
+
+
         :raises AllowableSettlementError: If actual settlement is greater than
                                           allowable settement
         """
