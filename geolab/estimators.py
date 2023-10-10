@@ -185,7 +185,7 @@ class CompressionIndex:
 
             C_c = 0.009 \left(LL - 10 \right) \rightarrow (unitless)
 
-        - :math:`LL` \rightarrow liquid limit of soil
+        - :math:`LL` |rarr| liquid limit of soil
         """
         return 0.009 * (self.liquid_limit - 10)
 
@@ -198,7 +198,7 @@ class CompressionIndex:
 
             C_c = 0.007 \left(LL - 10 \right) \rightarrow (unitless)
 
-        - :math:`LL` \rightarrow liquid limit of soil
+        - :math:`LL` |rarr| liquid limit of soil
         """
         return 0.007 * (self.liquid_limit - 10)
 
@@ -211,7 +211,7 @@ class CompressionIndex:
 
             C_c = 0.29 \left(e_o - 0.27 \right) \rightarrow (unitless)
 
-        - :math:`e_o` \rightarrow void ratio of soil
+        - :math:`e_o` |rarr| void ratio of soil
         """
         return 0.29 * (self.void_ratio - 0.27)
 
@@ -306,8 +306,8 @@ class SoilFrictionAngle:
                     {12.2 + 20.3 \cdot \left(\dfrac{\sigma_o}{P_a}\right)}
                     \right]^{0.34} \rightarrow (degrees)
 
-        - :math:`\sigma_o \rightarrow` effective overburden pressure (:math:`kN/m^3`)
-        - :math:`P_a \rightarrow` atmospheric pressure in the same unit as :math:`\sigma_o`
+        - :math:`\sigma_o` |rarr| effective overburden pressure (:math:`kN/m^3`)
+        - :math:`P_a` |rarr| atmospheric pressure in the same unit as :math:`\sigma_o`
         """
         x_1 = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
         return arctan(x_1**0.34)
@@ -399,7 +399,7 @@ class UndrainedShearStrength:
         if 3.5 <= self.k <= 6.5:
             return self.k * self.spt_n60
 
-        msg = f"k should be 3.5 <= k <= 6.5 not {self.k}"
+        msg = f"k should be in the range 3.5 <= k <= 6.5 not {self.k}"
         raise ValueError(msg)
 
     @round_
@@ -411,7 +411,7 @@ class UndrainedShearStrength:
 
             \dfrac{C_u}{\sigma_o} = 0.11 + 0.0037 \cdot PI
 
-        - :math:`\sigma_o \rightarrow` effective overburden pressure (:math:`kN/m^2`)
+        - :math:`\sigma_o` |rarr| effective overburden pressure (:math:`kN/m^2`)
 
         The ratio :math:`\frac{C_u}{\sigma_o}` is a constant for a given clay.
         ``Skempton`` suggested that a similar constant ratio exists between the
@@ -423,7 +423,7 @@ class UndrainedShearStrength:
         The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a
         consolidated-undrained test on undisturbed samples is generally greater than
         actual value because of anisotropic consolidation in the field. The actual
-        value is best determined by `in-situ shear vane test`.
+        value is best determined by ``in-situ shear vane test``.
         """
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)
 
@@ -449,7 +449,7 @@ def bowles_soil_elastic_modulus(spt_n60: float) -> float:
     :param spt_n60: spt N-value corrected for 60% hammer efficiency
     :type spt_n60: float
 
-    :return: Elastic modulus of the soil :math:`kN/m^2`
+    :return: Elastic modulus of the soil (:math:`kN/m^2`)
     :rtype: float
     """
     return 320 * (spt_n60 + 15)
@@ -481,7 +481,7 @@ def rankine_foundation_depth(
     :param soil_friction_angle: internal angle of friction (degrees)
     :type soil_friction_angle: float
 
-    :return: depth of foundation
+    :return: depth of foundation (m)
     :rtype: float
     """
     x_1 = allowable_bearing_capacity / soil_unit_weight
