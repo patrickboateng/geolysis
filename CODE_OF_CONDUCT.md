@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to [Project Name]! We are committed to creating a respectful and inclusive
+Welcome to `geolab`! We are committed to creating a respectful and inclusive
 community for all contributors. This Code of Conduct outlines our expectations for
 behavior within our community, both online and in-person, as well as the consequences
 for unacceptable behavior.
