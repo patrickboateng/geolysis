@@ -1,4 +1,8 @@
-"""This module provides classes for SPT Data Analysis."""
+"""This module provides classes for SPT Data Analysis.
+
+.. currentmodule:: geolab.bearing_capacity.spt
+
+"""
 from typing import Sequence
 
 from geolab import ERROR_TOLERANCE, GeotechEng
@@ -94,18 +98,36 @@ class SPTCorrections:
         self.eng = eng
 
     def skempton_opc_1986(self, spt_n60: float) -> float:
+        r"""
+        .. math::
+
+            C_N = \dfrac{2}{1 + 0.01044\sigma_o}
+        """
         corr_spt = (2 / (1 + 0.01044 * self.eop)) * spt_n60
         return self._opc(corr_spt, spt_n60)
 
     def bazaraa_peck_opc_1969(self, spt_n60: float) -> float:
+        r"""Return the overburden pressure correction given by ``Bazaraa (1967)`` and also by ``Peck and Bazaraa (1969)``, and it is one of the commonly used corrections.
+
+        According to them:
+
+        .. math::
+
+            N_c &= \dfrac{4N_R}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
+
+            N_c &= \dfrac{4N_R}{3.25 + 0.0104 \cdot \sigma_o}, \, \sigma_o \gt 71.8kN/m^2
+
+            N_c &= N_R \, , \, \sigma_o = 71.8kN/m^2
+
+        """
         corr_spt: float  # corrected spt n-value
 
-        std_pressure = 71.8
+        STD_PRESSURE = 71.8
 
-        if isclose(self.eop, std_pressure, rel_tol=ERROR_TOLERANCE):
+        if isclose(self.eop, STD_PRESSURE, rel_tol=ERROR_TOLERANCE):
             corr_spt = spt_n60
 
-        elif self.eop < std_pressure:
+        elif self.eop < STD_PRESSURE:
             corr_spt = 4 * spt_n60 / (1 + 0.0418 * self.eop)
 
         else:
@@ -114,6 +136,32 @@ class SPTCorrections:
         return self._opc(corr_spt, spt_n60)
 
     def gibbs_holtz_opc_1957(self, spt_n60: float) -> float:
+        r"""
+        It was only as late as in ``1957`` that ``Gibbs and Holtz`` suggested that corrections
+        should be made for field ``SPT`` values for depth. As the correction factor came to be
+        considered only after ``1957``, all empirical data published before ``1957`` like those
+        by ``Terzaghi`` is for uncorrected values of ``SPT``.
+
+        In granular soils, the overburden pressure affects the penetration resistance.
+        If two soils having same relative density but different confining pressures are tested,
+        the one with a higher confining pressure gives a higher penetration number. As the
+        confining pressure in cohesionless soils increases with the depth, the penetration number
+        for soils at shallow depths is underestimated and that at greater depths is overestimated.
+        For uniformity, the N-values obtained from field tests under different effective overburden
+        pressures are corrected to a standard effective overburden pressure.
+        ``Gibbs and Holtz (1957)`` recommend the use of the following equation for dry or moist clean
+        sand. (:cite:author:`2003:arora`, p. 428)
+
+        .. math::
+
+            N_c = \dfrac{350}{\sigma_o + 70} \cdot N_R \, , \, \sigma_o \le 280kN/m^2
+
+        .. note::
+
+            :math:`\frac{N_c}{N_R}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_R}` is
+            greater than 2.0, :math:`N_c` should be divided by 2.0 to obtain the design value used in
+            finding the bearing capacity of the soil. (:cite:author:`2003:arora`, p. 428)
+        """
         corr_spt: float
 
         std_pressure = 280
@@ -133,11 +181,22 @@ class SPTCorrections:
         return self._opc(corr_spt, spt_n60)
 
     def peck_et_al_opc_1974(self, spt_n60: float) -> float:
-        std_pressure = 24
+        r"""
+        .. math::
 
-        if self.eop < std_pressure:
+            (N_1)_{60} &= C_N \cdot N_{60} \le 2 \cdot N_{60}
+
+            C_N &= 0.77\log\left(\frac{1905}{\sigma}\right)
+
+
+        :math:`C_N` |rarr| *overburden pressure coefficient factor*
+
+        """
+        STD_PRESSURE = 24
+
+        if self.eop < STD_PRESSURE:
             msg = (
-                f"{self.eop} should be greater than or equal to {std_pressure}"
+                f"{self.eop} should be greater than or equal to {STD_PRESSURE}"
             )
             raise ValueError(msg)
 
@@ -146,11 +205,25 @@ class SPTCorrections:
         return self._opc(corr_spt, spt_n60)
 
     def liao_whitman_opc_1986(self, spt_n60) -> float:
+        r"""
+        .. math::
+
+            C_N = \sqrt{\frac{100}{\sigma}}
+        """
         corr_spt = sqrt(100 / self.eop) * spt_n60
         return self._opc(corr_spt, spt_n60)
 
     def spt_n60(self, recorded_spt_nvalue: int) -> float:
-        """Return SPT N-value corrected for 60% hammer efficiency."""
+        r"""Return SPT N-value corrected for 60% hammer efficiency.
+
+        .. math::
+
+            N_{60} = \dfrac{E_m \cdot C_B \cdot C_s \cdot C_R \cdot N}{0.6}
+
+        .. note::
+
+            The ``energy correction`` is to be applied irrespective of the type of soil.
+        """
         correction = prod(
             self.hammer_efficiency,
             self.borehole_diameter_correction,
@@ -161,7 +234,22 @@ class SPTCorrections:
         return (correction * recorded_spt_nvalue) / 0.6
 
     def dilatancy(self, recorded_spt_nvalue: int) -> float:
-        """Returns the dilatancy spt correction."""
+        r"""Returns the dilatancy spt correction.
+
+        **Dilatancy Correction** is a correction for silty fine sands and fine sands
+        below the water table that develop pore pressure which is not easily
+        dissipated. The pore pressure increases the resistance of the soil hence the
+        penetration number (N). (:cite:author:`2003:arora`)
+
+        Correction of silty fine sands recommended by ``Terzaghi and Peck (1967)`` if
+        :math:`N_{60}` exceeds 15.
+
+        .. math::
+
+            N_c &= 15 + \frac{1}{2}\left(N_{60} - 15\right) \, , \, N_{60} \gt 15
+
+            N_c &= N_{60} \, , \, N_{60} \le 15
+        """
 
         dsc: float  # dilatancy spt correction
 
@@ -202,4 +290,4 @@ class SPTCorrections:
 
     @staticmethod
     def _opc(corr_spt: float, spt_n60: float) -> float:
-        return corr_spt if corr_spt <= (expr := 2 * spt_n60) else expr
+        return min(corr_spt, 2 * spt_n60)
