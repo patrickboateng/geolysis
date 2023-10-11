@@ -7,6 +7,8 @@ from geolab.utils import PI, arctan, cos, deg2rad, exp, round_, sin, tan
 
 @dataclass
 class TerzaghiBearingCapacityFactors:
+    """Ultimate bearing capacity for ``strip``, ``square`` and ``circular`` foundation"""
+
     soil_friction_angle: float
     eng: GeotechEng = GeotechEng.MEYERHOF
 
@@ -48,8 +50,7 @@ class TerzaghiBearingCapacityFactors:
 
 
 class TerzaghiBearingCapacity:
-    r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip
-    footing``, ``square footing`` and ``circular footing``.
+    r"""Ultimate bearing capacity according to ``Terzaghi`` for ``strip``, ``square``, ``rectangular`` and ``circular footing``.
 
     :Example:
 
@@ -110,21 +111,50 @@ class TerzaghiBearingCapacity:
 
     @round_
     def ultimate_4_strip_footing(self) -> float:
-        """Return ultimate bearing capacity of strip footings."""
+        r"""Return ultimate bearing capacity of strip footings.
+
+        .. math::
+
+            q_u = c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.5 \cdot \gamma \cdot B \cdot N_\gamma
+
+        """
         return self._x_1 + self._x_2 + 0.5 * self._x_3
 
     @round_
     def ultimate_4_square_footing(self) -> float:
-        """Return ultimate bearing capacity for square footings."""
+        r"""Return ultimate bearing capacity for square footings.
+
+        .. math::
+
+            q_u &= 1.3 \cdot c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.4 \cdot \gamma \cdot B \cdot N_\gamma
+
+        """
         return 1.3 * self._x_1 + self._x_2 + 0.4 * self._x_3
 
     @round_
     def ultimate_4_circular_footing(self) -> float:
-        """Return ultimate bearing capacity for circular footing."""
+        r"""Return ultimate bearing capacity for circular footing.
+
+        .. math::
+
+            q_u &= 1.3 \cdot c \cdot N_c + \gamma \cdot D_f \cdot N_q + 0.3 \cdot \gamma \cdot B \cdot N_\gamma
+
+        """
         return 1.3 * self._x_1 + self._x_2 + 0.3 * self._x_3
 
     @round_
     def ultimate_4_rectangular_footing(self) -> float:
+        r"""Return the ultimate bearing for rectangular footing.
+
+        .. math::
+
+            q_u = \left( 1 + 0.3 \cdot \dfrac{B}{L} \right) c \cdot N_c +
+                  \gamma \cdot D_f \cdot N_q +
+                  \dfrac{1}{2} \left(1 - 0.2 \cdot \dfrac{B}{L} \right) \cdot
+                  \gamma \cdot B \cdot N_\gamma
+
+
+        """
         footing_size = self.foundation_size.footing_size
         a = 1 + 0.3 * (footing_size.width / footing_size.length)
         b = 0.5 * (1 - 0.2 * footing_size.width / footing_size.length)
