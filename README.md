@@ -45,49 +45,7 @@ allowing engineers to design and build better projects.
 
 ## Usage example
 
-Soil Classification example:
-
-```python
-
->>> from geolab.soil_classifier import AASHTO, USCS
->>> aashto_classifier = AASHTO(liquid_limit=37.7, plasticity_index=13.9, fines=47.44)
->>> aashto_classifier.classify()
-'A-6(4)'
-
-# single classification
->>> uscs_classifier = USCS(liquid_limit=34.1, plastic_limit=21.1, plasticity_index=13,
-...                        fines=47.88, sand=37.84, gravel=14.28)
->>> uscs_classifier.classify()
-'SC'
-
-# dual classification
->>> uscs_classifier = USCS(liquid_limit=30.8, plastic_limit=20.7, plasticity_index=10.1,
-...                       fines=10.29, sand=81.89, gravel=7.83, d10=0.07, d30=0.3, d60=0.8)
->>> uscs_classifier.classify()
-'SW-SC'
-
-```
-
-Ultimate Bearing Capacity example:
-
-```python
-
->>> from geolab.bearing_capacity import FoundationSize
->>> from geolab.bearing_capacity.ultimate import TerzaghiBearingCapacity
->>> tbc = TerzaghiBearingCapacity(cohesion=16,
-...                               soil_friction_angle=27,
-...                               soil_unit_weight=18.5,
-...                               foundation_size=FoundationSize(1.068, 1.068, 1.2))
->>> tbc.nc
-29.24
->>> tbc.nq
-15.9
->>> tbc.ngamma
-11.6
->>> tbc.ultimate_4_square_footing()
-1052.85
-
-```
+See [examples](./docs/source/examples/) folder for usage examples.
 
 ## Release History
 
