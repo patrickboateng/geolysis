@@ -1,7 +1,5 @@
 # geolab
 
-`geolab` is an open-source software for geotechnical engineering analysis and modeling.
-
 <p align="center">
     <a href="https://pypi.org/user/Pato546/">
         <img src="https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white" alt="pypi">
@@ -20,14 +18,14 @@
     </a>
 </p>
 
-`geolab` offers powerful tools and features for soil mechanics and modeling. It
-provides soil classification based on `USCS` and `AASHTO` standards, `bearing
-capacity analysis`, `estimation of soil engineering properties`, `settlement
-analysis`, and `finite element modeling`. The software assists geotechnical
-engineers in their day-to-day work, enabling them to efficiently perform a wide
-range of tasks and make informed decisions about design and construction.
-`geolab` enhances efficiency and effectiveness, allowing engineers to design and
-build better projects.
+`geolab` is an open-source software for geotechnical engineering analysis and
+modeling. `geolab` provides soil classification based on `USCS` and `AASHTO`
+standards, `bearing capacity analysis`,`estimation of soil engineering
+properties`, `settlement analysis`, and `finite element modeling`. The software
+assists geotechnical engineers in their day-to-day work, enabling them to
+efficiently perform a wide range of tasks and make informed decisions about
+design and construction. `geolab` enhances efficiency and effectiveness,
+allowing engineers to design and build better projects.
 
 ## Table of Contents
 
