@@ -405,14 +405,20 @@ class USCS:
 
     def classify(self) -> str:
         """Return the ``USCS`` classification of the soil."""
+        clf: str  # soil classification
+
         if self.psd.fines < 50:
             # Coarse grained, Run Sieve Analysis
             if self.psd.gravel > self.psd.sand:
                 # Gravel
-                return self._classify_coarse_soil(coarse_soil=GRAVEL)
+                clf = self._classify_coarse_soil(coarse_soil=GRAVEL)
 
             # Sand
-            return self._classify_coarse_soil(coarse_soil=SAND)
+            else:
+                clf = self._classify_coarse_soil(coarse_soil=SAND)
 
         # Fine grained, Run Atterberg
-        return self._classify_fine_soil()
+        else:
+            clf = self._classify_fine_soil()
+
+        return clf
