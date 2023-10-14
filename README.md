@@ -40,7 +40,7 @@ allowing engineers to design and build better projects.
 
 ## Installation
 
-> [!WARNING]
+> [!NOTE]
 > Project is still under development.
 
 ## Usage example
