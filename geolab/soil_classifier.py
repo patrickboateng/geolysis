@@ -407,8 +407,8 @@ class USCS:
         """Return the ``USCS`` classification of the soil."""
         clf: str  # soil classification
 
+        # Coarse grained, Run Sieve Analysis
         if self.psd.fines < 50:
-            # Coarse grained, Run Sieve Analysis
             if self.psd.gravel > self.psd.sand:
                 # Gravel
                 clf = self._classify_coarse_soil(coarse_soil=GRAVEL)
