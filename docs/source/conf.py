@@ -11,12 +11,12 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 
-import geo
+import geolysis
 
 project = "geolysis"
 copyright = f"2023, {project}"
 author = "Patrick Boateng"
-release = geo.__version__
+release = geolysis.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
