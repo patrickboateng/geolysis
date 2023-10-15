@@ -1,8 +1,8 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE
-from geolab.exceptions import PIValueError, PSDValueError
-from geolab.soil_classifier import AASHTO, PSD, USCS, AtterbergLimits
+from geolysis import ERROR_TOLERANCE
+from geolysis.exceptions import PIValueError, PSDValueError
+from geolysis.soil_classifier import AASHTO, PSD, USCS, AtterbergLimits
 
 
 def test_PSDValueError():

@@ -1,8 +1,8 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE
-from geolab.bearing_capacity import FoundationSize
-from geolab.bearing_capacity.ultimate import (
+from geolysis import ERROR_TOLERANCE
+from geolysis.bearing_capacity import FoundationSize
+from geolysis.bearing_capacity.ultimate import (
     HansenBearingCapacityFactors,
     TerzaghiBearingCapacity,
     TerzaghiBearingCapacityFactors,

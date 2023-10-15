@@ -1,14 +1,14 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE, GeotechEng
-from geolab.estimators import (
+from geolysis import ERROR_TOLERANCE, GeotechEng
+from geolysis.estimators import (
     CompressionIndex,
     SoilFrictionAngle,
     SoilUnitWeight,
     UndrainedShearStrength,
     rankine_foundation_depth,
 )
-from geolab.exceptions import EngineerTypeError
+from geolysis.exceptions import EngineerTypeError
 
 
 def test_compression_index():

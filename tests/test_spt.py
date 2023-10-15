@@ -1,7 +1,7 @@
 import pytest
 
-from geolab import ERROR_TOLERANCE
-from geolab.bearing_capacity.spt import n_design
+from geolysis import ERROR_TOLERANCE
+from geolysis.bearing_capacity.spt import n_design
 
 
 def test_n_design():
