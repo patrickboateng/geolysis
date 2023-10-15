@@ -51,7 +51,7 @@ pip install geolysis
 
 ## Usage example
 
-See [examples](./docs/source/examples/) folder for usage examples.
+See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/) folder for usage examples.
 
 ## Release History
 
