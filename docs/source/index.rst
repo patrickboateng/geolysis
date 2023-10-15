@@ -1,12 +1,12 @@
 :html_theme.sidebar_secondary.remove:
 
-geolab documentation
-====================
+geolysis documentation
+======================
 
-``geolab`` is an open-source software for geotechnical engineering analysis that offers 
+``geolysis`` is an open-source software for geotechnical engineering analysis that offers 
 a suite of powerful tools and features for soil analysis and modeling. 
 
-Some of the features ``geolab`` provides are:
+Some of the features ``geolysis`` provides are:
 
 - Provides soil classification based on ``USCS`` and ``AASHTO`` standards.
 - Bearing capacity analysis can be performed, both from results obtained from **laboratory** 
@@ -35,7 +35,7 @@ Some of the features ``geolab`` provides are:
       :octicon:`paper-airplane;1em;sd-text-info` Getting Started
       ^^^
 
-      New to Geolab? Check out the absolute beginners guide.
+      New to geolysis? Check out the absolute beginners guide.
 
    .. grid-item-card::  
       :link: user_guide
@@ -44,18 +44,18 @@ Some of the features ``geolab`` provides are:
       :octicon:`paper-airplane;1em;sd-text-info` User Guide 
       ^^^
 
-      The user guide provides in-depth information on key concepts of Geolab with 
+      The user guide provides in-depth information on key concepts of geolysis with 
       useful background information and explanation.
 
-   .. grid-item-card:: 
-      :link: api/index
+   .. grid-item-card::
+      :link: api
       :link-type: doc
 
       :octicon:`book;1em;sd-text-info` API Reference
       ^^^
 
       This is a description of all classes, methods, properties, and functions that 
-      geolab offers.
+      geolysis offers.
 
    .. grid-item-card::  
       :link: contributors_guide
@@ -67,13 +67,14 @@ Some of the features ``geolab`` provides are:
       Want to add to the codebase? Check out the contribution guide.
 
    .. grid-item-card::  
-      :link: ideas
+      :link: gep
       :link-type: doc
 
-      :octicon:`light-bulb;1em;sd-text-info` Ideas 
+      :octicon:`light-bulb;1em;sd-text-info` GEPs 
       ^^^
 
-      Got and idea, suggestion or issue? Let us know.
+      geolysis enhancement proposals, documents describing major changes to 
+      the package. 
 
 .. toctree::
    :maxdepth: 2
@@ -82,14 +83,14 @@ Some of the features ``geolab`` provides are:
 
    quickstart
    user_guide
-   api/index
+   api
    contributors_guide
-   ideas
+   GEPs <gep>
 
 .. Indices and tables
 .. ==================
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
