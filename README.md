@@ -1,20 +1,24 @@
 # geolysis
 
 <p align="center">
-    <a href="https://pypi.org/user/Pato546/">
-        <img src="https://img.shields.io/badge/PyPi-Pato546-blue?style=flat-square&logo=pypi&logoColor=white" alt="pypi">
+    <a href="https://pypi.org/project/geolysis/">
+        <img src="https://img.shields.io/pypi/v/geolysis?style=flat-square&logo=pypi&logoColor=white"
+        alt="PyPI Latest Release">
     </a>
     <a href="">
         <img src="https://img.shields.io/pypi/l/geolysis?style=flat-square" alt="license">
     </a>
     <a href="https://pycqa.github.io/isort/">
-        <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square&labelColor=ef8336" alt="isort">
+        <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat-square"
+        alt="isort">
     </a>
     <a href="https://github.com/psf/black">
-        <img src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square" alt="black">
+        <img src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square"
+        alt="black">
     </a>
     <a href="">
-        <img src="https://img.shields.io/github/repo-size/patrickboateng/geolysis?style=flat-square&labelColor=ef8336" alt="repo size">
+        <img src="https://img.shields.io/github/repo-size/patrickboateng/geolysis?style=flat-square"
+        alt="repo size">
     </a>
 </p>
 
@@ -64,7 +68,8 @@ Classification of soil using `AASHTO` classification system.
 
 ```
 
-See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/) folder for more usage examples.
+See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/)
+folder for more usage examples.
 
 ## Release History
 
