@@ -16,6 +16,14 @@
         <img src="https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square"
         alt="black">
     </a>
+    <a href="https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml">
+        <img src="https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg"
+        alt="CI - Test">
+    </a>
+    <a href="https://github.com/patrickboateng/geolysis/actions/workflows/build.yml">
+        <img src="https://github.com/patrickboateng/geolysis/actions/workflows/build.yml/badge.svg"
+        alt="CI - Test">
+    </a>
     <a href="">
         <img src="https://img.shields.io/github/repo-size/patrickboateng/geolysis?style=flat-square"
         alt="repo size">
