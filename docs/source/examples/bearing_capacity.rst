@@ -4,8 +4,8 @@ Terzaghi Bearing Capacity example:
 
 .. doctest::
 
-    >>> from geolab.bearing_capacity import FoundationSize
-    >>> from geolab.bearing_capacity.ultimate import TerzaghiBearingCapacity
+    >>> from geolysis.bearing_capacity import FoundationSize
+    >>> from geolysis.bearing_capacity.ultimate import TerzaghiBearingCapacity
     >>> tbc = TerzaghiBearingCapacity(cohesion=16,
     ...                               soil_friction_angle=27,
     ...                               soil_unit_weight=18.5,

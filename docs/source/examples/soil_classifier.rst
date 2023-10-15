@@ -4,7 +4,7 @@ Single classification example:
 
 .. doctest::
 
-    >>> from geolab.soil_classifier import USCS
+    >>> from geolysis.soil_classifier import USCS
     >>> uscs_classifier = USCS(liquid_limit=34.1, 
     ...                        plastic_limit=21.1, 
     ...                        plasticity_index=13,
@@ -34,7 +34,7 @@ Classification of soil using `AASHTO` classification system.
 
 .. doctest::
 
-    >>> from geolab.soil_classifier import AASHTO
+    >>> from geolysis.soil_classifier import AASHTO
     >>> aashto_classifier = AASHTO(liquid_limit=37.7, 
     ...                            plasticity_index=13.9, 
     ...                            fines=47.44)
