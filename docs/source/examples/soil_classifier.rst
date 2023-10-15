@@ -30,7 +30,7 @@ Dual classification example:
     >>> uscs_classifier.classify()
     'SW-SC'
 
-Classification of soil according to ``AASHTO``.
+Classification of soil using `AASHTO` classification system.
 
 .. doctest::
 
