@@ -51,6 +51,19 @@ pip install geolysis
 
 ## Usage example
 
+Classification of soil using `AASHTO` classification system.
+
+```python
+
+    >>> from geolab.soil_classifier import AASHTO
+    >>> aashto_classifier = AASHTO(liquid_limit=37.7,
+    ...                            plasticity_index=13.9,
+    ...                            fines=47.44)
+    >>> aashto_classifier.classify()
+    'A-6(4)'
+
+```
+
 See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/) folder for usage examples.
 
 ## Release History
