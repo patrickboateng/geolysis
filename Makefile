@@ -1,15 +1,21 @@
-.PHONY: check format test
+.PHONY: check format test build upload
 
 check:
-	@mypy geolab
-	@pycodestyle --statistics geolab
+	@mypy geolysis
+	@pycodestyle --statistics geolysis
 
 format:
-	@isort ./geolab
+	@isort ./geolysis
 	@isort ./tests
-	@black ./geolab
+	@black ./geolysis
 	@black ./tests
 
 test:
 	@echo "Running pytest..."
 	pytest
+
+build:
+	py -m build
+
+upload:
+	twine upload ./dist/*
