@@ -37,7 +37,7 @@ classifiers = [
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]
-version = {attr = "geo.__version__"}
+version = {attr = "geolysis.__version__"}
 
 [project.urls]
 # Homepage = "https://github.com/patrickboateng/geolab"
@@ -46,7 +46,7 @@ Repository = "https://github.com/patrickboateng/geolab"
 Changelog = "https://github.com/patrickboateng/geolab/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
-include = ["geo*"] 
+include = ["geolysis*"] 
 exclude = ["tests*"]  
 namespaces = false
 
