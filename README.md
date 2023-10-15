@@ -110,7 +110,12 @@ you agree to the terms and conditions of this license.
 
 ## Project Links
 
-- [**Documentation**](https://)
-- [**PyPi**](https://)
+<!-- - [**Documentation**](https://) -->
+<!-- [Mailing list](https://) -->
+<!-- - [**Website**](https://) -->
+
+- [**PyPi**](https://pypi.org/project/geolysis/)
 - [**Source Code**](https://github.com/patrickboateng/geolysis/)
-- [**Website**](https://)
+- [**Bug Reports**](https://github.com/patrickboateng/geolysis/issues)
+- [**Contributing**](https://github.com/patrickboateng/geolysis/blob/main/docs/CONTRIBUTING.md#how-to-contribute)
+- [**Code of Conduct**](https://github.com/patrickboateng/geolysis/blob/main/CODE_OF_CONDUCT.md)
