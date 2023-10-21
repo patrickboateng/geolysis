@@ -10,7 +10,7 @@ class FootingSize:
     length: float
 
     @property
-    def width_2_length_ratio(self) -> float:
+    def w2l(self) -> float:
         return self.width / self.length
 
 
@@ -25,11 +25,11 @@ class FoundationSize:
         self.footing_size = FootingSize(self.width, self.length)
 
     @property
-    def depth_2_width_ratio(self) -> float:
+    def d2w(self) -> float:
         return self.depth / self.width
 
     @property
-    def width_2_length_ratio(self) -> float:
+    def w2l(self) -> float:
         return self.width / self.length
 
 
