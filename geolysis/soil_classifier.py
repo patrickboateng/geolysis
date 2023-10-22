@@ -3,7 +3,7 @@ classification.
 """
 
 import math
-from dataclasses import KW_ONLY, dataclass
+from dataclasses import KW_ONLY, dataclass, field
 
 from geolysis import ERROR_TOLERANCE, exceptions
 from geolysis.utils import round_
@@ -17,6 +17,11 @@ POORLY_GRADED = "P"
 ORGANIC = "O"
 LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
+
+GC = GRAVEL + CLAY
+GM = GRAVEL + SILT
+SC = SAND + CLAY
+SM = SAND + SILT
 
 
 def _check_size_distribution(fines: float, sand: float, gravel: float):
@@ -300,6 +305,7 @@ class USCS:
     fines: float
     sand: float
     gravel: float
+    clf: str = field(default="", init=False)
 
     _: KW_ONLY
     d10: float = 0
@@ -328,7 +334,7 @@ class USCS:
         return f"{coarse_soil}{_soil_grd}-{coarse_soil}{fine_soil}"
 
     def _classify_coarse_soil(self, coarse_soil: str) -> str:
-        clf: str  # soil classification
+        clf: str
 
         if self.psd.fines > 12:
             if self.atterberg_limits.limit_plot_in_hatched_zone():
@@ -366,7 +372,7 @@ class USCS:
         return clf
 
     def _classify_fine_soil(self) -> str:
-        clf: str  # soil classification
+        clf: str
 
         if self.atterberg_limits.liquid_limit < 50:
             # Low LL
@@ -405,20 +411,18 @@ class USCS:
 
     def classify(self) -> str:
         """Return the ``USCS`` classification of the soil."""
-        clf: str  # soil classification
-
         # Coarse grained, Run Sieve Analysis
         if self.psd.fines < 50:
             if self.psd.gravel > self.psd.sand:
                 # Gravel
-                clf = self._classify_coarse_soil(coarse_soil=GRAVEL)
+                self.clf = self._classify_coarse_soil(coarse_soil=GRAVEL)
 
             # Sand
             else:
-                clf = self._classify_coarse_soil(coarse_soil=SAND)
+                self.clf = self._classify_coarse_soil(coarse_soil=SAND)
 
         # Fine grained, Run Atterberg
         else:
-            clf = self._classify_fine_soil()
+            self.clf = self._classify_fine_soil()
 
-        return clf
+        return self.clf
