@@ -20,8 +20,10 @@ HIGH_PLASTICITY = "H"
 
 GC = GRAVEL + CLAY
 GM = GRAVEL + SILT
+GM_GC = GM + "-" + GC
 SC = SAND + CLAY
 SM = SAND + SILT
+SM_SC = SM + "-" + SC
 
 
 def _check_size_distribution(fines: float, sand: float, gravel: float):
@@ -32,7 +34,9 @@ def _check_size_distribution(fines: float, sand: float, gravel: float):
 
 
 def _check_plasticity_idx(
-    liquid_limit: float, plastic_limit: float, plasticity_index: float
+    liquid_limit: float,
+    plastic_limit: float,
+    plasticity_index: float,
 ):
     plasticity_idx = liquid_limit - plastic_limit
     if not math.isclose(
@@ -180,6 +184,10 @@ class PSD:
         return self.d60 / self.d10
 
 
+class SoilDescription:
+    ...
+
+
 @dataclass
 class AASHTO:
     """American Association of State Highway and Transportation Officials
@@ -305,7 +313,8 @@ class USCS:
     fines: float
     sand: float
     gravel: float
-    clf: str = field(default="", init=False)
+
+    clf: str = field(default="", init=False, repr=False)
 
     _: KW_ONLY
     d10: float = 0
