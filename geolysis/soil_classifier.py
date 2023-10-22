@@ -116,7 +116,7 @@ class PSD:
     :param d60: Diameter at which 60% of the soil by weight is finer
     :type d60: float
     :raises exceptions.PSDValueError: Raised when soil aggregates does not
-        approximately sum to 100%
+                                      approximately sum to 100%
     """
 
     fines: float
