@@ -1,2 +1,0 @@
-.. automodule:: geolab
-    :members:
