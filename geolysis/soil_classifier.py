@@ -89,7 +89,11 @@ class AtterbergLimits:
 
     def limit_plot_in_hatched_zone(self) -> bool:
         """Checks if soil sample plot in the hatched zone."""
-        return math.isclose(self.plasticity_index, self.A_line)
+        return math.isclose(
+            self.plasticity_index,
+            self.A_line,
+            rel_tol=ERROR_TOLERANCE,
+        )
 
 
 @dataclass
