@@ -18,13 +18,6 @@ ORGANIC = "O"
 LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
-GC = GRAVEL + CLAY
-GM = GRAVEL + SILT
-GM_GC = GM + "-" + GC
-SC = SAND + CLAY
-SM = SAND + SILT
-SM_SC = SM + "-" + SC
-
 
 def _check_size_distribution(fines: float, sand: float, gravel: float):
     total_aggregate = fines + sand + gravel
@@ -168,7 +161,7 @@ class PSD:
 
         .. math::
 
-            C_c = \dfrac{d_{30}^2}{d_{60} \times d_{10}}
+            C_c = \dfrac{d_{30}^2}{d_{60} \cdot d_{10}}
         """
         return (self.d30**2) / (self.d60 * self.d10)
 
@@ -182,10 +175,6 @@ class PSD:
             C_u = \dfrac{d_{60}}{d_{10}}
         """
         return self.d60 / self.d10
-
-
-class SoilDescription:
-    ...
 
 
 @dataclass
@@ -361,12 +350,16 @@ class USCS:
                 clf = self._dual_soil_classifier(coarse_soil)
 
             else:
-                clf = (
-                    f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
-                    f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{SILT},"
-                    f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{CLAY},"
-                    f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{CLAY}"
-                )
+                if self.atterberg_limits.above_A_line:
+                    clf = (
+                        f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{CLAY},"
+                        f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{CLAY}"
+                    )
+                else:
+                    clf = (
+                        f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
+                        f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{SILT},"
+                    )
 
         # Less than 5% pass No. 200 sieve
         # Obtain Cc and Cu from grain size graph
