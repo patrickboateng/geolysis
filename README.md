@@ -97,13 +97,14 @@ for more information on contributing.
 
 ## License
 
-Distributed under the `MIT license`. See [LICENSE](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt)
-for more information. By using, distributing, or contributing to this project,
-you agree to the terms and conditions of this license.
+Distributed under the
+[**MIT**](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt) license.
+By using, distributing, or contributing to this project, you agree to the terms
+and conditions of this license.
 
 ## Contact Information
 
-- **LinkedIn**: <https://linkedin.com/in/patrickboateng/>
+- [**LinkedIn**](https://linkedin.com/in/patrickboateng/)
 
 > [!IMPORTANT]
 > For questions or comments about `geolysis`, please contact <https://linkedin.com/in/patrickboateng/>
