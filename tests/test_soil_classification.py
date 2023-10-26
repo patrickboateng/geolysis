@@ -1,6 +1,5 @@
 import pytest
 
-from geolysis import ERROR_TOLERANCE
 from geolysis.exceptions import PIValueError, PSDValueError
 from geolysis.soil_classifier import AASHTO, PSD, USCS, AtterbergLimits
 
@@ -68,9 +67,47 @@ def test_aashto(soil_params, classification):
     ],
 )
 def test_dual_classification(
-    soil_params: tuple, particle_sizes: dict, classification: dict
+    soil_params: tuple,
+    particle_sizes: dict,
+    classification: dict,
 ):
     assert USCS(*soil_params, **particle_sizes).classify() == classification
+
+
+# @pytest.mark.parametrize(
+#     "soil_params,classification",
+#     [
+#         (
+#             (30.8, 20.7, 10.1, 10.29, 81.89, 7.83),
+#             "SW-SC,SP-SC",
+#         ),
+#         (
+#             (24.4, 14.7, 9.7, 9.77, 44.82, 45.41),
+#             "GW-GC,GP-GC",
+#         ),
+#         (
+#             (49.5, 33.6, 15.9, 6.93, 91.79, 1.28),
+#             "SW-SM,SP-SM",
+#         ),
+#         (
+#             (30.33, 23.42, 6.91, 8.93, 7.69, 83.38),
+#             "GW-GM,GP-GM",
+#         ),
+#         (
+#             (35.32, 25.57, 9.75, 9.70, 5.63, 84.67),
+#             "GW-GM,GP-GM",
+#         ),
+#         (
+#             (26.17, 19.69, 6.48, 12.00, 8.24, 79.76),
+#             "GW-GC,GP-GC",
+#         ),
+#     ],
+# )
+# def test_dual_classification_no_psd_coeff(
+#     soil_params: tuple,
+#     classification: str,
+# ):
+#     assert USCS(*soil_params).classify() == classification
 
 
 @pytest.mark.parametrize(
