@@ -331,9 +331,9 @@ class USCS:
         )
 
     def _dual_soil_classifier(self, coarse_soil: str) -> str:
-        _soil_grd = self.psd.grade(coarse_soil)
+        soil_grd = self.psd.grade(coarse_soil)
         fine_soil = self.atterberg_limits.fine_soil
-        return f"{coarse_soil}{_soil_grd}-{coarse_soil}{fine_soil}"
+        return f"{coarse_soil}{soil_grd}-{coarse_soil}{fine_soil}"
 
     def _classify_coarse_soil(self, coarse_soil: str) -> str:
         clf: str
@@ -354,16 +354,11 @@ class USCS:
                 clf = self._dual_soil_classifier(coarse_soil)
 
             else:
-                if self.atterberg_limits.above_A_line:
-                    clf = (
-                        f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{CLAY},"
-                        f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{CLAY}"
-                    )
-                else:
-                    clf = (
-                        f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{SILT},"
-                        f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{SILT},"
-                    )
+                fine_soil = self.atterberg_limits.fine_soil
+                clf = (
+                    f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{fine_soil},"
+                    f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{fine_soil}"
+                )
 
         # Less than 5% pass No. 200 sieve
         # Obtain Cc and Cu from grain size graph
