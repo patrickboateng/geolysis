@@ -56,9 +56,7 @@ allowing engineers to design and build better projects.
 > Project is still under development.
 
 ```shell
-
 pip install geolysis
-
 ```
 
 ## Usage example
@@ -76,24 +74,24 @@ Classification of soil using `AASHTO` classification system.
 
 ```
 
-See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/)
-folder for more usage examples.
+<!-- See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/)
+folder for more usage examples. -->
 
 ## Release History
 
-Check the [CHANGELOG](https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md)
+Check the [changelog](https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md)
 for release history.
 
 ## Code of Conduct
 
-This project has a [CODE_OF_CONDUCT](https://github.com/patrickboateng/geolysis/blob/main/CODE_OF_CONDUCT.md)
+This project has a [code of conduct](https://github.com/patrickboateng/geolysis/blob/main/CODE_OF_CONDUCT.md)
 that we expect all contributors to adhere to. Please read and follow it when
 participating in this project.
 
 ## Contributing
 
-See [CONTRIBUTING](https://github.com/patrickboateng/geolysis/blob/main/docs/CONTRIBUTING.md#how-to-contribute)
-for more information on contributing.
+If you would like to contribute to this project, please read the
+[contributing guidelines](https://github.com/patrickboateng/geolysis/blob/main/docs/CONTRIBUTING.md#how-to-contribute)
 
 ## License
 
