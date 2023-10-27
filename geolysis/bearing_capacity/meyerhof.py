@@ -1,12 +1,17 @@
-from dataclasses import dataclass
-
-from geolysis.bearing_capacity import FootingSize, FoundationSize
-from geolysis.utils import PI, arctan, cos, deg2rad, exp, round_, sin, tan
+from geolysis.bearing_capacity import FoundationSize
+from geolysis.utils import PI, arctan, exp, sin, tan
 
 
-class MeyerhofBearingCapacityFactors:
-    def __init__(self, soil_friction_angle: float):
+class MeyerhofFactors:
+    def __init__(
+        self,
+        soil_friction_angle: float,
+        beta: float,
+        foundation_size: FoundationSize,
+    ) -> None:
         self.soil_friction_angle = soil_friction_angle
+        self.beta = beta
+        self.foundation_size = foundation_size
 
     @property
     def nc(self) -> float:
@@ -26,85 +31,57 @@ class MeyerhofBearingCapacityFactors:
         r"""Return ``Meyerhof`` bearing capacity factor :math:`N_\gamma`."""
         return 2 * (self.nq + 1) * tan(self.soil_friction_angle)
 
-
-@dataclass
-class MeyerhofDepthFactors:
-    soil_friction_angle: float
-    foundation_size: FoundationSize
-
     @property
-    def d2w(self) -> float:
+    def _d2w(self) -> float:
+        """Return depth to width ratio of foundation."""
         return self.foundation_size.d2w
 
     @property
     def dc(self) -> float:
         """Return ``Meyerhof`` depth factor :math:`d_c`."""
-        _dc: float
 
-        if self.d2w <= 1:
-            _dc = 1 + 0.4 * self.d2w
+        if self._d2w <= 1:
+            return 1 + 0.4 * self._d2w
 
-        else:
-            x_1 = 0.4 * arctan(self.d2w)
-            _dc = 1 + x_1 * (PI / 180)
-
-        return _dc
+        x_1 = 0.4 * arctan(self._d2w)
+        return 1 + x_1 * (PI / 180)
 
     @property
     def dq(self) -> float:
         """Return ``Meyerhof`` depth factor :math:`d_q`."""
-        _dq: float
-
         x_2 = (1 - sin(self.soil_friction_angle)) ** 2
 
-        if self.d2w <= 1:
+        if self._d2w <= 1:
             x_1 = 2 * tan(self.soil_friction_angle)
-            _dq = 1 + x_1 * x_2 * self.d2w
+            return 1 + x_1 * x_2 * self._d2w
 
-        else:
-            x_1 = 2 * tan(self.soil_friction_angle)
-            x_3 = arctan(self.d2w)
-            _dq = 1 + x_1 * x_2 * x_3 * (PI / 180)
-
-        return _dq
+        x_1 = 2 * tan(self.soil_friction_angle)
+        x_3 = arctan(self._d2w)
+        return 1 + x_1 * x_2 * x_3 * (PI / 180)
 
     @property
     def dgamma(self) -> float:
         r"""Return ``Meyerhof`` depth factor :math:`d_\gamma`."""
         return 1
 
-
-@dataclass
-class MeyerhofShapeFactors:
-    soil_friction_angle: float
-    footing_size: FootingSize
-    nq: float
-    nc: float
-
     @property
-    def w2l(self) -> float:
-        return self.footing_size.w2l
+    def _w2l(self) -> float:
+        return self.foundation_size.footing_size.w2l
 
     @property
     def sc(self) -> float:
         """Return ``Meyerhof`` shape factor :math:`s_c`."""
-        return 1 + self.w2l * (self.nq / self.nc)
+        return 1 + self._w2l * (self.nq / self.nc)
 
     @property
     def sq(self) -> float:
         """Return ``Meyerhof`` shape factor :math:`s_q`."""
-        return 1 + self.w2l * tan(self.soil_friction_angle)
+        return 1 + self._w2l * tan(self.soil_friction_angle)
 
     @property
     def sgamma(self) -> float:
         r"""Return ``Meyerhof`` shape factor :math:`s_\gamma`."""
-        return 1 - 0.4 * self.w2l
-
-
-@dataclass
-class MeyerhofInclinationFactors:
-    soil_friction_angle: float
-    beta: float
+        return 1 - 0.4 * self._w2l
 
     @property
     def ic(self) -> float:
@@ -127,30 +104,18 @@ class MeyerhofBearingCapacity:
         self,
         cohesion: float,
         soil_unit_weight: float,
-        foundation_size: FoundationSize,
         soil_friction_angle: float,
         beta: float,
+        foundation_size: FoundationSize,
     ) -> None:
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
-        self.foundation_size = foundation_size
         self.soil_friction_angle = soil_friction_angle
         self.beta = beta
+        self.foundation_size = foundation_size
 
-        self.bearing_capacity_factor = MeyerhofBearingCapacityFactors(
-            self.soil_friction_angle
-        )
-        self.depth_factor = MeyerhofDepthFactors(
-            self.soil_friction_angle, self.foundation_size
-        )
-        self.shape_factor = MeyerhofShapeFactors(
-            self.soil_friction_angle,
-            self.foundation_size.footing_size,
-            self.nq,
-            self.nc,
-        )
-        self.incl_factor = MeyerhofInclinationFactors(
-            self.soil_friction_angle, self.beta
+        self.meyerhof_factors = MeyerhofFactors(
+            soil_friction_angle, beta, foundation_size
         )
 
     def ultimate(self) -> float:
@@ -165,48 +130,48 @@ class MeyerhofBearingCapacity:
 
     @property
     def nc(self) -> float:
-        return self.bearing_capacity_factor.nc
+        return self.meyerhof_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.bearing_capacity_factor.nq
+        return self.meyerhof_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.bearing_capacity_factor.ngamma
+        return self.meyerhof_factors.ngamma
 
     @property
     def dc(self) -> float:
-        return self.depth_factor.dc
+        return self.meyerhof_factors.dc
 
     @property
     def dq(self) -> float:
-        return self.depth_factor.dq
+        return self.meyerhof_factors.dq
 
     @property
     def dgamma(self) -> float:
-        return self.depth_factor.dgamma
+        return self.meyerhof_factors.dgamma
 
     @property
     def sc(self) -> float:
-        return self.shape_factor.sc
+        return self.meyerhof_factors.sc
 
     @property
     def sq(self) -> float:
-        return self.shape_factor.sq
+        return self.meyerhof_factors.sq
 
     @property
     def sgamma(self) -> float:
-        return self.shape_factor.sgamma
+        return self.meyerhof_factors.sgamma
 
     @property
     def ic(self) -> float:
-        return self.incl_factor.ic
+        return self.meyerhof_factors.ic
 
     @property
     def iq(self) -> float:
-        return self.incl_factor.iq
+        return self.meyerhof_factors.iq
 
     @property
     def igamma(self) -> float:
-        return self.incl_factor.igamma
+        return self.meyerhof_factors.igamma
