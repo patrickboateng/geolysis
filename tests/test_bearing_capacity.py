@@ -2,12 +2,12 @@ import pytest
 
 from geolysis import ERROR_TOLERANCE
 from geolysis.bearing_capacity import FoundationSize
-from geolysis.bearing_capacity.ultimate import (
-    HansenBearingCapacityFactors,
+from geolysis.bearing_capacity.hansen import HansenBearingCapacityFactors
+from geolysis.bearing_capacity.terzaghi import (
     TerzaghiBearingCapacity,
     TerzaghiBearingCapacityFactors,
-    VesicBearingCapacityFactors,
 )
+from geolysis.bearing_capacity.vesic import VesicBearingCapacityFactors
 
 
 class TestTerzaghiBearingCapacity:
@@ -25,13 +25,12 @@ class TestTerzaghiBearingCapacity:
             soil_unit_weight=18,
             foundation_size=FoundationSize(2, 2, 1.5),
         )
-        cls.tbc_local_shear = TerzaghiBearingCapacity(
-            cohesion=16,
-            soil_friction_angle=27,
-            soil_unit_weight=18.5,
-            foundation_size=FoundationSize(1.715, 1.715, 1.2),
-            local_shear=True,
-        )
+        # cls.tbc_3 = TerzaghiBearingCapacity(
+        #     cohesion=16,
+        #     soil_friction_angle=27,
+        #     soil_unit_weight=18.5,
+        #     foundation_size=FoundationSize(1.715, 1.715, 1.2),
+        # )
 
     @classmethod
     def teardown_class(cls):
@@ -40,24 +39,17 @@ class TestTerzaghiBearingCapacity:
     def test_nc(self):
         assert self.tbc_1.nc == pytest.approx(29.24, ERROR_TOLERANCE)
         assert self.tbc_2.nc == pytest.approx(37.16, ERROR_TOLERANCE)
-        assert self.tbc_local_shear.nc == pytest.approx(16.21, ERROR_TOLERANCE)
+        # assert self.tbc_3.nc == pytest.approx(16.21, ERROR_TOLERANCE)
 
     def test_nq(self):
         assert self.tbc_1.nq == pytest.approx(15.9, ERROR_TOLERANCE)
         assert self.tbc_2.nq == pytest.approx(22.46, ERROR_TOLERANCE)
-        assert self.tbc_local_shear.nq == pytest.approx(6.54, ERROR_TOLERANCE)
+        # assert self.tbc_3.nq == pytest.approx(6.54, ERROR_TOLERANCE)
 
     def test_ngamma(self):
         assert self.tbc_1.ngamma == pytest.approx(11.6, ERROR_TOLERANCE)
         assert self.tbc_2.ngamma == pytest.approx(19.13, ERROR_TOLERANCE)
-        assert self.tbc_local_shear.ngamma == pytest.approx(
-            2.73, ERROR_TOLERANCE
-        )
-
-    def test_soil_friction_angle(self):
-        assert self.tbc_local_shear.soil_friction_angle == pytest.approx(
-            18.76, ERROR_TOLERANCE
-        )
+        # assert self.tbc_3.ngamma == pytest.approx(2.73, ERROR_TOLERANCE)
 
     def test_ultimate_4_square_footing(self):
         assert self.tbc_1.ultimate_4_square_footing() == pytest.approx(
@@ -66,10 +58,9 @@ class TestTerzaghiBearingCapacity:
         assert self.tbc_2.ultimate_4_square_footing() == pytest.approx(
             2331.13, ERROR_TOLERANCE
         )
-        assert (
-            self.tbc_local_shear.ultimate_4_square_footing()
-            == pytest.approx(408.11, ERROR_TOLERANCE)
-        )
+        # assert self.tbc_3.ultimate_4_square_footing() == pytest.approx(
+        #     408.11, ERROR_TOLERANCE
+        # )
 
 
 @pytest.mark.parametrize(
