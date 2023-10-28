@@ -4,9 +4,22 @@ from geolysis.bearing_capacity import FootingShape, FootingSize, FoundationSize
 from geolysis.utils import PI, exp, tan
 
 
-@dataclass
-class HansenBearingCapacityFactors:
-    soil_friction_angle: float
+class HansenFactors:
+    def __init__(
+        self,
+        soil_friction_angle: float,
+        cohesion: float,
+        beta: float,
+        total_vertical_load: float,
+        foundation_size: FoundationSize,
+        footing_shape: FootingShape,
+    ) -> None:
+        self.soil_friction_angle = soil_friction_angle
+        self.cohesion = cohesion
+        self.beta = beta
+        self.total_vertical_load = total_vertical_load
+        self.foundation_size = foundation_size
+        self.footing_shape = footing_shape
 
     @property
     def nc(self) -> float:
@@ -47,11 +60,6 @@ class HansenBearingCapacityFactors:
         """
         return 1.8 * (self.nq - 1.0) * tan(self.soil_friction_angle)
 
-
-@dataclass
-class HansenDepthFactors:
-    foundation_size: FoundationSize
-
     @property
     def d2w(self) -> float:
         return self.foundation_size.d2w
@@ -89,15 +97,9 @@ class HansenDepthFactors:
         """
         return 1.0
 
-
-@dataclass
-class HansenShapeFactors:
-    footing_size: FootingSize
-    footing_shape: FootingShape
-
     @property
-    def w2l(self) -> float:
-        return self.footing_size.w2l
+    def _w2l(self) -> float:
+        return self.foundation_size.w2l
 
     @property
     def sc(self) -> float:
@@ -121,7 +123,7 @@ class HansenShapeFactors:
             _sc = 1.3
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sc = 1 + 0.2 * self.w2l
+            _sc = 1 + 0.2 * self._w2l
 
         else:
             msg = ""
@@ -151,7 +153,7 @@ class HansenShapeFactors:
             _sq = 1.2
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sq = 1 + 0.2 * self.w2l
+            _sq = 1 + 0.2 * self._w2l
 
         else:
             msg = ""
@@ -181,21 +183,13 @@ class HansenShapeFactors:
             _sgamma = 0.6
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sgamma = 1 - 0.4 * self.w2l
+            _sgamma = 1 - 0.4 * self._w2l
 
         else:
             msg = ""
             raise TypeError(msg)
 
         return _sgamma
-
-
-@dataclass
-class HansenInclinationFactors:
-    cohesion: float
-    footing_size: FootingSize
-    beta: float
-    total_vertical_load: float
 
     @property
     def ic(self) -> float:
@@ -209,8 +203,8 @@ class HansenInclinationFactors:
         x_1 = (
             2
             * self.cohesion
-            * self.footing_size.width
-            * self.footing_size.length
+            * self.foundation_size.width
+            * self.foundation_size.length
         )
         return 1 - self.beta / x_1
 
@@ -275,18 +269,13 @@ class HansenBearingCapacity:
         self.footing_shape = footing_shape
         self.total_vertical_load = total_vertical_load
 
-        self.bearing_capacity_factor = HansenBearingCapacityFactors(
-            self.soil_friction_angle
-        )
-        self.depth_factor = HansenDepthFactors(self.foundation_size)
-        self.shape_factor = HansenShapeFactors(
-            self.foundation_size.footing_size, self.footing_shape
-        )
-        self.incl_factor = HansenInclinationFactors(
-            self.cohesion,
-            self.foundation_size.footing_size,
-            self.beta,
-            self.total_vertical_load,
+        self.hansen_factors = HansenFactors(
+            soil_friction_angle,
+            cohesion,
+            beta,
+            total_vertical_load,
+            foundation_size,
+            footing_shape,
         )
 
     def ultimate(self) -> float:
@@ -310,48 +299,48 @@ class HansenBearingCapacity:
 
     @property
     def nc(self) -> float:
-        return self.bearing_capacity_factor.nc
+        return self.hansen_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.bearing_capacity_factor.nq
+        return self.hansen_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.bearing_capacity_factor.ngamma
+        return self.hansen_factors.ngamma
 
     @property
     def dc(self) -> float:
-        return self.depth_factor.dc
+        return self.hansen_factors.dc
 
     @property
     def dq(self) -> float:
-        return self.depth_factor.dq
+        return self.hansen_factors.dq
 
     @property
     def dgamma(self) -> float:
-        return self.depth_factor.dgamma
+        return self.hansen_factors.dgamma
 
     @property
     def sc(self) -> float:
-        return self.shape_factor.sc
+        return self.hansen_factors.sc
 
     @property
     def sq(self) -> float:
-        return self.shape_factor.sq
+        return self.hansen_factors.sq
 
     @property
     def sgamma(self) -> float:
-        return self.shape_factor.sgamma
+        return self.hansen_factors.sgamma
 
     @property
     def ic(self) -> float:
-        return self.incl_factor.ic
+        return self.hansen_factors.ic
 
     @property
     def iq(self) -> float:
-        return self.incl_factor.iq
+        return self.hansen_factors.iq
 
     @property
     def igamma(self) -> float:
-        return self.incl_factor.igamma
+        return self.hansen_factors.igamma
