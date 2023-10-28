@@ -66,7 +66,7 @@ class MeyerhofFactors:
 
     @property
     def _w2l(self) -> float:
-        return self.foundation_size.footing_size.w2l
+        return self.foundation_size.w2l
 
     @property
     def sc(self) -> float:
