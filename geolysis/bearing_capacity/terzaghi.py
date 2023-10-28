@@ -1,14 +1,16 @@
-from dataclasses import dataclass
-
 from geolysis import GeotechEng
 from geolysis.bearing_capacity import FoundationSize
 from geolysis.utils import PI, arctan, cos, deg2rad, exp, round_, tan
 
 
-@dataclass
-class TerzaghiBearingCapacityFactors:
-    soil_friction_angle: float
-    eng: GeotechEng = GeotechEng.MEYERHOF
+class TerzaghiFactors:
+    def __init__(
+        self,
+        soil_friction_angle_angle: float,
+        eng: GeotechEng = GeotechEng.MEYERHOF,
+    ) -> None:
+        self.soil_friction_angle = soil_friction_angle_angle
+        self.eng = eng
 
     @property
     @round_(precision=2)
@@ -20,10 +22,7 @@ class TerzaghiBearingCapacityFactors:
             N_c = \cot \phi \left(N_q - 1 \right)
 
         """
-        x_1 = 1 / tan(self.soil_friction_angle)
-        x_2 = self.nq - 1
-
-        return x_1 * x_2
+        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
 
     @property
     @round_(precision=2)
@@ -115,7 +114,7 @@ class TerzaghiBearingCapacity:
         self.footing_size = self.foundation_size.footing_size
         self.eng = eng
 
-        self.bearing_capacity_factor = TerzaghiBearingCapacityFactors(
+        self.terzaghi_factors = TerzaghiFactors(
             self.soil_friction_angle, self.eng
         )
 
@@ -131,11 +130,11 @@ class TerzaghiBearingCapacity:
     def _x_3(self) -> float:
         return self.soil_unit_weight * self.foundation_size.width * self.ngamma
 
-    def local_shear(self):
-        self.cohesion = (2 / 3) * self.cohesion
-        self.soil_friction_angle = arctan(
-            (2 / 3) * tan(self.soil_friction_angle)
-        )
+    # def local_shear(self):
+    #     self.cohesion = (2 / 3) * self.cohesion
+    #     self.soil_friction_angle = arctan(
+    #         (2 / 3) * tan(self.soil_friction_angle)
+    #     )
 
     @round_
     def ultimate_4_strip_footing(self) -> float:
@@ -179,7 +178,7 @@ class TerzaghiBearingCapacity:
 
         .. math::
 
-            q_u = \left( 1 + 0.3 \cdot \dfrac{B}{L} \right) c \cdot N_c
+            q_u = \left( 1 + 0.3 \cdot \dfrac{B}{L} \right) \cdot N_c
                   + \gamma \cdot D_f \cdot N_q
                   + \dfrac{1}{2} \left(1 - 0.2 \cdot \dfrac{B}{L} \right)
                   \cdot \gamma \cdot B \cdot N_\gamma
@@ -193,12 +192,12 @@ class TerzaghiBearingCapacity:
 
     @property
     def nc(self) -> float:
-        return self.bearing_capacity_factor.nc
+        return self.terzaghi_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.bearing_capacity_factor.nq
+        return self.terzaghi_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.bearing_capacity_factor.ngamma
+        return self.terzaghi_factors.ngamma
