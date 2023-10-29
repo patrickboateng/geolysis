@@ -1,4 +1,4 @@
-from typing import ClassVar, Final
+from typing import ClassVar
 
 from geolysis import ERROR_TOLERANCE
 from geolysis.bearing_capacity import FoundationSize
@@ -137,14 +137,15 @@ class MeyerhofBearingCapacity:
         """
         return min(1 + 0.33 * self.foundation_size.d2w, 1.33)
 
-    def net_allowable(self, n_design: float) -> float:
+    def net_allowable_bearing_capacity(self, n_design: float) -> float:
         r"""Return the net allowable bearing capacity.
 
         .. math::
 
             q_{a(net)} &= 19.16 \cdot N_{des} \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \le 1.22
 
-            q_{a(net)} &= 11.98 \cdot N_{des} \cdot \left(\dfrac{3.28B + 1}{3.28B} \right)^2 \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \gt 1.22
+            q_{a(net)} &= 11.98 \cdot N_{des} \cdot \left(\dfrac{3.28B + 1}{3.28B} \right)^2
+                          \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \gt 1.22
 
 
         :raises AllowableSettlementError: If actual settlement is greater than
@@ -154,7 +155,7 @@ class MeyerhofBearingCapacity:
         if (
             settlement_ratio := self.actual_settlement
             / self.ALLOWABLE_SETTLEMENT
-        ) > 1 + ERROR_TOLERANCE:
+        ) > (1 + ERROR_TOLERANCE):
             msg = f"Settlement: {self.actual_settlement}should be less than or equal \
                   Allowable Settlement: {self.ALLOWABLE_SETTLEMENT}"
             raise AllowableSettlementError(msg)
@@ -167,7 +168,7 @@ class MeyerhofBearingCapacity:
 
         return n_design * self.fd * settlement_ratio * (11.98 * (a / b)) ** 2
 
-    def allowable_1956(self, spt_n60: float) -> float:
+    def allowable_bearing_capacity_1956(self, spt_n60: float) -> float:
         if self.foundation_size.width <= 1.2:
             return 12 * spt_n60 * self.fd
 
