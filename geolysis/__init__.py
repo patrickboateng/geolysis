@@ -1,6 +1,6 @@
 import enum
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 ERROR_TOLERANCE = 0.01
 DECIMAL_PLACES = 3
 
