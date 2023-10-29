@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1> Geolab </h1>
+<h1> geolysis </h1>
 
 <h3>
 
