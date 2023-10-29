@@ -6,15 +6,20 @@ class BowlesBearingCapacity:
         self.foundation_size = foundation_size
 
     @property
-    def f_d(self) -> float:
-        """Return the depth factor."""
+    def fd(self) -> float:
+        r"""Return the depth factor.
 
+        .. math::
+
+            f_d = 1 + 0.33 \cdot \frac{D_f}{B}
+
+        """
         return min(1 + 0.33 * self.foundation_size.d2w, 1.33)
 
     def allowable_1977(self, spt_corrected_nvalue: float) -> float:
         if self.foundation_size.width <= 1.2:
-            return 20 * spt_corrected_nvalue * self.f_d
+            return 20 * spt_corrected_nvalue * self.fd
 
-        x_1 = 12.5 * spt_corrected_nvalue
-        x_2 = (self.foundation_size.width + 0.3) / self.foundation_size.width
-        return x_1 * x_2**2 * self.f_d
+        a = self.foundation_size.width + 0.3
+        b = self.foundation_size.width
+        return 12.5 * spt_corrected_nvalue * (a / b) ** 2 * self.fd
