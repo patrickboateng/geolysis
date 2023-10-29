@@ -7,7 +7,7 @@ from geolysis.bearing_capacity.terzaghi import (
     TerzaghiBearingCapacity,
     TerzaghiFactors,
 )
-from geolysis.bearing_capacity.vesic import VesicBearingCapacityFactors
+from geolysis.bearing_capacity.vesic import VesicFactors
 
 
 class TestTerzaghiBearingCapacity:
