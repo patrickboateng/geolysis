@@ -3,6 +3,18 @@
 import enum
 from dataclasses import dataclass, field
 
+from geolysis.utils import arctan, tan
+
+
+def local_shear(
+    cohesion: float,
+    soil_friction_angle: float,
+) -> tuple[float, float]:
+    cohesion = (2 / 3) * cohesion
+    soil_friction_angle = arctan((2 / 3) * tan(soil_friction_angle))
+
+    return (cohesion, soil_friction_angle)
+
 
 @dataclass(slots=True)
 class FootingSize:
