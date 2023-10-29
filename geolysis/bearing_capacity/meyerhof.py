@@ -25,10 +25,9 @@ class MeyerhofFactors:
     @property
     def nq(self) -> float:
         """Return ``Meyerhof`` bearing capacity factor :math:`N_q`."""
-        x_1 = tan(45 + self.soil_friction_angle / 2) ** 2
-        x_2 = exp(PI * tan(self.soil_friction_angle))
-
-        return x_1 * x_2
+        return pow(tan(45 + self.soil_friction_angle / 2), 2) * exp(
+            PI * tan(self.soil_friction_angle)
+        )
 
     @property
     def ngamma(self) -> float:
@@ -47,21 +46,24 @@ class MeyerhofFactors:
         if self._d2w <= 1:
             return 1 + 0.4 * self._d2w
 
-        x_1 = 0.4 * arctan(self._d2w)
-        return 1 + x_1 * (PI / 180)
+        return 1 + 0.4 * arctan(self._d2w) * (PI / 180)
 
     @property
     def dq(self) -> float:
         """Return ``Meyerhof`` depth factor :math:`d_q`."""
-        x_2 = (1 - sin(self.soil_friction_angle)) ** 2
 
         if self._d2w <= 1:
-            x_1 = 2 * tan(self.soil_friction_angle)
-            return 1 + x_1 * x_2 * self._d2w
+            return (
+                1
+                + 2
+                * tan(self.soil_friction_angle)
+                * (1 - sin(self.soil_friction_angle)) ** 2
+                * self._d2w
+            )
 
-        x_1 = 2 * tan(self.soil_friction_angle)
-        x_3 = arctan(self._d2w)
-        return 1 + x_1 * x_2 * x_3 * (PI / 180)
+        return 1 + (2 * tan(self.soil_friction_angle)) * pow(
+            (1 - sin(self.soil_friction_angle)), 2
+        ) * (arctan(self._d2w) * (PI / 180))
 
     @property
     def dgamma(self) -> float:
@@ -128,7 +130,7 @@ class MeyerhofBearingCapacity:
 
     @property
     def fd(self) -> float:
-        r"""Return the depth factor.
+        r"""Return the depth factor (:math:`f_d`).
 
         .. math::
 

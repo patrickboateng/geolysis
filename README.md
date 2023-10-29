@@ -96,3 +96,6 @@ and conditions of this license.
 > [!IMPORTANT]
 > For questions or comments about `geolysis`, please ask them in the
 > [discussions forum](https://github.com/patrickboateng/geolysis/discussions)
+
+<!-- Code -> code documentation -> testing -> project documentation
+-> code & documentation deployment -->
