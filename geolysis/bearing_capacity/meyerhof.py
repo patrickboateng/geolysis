@@ -1,5 +1,6 @@
 from typing import ClassVar, Final
 
+from geolysis import ERROR_TOLERANCE
 from geolysis.bearing_capacity import FoundationSize
 from geolysis.exceptions import AllowableSettlementError
 from geolysis.utils import PI, arctan, exp, sin, tan
@@ -150,42 +151,28 @@ class MeyerhofBearingCapacity:
                                           allowable settement
         """
 
-        if self.actual_settlement > self.ALLOWABLE_SETTLEMENT:
-            msg = f"Settlement: {self.actual_settlement}should be less than \
+        if (
+            settlement_ratio := self.actual_settlement
+            / self.ALLOWABLE_SETTLEMENT
+        ) > 1 + ERROR_TOLERANCE:
+            msg = f"Settlement: {self.actual_settlement}should be less than or equal \
                   Allowable Settlement: {self.ALLOWABLE_SETTLEMENT}"
             raise AllowableSettlementError(msg)
 
-        abc: float  # allowable bearing capacity
-
-        x_1 = n_design * self.fd
-        x_2 = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
-
         if self.foundation_size.width <= 1.22:
-            abc = 19.16 * x_1 * x_2
+            return 19.16 * n_design * self.fd * settlement_ratio
 
-        else:
-            x_3 = 3.28 * self.foundation_size.width + 1
-            x_4 = 3.28 * self.foundation_size.width
+        a = 3.28 * self.foundation_size.width + 1
+        b = 3.28 * self.foundation_size.width
 
-            abc = x_1 * x_2 * (11.98 * (x_3 / x_4)) ** 2
-
-        return abc
+        return n_design * self.fd * settlement_ratio * (11.98 * (a / b)) ** 2
 
     def allowable_1956(self, spt_n60: float) -> float:
-        """"""
-        abc: float
-
         if self.foundation_size.width <= 1.2:
-            abc = 12 * spt_n60 * self.fd
+            return 12 * spt_n60 * self.fd
 
-        else:
-            x_1 = 8 * spt_n60
-            x_2 = (
-                self.foundation_size.width + 0.3
-            ) / self.foundation_size.width
-            abc = x_1 * x_2**2 * self.fd
-
-        return abc
+        a = (self.foundation_size.width + 0.3) / self.foundation_size.width
+        return 8 * spt_n60 * a**2 * self.fd
 
     def ultimate(self) -> float:
         r"""Return the ultimate bearing capacity according to ``Meyerhof``."""
