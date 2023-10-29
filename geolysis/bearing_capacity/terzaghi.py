@@ -130,12 +130,6 @@ class TerzaghiBearingCapacity:
     def _x_3(self) -> float:
         return self.soil_unit_weight * self.foundation_size.width * self.ngamma
 
-    # def local_shear(self):
-    #     self.cohesion = (2 / 3) * self.cohesion
-    #     self.soil_friction_angle = arctan(
-    #         (2 / 3) * tan(self.soil_friction_angle)
-    #     )
-
     @round_
     def ultimate_4_strip_footing(self) -> float:
         r"""Return ultimate bearing capacity of strip footings.
