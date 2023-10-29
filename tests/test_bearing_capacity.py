@@ -62,22 +62,21 @@ class TestTerzaghiBearingCapacity:
         #     408.11, ERROR_TOLERANCE
         # )
 
-
-@pytest.mark.parametrize(
-    "soil_friction_angle,bcf",
-    [
-        (1, {"nq": 1.10, "nc": 5.73, "ngamma": 0.0}),
-        (15, {"nq": 4.45, "nc": 12.86, "ngamma": 1.32}),
-        (25, {"nq": 12.72, "nc": 25.13, "ngamma": 8.21}),
-        (27, {"nq": 15.9, "nc": 29.24, "ngamma": 11.6}),
-        (18.76, {"nq": 6.54, "nc": 16.21, "ngamma": 2.73}),
-    ],
-)
-def test_terzaghi_bcf(soil_friction_angle: float, bcf: dict):
-    tbcf = TerzaghiFactors(soil_friction_angle)
-    assert tbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
-    assert tbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
-    assert tbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
+    @pytest.mark.parametrize(
+        "soil_friction_angle,bcf",
+        [
+            (1, {"nq": 1.10, "nc": 5.73, "ngamma": 0.0}),
+            (15, {"nq": 4.45, "nc": 12.86, "ngamma": 1.32}),
+            (25, {"nq": 12.72, "nc": 25.13, "ngamma": 8.21}),
+            (27, {"nq": 15.9, "nc": 29.24, "ngamma": 11.6}),
+            (18.76, {"nq": 6.54, "nc": 16.21, "ngamma": 2.73}),
+        ],
+    )
+    def test_terzaghi_bcf(self, soil_friction_angle: float, bcf: dict):
+        tbcf = TerzaghiFactors(soil_friction_angle)
+        assert tbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
+        assert tbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
+        assert tbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
 
 
 # @pytest.mark.parametrize(
@@ -88,12 +87,7 @@ def test_terzaghi_bcf(soil_friction_angle: float, bcf: dict):
 #         (15, {"nq": 3.94, "nc": 10.98, "ngamma": 1.42}),
 #         (20, {"nq": 6.40, "nc": 14.83, "ngamma": 3.54}),
 #     ],
-# )
-# def test_hansen_bcf(soil_friction_angle: float, bcf: dict):
-#     hbcf = HansenFactors(soil_friction_angle)
-#     assert hbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
-#     assert hbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
-#     assert hbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
+# ) -> Hansen
 
 
 # @pytest.mark.parametrize(
@@ -104,9 +98,4 @@ def test_terzaghi_bcf(soil_friction_angle: float, bcf: dict):
 #         (15, {"nq": 3.94, "nc": 10.98, "ngamma": 2.65}),
 #         (20, {"nq": 6.40, "nc": 14.83, "ngamma": 5.39}),
 #     ],
-# )
-# def test_vesic_bcf(soil_friction_angle: float, bcf: dict):
-#     vbcf = VesicBearingCapacityFactors(soil_friction_angle)
-#     assert vbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
-#     assert vbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
-#     assert vbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
+# ) -> Vesic

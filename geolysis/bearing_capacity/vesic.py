@@ -1,12 +1,19 @@
-from dataclasses import dataclass
-
-from geolysis.bearing_capacity import FootingShape, FootingSize, FoundationSize
+from geolysis.bearing_capacity import FootingShape, FoundationSize
 from geolysis.utils import PI, exp, sin, tan
 
 
-@dataclass
-class VesicBearingCapacityFactors:
-    soil_friction_angle: float
+class VesicFactors:
+    def __init__(
+        self,
+        soil_friction_angle: float,
+        beta: float,
+        foundation_size: FoundationSize,
+        footing_shape: FootingShape,
+    ) -> None:
+        self.soil_friction_angle = soil_friction_angle
+        self.beta = beta
+        self.foundation_size = foundation_size
+        self.footing_shape = footing_shape
 
     @property
     def nc(self) -> float:
@@ -45,14 +52,8 @@ class VesicBearingCapacityFactors:
         """
         return 2 * (self.nq + 1) * tan(self.soil_friction_angle)
 
-
-@dataclass
-class VesicDepthFactors:
-    soil_friction_angle: float
-    foundation_size: FoundationSize
-
     @property
-    def d2w(self) -> float:
+    def _d2w(self) -> float:
         return self.foundation_size.d2w
 
     @property
@@ -64,7 +65,7 @@ class VesicDepthFactors:
             d_c = 1 + 0.4 \cdot \left(\frac{D_f}{B} \right)
 
         """
-        return 1 + 0.4 * self.d2w
+        return 1 + 0.4 * self._d2w
 
     @property
     def dq(self) -> float:
@@ -79,7 +80,7 @@ class VesicDepthFactors:
         """
         x_1 = 2 * tan(self.soil_friction_angle)
         x_2 = (1 - sin(self.soil_friction_angle)) ** 2
-        x_3 = self.d2w
+        x_3 = self._d2w
 
         return 1 + (x_1 * x_2 * x_3)
 
@@ -94,18 +95,9 @@ class VesicDepthFactors:
         """
         return 1.0
 
-
-@dataclass
-class VesicShapeFactors:
-    soil_friction_angle: float
-    footing_size: FootingSize
-    footing_shape: FootingShape
-    nq: float
-    nc: float
-
     @property
-    def w2l(self) -> float:
-        return self.footing_size.w2l
+    def _w2l(self) -> float:
+        return self.foundation_size.w2l
 
     @property
     def sc(self) -> float:
@@ -127,7 +119,7 @@ class VesicShapeFactors:
             _sc = 1 + (self.nq / self.nc)
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sc = 1 + self.w2l * (self.nq / self.nc)
+            _sc = 1 + self._w2l * (self.nq / self.nc)
 
         else:
             msg = ""
@@ -155,7 +147,7 @@ class VesicShapeFactors:
             _sq = 1 + tan(self.soil_friction_angle)
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sq = 1 + self.w2l * tan(self.soil_friction_angle)
+            _sq = 1 + self._w2l * tan(self.soil_friction_angle)
 
         else:
             msg = ""
@@ -183,19 +175,13 @@ class VesicShapeFactors:
             _sgamma = 0.6
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sgamma = 1 - 0.4 * (self.w2l)
+            _sgamma = 1 - 0.4 * (self._w2l)
 
         else:
             msg = ""
             raise TypeError(msg)
 
         return _sgamma
-
-
-@dataclass
-class VesicInclinationFactors:
-    soil_friction_angle: float
-    beta: float
 
     @property
     def ic(self) -> float:
@@ -266,21 +252,8 @@ class VesicBearingCapacity:
         self.beta = beta
         self.footing_shape = footing_shape
 
-        self.bearing_cpty_factors = VesicBearingCapacityFactors(
-            self.soil_friction_angle
-        )
-        self.depth_factors = VesicDepthFactors(
-            self.soil_friction_angle, self.foundation_size
-        )
-        self.shape_factors = VesicShapeFactors(
-            self.soil_friction_angle,
-            self.foundation_size.footing_size,
-            self.footing_shape,
-            self.nq,
-            self.nc,
-        )
-        self.incl_factors = VesicInclinationFactors(
-            self.soil_friction_angle, self.beta
+        self.vesic_factors = VesicFactors(
+            soil_friction_angle, beta, foundation_size, footing_shape
         )
 
     def ultimate(self) -> float:
@@ -303,48 +276,48 @@ class VesicBearingCapacity:
 
     @property
     def nc(self) -> float:
-        return self.bearing_cpty_factors.nc
+        return self.vesic_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.bearing_cpty_factors.nq
+        return self.vesic_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.bearing_cpty_factors.ngamma
+        return self.vesic_factors.ngamma
 
     @property
     def dc(self) -> float:
-        return self.depth_factors.dc
+        return self.vesic_factors.dc
 
     @property
     def dq(self) -> float:
-        return self.depth_factors.dq
+        return self.vesic_factors.dq
 
     @property
     def dgamma(self) -> float:
-        return self.depth_factors.dgamma
+        return self.vesic_factors.dgamma
 
     @property
     def sc(self) -> float:
-        return self.shape_factors.sc
+        return self.vesic_factors.sc
 
     @property
     def sq(self) -> float:
-        return self.shape_factors.sq
+        return self.vesic_factors.sq
 
     @property
     def sgamma(self) -> float:
-        return self.shape_factors.sgamma
+        return self.vesic_factors.sgamma
 
     @property
     def ic(self) -> float:
-        return self.incl_factors.ic
+        return self.vesic_factors.ic
 
     @property
     def iq(self) -> float:
-        return self.incl_factors.iq
+        return self.vesic_factors.iq
 
     @property
     def igamma(self) -> float:
-        return self.incl_factors.igamma
+        return self.vesic_factors.igamma

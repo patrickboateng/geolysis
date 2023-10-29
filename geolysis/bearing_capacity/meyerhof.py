@@ -1,4 +1,7 @@
+from typing import ClassVar, Final
+
 from geolysis.bearing_capacity import FoundationSize
+from geolysis.exceptions import AllowableSettlementError
 from geolysis.utils import PI, arctan, exp, sin, tan
 
 
@@ -100,23 +103,89 @@ class MeyerhofFactors:
 
 
 class MeyerhofBearingCapacity:
+    ALLOWABLE_SETTLEMENT: ClassVar[float] = 25.4
+
     def __init__(
         self,
         cohesion: float,
         soil_unit_weight: float,
         soil_friction_angle: float,
+        actual_settlement: float,
         beta: float,
         foundation_size: FoundationSize,
     ) -> None:
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
         self.soil_friction_angle = soil_friction_angle
+        self.actual_settlement = actual_settlement
         self.beta = beta
         self.foundation_size = foundation_size
 
         self.meyerhof_factors = MeyerhofFactors(
             soil_friction_angle, beta, foundation_size
         )
+
+    @property
+    def fd(self) -> float:
+        r"""Return the depth factor.
+
+        .. math::
+
+            f_d = 1 + 0.33 \cdot \frac{D_f}{B}
+
+        """
+        return min(1 + 0.33 * self.foundation_size.d2w, 1.33)
+
+    def net_allowable(self, n_design: float) -> float:
+        r"""Return the net allowable bearing capacity.
+
+        .. math::
+
+            q_{a(net)} &= 19.16 \cdot N_{des} \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \le 1.22
+
+            q_{a(net)} &= 11.98 \cdot N_{des} \cdot \left(\dfrac{3.28B + 1}{3.28B} \right)^2 \cdot f_d \cdot \dfrac{S_e}{25.4} \, , \, B \gt 1.22
+
+
+        :raises AllowableSettlementError: If actual settlement is greater than
+                                          allowable settement
+        """
+
+        if self.actual_settlement > self.ALLOWABLE_SETTLEMENT:
+            msg = f"Settlement: {self.actual_settlement}should be less than \
+                  Allowable Settlement: {self.ALLOWABLE_SETTLEMENT}"
+            raise AllowableSettlementError(msg)
+
+        abc: float  # allowable bearing capacity
+
+        x_1 = n_design * self.fd
+        x_2 = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
+
+        if self.foundation_size.width <= 1.22:
+            abc = 19.16 * x_1 * x_2
+
+        else:
+            x_3 = 3.28 * self.foundation_size.width + 1
+            x_4 = 3.28 * self.foundation_size.width
+
+            abc = x_1 * x_2 * (11.98 * (x_3 / x_4)) ** 2
+
+        return abc
+
+    def allowable_1956(self, spt_n60: float) -> float:
+        """"""
+        abc: float
+
+        if self.foundation_size.width <= 1.2:
+            abc = 12 * spt_n60 * self.fd
+
+        else:
+            x_1 = 8 * spt_n60
+            x_2 = (
+                self.foundation_size.width + 0.3
+            ) / self.foundation_size.width
+            abc = x_1 * x_2**2 * self.fd
+
+        return abc
 
     def ultimate(self) -> float:
         r"""Return the ultimate bearing capacity according to ``Meyerhof``."""
