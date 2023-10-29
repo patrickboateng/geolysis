@@ -4,7 +4,7 @@
 
 <h3>
 
-[Homepage](https://github.com/patrickboateng/geolysis) | [Documentation](/docs) | [PyPi](https://pypi.org/project/geolysis/) | [Source Code](https://github.com/patrickboateng/geolysis/) | [Bug Reports](https://github.com/patrickboateng/geolysis/issues) | [discussions](https://github.com/patrickboateng/geolysis/discussions)
+[Homepage](https://github.com/patrickboateng/geolysis) | [Documentation](/docs) | [PyPi](https://pypi.org/project/geolysis/) | [Source Code](https://github.com/patrickboateng/geolysis/) | [Bug Reports](https://github.com/patrickboateng/geolysis/issues) | [Discussions](https://github.com/patrickboateng/geolysis/discussions)
 
 </h3>
 
@@ -95,5 +95,6 @@ and conditions of this license.
 
 - [**LinkedIn**](https://linkedin.com/in/patrickboateng/)
 
-> [!IMPORTANT] For questions or comments about `geolysis`, please ask them in the
+> [!IMPORTANT]
+> For questions or comments about `geolysis`, please ask them in the
 > [discussions forum](https://github.com/patrickboateng/geolysis/discussions)
