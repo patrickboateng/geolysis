@@ -1,5 +1,5 @@
 from geolysis.bearing_capacity import FootingShape, FoundationSize
-from geolysis.utils import PI, exp, sin, tan
+from geolysis.utils import PI, exp, prod, sin, tan
 
 
 class VesicFactors:
@@ -36,10 +36,9 @@ class VesicFactors:
                   \cdot (e^{\pi \tan \phi})
 
         """
-        x_1 = tan(45 + self.soil_friction_angle / 2)
-        x_2 = exp(PI * tan(self.soil_friction_angle))
-
-        return (x_1**2) * x_2
+        return (tan(45 + self.soil_friction_angle / 2) ** 2) * exp(
+            PI * tan(self.soil_friction_angle)
+        )
 
     @property
     def ngamma(self) -> float:
@@ -78,11 +77,13 @@ class VesicFactors:
                   \cdot \dfrac{D_f}{B}
 
         """
-        x_1 = 2 * tan(self.soil_friction_angle)
-        x_2 = (1 - sin(self.soil_friction_angle)) ** 2
-        x_3 = self._d2w
 
-        return 1 + (x_1 * x_2 * x_3)
+        return 1 + (
+            2
+            * tan(self.soil_friction_angle)
+            * (1 - sin(self.soil_friction_angle)) ** 2
+            * self._d2w
+        )
 
     @property
     def dgamma(self) -> float:
@@ -107,25 +108,22 @@ class VesicFactors:
         - for rectangular footing |rarr| math:`s_c = 1 + \dfrac{B}{L} \cdot \dfrac{N_q}{N_c}`
         - for square or circular footing |rarr| :math:`s_c = 1 + \dfrac{N_q}{N_c}`
         """
-        _sc: float
 
         if self.footing_shape is FootingShape.STRIP:
-            _sc = 1.0
+            return 1.0
 
         elif (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sc = 1 + (self.nq / self.nc)
+            return 1 + (self.nq / self.nc)
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sc = 1 + self._w2l * (self.nq / self.nc)
+            return 1 + self._w2l * (self.nq / self.nc)
 
         else:
             msg = ""
             raise TypeError(msg)
-
-        return _sc
 
     @property
     def sq(self) -> float:
@@ -135,25 +133,21 @@ class VesicFactors:
         - for rectangular footing |rarr| math:`s_q = 1 + \dfrac{B}{L} \cdot \tan \phi`
         - for square or circular footing |rarr| :math:`s_q = 1 + \tan \phi`
         """
-        _sq: float
-
         if self.footing_shape is FootingShape.STRIP:
-            _sq = 1.0
+            return 1.0
 
         elif (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sq = 1 + tan(self.soil_friction_angle)
+            return 1 + tan(self.soil_friction_angle)
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sq = 1 + self._w2l * tan(self.soil_friction_angle)
+            return 1 + self._w2l * tan(self.soil_friction_angle)
 
         else:
             msg = ""
             raise TypeError(msg)
-
-        return _sq
 
     @property
     def sgamma(self) -> float:
@@ -163,25 +157,22 @@ class VesicFactors:
         - for rectangular footing |rarr| math:`s_\gamma = 1 - 0.4 \cdot \dfrac{B}{L}`
         - for square or circular footing |rarr| :math:`s_\gamma = 0.6`
         """
-        _sgamma: float
 
         if self.footing_shape is FootingShape.STRIP:
-            _sgamma = 1.0
+            return 1.0
 
         elif (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sgamma = 0.6
+            return 0.6
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sgamma = 1 - 0.4 * (self._w2l)
+            return 1 - 0.4 * (self._w2l)
 
         else:
             msg = ""
             raise TypeError(msg)
-
-        return _sgamma
 
     @property
     def ic(self) -> float:
@@ -256,23 +247,44 @@ class VesicBearingCapacity:
             soil_friction_angle, beta, foundation_size, footing_shape
         )
 
-    def ultimate(self) -> float:
+    @property
+    def first_expr(self) -> float:
+        return self.cohesion * self.nc * self.sc * self.dc * self.ic
+
+    @property
+    def mid_expr(self) -> float:
+        return prod(
+            self.soil_unit_weight,
+            self.foundation_size.depth,
+            self.nq,
+            self.sq,
+            self.dq,
+            self.iq,
+        )
+
+    @property
+    def last_expr(self) -> float:
+        return prod(
+            self.soil_unit_weight,
+            self.foundation_size.width,
+            self.ngamma,
+            self.sgamma,
+            self.dgamma,
+            self.igamma,
+        )
+
+    def ultimate_bearing_capacity(self) -> float:
         r"""Return the ultimate bearing capacity according to ``Hansen``.
 
         .. math::
 
             q_u = c \cdot N_c \cdot s_c \cdot d_c \cdot i_c \,
-            + q \cdot N_q \cdot s_q \cdot d_q \cdot i_q \,
-            + 0.5 \cdot \gamma \cdot B \cdot N_\gamma \cdot s_\gamma \cdot d_\gamma \cdot i_\gamma
+                  + q \cdot N_q \cdot s_q \cdot d_q \cdot i_q \,
+                  + 0.5 \cdot \gamma \cdot B \cdot N_\gamma
+                  \cdot s_\gamma \cdot d_\gamma \cdot i_\gamma
 
         """
-        x_1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
-        x_2 = self.soil_unit_weight * self.foundation_size.depth
-        x_3 = self.nq * self.sq * self.dq * self.iq
-        x_4 = self.soil_unit_weight * self.foundation_size.width
-        x_5 = self.ngamma * self.sgamma * self.dgamma * self.igamma
-
-        return x_1 + (x_2 * x_3) + (0.5 * x_4 * x_5)
+        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
 
     @property
     def nc(self) -> float:
