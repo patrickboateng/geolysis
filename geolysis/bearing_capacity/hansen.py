@@ -1,7 +1,5 @@
-from dataclasses import dataclass
-
-from geolysis.bearing_capacity import FootingShape, FootingSize, FoundationSize
-from geolysis.utils import PI, exp, tan
+from geolysis.bearing_capacity import FootingShape, FoundationSize
+from geolysis.utils import PI, exp, prod, tan
 
 
 class HansenFactors:
@@ -30,10 +28,7 @@ class HansenFactors:
             N_c = (N_q - 1) \cot \phi
 
         """
-        x_1 = 1 / tan(self.soil_friction_angle)
-        x_2 = self.nq - 1.0
-
-        return x_1 * x_2
+        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1.0)
 
     @property
     def nq(self) -> float:
@@ -45,10 +40,9 @@ class HansenFactors:
                   \left(e^{\pi \tan \phi}\right)
 
         """
-        x_1 = tan(45 + self.soil_friction_angle / 2) ** 2
-        x_2 = exp(PI * tan(self.soil_friction_angle))
-
-        return x_1 * x_2
+        return tan(45 + self.soil_friction_angle / 2) ** 2 * exp(
+            PI * tan(self.soil_friction_angle)
+        )
 
     @property
     def ngamma(self) -> float:
@@ -61,7 +55,7 @@ class HansenFactors:
         return 1.8 * (self.nq - 1.0) * tan(self.soil_friction_angle)
 
     @property
-    def d2w(self) -> float:
+    def _d2w(self) -> float:
         return self.foundation_size.d2w
 
     @property
@@ -73,7 +67,7 @@ class HansenFactors:
             d_c = 1 + 0.35 \left(\frac{D_f}{B}\right)
 
         """
-        return 1 + 0.35 * self.d2w
+        return 1 + 0.35 * self._d2w
 
     @property
     def dq(self) -> float:
@@ -111,25 +105,22 @@ class HansenFactors:
         - for circular footing |rarr| :math:`s_c = 1.3`
 
         """
-        _sc: float
 
         if self.footing_shape is FootingShape.STRIP:
-            _sc = 1.0
+            return 1.0
 
         elif (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sc = 1.3
+            return 1.3
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sc = 1 + 0.2 * self._w2l
+            return 1 + 0.2 * self._w2l
 
         else:
             msg = ""
             raise TypeError(msg)
-
-        return _sc
 
     @property
     def sq(self) -> float:
@@ -141,25 +132,22 @@ class HansenFactors:
         - for circular footing |rarr| :math:`s_q = 1.2`
 
         """
-        _sq: float
 
         if self.footing_shape is FootingShape.STRIP:
-            _sq = 1.0
+            return 1.0
 
         elif (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
-            _sq = 1.2
+            return 1.2
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sq = 1 + 0.2 * self._w2l
+            return 1 + 0.2 * self._w2l
 
         else:
             msg = ""
             raise TypeError(msg)
-
-        return _sq
 
     @property
     def sgamma(self) -> float:
@@ -171,25 +159,22 @@ class HansenFactors:
         - for circular footing |rarr| :math:`s_\gamma = 0.6`
 
         """
-        _sgamma: float
 
         if self.footing_shape is FootingShape.STRIP:
-            _sgamma = 1.0
+            return 1.0
 
         elif self.footing_shape is FootingShape.SQUARE:
-            _sgamma = 0.8
+            return 0.8
 
         elif self.footing_shape is FootingShape.CIRCULAR:
-            _sgamma = 0.6
+            return 0.6
 
         elif self.footing_shape is FootingShape.RECTANGULAR:
-            _sgamma = 1 - 0.4 * self._w2l
+            return 1 - 0.4 * self._w2l
 
         else:
             msg = ""
             raise TypeError(msg)
-
-        return _sgamma
 
     @property
     def ic(self) -> float:
@@ -200,13 +185,12 @@ class HansenFactors:
             i_c = 1 - \left(\dfrac{\beta}{2cBL}\right)
 
         """
-        x_1 = (
+        return 1 - self.beta / (
             2
             * self.cohesion
             * self.foundation_size.width
             * self.foundation_size.length
         )
-        return 1 - self.beta / x_1
 
     @property
     def iq(self) -> float:
@@ -278,7 +262,33 @@ class HansenBearingCapacity:
             footing_shape,
         )
 
-    def ultimate(self) -> float:
+    @property
+    def first_expr(self) -> float:
+        return self.cohesion * self.nc * self.sc * self.dc * self.ic
+
+    @property
+    def mid_expr(self) -> float:
+        return prod(
+            self.soil_unit_weight,
+            self.foundation_size.depth,
+            self.nq,
+            self.sq,
+            self.dq,
+            self.iq,
+        )
+
+    @property
+    def last_expr(self) -> float:
+        return prod(
+            self.soil_unit_weight,
+            self.foundation_size.width,
+            self.ngamma,
+            self.sgamma,
+            self.dgamma,
+            self.igamma,
+        )
+
+    def ultimate_bearing_capacity(self) -> float:
         r"""Return the ultimate bearing capacity according to ``Hansen``.
 
         .. math::
@@ -289,13 +299,7 @@ class HansenBearingCapacity:
                   \cdot s_\gamma \cdot d_\gamma \cdot i_\gamma
 
         """
-        x_1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
-        x_2 = self.soil_unit_weight * self.foundation_size.depth
-        x_3 = self.nq * self.sq * self.dq * self.iq
-        x_4 = self.soil_unit_weight * self.foundation_size.width
-        x_5 = self.ngamma * self.sgamma * self.dgamma * self.igamma
-
-        return x_1 + (x_2 * x_3) + (0.5 * x_4 * x_5)
+        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
 
     @property
     def nc(self) -> float:
