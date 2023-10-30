@@ -1,6 +1,6 @@
 from geolysis import GeotechEng
 from geolysis.bearing_capacity import FoundationSize
-from geolysis.utils import PI, arctan, cos, deg2rad, exp, round_, tan
+from geolysis.utils import PI, cos, deg2rad, exp, round_, tan
 
 
 class TerzaghiFactors:
@@ -35,10 +35,11 @@ class TerzaghiFactors:
                   {2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
 
         """
-        x_1 = (3 * PI) / 2 - deg2rad(self.soil_friction_angle)
-        x_2 = 2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2)
 
-        return exp(x_1 * tan(self.soil_friction_angle)) / x_2
+        return exp(
+            ((3 * PI) / 2 - deg2rad(self.soil_friction_angle))
+            * tan(self.soil_friction_angle)
+        ) / (2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2))
 
     @property
     @round_(precision=2)
@@ -60,19 +61,16 @@ class TerzaghiFactors:
             N_\gamma &= \left(N_q -1 \right)\tan(1.4\phi)
 
         """
-        _ngamma: float
 
         if self.eng is GeotechEng.MEYERHOF:
-            _ngamma = (self.nq - 1) * tan(1.4 * self.soil_friction_angle)
+            return (self.nq - 1) * tan(1.4 * self.soil_friction_angle)
 
         elif self.eng is GeotechEng.HANSEN:
-            _ngamma = 1.8 * (self.nq - 1) * tan(self.soil_friction_angle)
+            return 1.8 * (self.nq - 1) * tan(self.soil_friction_angle)
 
         else:
             msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
             raise TypeError(msg)
-
-        return _ngamma
 
 
 class TerzaghiBearingCapacity:
@@ -119,15 +117,15 @@ class TerzaghiBearingCapacity:
         )
 
     @property
-    def _x_1(self) -> float:
+    def first_expr(self) -> float:
         return self.cohesion * self.nc
 
     @property
-    def _x_2(self) -> float:
+    def mid_expr(self) -> float:
         return self.soil_unit_weight * self.foundation_size.depth * self.nq
 
     @property
-    def _x_3(self) -> float:
+    def last_expr(self) -> float:
         return self.soil_unit_weight * self.foundation_size.width * self.ngamma
 
     @round_
@@ -140,7 +138,7 @@ class TerzaghiBearingCapacity:
                   \cdot D_f \cdot N_q
                   + 0.5 \cdot \gamma \cdot B \cdot N_\gamma
         """
-        return self._x_1 + self._x_2 + 0.5 * self._x_3
+        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
 
     @round_
     def ultimate_4_square_footing(self) -> float:
@@ -152,7 +150,7 @@ class TerzaghiBearingCapacity:
                   + \gamma \cdot D_f \cdot N_q
                   + 0.4 \cdot \gamma \cdot B \cdot N_\gamma
         """
-        return 1.3 * self._x_1 + self._x_2 + 0.4 * self._x_3
+        return 1.3 * self.first_expr + self.mid_expr + 0.4 * self.last_expr
 
     @round_
     def ultimate_4_circular_footing(self) -> float:
@@ -164,7 +162,7 @@ class TerzaghiBearingCapacity:
                   + \gamma \cdot D_f \cdot N_q
                   + 0.3 \cdot \gamma \cdot B \cdot N_\gamma
         """
-        return 1.3 * self._x_1 + self._x_2 + 0.3 * self._x_3
+        return 1.3 * self.first_expr + self.mid_expr + 0.3 * self.last_expr
 
     @round_
     def ultimate_4_rectangular_footing(self) -> float:
@@ -182,7 +180,7 @@ class TerzaghiBearingCapacity:
             1 - 0.2 * self.footing_size.width / self.footing_size.length
         )
 
-        return a * self._x_1 + self._x_2 + b * self._x_3
+        return a * self.first_expr + self.mid_expr + b * self.last_expr
 
     @property
     def nc(self) -> float:
