@@ -3,7 +3,7 @@ from typing import ClassVar
 from geolysis import ERROR_TOLERANCE
 from geolysis.bearing_capacity import FoundationSize
 from geolysis.exceptions import AllowableSettlementError
-from geolysis.utils import PI, arctan, exp, sin, tan
+from geolysis.utils import PI, arctan, exp, prod, sin, tan
 
 
 class MeyerhofFactors:
@@ -177,15 +177,35 @@ class MeyerhofBearingCapacity:
         a = (self.foundation_size.width + 0.3) / self.foundation_size.width
         return 8 * spt_n60 * a**2 * self.fd
 
-    def ultimate(self) -> float:
-        r"""Return the ultimate bearing capacity according to ``Meyerhof``."""
-        x_1 = self.cohesion * self.nc * self.sc * self.dc * self.ic
-        x_2 = self.soil_unit_weight * self.foundation_size.depth
-        x_3 = self.nq * self.sq * self.dq * self.iq
-        x_4 = self.soil_unit_weight * self.foundation_size.width
-        x_5 = self.ngamma * self.sgamma * self.dgamma * self.igamma
+    @property
+    def first_expr(self) -> float:
+        return self.cohesion * self.nc * self.sc * self.dc * self.ic
 
-        return x_1 + (x_2 * x_3) + (0.5 * x_4 * x_5)
+    @property
+    def mid_expr(self) -> float:
+        return prod(
+            self.soil_unit_weight,
+            self.foundation_size.depth,
+            self.nq,
+            self.sq,
+            self.dq,
+            self.iq,
+        )
+
+    @property
+    def last_expr(self) -> float:
+        return prod(
+            self.soil_unit_weight,
+            self.foundation_size.width,
+            self.ngamma,
+            self.sgamma,
+            self.dgamma,
+            self.igamma,
+        )
+
+    def ultimate_bearing_capacity(self) -> float:
+        r"""Return the ultimate bearing capacity according to ``Meyerhof``."""
+        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
 
     @property
     def nc(self) -> float:
