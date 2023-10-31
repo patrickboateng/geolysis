@@ -156,25 +156,21 @@ class CompressionIndex:
         # Returns the compression index of the soil sample (unitless)
 
         comp_idx = {}  # compression index
-        is_engineer: bool = False
 
         if self.liquid_limit and self.eng & GeotechEng.SKEMPTON:
             comp_idx[GeotechEng.SKEMPTON] = self.skempton_1994()
-            is_engineer = True
+            return comp_idx
 
         if self.liquid_limit and self.eng & GeotechEng.TERZAGHI:
             comp_idx[GeotechEng.TERZAGHI] = self.terzaghi_et_al_1967()
-            is_engineer = True
+            return comp_idx
 
         if self.void_ratio and self.eng & GeotechEng.HOUGH:
             comp_idx[GeotechEng.HOUGH] = self.hough_1957()
-            is_engineer = True
+            return comp_idx
 
-        if not is_engineer:
-            msg = f"{self.eng} is not a valid type for {type(self)}"
-            raise EngineerTypeError(msg)
-
-        return comp_idx
+        msg = f"{self.eng} is not a valid type for {type(self)}"
+        raise EngineerTypeError(msg)
 
     @round_
     def terzaghi_et_al_1967(self) -> float:
@@ -268,21 +264,17 @@ class SoilFrictionAngle:
         # Returns the internal angle of friction (degrees)
 
         _friction_angle = {}
-        is_engineer: bool = False
 
         if self.eng & GeotechEng.WOLFF:
             _friction_angle[GeotechEng.WOLFF] = self.wolff_1989()
-            is_engineer = True
+            return _friction_angle
 
         if self.eop and self.atm_pressure and self.eng & GeotechEng.WOLFF:
             _friction_angle[GeotechEng.KULLHAWY] = self.kullhawy_mayne_1990()
-            is_engineer = True
+            return _friction_angle
 
-        if not is_engineer:
-            msg = f"{self.eng} is not a valid type for {type(self)}"
-            raise EngineerTypeError(msg)
-
-        return _friction_angle
+        msg = f"{self.eng} is not a valid type for {type(self)}"
+        raise EngineerTypeError(msg)
 
     @round_
     def wolff_1989(self) -> float:
@@ -309,8 +301,8 @@ class SoilFrictionAngle:
         - :math:`\sigma_o` |rarr| effective overburden pressure (:math:`kN/m^3`)
         - :math:`P_a` |rarr| atmospheric pressure in the same unit as :math:`\sigma_o`
         """
-        x_1 = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
-        return arctan(x_1**0.34)
+        expr = self.spt_n60 / (12.2 + 20.3 * (self.eop / self.atm_pressure))
+        return arctan(expr**0.34)
 
 
 class UndrainedShearStrength:
@@ -364,11 +356,10 @@ class UndrainedShearStrength:
 
     def __call__(self) -> dict[GeotechEng, float]:
         und_shr = {}  # undrained shear strength
-        is_engineer = False
 
         if self.spt_n60 and self.eng & GeotechEng.STROUD:
             und_shr[GeotechEng.STROUD] = self.stroud_1974()
-            is_engineer = True
+            return und_shr
 
         if (
             self.eop
@@ -376,13 +367,10 @@ class UndrainedShearStrength:
             and self.eng & GeotechEng.SKEMPTON
         ):
             und_shr[GeotechEng.SKEMPTON] = self.skempton_1957()
-            is_engineer = True
+            return und_shr
 
-        if not is_engineer:
-            msg = f"{self.eng} is not a valid type for {type(self)}"
-            raise EngineerTypeError(msg)
-
-        return und_shr
+        msg = f"{self.eng} is not a valid type for {type(self)}"
+        raise EngineerTypeError(msg)
 
     @round_
     def stroud_1974(self):
@@ -484,7 +472,7 @@ def rankine_foundation_depth(
     :return: depth of foundation (m)
     :rtype: float
     """
-    x_1 = allowable_bearing_capacity / soil_unit_weight
-    x_2 = (1 - sin(soil_friction_angle)) / (1 + sin(soil_friction_angle))
+    expr_1 = allowable_bearing_capacity / soil_unit_weight
+    expr_2 = (1 - sin(soil_friction_angle)) / (1 + sin(soil_friction_angle))
 
-    return x_1 * (x_2**2)
+    return expr_1 * (expr_2**2)
