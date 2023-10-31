@@ -10,6 +10,7 @@
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/patrickboateng/geolysis?style=flat-square)](https://github.com/patrickboateng/geolysis/stargazers)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/geolysis?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/geolysis/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/geolysis.svg?style=flat-square)](https://pypi.python.org/pypi/geolysis/)
 [![license](https://img.shields.io/pypi/l/geolysis?style=flat-square)](https://opensource.org/license/mit/)
 ![repo size](https://img.shields.io/github/repo-size/patrickboateng/geolysis?style=flat-square)
 [![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
@@ -96,6 +97,3 @@ and conditions of this license.
 > [!IMPORTANT]
 > For questions or comments about `geolysis`, please ask them in the
 > [discussions forum](https://github.com/patrickboateng/geolysis/discussions)
-
-<!-- Code -> code documentation -> testing -> project documentation
--> code & documentation deployment -->
