@@ -32,5 +32,5 @@ class GeotechEng(enum.IntFlag):
 # or running geolab.
 # import geolab
 # from geolab import GeotechEng
-# geolab.BAZARAA is GeotechEng.BAZARAA returns True
+# geolab.BAZARAA is GeotechEng.BAZARAA -> True
 globals().update(GeotechEng.__members__)
