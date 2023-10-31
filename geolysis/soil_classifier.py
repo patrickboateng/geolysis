@@ -2,11 +2,10 @@
 classification.
 """
 
-import math
-from dataclasses import KW_ONLY, dataclass, field
+from dataclasses import KW_ONLY, dataclass
 
 from geolysis import ERROR_TOLERANCE, exceptions
-from geolysis.utils import round_
+from geolysis.utils import isclose, round_
 
 GRAVEL = "G"
 SAND = "S"
@@ -21,7 +20,7 @@ HIGH_PLASTICITY = "H"
 
 def _check_size_distribution(fines: float, sand: float, gravel: float):
     total_aggregate = fines + sand + gravel
-    if not math.isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
+    if not isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
         msg = f"fines + sand + gravels = 100% not {total_aggregate}"
         raise exceptions.PSDValueError(msg)
 
@@ -32,9 +31,7 @@ def _check_plasticity_idx(
     plasticity_index: float,
 ):
     plasticity_idx = liquid_limit - plastic_limit
-    if not math.isclose(
-        plasticity_idx, plasticity_index, rel_tol=ERROR_TOLERANCE
-    ):
+    if not isclose(plasticity_idx, plasticity_index, rel_tol=ERROR_TOLERANCE):
         msg = f"PI should be equal to {plasticity_idx} not {plasticity_index}"
         raise exceptions.PIValueError(msg)
 
@@ -89,7 +86,7 @@ class AtterbergLimits:
 
     def limit_plot_in_hatched_zone(self) -> bool:
         """Checks if soil sample plot in the hatched zone."""
-        return math.isclose(
+        return isclose(
             self.plasticity_index,
             self.A_line,
             rel_tol=ERROR_TOLERANCE,
@@ -307,8 +304,6 @@ class USCS:
     sand: float
     gravel: float
 
-    clf: str = field(default="", init=False, repr=False)
-
     _: KW_ONLY
     d10: float = 0
     d30: float = 0
@@ -416,14 +411,12 @@ class USCS:
         if self.psd.fines < 50:
             if self.psd.gravel > self.psd.sand:
                 # Gravel
-                self.clf = self._classify_coarse_soil(coarse_soil=GRAVEL)
+                return self._classify_coarse_soil(coarse_soil=GRAVEL)
 
             # Sand
             else:
-                self.clf = self._classify_coarse_soil(coarse_soil=SAND)
+                return self._classify_coarse_soil(coarse_soil=SAND)
 
         # Fine grained, Run Atterberg
         else:
-            self.clf = self._classify_fine_soil()
-
-        return self.clf
+            return self._classify_fine_soil()
