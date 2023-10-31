@@ -26,9 +26,7 @@ class PIValueError(ArithmeticError):
 
 
 class AllowableSettlementError(ValueError):
-    """Exception raised when allowable settlement is greater than
-    ``25.4mm``.
-    """
+    """Exception raised when allowable settlement is greater than ``25.4mm``."""
 
 
 class EngineerTypeError(TypeError):
