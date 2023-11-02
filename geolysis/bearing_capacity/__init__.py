@@ -1,4 +1,4 @@
-"""This module provides functions for bearing capacity analysis."""
+"""This package provides functions for bearing capacity analysis."""
 
 import enum
 from dataclasses import dataclass, field
