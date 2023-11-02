@@ -1,12 +1,13 @@
 from geolysis.bearing_capacity import FootingShape, FoundationSize
+from geolysis.exceptions import FootingShapeError
 from geolysis.utils import PI, exp, prod, tan
 
 
 class HansenFactors:
     def __init__(
         self,
-        soil_friction_angle: float,
         cohesion: float,
+        soil_friction_angle: float,
         beta: float,
         total_vertical_load: float,
         foundation_size: FoundationSize,
@@ -28,7 +29,7 @@ class HansenFactors:
             N_c = (N_q - 1) \cot \phi
 
         """
-        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1.0)
+        return (self.nq - 1.0) * (1 / tan(self.soil_friction_angle))
 
     @property
     def nq(self) -> float:
@@ -119,8 +120,9 @@ class HansenFactors:
             return 1 + 0.2 * self._w2l
 
         else:
-            msg = ""
-            raise TypeError(msg)
+            msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
+                  {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
+            raise FootingShapeError(msg)
 
     @property
     def sq(self) -> float:
@@ -146,8 +148,9 @@ class HansenFactors:
             return 1 + 0.2 * self._w2l
 
         else:
-            msg = ""
-            raise TypeError(msg)
+            msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
+                  {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
+            raise FootingShapeError(msg)
 
     @property
     def sgamma(self) -> float:
@@ -173,8 +176,9 @@ class HansenFactors:
             return 1 - 0.4 * self._w2l
 
         else:
-            msg = ""
-            raise TypeError(msg)
+            msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
+                  {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
+            raise FootingShapeError(msg)
 
     @property
     def ic(self) -> float:
@@ -185,11 +189,10 @@ class HansenFactors:
             i_c = 1 - \left(\dfrac{\beta}{2cBL}\right)
 
         """
-        return 1 - self.beta / (
-            2
-            * self.cohesion
-            * self.foundation_size.width
-            * self.foundation_size.length
+        return 1 - self.beta / 2 * prod(
+            self.cohesion,
+            self.foundation_size.width,
+            self.foundation_size.length,
         )
 
     @property
@@ -227,7 +230,7 @@ class HansenBearingCapacity:
     :param friction_angle: Internal angle of friction (degrees)
     :type friction_angle: float
     :param beta: Inclination of the load on the foundation with respect to the
-        vertical (degrees)
+                 vertical (degrees)
     :type beta: float
     :param total_vertical_load: Total vertical load on foundation
     :type total_vertical_load: float
@@ -239,35 +242,35 @@ class HansenBearingCapacity:
         self,
         cohesion: float,
         soil_unit_weight: float,
-        foundation_size: FoundationSize,
         soil_friction_angle: float,
         beta: float,
         total_vertical_load: float,
+        foundation_size: FoundationSize,
         footing_shape: FootingShape = FootingShape.SQUARE,
     ) -> None:
         self.cohesion = cohesion
         self.soil_unit_weight = soil_unit_weight
-        self.foundation_size = foundation_size
         self.soil_friction_angle = soil_friction_angle
         self.beta = beta
-        self.footing_shape = footing_shape
         self.total_vertical_load = total_vertical_load
+        self.foundation_size = foundation_size
+        self.footing_shape = footing_shape
 
         self.hansen_factors = HansenFactors(
-            soil_friction_angle,
-            cohesion,
-            beta,
-            total_vertical_load,
-            foundation_size,
-            footing_shape,
+            cohesion=self.cohesion,
+            soil_friction_angle=self.soil_friction_angle,
+            beta=self.beta,
+            total_vertical_load=self.total_vertical_load,
+            foundation_size=self.foundation_size,
+            footing_shape=self.footing_shape,
         )
 
     @property
-    def first_expr(self) -> float:
+    def _first_expr(self) -> float:
         return self.cohesion * self.nc * self.sc * self.dc * self.ic
 
     @property
-    def mid_expr(self) -> float:
+    def _mid_expr(self) -> float:
         return prod(
             self.soil_unit_weight,
             self.foundation_size.depth,
@@ -278,7 +281,7 @@ class HansenBearingCapacity:
         )
 
     @property
-    def last_expr(self) -> float:
+    def _last_expr(self) -> float:
         return prod(
             self.soil_unit_weight,
             self.foundation_size.width,
@@ -299,7 +302,7 @@ class HansenBearingCapacity:
                   \cdot s_\gamma \cdot d_\gamma \cdot i_\gamma
 
         """
-        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
+        return self._first_expr + self._mid_expr + 0.5 * self._last_expr
 
     @property
     def nc(self) -> float:
