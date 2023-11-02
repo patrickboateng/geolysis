@@ -136,5 +136,5 @@ def round_(precision: Callable[..., float] | int) -> Callable:
     if isinstance(precision, int):  # type: ignore
         return functools.partial(dec, precision=precision)  # return decorator
 
-    msg = "precision should be a function or an int"
+    msg = "precision should be a function to be decorated or an int."
     raise TypeError(msg)
