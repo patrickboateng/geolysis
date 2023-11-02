@@ -11,6 +11,7 @@ Exceptions (:mod:`geolab.exceptions`)
     PIValueError
     AllowableSettlementError
     EngineerTypeError
+    FootingShapeError
 
 """
 
@@ -28,4 +29,8 @@ class AllowableSettlementError(ValueError):
 
 
 class EngineerTypeError(TypeError):
-    """Exception raise when a particular engineer is not allowed."""
+    """Exception raised when a particular engineer is not allowed."""
+
+
+class FootingShapeError(TypeError):
+    """Exception raised when footing shape is not allowed."""
