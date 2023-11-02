@@ -4,7 +4,11 @@
 
 <h3>
 
-[Homepage](https://github.com/patrickboateng/geolysis) | [Documentation](/docs) | [PyPi](https://pypi.org/project/geolysis/) | [Source Code](https://github.com/patrickboateng/geolysis/) | [Bug Reports](https://github.com/patrickboateng/geolysis/issues) | [Discussions](https://github.com/patrickboateng/geolysis/discussions)
+[Homepage](https://github.com/patrickboateng/geolysis) | [Documentation](/docs) |
+[PyPi](https://pypi.org/project/geolysis/) |
+[Source Code](https://github.com/patrickboateng/geolysis/) |
+[Bug Reports](https://github.com/patrickboateng/geolysis/issues) |
+[Discussions](https://github.com/patrickboateng/geolysis/discussions)
 
 </h3>
 
