@@ -68,9 +68,6 @@ Classification of soil using `AASHTO` classification system.
 
 ```
 
-<!-- See [examples](https://github.com/patrickboateng/geolysis/blob/main/docs/source/examples/)
-folder for more usage examples. -->
-
 ## Release History
 
 Check the [changelog](https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md)
@@ -89,10 +86,9 @@ If you would like to contribute to this project, please read the
 
 ## License
 
-Distributed under the
-[**MIT**](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt) license.
-By using, distributing, or contributing to this project, you agree to the terms
-and conditions of this license.
+Distributed under the [**MIT**](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt)
+license. By using, distributing, or contributing to this project, you agree to
+the terms and conditions of this license.
 
 ## Contact Information
 
