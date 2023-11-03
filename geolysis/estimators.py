@@ -7,45 +7,9 @@ Soil Engineering Parameter Estimators (:mod:`geolab.estimators`).
 
 This module provides functions for estimating soil engineering parameters.
 
-.. autosummary:: 
-
-    SoilUnitWeight
-    CompressionIndex
-    SoilFrictionAngle
-    UndrainedShearStrength
-    bowles_soil_elastic_modulus
-    rankine_foundation_depth
-
----
-
-.. autoclass:: SoilUnitWeight
-    :members: 
-
----
-
-.. autoclass:: CompressionIndex
-    :members:
-
----
-
-.. autoclass:: SoilFrictionAngle
-    :members:
-
----
-
-.. autoclass:: UndrainedShearStrength
-    :members:
-
----
-
-.. autofunction:: bowles_soil_elastic_modulus
-
----
-
-.. autofunction:: rankine_foundation_depth
- 
 """
 from dataclasses import dataclass
+from types import SimpleNamespace
 
 from geolysis import GeotechEng
 from geolysis.exceptions import EngineerTypeError
