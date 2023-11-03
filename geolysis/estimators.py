@@ -9,7 +9,6 @@ This module provides functions for estimating soil engineering parameters.
 
 """
 from dataclasses import dataclass
-from types import SimpleNamespace
 
 from geolysis import GeotechEng
 from geolysis.exceptions import EngineerTypeError
