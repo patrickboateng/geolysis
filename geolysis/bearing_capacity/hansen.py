@@ -256,7 +256,7 @@ class HansenBearingCapacity:
         self.foundation_size = foundation_size
         self.footing_shape = footing_shape
 
-        self.hansen_factors = HansenFactors(
+        self._hansen_factors = HansenFactors(
             cohesion=self.cohesion,
             soil_friction_angle=self.soil_friction_angle,
             beta=self.beta,
@@ -306,48 +306,48 @@ class HansenBearingCapacity:
 
     @property
     def nc(self) -> float:
-        return self.hansen_factors.nc
+        return self._hansen_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.hansen_factors.nq
+        return self._hansen_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.hansen_factors.ngamma
+        return self._hansen_factors.ngamma
 
     @property
     def dc(self) -> float:
-        return self.hansen_factors.dc
+        return self._hansen_factors.dc
 
     @property
     def dq(self) -> float:
-        return self.hansen_factors.dq
+        return self._hansen_factors.dq
 
     @property
     def dgamma(self) -> float:
-        return self.hansen_factors.dgamma
+        return self._hansen_factors.dgamma
 
     @property
     def sc(self) -> float:
-        return self.hansen_factors.sc
+        return self._hansen_factors.sc
 
     @property
     def sq(self) -> float:
-        return self.hansen_factors.sq
+        return self._hansen_factors.sq
 
     @property
     def sgamma(self) -> float:
-        return self.hansen_factors.sgamma
+        return self._hansen_factors.sgamma
 
     @property
     def ic(self) -> float:
-        return self.hansen_factors.ic
+        return self._hansen_factors.ic
 
     @property
     def iq(self) -> float:
-        return self.hansen_factors.iq
+        return self._hansen_factors.iq
 
     @property
     def igamma(self) -> float:
-        return self.hansen_factors.igamma
+        return self._hansen_factors.igamma
