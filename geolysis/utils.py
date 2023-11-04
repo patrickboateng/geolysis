@@ -51,6 +51,11 @@ def tan(x: float, /) -> float:
     return math.tan(deg2rad(x))
 
 
+def cot(x: float, /) -> float:
+    """Return the cotangent of x (measured in degrees)."""
+    return 1 / tan(x)
+
+
 def sin(x: float, /) -> float:
     """Return the sine of x (measured in degrees)."""
     return math.sin(deg2rad(x))
