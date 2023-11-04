@@ -1,6 +1,6 @@
 from geolysis.bearing_capacity import FootingShape, FoundationSize
 from geolysis.exceptions import FootingShapeError
-from geolysis.utils import PI, exp, prod, tan
+from geolysis.utils import PI, cot, exp, prod, round_, tan
 
 
 class HansenFactors:
@@ -26,10 +26,10 @@ class HansenFactors:
 
         .. math::
 
-            N_c = (N_q - 1) \cot \phi
+            N_c = \cot \phi \cdot (N_q - 1)
 
         """
-        return (self.nq - 1.0) * (1 / tan(self.soil_friction_angle))
+        return cot(self.soil_friction_angle) * (self.nq - 1.0)
 
     @property
     def nq(self) -> float:
@@ -41,9 +41,8 @@ class HansenFactors:
                   \left(e^{\pi \tan \phi}\right)
 
         """
-        return tan(45 + self.soil_friction_angle / 2) ** 2 * exp(
-            PI * tan(self.soil_friction_angle)
-        )
+        expr = PI * tan(self.soil_friction_angle)
+        return tan(45 + self.soil_friction_angle / 2) ** 2 * exp(expr)
 
     @property
     def ngamma(self) -> float:
@@ -110,19 +109,18 @@ class HansenFactors:
         if self.footing_shape is FootingShape.STRIP:
             return 1.0
 
-        elif (
+        if (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
             return 1.3
 
-        elif self.footing_shape is FootingShape.RECTANGULAR:
+        if self.footing_shape is FootingShape.RECTANGULAR:
             return 1 + 0.2 * self._w2l
 
-        else:
-            msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
-                  {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
-            raise FootingShapeError(msg)
+        msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
+                {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
+        raise FootingShapeError(msg)
 
     @property
     def sq(self) -> float:
@@ -138,19 +136,18 @@ class HansenFactors:
         if self.footing_shape is FootingShape.STRIP:
             return 1.0
 
-        elif (
+        if (
             self.footing_shape is FootingShape.SQUARE
             or self.footing_shape is FootingShape.CIRCULAR
         ):
             return 1.2
 
-        elif self.footing_shape is FootingShape.RECTANGULAR:
+        if self.footing_shape is FootingShape.RECTANGULAR:
             return 1 + 0.2 * self._w2l
 
-        else:
-            msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
-                  {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
-            raise FootingShapeError(msg)
+        msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
+                {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
+        raise FootingShapeError(msg)
 
     @property
     def sgamma(self) -> float:
@@ -166,19 +163,18 @@ class HansenFactors:
         if self.footing_shape is FootingShape.STRIP:
             return 1.0
 
-        elif self.footing_shape is FootingShape.SQUARE:
+        if self.footing_shape is FootingShape.SQUARE:
             return 0.8
 
-        elif self.footing_shape is FootingShape.CIRCULAR:
+        if self.footing_shape is FootingShape.CIRCULAR:
             return 0.6
 
-        elif self.footing_shape is FootingShape.RECTANGULAR:
+        if self.footing_shape is FootingShape.RECTANGULAR:
             return 1 - 0.4 * self._w2l
 
-        else:
-            msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
-                  {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
-            raise FootingShapeError(msg)
+        msg = f"Footing shape should be one of the following: {FootingShape.STRIP}, \
+                {FootingShape.SQUARE}, {FootingShape.RECTANGULAR}, and {FootingShape.CIRCULAR}"
+        raise FootingShapeError(msg)
 
     @property
     def ic(self) -> float:
@@ -189,11 +185,12 @@ class HansenFactors:
             i_c = 1 - \left(\dfrac{\beta}{2cBL}\right)
 
         """
-        return 1 - self.beta / 2 * prod(
+        expr = 2 * prod(
             self.cohesion,
             self.foundation_size.width,
             self.foundation_size.length,
         )
+        return 1 - self.beta / expr
 
     @property
     def iq(self) -> float:
@@ -291,16 +288,14 @@ class HansenBearingCapacity:
             self.igamma,
         )
 
+    @round_(precision=2)
     def ultimate_bearing_capacity(self) -> float:
         r"""Return the ultimate bearing capacity according to ``Hansen``.
 
         .. math::
 
-            q_u = c \cdot N_c \cdot s_c \cdot d_c \cdot i_c \,
-                  + q \cdot N_q \cdot s_q \cdot d_q \cdot i_q \,
-                  + 0.5 \cdot \gamma \cdot B \cdot N_\gamma
-                  \cdot s_\gamma \cdot d_\gamma \cdot i_\gamma
-
+            q_u = c N_c s_c d_c i_c + q N_q s_q d_q i_q
+                  + 0.5 \gamma B N_\gamma s_\gamma d_\gamma i_\gamma
         """
         return self._first_expr + self._mid_expr + 0.5 * self._last_expr
 

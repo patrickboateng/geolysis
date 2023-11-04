@@ -1,13 +1,13 @@
 from geolysis import GeotechEng
 from geolysis.bearing_capacity import FoundationSize
-from geolysis.utils import PI, cos, deg2rad, exp, round_, tan
+from geolysis.utils import PI, cos, cot, deg2rad, exp, round_, tan
 
 
 class TerzaghiFactors:
     def __init__(
         self,
         soil_friction_angle_angle: float,
-        eng: GeotechEng = GeotechEng.MEYERHOF,
+        eng: GeotechEng,
     ) -> None:
         self.soil_friction_angle = soil_friction_angle_angle
         self.eng = eng
@@ -22,7 +22,7 @@ class TerzaghiFactors:
             N_c = \cot \phi \left(N_q - 1 \right)
 
         """
-        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
+        return cot(self.soil_friction_angle) * (self.nq - 1)
 
     @property
     @round_(precision=2)
@@ -33,13 +33,13 @@ class TerzaghiFactors:
 
             N_q = \dfrac{e^{(\frac{3\pi}{2}-\phi)\tan\phi}}
                   {2\cos^2\left(45^{\circ}+\frac{\phi}{2}\right)}
-
         """
 
-        return exp(
-            ((3 * PI) / 2 - deg2rad(self.soil_friction_angle))
-            * tan(self.soil_friction_angle)
-        ) / (2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2))
+        a = (3 * PI) / 2 - deg2rad(self.soil_friction_angle)
+        b = a * tan(self.soil_friction_angle)
+        c = 2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2)
+
+        return exp(b) / c
 
     @property
     @round_(precision=2)
@@ -65,12 +65,13 @@ class TerzaghiFactors:
         if self.eng is GeotechEng.MEYERHOF:
             return (self.nq - 1) * tan(1.4 * self.soil_friction_angle)
 
-        elif self.eng is GeotechEng.HANSEN:
+        if self.eng is GeotechEng.HANSEN:
             return 1.8 * (self.nq - 1) * tan(self.soil_friction_angle)
 
-        else:
-            msg = f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
-            raise TypeError(msg)
+        msg = (
+            f"Available types are {GeotechEng.MEYERHOF} or {GeotechEng.HANSEN}"
+        )
+        raise TypeError(msg)
 
 
 class TerzaghiBearingCapacity:
@@ -106,29 +107,28 @@ class TerzaghiBearingCapacity:
     ) -> None:
         self.cohesion = cohesion
         self.soil_friction_angle = soil_friction_angle
-
         self.soil_unit_weight = soil_unit_weight
         self.foundation_size = foundation_size
-        self.footing_size = self.foundation_size.footing_size
         self.eng = eng
 
-        self.terzaghi_factors = TerzaghiFactors(
-            self.soil_friction_angle, self.eng
+        self._terzaghi_factors = TerzaghiFactors(
+            soil_friction_angle_angle=self.soil_friction_angle,
+            eng=self.eng,
         )
 
     @property
-    def first_expr(self) -> float:
+    def _first_expr(self) -> float:
         return self.cohesion * self.nc
 
     @property
-    def mid_expr(self) -> float:
+    def _mid_expr(self) -> float:
         return self.soil_unit_weight * self.foundation_size.depth * self.nq
 
     @property
-    def last_expr(self) -> float:
+    def _last_expr(self) -> float:
         return self.soil_unit_weight * self.foundation_size.width * self.ngamma
 
-    @round_
+    @round_(precision=2)
     def ultimate_4_strip_footing(self) -> float:
         r"""Return ultimate bearing capacity of strip footings.
 
@@ -138,9 +138,9 @@ class TerzaghiBearingCapacity:
                   \cdot D_f \cdot N_q
                   + 0.5 \cdot \gamma \cdot B \cdot N_\gamma
         """
-        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
+        return self._first_expr + self._mid_expr + 0.5 * self._last_expr
 
-    @round_
+    @round_(precision=2)
     def ultimate_4_square_footing(self) -> float:
         r"""Return ultimate bearing capacity for square footings.
 
@@ -150,9 +150,9 @@ class TerzaghiBearingCapacity:
                   + \gamma \cdot D_f \cdot N_q
                   + 0.4 \cdot \gamma \cdot B \cdot N_\gamma
         """
-        return 1.3 * self.first_expr + self.mid_expr + 0.4 * self.last_expr
+        return self.ultimate_4_rectangular_footing()
 
-    @round_
+    @round_(precision=2)
     def ultimate_4_circular_footing(self) -> float:
         r"""Return ultimate bearing capacity for circular footing.
 
@@ -162,9 +162,9 @@ class TerzaghiBearingCapacity:
                   + \gamma \cdot D_f \cdot N_q
                   + 0.3 \cdot \gamma \cdot B \cdot N_\gamma
         """
-        return 1.3 * self.first_expr + self.mid_expr + 0.3 * self.last_expr
+        return 1.3 * self._first_expr + self._mid_expr + 0.3 * self._last_expr
 
-    @round_
+    @round_(precision=2)
     def ultimate_4_rectangular_footing(self) -> float:
         r"""Return the ultimate bearing for rectangular footing.
 
@@ -175,21 +175,19 @@ class TerzaghiBearingCapacity:
                   + \dfrac{1}{2} \left(1 - 0.2 \cdot \dfrac{B}{L} \right)
                   \cdot \gamma \cdot B \cdot N_\gamma
         """
-        a = 1 + 0.3 * (self.footing_size.width / self.footing_size.length)
-        b = 0.5 * (
-            1 - 0.2 * self.footing_size.width / self.footing_size.length
-        )
+        a = 1 + 0.3 * self.foundation_size.w2l
+        b = 0.5 * (1 - 0.2 * self.foundation_size.w2l)
 
-        return a * self.first_expr + self.mid_expr + b * self.last_expr
+        return a * self._first_expr + self._mid_expr + b * self._last_expr
 
     @property
     def nc(self) -> float:
-        return self.terzaghi_factors.nc
+        return self._terzaghi_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.terzaghi_factors.nq
+        return self._terzaghi_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.terzaghi_factors.ngamma
+        return self._terzaghi_factors.ngamma

@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis import ERROR_TOLERANCE
+from geolysis import ERROR_TOLERANCE, GeotechEng
 from geolysis.bearing_capacity import FoundationSize, local_shear
 from geolysis.bearing_capacity.hansen import HansenFactors
 from geolysis.bearing_capacity.terzaghi import (
@@ -80,7 +80,7 @@ class TestTerzaghiBearingCapacity:
         ],
     )
     def test_terzaghi_bcf(self, soil_friction_angle: float, bcf: dict):
-        tbcf = TerzaghiFactors(soil_friction_angle)
+        tbcf = TerzaghiFactors(soil_friction_angle, GeotechEng.MEYERHOF)
         assert tbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
         assert tbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
         assert tbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)

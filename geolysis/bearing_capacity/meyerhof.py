@@ -3,7 +3,7 @@ from typing import ClassVar
 from geolysis import ERROR_TOLERANCE
 from geolysis.bearing_capacity import FoundationSize
 from geolysis.exceptions import AllowableSettlementError
-from geolysis.utils import PI, arctan, exp, prod, sin, tan
+from geolysis.utils import PI, arctan, cot, exp, prod, round_, sin, tan
 
 
 class MeyerhofFactors:
@@ -20,14 +20,14 @@ class MeyerhofFactors:
     @property
     def nc(self) -> float:
         """Return ``Meyerhof`` bearing capacity factor :math:`N_c`."""
-        return (1 / tan(self.soil_friction_angle)) * (self.nq - 1)
+        return cot(self.soil_friction_angle) * (self.nq - 1)
 
     @property
     def nq(self) -> float:
         """Return ``Meyerhof`` bearing capacity factor :math:`N_q`."""
-        return pow(tan(45 + self.soil_friction_angle / 2), 2) * exp(
-            PI * tan(self.soil_friction_angle)
-        )
+        expr_1 = tan(45 + self.soil_friction_angle / 2) ** 2
+        expr_2 = exp(PI * tan(self.soil_friction_angle))
+        return prod(expr_1, expr_2)
 
     @property
     def ngamma(self) -> float:
@@ -53,17 +53,16 @@ class MeyerhofFactors:
         """Return ``Meyerhof`` depth factor :math:`d_q`."""
 
         if self._d2w <= 1:
-            return (
-                1
-                + 2
-                * tan(self.soil_friction_angle)
-                * (1 - sin(self.soil_friction_angle)) ** 2
-                * self._d2w
-            )
+            expr_1 = 2 * tan(self.soil_friction_angle)
+            expr_2 = (1 - sin(self.soil_friction_angle)) ** 2
 
-        return 1 + (2 * tan(self.soil_friction_angle)) * pow(
-            (1 - sin(self.soil_friction_angle)), 2
-        ) * (arctan(self._d2w) * (PI / 180))
+            return 1 + prod(expr_1, expr_2, self._d2w)
+
+        first_expr = 1 + (2 * tan(self.soil_friction_angle))
+        mid_expr = (1 - sin(self.soil_friction_angle)) ** 2
+        last_expr = arctan(self._d2w) * (PI / 180)
+
+        return prod(first_expr, mid_expr, last_expr)
 
     @property
     def dgamma(self) -> float:
@@ -124,8 +123,10 @@ class MeyerhofBearingCapacity:
         self.beta = beta
         self.foundation_size = foundation_size
 
-        self.meyerhof_factors = MeyerhofFactors(
-            soil_friction_angle, beta, foundation_size
+        self._meyerhof_factors = MeyerhofFactors(
+            soil_friction_angle=self.soil_friction_angle,
+            beta=self.beta,
+            foundation_size=self.foundation_size,
         )
 
     @property
@@ -139,6 +140,7 @@ class MeyerhofBearingCapacity:
         """
         return min(1 + 0.33 * self.foundation_size.d2w, 1.33)
 
+    @round_(precision=2)
     def net_allowable_bearing_capacity(self, n_design: float) -> float:
         r"""Return the net allowable bearing capacity.
 
@@ -154,10 +156,8 @@ class MeyerhofBearingCapacity:
                                           allowable settement
         """
 
-        if (
-            settlement_ratio := self.actual_settlement
-            / self.ALLOWABLE_SETTLEMENT
-        ) > (1 + ERROR_TOLERANCE):
+        settlement_ratio = self.actual_settlement / self.ALLOWABLE_SETTLEMENT
+        if settlement_ratio > (1 + ERROR_TOLERANCE):
             msg = f"Settlement: {self.actual_settlement}should be less than or equal \
                   Allowable Settlement: {self.ALLOWABLE_SETTLEMENT}"
             raise AllowableSettlementError(msg)
@@ -170,19 +170,20 @@ class MeyerhofBearingCapacity:
 
         return n_design * self.fd * settlement_ratio * (11.98 * (a / b)) ** 2
 
+    @round_(precision=2)
     def allowable_bearing_capacity_1956(self, spt_n60: float) -> float:
         if self.foundation_size.width <= 1.2:
             return 12 * spt_n60 * self.fd
 
-        a = (self.foundation_size.width + 0.3) / self.foundation_size.width
-        return 8 * spt_n60 * a**2 * self.fd
+        expr = (self.foundation_size.width + 0.3) / self.foundation_size.width
+        return 8 * spt_n60 * expr**2 * self.fd
 
     @property
-    def first_expr(self) -> float:
+    def _first_expr(self) -> float:
         return self.cohesion * self.nc * self.sc * self.dc * self.ic
 
     @property
-    def mid_expr(self) -> float:
+    def _mid_expr(self) -> float:
         return prod(
             self.soil_unit_weight,
             self.foundation_size.depth,
@@ -193,7 +194,7 @@ class MeyerhofBearingCapacity:
         )
 
     @property
-    def last_expr(self) -> float:
+    def _last_expr(self) -> float:
         return prod(
             self.soil_unit_weight,
             self.foundation_size.width,
@@ -203,54 +204,55 @@ class MeyerhofBearingCapacity:
             self.igamma,
         )
 
+    @round_(precision=2)
     def ultimate_bearing_capacity(self) -> float:
         r"""Return the ultimate bearing capacity according to ``Meyerhof``."""
-        return self.first_expr + self.mid_expr + 0.5 * self.last_expr
+        return self._first_expr + self._mid_expr + 0.5 * self._last_expr
 
     @property
     def nc(self) -> float:
-        return self.meyerhof_factors.nc
+        return self._meyerhof_factors.nc
 
     @property
     def nq(self) -> float:
-        return self.meyerhof_factors.nq
+        return self._meyerhof_factors.nq
 
     @property
     def ngamma(self) -> float:
-        return self.meyerhof_factors.ngamma
+        return self._meyerhof_factors.ngamma
 
     @property
     def dc(self) -> float:
-        return self.meyerhof_factors.dc
+        return self._meyerhof_factors.dc
 
     @property
     def dq(self) -> float:
-        return self.meyerhof_factors.dq
+        return self._meyerhof_factors.dq
 
     @property
     def dgamma(self) -> float:
-        return self.meyerhof_factors.dgamma
+        return self._meyerhof_factors.dgamma
 
     @property
     def sc(self) -> float:
-        return self.meyerhof_factors.sc
+        return self._meyerhof_factors.sc
 
     @property
     def sq(self) -> float:
-        return self.meyerhof_factors.sq
+        return self._meyerhof_factors.sq
 
     @property
     def sgamma(self) -> float:
-        return self.meyerhof_factors.sgamma
+        return self._meyerhof_factors.sgamma
 
     @property
     def ic(self) -> float:
-        return self.meyerhof_factors.ic
+        return self._meyerhof_factors.ic
 
     @property
     def iq(self) -> float:
-        return self.meyerhof_factors.iq
+        return self._meyerhof_factors.iq
 
     @property
     def igamma(self) -> float:
-        return self.meyerhof_factors.igamma
+        return self._meyerhof_factors.igamma
