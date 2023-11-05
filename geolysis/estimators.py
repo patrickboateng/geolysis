@@ -1,28 +1,25 @@
 """
-.. currentmodule:: geolab.estimators
+.. currentmodule:: geolysis.estimators
 
-=================================================================
-Soil Engineering Parameter Estimators (:mod:`geolab.estimators`).
-=================================================================
+===================================================================
+Soil Engineering Parameter Estimators (:mod:`geolysis.estimators`).
+===================================================================
 
 This module provides functions for estimating soil engineering parameters.
 
 """
-from dataclasses import dataclass
 
 from geolysis import GeotechEng
-from geolysis.exceptions import EngineerTypeError
 from geolysis.utils import arctan, round_, sin
 
 
-@dataclass
 class SoilUnitWeight:
     """Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight of
     soil sample.
 
     :Example:
 
-        >>> from geolab.estimators import SoilUnitWeight
+        >>> from geolysis.estimators import SoilUnitWeight
         >>> suw = SoilUnitWeight(spt_n60=13)
         >>> suw.moist
         17.3
@@ -35,7 +32,10 @@ class SoilUnitWeight:
     :type spt_n60: float
     """
 
-    spt_n60: float
+    __slots__ = ("spt_n60",)
+
+    def __init__(self, spt_n60: float) -> None:
+        self.spt_n60 = spt_n60
 
     @property
     @round_
@@ -80,7 +80,7 @@ class CompressionIndex:
 
     :Example:
 
-        >>> from geolab.estimators import CompressionIndex
+        >>> from geolysis.estimators import CompressionIndex
         >>> compression_index = CompressionIndex(liquid_limit=35)
         >>> compression_index.skempton_1994()
         0.175
@@ -94,46 +94,31 @@ class CompressionIndex:
     :type liquid_limit: float
     :param void_ratio: ratio of the volume of voids to the volume of solids (unitless)
     :type void_ratio: float
-    :param eng: specifies the type of compression index formula to use. Available
-                values are ``GeotechEng.SKEMPTON``, ``GeotechEng.TERZAGHI`` and
-                ``GeotechEng.HOUGH``. Defaults to ``GeotechEng.SKEMPTON``.
-    :type eng: GeotechEng
-
-    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
+    __slots__ = ("liquid_limit", "void_ratio")
 
     def __init__(
         self,
         *,
         liquid_limit: float = 0.0,
         void_ratio: float = 0.0,
-        eng: GeotechEng = GeotechEng.SKEMPTON
-        | GeotechEng.TERZAGHI
-        | GeotechEng.HOUGH,
     ) -> None:
         self.liquid_limit = liquid_limit
         self.void_ratio = void_ratio
-        self.eng = eng
 
     def __call__(self) -> dict[GeotechEng, float]:
-        # Returns the compression index of the soil sample (unitless)
+        """Returns all the available compression index estimations.
 
-        comp_idx = {}  # compression index
+        Available values are ``GeotechEng.SKEMPTON``, ``GeotechEng.TERZAGHI`` and
+        ``GeotechEng.HOUGH``.
+        """
+        comp_idx = {}
 
-        if self.liquid_limit and self.eng & GeotechEng.SKEMPTON:
-            comp_idx[GeotechEng.SKEMPTON] = self.skempton_1994()
-            return comp_idx
+        comp_idx[GeotechEng.SKEMPTON] = self.skempton_1994()
+        comp_idx[GeotechEng.TERZAGHI] = self.terzaghi_et_al_1967()
+        comp_idx[GeotechEng.HOUGH] = self.hough_1957()
 
-        if self.liquid_limit and self.eng & GeotechEng.TERZAGHI:
-            comp_idx[GeotechEng.TERZAGHI] = self.terzaghi_et_al_1967()
-            return comp_idx
-
-        if self.void_ratio and self.eng & GeotechEng.HOUGH:
-            comp_idx[GeotechEng.HOUGH] = self.hough_1957()
-            return comp_idx
-
-        msg = f"{self.eng} is not a valid type for {type(self)}"
-        raise EngineerTypeError(msg)
+        return comp_idx
 
     @round_
     def terzaghi_et_al_1967(self) -> float:
@@ -179,20 +164,19 @@ class SoilFrictionAngle:
     r"""Estimation of the internal angle of friction using spt_n60.
 
     For cohesionless soils the coefficient of internal friction (:math:`\phi`)
-    was determined from the minimum value from :py:meth:`wolff_1989` and 
+    was determined from the minimum value from :py:meth:`wolff_1989` and
     :py:meth:`kullhawy_mayne_1990`.
 
     :Example:
 
-        >>> from geolab.estimators import SoilFrictionAngle
+        >>> from geolysis.estimators import SoilFrictionAngle
         >>> sfa = SoilFrictionAngle(spt_n60=50)
         >>> sfa.wolff_1989()
         40.75
         >>> sfa = SoilFrictionAngle(spt_n60=40)
         >>> sfa.wolff_1989()
         38.236
-        >>> sfa = SoilFrictionAngle(spt_n60=40, eop=103.8, atm_pressure=101.325,\
-        ... eng=GeotechEng.KULLHAWY)
+        >>> sfa = SoilFrictionAngle(spt_n60=40, eop=103.8, atm_pressure=101.325)
         >>> sfa.kullhawy_mayne_1990()
         46.874
 
@@ -202,13 +186,8 @@ class SoilFrictionAngle:
     :type eop: float, optional
     :param atm_pressure: atmospheric pressure :math:`kN/m^2`, defaults to 0
     :type atm_pressure: float, optional
-    :param eng: specifies the type of soil friction angle formula to use. Available
-                values are ``GeotechEng.WOLFF`` and ``GeotechEng.KULLHAWY``. Defaults to 
-                ``GeotechEng.WOLFF``.
-    :type eng: GeotechEng
-
-    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
+    __slots__ = ("spt_n60", "eop", "atm_pressure")
 
     def __init__(
         self,
@@ -216,28 +195,23 @@ class SoilFrictionAngle:
         spt_n60: float,
         eop: float = 0,
         atm_pressure: float = 0,
-        eng: GeotechEng = GeotechEng.WOLFF | GeotechEng.KULLHAWY,
     ):
         self.spt_n60 = spt_n60
         self.eop = eop
         self.atm_pressure = atm_pressure
-        self.eng = eng
 
     def __call__(self) -> dict[GeotechEng, float]:
-        # Returns the internal angle of friction (degrees)
+        """Return all the internal angle of friction estimations.
 
-        _friction_angle = {}
+        Available values are ``GeotechEng.WOLFF`` and ``GeotechEng.KULLHAWY``.
+        """
 
-        if self.eng & GeotechEng.WOLFF:
-            _friction_angle[GeotechEng.WOLFF] = self.wolff_1989()
-            return _friction_angle
+        friction_angle = {}
 
-        if self.eop and self.atm_pressure and self.eng & GeotechEng.WOLFF:
-            _friction_angle[GeotechEng.KULLHAWY] = self.kullhawy_mayne_1990()
-            return _friction_angle
+        friction_angle[GeotechEng.WOLFF] = self.wolff_1989()
+        friction_angle[GeotechEng.KULLHAWY] = self.kullhawy_mayne_1990()
 
-        msg = f"{self.eng} is not a valid type for {type(self)}"
-        raise EngineerTypeError(msg)
+        return friction_angle
 
     @round_
     def wolff_1989(self) -> float:
@@ -271,17 +245,16 @@ class SoilFrictionAngle:
 class UndrainedShearStrength:
     r"""Undrained shear strength of soil.
 
-    The available correlations used are :py:meth:`stroud_1974` and 
+    The available correlations used are :py:meth:`stroud_1974` and
     :py:meth:`skempton_1957`.
 
     :Example:
 
-        >>> from geolab.estimators import UndrainedShearStrength
+        >>> from geolysis.estimators import UndrainedShearStrength
         >>> uss = UndrainedShearStrength(spt_n60=40)
         >>> uss.stroud_1974()
         140.0
-        >>> uss = UndrainedShearStrength(spt_n60=40, eop=108.3,\
-        ... plasticity_index=12, eng=GeotechEng.SKEMPTON)
+        >>> uss = UndrainedShearStrength(spt_n60=40, eop=108.3, plasticity_index=12)
         >>> uss.skempton_1957()
         16.722
 
@@ -294,13 +267,9 @@ class UndrainedShearStrength:
     :type plasticity_index: Optional[float], optional
     :param k: stroud parameter, defaults to 3.5
     :type k: float, optional
-    :param eng: specifies the type of undrained shear strength formula to use. Available
-                values are ``GeotechEng.STROUD`` and ``GeotechEng.SKEMPTON``, defaults to
-                ``GeotechEng.STROUD``
-    :type eng: GeotechEng, optional
-
-    :raises exceptions.EngineerTypeError: if eng specified is not valid
     """
+
+    __slots__ = ("spt_n60", "eop", "plasticity_index", "k")
 
     def __init__(
         self,
@@ -309,31 +278,23 @@ class UndrainedShearStrength:
         eop: float = 0,
         plasticity_index: float = 0,
         k: float = 3.5,
-        eng: GeotechEng = GeotechEng.STROUD | GeotechEng.SKEMPTON,
     ) -> None:
         self.spt_n60 = spt_n60
         self.eop = eop
         self.plasticity_index = plasticity_index
         self.k = k
-        self.eng = eng
 
     def __call__(self) -> dict[GeotechEng, float]:
+        """Return all the undrained shear strength estimations.
+
+        Available values are ``GeotechEng.STROUD`` and ``GeotechEng.SKEMPTON``.
+        """
         und_shr = {}  # undrained shear strength
 
-        if self.spt_n60 and self.eng & GeotechEng.STROUD:
-            und_shr[GeotechEng.STROUD] = self.stroud_1974()
-            return und_shr
+        und_shr[GeotechEng.STROUD] = self.stroud_1974()
+        und_shr[GeotechEng.SKEMPTON] = self.skempton_1957()
 
-        if (
-            self.eop
-            and self.plasticity_index
-            and self.eng & GeotechEng.SKEMPTON
-        ):
-            und_shr[GeotechEng.SKEMPTON] = self.skempton_1957()
-            return und_shr
-
-        msg = f"{self.eng} is not a valid type for {type(self)}"
-        raise EngineerTypeError(msg)
+        return und_shr
 
     @round_
     def stroud_1974(self):
@@ -389,7 +350,7 @@ def bowles_soil_elastic_modulus(spt_n60: float) -> float:
 
     :Example:
 
-        >>> from geolab.estimators import bowles_soil_elastic_modulus
+        >>> from geolysis.estimators import bowles_soil_elastic_modulus
         >>> bowles_soil_elastic_modulus(20)
         11200
         >>> bowles_soil_elastic_modulus(30)
@@ -421,7 +382,7 @@ def rankine_foundation_depth(
 
     :Example:
 
-        >>> from geolab.estimators import rankine_foundation_depth
+        >>> from geolysis.estimators import rankine_foundation_depth
         >>> rankine_foundation_depth(350, 18, 35)
         1.4
 
