@@ -44,8 +44,8 @@ version = {attr = "geolysis.__version__"}
 [project.urls]
 # Homepage = "https://"
 # Documentation = "https://readthedocs.org"
-Repository = "https://github.com/patrickboateng/geolab"
-Changelog = "https://github.com/patrickboateng/geolab/blob/main/CHANGELOG.md"
+Repository = "https://github.com/patrickboateng/geolysis"
+Changelog = "https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["geolysis*"] 
