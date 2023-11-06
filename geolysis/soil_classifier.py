@@ -127,33 +127,32 @@ class PSD:
         """Checks if soil sample has particle sizes."""
         return all((self.d10, self.d30, self.d60))
 
+    def _sand_grade(self) -> str:
+        if (
+            1 < self.curvature_coefficient < 3
+            and self.uniformity_coefficient >= 6
+        ):
+            return WELL_GRADED
+
+        return POORLY_GRADED
+
+    def _coarse_grade(self) -> str:
+        if (
+            1 < self.curvature_coefficient < 3
+            and self.uniformity_coefficient >= 4
+        ):
+            return WELL_GRADED
+
+        return POORLY_GRADED
+
     def grade(self, coarse_soil: str) -> str:
         """Return the grade of the soil sample."""
-        soil_grade: str
-
         # Gravel
         if coarse_soil == GRAVEL:
-            if (
-                1 < self.curvature_coefficient < 3
-                and self.uniformity_coefficient >= 4
-            ):
-                soil_grade = WELL_GRADED
-
-            else:
-                soil_grade = POORLY_GRADED
+            return self._coarse_grade()
 
         # Sand
-        else:
-            if (
-                1 < self.curvature_coefficient < 3
-                and self.uniformity_coefficient >= 6
-            ):
-                soil_grade = WELL_GRADED
-
-            else:
-                soil_grade = POORLY_GRADED
-
-        return soil_grade
+        return self._sand_grade()
 
     @property
     @round_(precision=2)
@@ -270,60 +269,13 @@ class USCS:
     categorized into three main groups: coarse-grained, fine-grained, and highly
     organic soils. Additionally, the system has been adopted by the American Society
     for Testing and Materials (``ASTM``).
-
-    :param liquid_limit: Water content beyond which soils flows under their own
-                         weight (%)
-    :type liquid_limit: float
-    :param plastic_limit: Water content at which plastic deformation can be initiated (%)
-    :type plastic_limit: float
-    :param plasticity_index: Range of water content over which soil remains in
-                             plastic condition (%)
-    :type plasticity_index: float
-    :param fines: Percentage of fines in soil sample (%)
-    :type fines: float
-    :param sand: Percentage of sand in soil sample (%)
-    :type sand: float
-    :param gravel: Percentage of gravel in soil sample (%)
-    :type gravel: float
-    :param d10: Diameter at which 30% of the soil by weight is finer
-    :type d10: float
-    :param d30: Diameter at which 30% of the soil by weight is finer
-    :type d30: float
-    :param d60: Diameter at which 60% of the soil by weight is finer
-    :type d60: float
-
-    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
-    :raises exceptions.PSDValueError: Raised when soil aggregates does not approximately
-                                      sum to 100%
     """
 
-    liquid_limit: float
-    plastic_limit: float
-    plasticity_index: float
-    fines: float
-    sand: float
-    gravel: float
+    atterberg_limits: AtterbergLimits
+    psd: PSD
 
     _: KW_ONLY
-    d10: float = 0
-    d30: float = 0
-    d60: float = 0
     organic: bool = False
-
-    def __post_init__(self):
-        self.atterberg_limits = AtterbergLimits(
-            self.liquid_limit,
-            self.plastic_limit,
-            self.plasticity_index,
-        )
-        self.psd = PSD(
-            self.fines,
-            self.sand,
-            self.gravel,
-            self.d10,
-            self.d30,
-            self.d60,
-        )
 
     def _dual_soil_classifier(self, coarse_soil: str) -> str:
         soil_grd = self.psd.grade(coarse_soil)
@@ -331,8 +283,6 @@ class USCS:
         return f"{coarse_soil}{soil_grd}-{coarse_soil}{fine_soil}"
 
     def _classify_coarse_soil(self, coarse_soil: str) -> str:
-        clf: str
-
         if self.psd.fines > 12:
             if self.atterberg_limits.limit_plot_in_hatched_zone():
                 clf = f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
@@ -414,9 +364,7 @@ class USCS:
                 return self._classify_coarse_soil(coarse_soil=GRAVEL)
 
             # Sand
-            else:
-                return self._classify_coarse_soil(coarse_soil=SAND)
+            return self._classify_coarse_soil(coarse_soil=SAND)
 
         # Fine grained, Run Atterberg
-        else:
-            return self._classify_fine_soil()
+        return self._classify_fine_soil()
