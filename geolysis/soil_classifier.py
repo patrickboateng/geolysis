@@ -25,44 +25,42 @@ def _check_size_distribution(fines: float, sand: float, gravel: float):
         raise exceptions.PSDValueError(msg)
 
 
-def _check_plasticity_idx(
-    liquid_limit: float,
-    plastic_limit: float,
-    plasticity_index: float,
-):
-    plasticity_idx = liquid_limit - plastic_limit
-    if not isclose(plasticity_idx, plasticity_index, rel_tol=ERROR_TOLERANCE):
-        msg = f"PI should be equal to {plasticity_idx} not {plasticity_index}"
-        raise exceptions.PIValueError(msg)
-
-
-@dataclass
 class AtterbergLimits:
-    """A dataclass for Atterberg Limits.
+    """Atterberg Limits.
 
-    :param liquid_limit: Water content beyond which soils flows under their
-                         own weight (%)
+    In 1911, a Swedish agriculture engineer ``Atterberg`` mentioned
+    that  a fined-grained soil can exist in four states, namely,
+    liquid, plastic, semi-solid or solid state.
+
+    The water contents at which the soil changes from one state to
+    other are known as ``Atterberg limits`` or ``Consistency limits``.
+
+    :param liquid_limit: Water content beyond which soils flows
+                         under their own weight (%). It can also be
+                         defined as the minimum moisture content at
+                         which a soil flows upon application of a
+                         very small shear force. (%)
     :type liquid_limit: float
-    :param plastic_limit: Water content at which plastic deformation can be
-                          initiated (%)
+    :param plastic_limit: Water content at which plastic deformation
+                          can be initiated. It is also the minimum
+                          water content at which soil can be rolled
+                          into a thread 3mm thick (molded without
+                          breaking)
     :type plastic_limit: float
-    :param plasticity_index: Range of water content over which soil remains in
-                             plastic condition (%)
-    :type plasticity_index: float
-
-    :raises exceptions.PIValueError: Raised when ``PI`` is not equal to ``LL - PL``
+    :param nmc: Moisture contents of the soil in natural condition.
+                (Natural Moisture Content)
+    :type nmc: float, optional
     """
 
-    liquid_limit: float
-    plastic_limit: float
-    plasticity_index: float
-
-    def __post_init__(self):
-        _check_plasticity_idx(
-            self.liquid_limit,
-            self.plastic_limit,
-            self.plasticity_index,
-        )
+    def __init__(
+        self,
+        liquid_limit: float,
+        plastic_limit: float,
+        nmc: float = 0,
+    ):
+        self.liquid_limit = liquid_limit
+        self.plastic_limit = plastic_limit
+        self.nmc = nmc
 
     @property
     @round_(precision=2)
@@ -76,8 +74,8 @@ class AtterbergLimits:
         return 0.73 * (self.liquid_limit - 20)
 
     @property
-    def fine_soil(self) -> str:
-        """Return the type of fine soil."""
+    def type_of_fines(self) -> str:
+        """Return the type of fine soil, either CLAY or SILT"""
         return CLAY if self.above_A_line() else SILT
 
     def above_A_line(self) -> bool:
@@ -91,6 +89,76 @@ class AtterbergLimits:
             self.A_line,
             rel_tol=ERROR_TOLERANCE,
         )
+
+    @property
+    def plasticity_index(self) -> float:
+        """Return the plasticity index of the soil.
+
+        Plasticity index is the range of water content over which
+        the soil remains in the plastic state. It is also the
+        numerical difference between the liquid limit and plastic
+        limit of the soil.
+
+        .. math::
+
+            PI = LL - PL
+
+        - PI: Plasticity Index
+        - LL: Liquid Limit
+        - PL: Plastic Limit
+        """
+        return self.liquid_limit - self.plastic_limit
+
+    @property
+    def liquidity_index(self) -> float:
+        r"""Return the liquidity index of the soil.
+
+        Liquidity index of a soil indicates the nearness of its
+        water content to its liquid limit. When the soil is at the
+        plastic limit its liquidity index is zero. Negative values
+        of the liquidity index indicate that the soil is in a hard
+        (desiccated) state. It is also known as ``Water-Plasticity
+        ratio``.
+
+        .. math::
+
+            l_i = \dfrac{w - PL}{PI} \cdot 100
+
+        - I_i: Liquidity Index
+        - w: Moisture contents of the soil in natural condition.
+             (Natural Moisture Content)
+        - PL: Plastic Limit
+        - PI: Plasticity Index
+        """
+        return ((self.nmc - self.plastic_limit) / self.plasticity_index) * 100
+
+    @property
+    def consistency_index(self) -> float:
+        r"""Return the consistency index of the soil.
+
+        Consistency index indicates the consistency (firmness) of
+        soil. It shows the nearness of the water content of the
+        soil to its plastic limit. When the soil is at the liquid
+        limit, the consistency index is zero. The soil at consistency
+        index of zero will be extremely soft and has negligible
+        shear strength. A soil at a water content equal to the
+        plastic limit has consistency index of 100% indicating that
+        the soil is relatively firm. A consistency index of greater
+        than 100% shows the soil is relatively strong (semi-solid state).
+        A negative value indicate the soil is in the liquid state.
+        It is also known as ``Relative Consistency``.
+
+        .. math::
+
+            I_c = \dfrac{LL - w}{Plasticity Index} \cdot 100
+
+        - I_c: Consistency Index
+        - LL: Liquid Limit
+        - w: Moisture contents of the soil in natural condition.
+             (Natural Moisture Content)
+        - PI: Plasticity Index
+        """
+        return ((self.liquid_limit - self.nmc) / self.plasticity_index) * 100
 
 
 @dataclass
@@ -218,43 +286,55 @@ class AASHTO:
 
         return 0.0 if grp_idx <= 0 else grp_idx
 
-    def classify(self) -> str:
-        """Return the AASHTO classification of the soil sample."""
-        clf: str  # soil classification
+    @property
+    def _grp_idx(self) -> str:
         grp_idx = self.group_index()
-        grp_idx = f"{grp_idx:.0f}"  # convert grp_idx to a whole number
+        grp_idx = f"{grp_idx:.0f}"
 
-        if self.fines <= 35:
-            if self.liquid_limit <= 40:
-                if self.plasticity_index <= 10:
-                    clf = f"A-2-4({grp_idx})"
-                else:
-                    clf = f"A-2-6({grp_idx})"
+        return grp_idx
 
+    def _classify_coarse_soil(self) -> str:
+        if self.liquid_limit <= 40:
+            if self.plasticity_index <= 10:
+                clf = f"A-2-4({self._grp_idx})"
             else:
-                if self.plasticity_index <= 10:
-                    clf = f"A-2-5({grp_idx})"
-                else:
-                    clf = f"A-2-7({grp_idx})"
+                clf = f"A-2-6({self._grp_idx})"
 
-        # Silts A4-A7
         else:
-            if self.liquid_limit <= 40:
-                if self.plasticity_index <= 10:
-                    clf = f"A-4({grp_idx})"
-                else:
-                    clf = f"A-6({grp_idx})"
-
+            if self.plasticity_index <= 10:
+                clf = f"A-2-5({self._grp_idx})"
             else:
-                if self.plasticity_index <= 10:
-                    clf = f"A-5({grp_idx})"
-                else:
-                    if self.plasticity_index <= (self.liquid_limit - 30):
-                        clf = f"A-7-5({grp_idx})"
-                    else:
-                        clf = f"A-7-6({grp_idx})"
+                clf = f"A-2-7({self._grp_idx})"
 
         return clf
+
+    def _classify_fine_soil(self) -> str:
+        if self.liquid_limit <= 40:
+            if self.plasticity_index <= 10:
+                clf = f"A-4({self._grp_idx})"
+            else:
+                clf = f"A-6({self._grp_idx})"
+
+        else:
+            if self.plasticity_index <= 10:
+                clf = f"A-5({self._grp_idx})"
+            else:
+                if self.plasticity_index <= (self.liquid_limit - 30):
+                    clf = f"A-7-5({self._grp_idx})"
+                else:
+                    clf = f"A-7-6({self._grp_idx})"
+
+        return clf
+
+    def classify(self) -> str:
+        """Return the AASHTO classification of the soil sample."""
+
+        # Coarse A1-A3
+        if self.fines <= 35:
+            return self._classify_coarse_soil()
+
+        # Silts A4-A7
+        return self._classify_fine_soil()
 
 
 @dataclass
@@ -279,7 +359,8 @@ class USCS:
 
     def _dual_soil_classifier(self, coarse_soil: str) -> str:
         soil_grd = self.psd.grade(coarse_soil)
-        fine_soil = self.atterberg_limits.fine_soil
+        fine_soil = self.atterberg_limits.type_of_fines
+
         return f"{coarse_soil}{soil_grd}-{coarse_soil}{fine_soil}"
 
     def _classify_coarse_soil(self, coarse_soil: str) -> str:
@@ -299,7 +380,7 @@ class USCS:
                 clf = self._dual_soil_classifier(coarse_soil)
 
             else:
-                fine_soil = self.atterberg_limits.fine_soil
+                fine_soil = self.atterberg_limits.type_of_fines
                 clf = (
                     f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{fine_soil},"
                     f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{fine_soil}"
