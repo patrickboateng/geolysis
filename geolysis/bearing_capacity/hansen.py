@@ -27,7 +27,6 @@ class HansenFactors:
         .. math::
 
             N_c = \cot \phi \cdot (N_q - 1)
-
         """
         return cot(self.soil_friction_angle) * (self.nq - 1.0)
 
@@ -39,7 +38,6 @@ class HansenFactors:
 
             N_q = \tan^2 \left(45 + \frac{\phi}{2} \right)
                   \left(e^{\pi \tan \phi}\right)
-
         """
         expr = PI * tan(self.soil_friction_angle)
         return tan(45 + self.soil_friction_angle / 2) ** 2 * exp(expr)
@@ -65,7 +63,6 @@ class HansenFactors:
         .. math::
 
             d_c = 1 + 0.35 \left(\frac{D_f}{B}\right)
-
         """
         return 1 + 0.35 * self._d2w
 
@@ -76,7 +73,6 @@ class HansenFactors:
         .. math::
 
             d_q = 1 + 0.35 \left(\frac{D_f}{B}\right)
-
         """
         return self.dc
 
@@ -87,7 +83,6 @@ class HansenFactors:
         .. math::
 
             d_\gamma = 1.0
-
         """
         return 1.0
 
@@ -103,7 +98,6 @@ class HansenFactors:
         - for rectangular footing |rarr| :math:`s_c = 1 + 0.2 \left(\dfrac{B}{L}\right)`
         - for square footing |rarr| :math:`s_c = 1.3`
         - for circular footing |rarr| :math:`s_c = 1.3`
-
         """
 
         if self.footing_shape is FootingShape.STRIP:
@@ -130,7 +124,6 @@ class HansenFactors:
         - for rectangular footing |rarr| :math:`s_q = 1 + 0.2 \left(\dfrac{B}{L}\right)`
         - for square footing |rarr| :math:`s_q = 1.2`
         - for circular footing |rarr| :math:`s_q = 1.2`
-
         """
 
         if self.footing_shape is FootingShape.STRIP:
@@ -157,7 +150,6 @@ class HansenFactors:
         - for rectangular footing |rarr| :math:`s_\gamma = 1 - 0.4 \left(\dfrac{B}{L}\right)`
         - for square footing |rarr| :math:`s_\gamma = 0.8`
         - for circular footing |rarr| :math:`s_\gamma = 0.6`
-
         """
 
         if self.footing_shape is FootingShape.STRIP:
