@@ -26,7 +26,7 @@ Utility Function (:mod:`geolab.utils`)
 import functools
 import math
 import statistics
-from typing import Any, Callable
+from typing import Callable
 
 from geolysis import DECIMAL_PLACES
 
@@ -81,7 +81,7 @@ def sqrt(x: float, /) -> float:
     return math.sqrt(x)
 
 
-def prod(*args: float | int) -> float:
+def prod(*args) -> float:
     """Calculate the product of all the elements in the input iterable.
 
     The default start value for the product is 1.
@@ -130,7 +130,7 @@ def round_(precision: Callable[..., float] | int) -> Callable:
         # performs the rounding.
 
         @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> float:
+        def wrapper(*args, **kwargs) -> float:
             return round(func(*args, **kwargs), ndigits=precision)
 
         return wrapper
