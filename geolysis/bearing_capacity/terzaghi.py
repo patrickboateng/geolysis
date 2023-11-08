@@ -37,9 +37,8 @@ class TerzaghiFactors:
 
         a = (3 * PI) / 2 - deg2rad(self.soil_friction_angle)
         b = a * tan(self.soil_friction_angle)
-        c = 2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2)
 
-        return exp(b) / c
+        return exp(b) / (2 * (cos(45 + (self.soil_friction_angle / 2)) ** 2))
 
     @property
     @round_(precision=2)
