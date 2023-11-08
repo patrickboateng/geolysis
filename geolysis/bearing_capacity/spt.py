@@ -22,18 +22,19 @@ def n_design(corrected_spt_nvalues: Sequence[float], t: bool = False) -> float:
 
         N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n} \frac{1}{i^2}}
 
-    - :math:`n \rightarrow` number of layers in the influence zone.
-    - :math:`N_i \rightarrow` corrected N-value at ith layer from the footing base.
+    - :math:`n` |rarr| number of layers in the influence zone.
+    - :math:`N_i` |rarr| corrected N-value at ith layer from the footing base.
 
     .. note::
 
-        Alternatively, for ease in calculation, the lowest N-value from the influence
-        zone can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+        Alternatively, for ease in calculation, the lowest N-value from the
+        influence zone can be taken as the :math:`N_{design}` as suggested by
+        ``Terzaghi & Peck (1948)``.
 
     :param corrected_spt_nvalues: Corrected SPT N-values in the foundation influence zone
     :type corrected_spt_nvalues: Sequence[float]
-    :param t: A flag used to specify that the lowest value in `corrected_spt_nvalues` should
-              be taken as the :py:func:`n_design`
+    :param t: A flag used to specify that the minimum value in `corrected_spt_nvalues`
+              should be taken as the :py:func:`n_design`
     :type t: bool, Optional
 
     :return: weighted average of corrected SPT N-values
@@ -75,8 +76,6 @@ class SPTCorrections:
     :type rod_length_correction: float
     :param eop: effective overburden pressure :math:`kN/m^2`
     :type eop: float
-
-
     """
 
     def __init__(
