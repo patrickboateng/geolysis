@@ -227,9 +227,9 @@ class VesicBearingCapacity:
         self,
         cohesion: float,
         soil_unit_weight: float,
-        foundation_size: FoundationSize,
         soil_friction_angle: float,
         beta: float,
+        foundation_size: FoundationSize,
         footing_shape: FootingShape = FootingShape.SQUARE,
     ) -> None:
         self.cohesion = cohesion
