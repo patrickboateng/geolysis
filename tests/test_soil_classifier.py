@@ -1,7 +1,29 @@
 import pytest
 
+from geolysis import ERROR_TOLERANCE
 from geolysis.exceptions import PSDValueError
 from geolysis.soil_classifier import AASHTO, PSD, USCS, AtterbergLimits
+
+
+class TestAtterbergLimits:
+    @classmethod
+    def setup_class(cls):
+        cls.atterberg_limits = AtterbergLimits(
+            liquid_limit=25,
+            plastic_limit=15,
+        )
+
+    def test_plasticity_index(self):
+        plasticity_index = self.atterberg_limits.plasticity_index
+        assert plasticity_index == pytest.approx(10, rel=ERROR_TOLERANCE)
+
+    def test_liquidity_index(self):
+        liquidity_index = self.atterberg_limits.liquidity_index(nmc=20)
+        assert liquidity_index == pytest.approx(50, rel=ERROR_TOLERANCE)
+
+    def test_consistency_index(self):
+        consistency_index = self.atterberg_limits.consistency_index(nmc=20)
+        assert consistency_index == pytest.approx(50, rel=ERROR_TOLERANCE)
 
 
 def test_PSDValueError():
