@@ -2,7 +2,12 @@ import pytest
 
 from geolysis import ERROR_TOLERANCE
 from geolysis.exceptions import PSDValueError
-from geolysis.soil_classifier import AASHTO, PSD, USCS, AtterbergLimits
+from geolysis.soil_classifier import (
+    AASHTOClassificationSystem,
+    AtterbergLimits,
+    ParticleSizeDistribution,
+    UnifiedSoilClassificationSystem,
+)
 
 
 class TestAtterbergLimits:
@@ -26,26 +31,57 @@ class TestAtterbergLimits:
         assert consistency_index == pytest.approx(50, rel=ERROR_TOLERANCE)
 
 
-def test_PSDValueError():
-    with pytest.raises(PSDValueError):
-        PSD(30, 30, 30)
+class TestParticleSizeDistribution:
+    def test_uniformity_coefficient(self):
+        psd = ParticleSizeDistribution(
+            0, 0, 100, d10=0.115, d30=0.53, d60=1.55
+        )
+        assert psd.uniformity_coefficient == pytest.approx(
+            13.48,
+            rel=ERROR_TOLERANCE,
+        )
+        assert psd.coefficient_of_uniformity == pytest.approx(
+            13.48,
+            rel=ERROR_TOLERANCE,
+        )
+
+    def test_curvature_coefficient(self):
+        psd = ParticleSizeDistribution(
+            0, 0, 100, d10=0.115, d30=0.53, d60=1.55
+        )
+        assert psd.curvature_coefficient == pytest.approx(
+            1.58,
+            rel=ERROR_TOLERANCE,
+        )
+        assert psd.coefficient_of_gradation == pytest.approx(
+            1.58, ERROR_TOLERANCE
+        )
+        assert psd.coefficient_of_curvature == pytest.approx(
+            1.58, ERROR_TOLERANCE
+        )
+
+    def test_PSDValueError(self):
+        with pytest.raises(PSDValueError):
+            ParticleSizeDistribution(30, 30, 30)
 
 
-@pytest.mark.parametrize(
-    "soil_params,classification",
-    [
-        ((17.9, 3.4, 24.01), "A-2-4(0)"),
-        ((37.7, 13.9, 47.44), "A-6(4)"),
-        ((30.1, 13.7, 18.38), "A-2-6(0)"),
-        ((61.7, 29.4, 52.09), "A-7-5(12)"),
-        ((52.6, 25.0, 45.8), "A-7-6(7)"),
-        ((30.2, 6.3, 11.18), "A-2-4(0)"),
-        ((70.0, 32.0, 86), "A-7-5(20)"),
-        ((45, 29, 60), "A-7-6(13)"),
-    ],
-)
-def test_aashto(soil_params, classification):
-    assert AASHTO(*soil_params).classify() == classification
+class TestAASHTOClassificationSystem:
+    @pytest.mark.parametrize(
+        "soil_params,classification",
+        [
+            ((17.9, 3.4, 24.01), "A-2-4(0)"),
+            ((37.7, 13.9, 47.44), "A-6(4)"),
+            ((30.1, 13.7, 18.38), "A-2-6(0)"),
+            ((61.7, 29.4, 52.09), "A-7-5(12)"),
+            ((52.6, 25.0, 45.8), "A-7-6(7)"),
+            ((30.2, 6.3, 11.18), "A-2-4(0)"),
+            ((70.0, 32.0, 86), "A-7-5(20)"),
+            ((45, 29, 60), "A-7-6(13)"),
+        ],
+    )
+    def test_aashto(self, soil_params, classification):
+        asshto_classifier = AASHTOClassificationSystem(*soil_params)
+        assert asshto_classifier.classify() == classification
 
 
 @pytest.mark.parametrize(
@@ -96,8 +132,10 @@ def test_dual_classification(
     classification: str,
 ):
     atterberg_limits = AtterbergLimits(*al)
-    psd = PSD(*psd, **particle_sizes)
-    uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
+    psd = ParticleSizeDistribution(*psd, **particle_sizes)
+    uscs = UnifiedSoilClassificationSystem(
+        atterberg_limits=atterberg_limits, psd=psd
+    )
 
     assert uscs.classify() == classification
 
@@ -143,8 +181,10 @@ def test_dual_classification_no_psd_coeff(
     classification: str,
 ):
     atterberg_limits = AtterbergLimits(*al)
-    psd = PSD(*psd)
-    uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
+    psd = ParticleSizeDistribution(*psd)
+    uscs = UnifiedSoilClassificationSystem(
+        atterberg_limits=atterberg_limits, psd=psd
+    )
 
     assert uscs.classify() == classification
 
@@ -165,7 +205,9 @@ def test_dual_classification_no_psd_coeff(
 )
 def test_single_classification(al, psd, classification: str):
     atterberg_limits = AtterbergLimits(*al)
-    psd = PSD(*psd)
-    uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
+    psd = ParticleSizeDistribution(*psd)
+    uscs = UnifiedSoilClassificationSystem(
+        atterberg_limits=atterberg_limits, psd=psd
+    )
 
     assert uscs.classify() == classification
