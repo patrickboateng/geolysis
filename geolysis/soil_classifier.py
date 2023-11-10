@@ -3,6 +3,7 @@ classification.
 """
 
 from dataclasses import KW_ONLY, dataclass
+from math import trunc
 
 from geolysis import ERROR_TOLERANCE, exceptions
 from geolysis.utils import isclose, round_
@@ -34,33 +35,22 @@ class AtterbergLimits:
 
     The water contents at which the soil changes from one state to
     other are known as ``Atterberg limits`` or ``Consistency limits``.
+    The main use of consistency limits is in the classification of
+    soils.
 
-    :param liquid_limit: Water content beyond which soils flows
-                         under their own weight (%). It can also be
-                         defined as the minimum moisture content at
-                         which a soil flows upon application of a
-                         very small shear force. (%)
-    :type liquid_limit: float
-    :param plastic_limit: Water content at which plastic deformation
-                          can be initiated. It is also the minimum
-                          water content at which soil can be rolled
-                          into a thread 3mm thick (molded without
-                          breaking)
-    :type plastic_limit: float
-    :param nmc: Moisture contents of the soil in natural condition.
-                (Natural Moisture Content)
-    :type nmc: float, optional
+    :param float liquid_limit:
+        Water content beyond which soils flows under their own weight.
+        It can also be defined as the minimum moisture content at
+        which a soil flows upon application of a very small shear force.
+    :param float plastic_limit:
+        Water content at which plastic deformation can be initiated.
+        It is also the minimum water content at which soil can be rolled
+        into a thread 3mm thick (molded without breaking)
     """
 
-    def __init__(
-        self,
-        liquid_limit: float,
-        plastic_limit: float,
-        nmc: float = 0,
-    ):
+    def __init__(self, liquid_limit: float, plastic_limit: float):
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
-        self.nmc = nmc
 
     @property
     @round_(precision=2)
@@ -75,7 +65,7 @@ class AtterbergLimits:
 
     @property
     def type_of_fines(self) -> str:
-        """Return the type of fine soil, either CLAY or SILT"""
+        """Return the type of fine soil, either CLAY or SILT."""
         return CLAY if self.above_A_line() else SILT
 
     def above_A_line(self) -> bool:
@@ -109,8 +99,7 @@ class AtterbergLimits:
         """
         return self.liquid_limit - self.plastic_limit
 
-    @property
-    def liquidity_index(self) -> float:
+    def liquidity_index(self, nmc: float) -> float:
         r"""Return the liquidity index of the soil.
 
         Liquidity index of a soil indicates the nearness of its
@@ -122,18 +111,21 @@ class AtterbergLimits:
 
         .. math::
 
-            l_i = \dfrac{w - PL}{PI} \cdot 100
+            I_l = \dfrac{w - PL}{PI} \cdot 100
 
-        - I_i: Liquidity Index
+        - I_l: Liquidity Index
         - w: Moisture contents of the soil in natural condition.
              (Natural Moisture Content)
         - PL: Plastic Limit
         - PI: Plasticity Index
-        """
-        return ((self.nmc - self.plastic_limit) / self.plasticity_index) * 100
 
-    @property
-    def consistency_index(self) -> float:
+        :param float nmc:
+            Moisture contents of the soil in natural condition.
+            (Natural Moisture Content)
+        """
+        return ((nmc - self.plastic_limit) / self.plasticity_index) * 100
+
+    def consistency_index(self, nmc: float) -> float:
         r"""Return the consistency index of the soil.
 
         Consistency index indicates the consistency (firmness) of
@@ -150,45 +142,73 @@ class AtterbergLimits:
 
         .. math::
 
-            I_c = \dfrac{LL - w}{Plasticity Index} \cdot 100
+            I_c = \dfrac{LL - w}{PI} \cdot 100
 
         - I_c: Consistency Index
         - LL: Liquid Limit
         - w: Moisture contents of the soil in natural condition.
              (Natural Moisture Content)
         - PI: Plasticity Index
+
+        :param float nmc:
+            Moisture contents of the soil in natural condition.
+            (Natural Moisture Content)
         """
-        return ((self.liquid_limit - self.nmc) / self.plasticity_index) * 100
+        return ((self.liquid_limit - nmc) / self.plasticity_index) * 100
 
 
-@dataclass
-class PSD:
-    """A dataclass for Particle Size Distribution.
+class ParticleSizeDistribution:
+    """Particle Size Distribution.
 
-    :param fines: Percentage of fines in soil sample (%)
-    :type fines: float
-    :param sand: Percentage of sand in soil sample (%)
-    :type sand: float
-    :param gravel: Percentage of gravel in soil sample (%)
-    :type gravel: float
-    :param d10: Diameter at which 30% of the soil by weight is finer
-    :type d10: float
-    :param d30: Diameter at which 30% of the soil by weight is finer
-    :type d30: float
-    :param d60: Diameter at which 60% of the soil by weight is finer
-    :type d60: float
-    :raises exceptions.PSDValueError: Raised when soil aggregates does not
-                                      approximately sum to 100%
+    Particle Size Distribution is a method of separation of soils
+    into different fractions based on the particle size. It
+    expresses quantitatively the proportions by mass of various
+    sizes of particles present in a soil. The analysis is done in
+    two stages:
+
+    1. Sieve Analysis: It is meant for coarse grained soils
+    (particle size greater than 75 micron) which can easily pass
+    through a set of sieves. Coarse grained soils can be subdivided
+    into gravel fraction (particle size > 4.75 mm) and sand
+    fraction (75 micron < particle size < 4.75 mm).
+    1. Sedimentation Analysis: It meant for fine grained soils
+    (particle size smaller than 75 micron)
+
+    :param float fines:
+        Percentage of fines in soil sample (%)
+    :param float sand:
+        Percentage of sand in soil sample (%)
+    :param float gravel:
+        Percentage of gravel in soil sample (%)
+    :kwparam float d10:
+        Diameter at which 30% of the soil by weight is finer
+    :kwparam float d30:
+        Diameter at which 30% of the soil by weight is finer
+    :kwparam float d60:
+        Diameter at which 60% of the soil by weight is finer
+
+    :raises exceptions.PSDValueError:
+        Raised when soil aggregates does not approximately sum
+        up to 100%
     """
 
-    fines: float
-    sand: float
-    gravel: float
-    d10: float = 0
-    d30: float = 0
-    d60: float = 0
+    def __init__(
+        self,
+        fines: float,
+        sand: float,
+        gravel: float,
+        *,
+        d10: float = 0,
+        d30: float = 0,
+        d60: float = 0,
+    ):
+        self.fines = fines
+        self.sand = sand
+        self.gravel = gravel
+        self.d10 = d10
+        self.d30 = d30
+        self.d60 = d60
 
-    def __post_init__(self):
         _check_size_distribution(self.fines, self.sand, self.gravel)
 
     def has_particle_sizes(self) -> bool:
@@ -229,9 +249,12 @@ class PSD:
 
         .. math::
 
-            C_c = \dfrac{d_{30}^2}{d_{60} \cdot d_{10}}
+            C_c = \dfrac{D_{30}^2}{D_{60} \cdot D_{10}}
         """
         return (self.d30**2) / (self.d60 * self.d10)
+
+    coefficient_of_curvature = curvature_coefficient
+    coefficient_of_gradation = curvature_coefficient
 
     @property
     @round_(precision=2)
@@ -240,89 +263,108 @@ class PSD:
 
         .. math::
 
-            C_u = \dfrac{d_{60}}{d_{10}}
+            C_u = \dfrac{D_{60}}{D_{10}}
         """
         return self.d60 / self.d10
 
+    coefficient_of_uniformity = uniformity_coefficient
 
-@dataclass
-class AASHTO:
-    """American Association of State Highway and Transportation Officials
-    (``AASHTO``) classification system.
 
-    The AASHTO Classification system categorizes soils for highways based on
-    Particle Size Distribution and plasticity characteristics. It classifies
-    both coarse-grained and fine-grained soils into eight main groups (A1 to
-    A7) with subgroups, along with a separate category (A8) for organic soils.
+class AASHTOClassificationSystem:
+    """American Association of State Highway and Transportation
+    Officials (``AASHTO``) classification system.
 
-    :param liquid_limit: Water content beyond which soils flows under their own
-        weight (%)
-    :type liquid_limit: float
-    :param plasticity_index: Range of water content over which soil remains in
-        plastic condition (%)
-    :param fines: Percentage of fines in soil sample (%)
-    :type fines: float
+    The AASHTO classification system is useful for classifying soils
+    for highways. It categorizes soils for highways based on particle
+    size analysis and plasticity characteristics. It classifies both
+    coarse-grained and fine-grained soils into eight main groups
+    (A1-A7) with subgroups, along with a separate category (A8) for
+    organic soils.
+
+    :param float liquid_limit:
+        Water content beyond which soils flows under their own weight
+    :param float plasticity_index:
+        Range of water content over which soil remains in plastic
+        condition
+    :param float fines:
+        Percentage of fines in soil sample
     """
 
-    liquid_limit: float
-    plasticity_index: float
-    fines: float
+    def __init__(
+        self,
+        liquid_limit: float,
+        plasticity_index: float,
+        fines: float,
+    ):
+        self.liquid_limit = liquid_limit
+        self.plasticity_index = plasticity_index
+        self.fines = fines
 
-    @round_(precision=0)
     def group_index(self) -> float:
-        """Return the ``Group Index GI`` of the soil sample.
+        """Return the ``Group Index (GI)`` of the soil sample.
 
-        The ``(GI)`` is used to further evaluate soils with a group (subgroups).
+        The ``(GI)`` is used to further evaluate soils with a group
+        (subgroups). When calculating ``GI`` from the equation below,
+        if any term in the parenthesis becomes negative, it is drop
+        and not given a negative value. The maximum values of
+        :math:`(F_{200} - 35)` and :math:`(F_{200} - 15)` are taken
+        as 40 and :math:`(LL - 4o)` and :math:`(PI - 10)` as 20.
+        If the computed value for ``GI`` is negative, it is reported
+        as zero. In general, the rating for the pavement subgrade is
+        inversely proportional to the ``GI`` (lower the ``GI``, better
+        the material).
+        For e.g., a ``GI`` of zero indicates a good subgrade, whereas
+        a group index of 20 or greater shows a very poor subgrade.
+
+        .. note::
+
+            The ``GI`` must be mentioned even when it is zero, to
+            indicate that the soil has been classified as per AASHTO
+            system.
 
         .. math::
 
             GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
         """
-        x_1 = 0 if (x_0 := self.fines - 35) < 0 else min(x_0, 40)
-        x_2 = 0 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
-        x_3 = 0 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
-        x_4 = 0 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
+        x_1 = 1 if (x_0 := self.fines - 35) < 0 else min(x_0, 40)
+        x_2 = 1 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
+        x_3 = 1 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
+        x_4 = 1 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
         grp_idx = x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
+        grp_idx = round(grp_idx, ndigits=0)
 
-        return 0.0 if grp_idx <= 0 else grp_idx
-
-    @property
-    def _grp_idx(self) -> str:
-        grp_idx = self.group_index()
-        grp_idx = f"{grp_idx:.0f}"
-
-        return grp_idx
+        return 0 if grp_idx <= 0 else trunc(grp_idx)
 
     def _classify_coarse_soil(self) -> str:
         if self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
-                clf = f"A-2-4({self._grp_idx})"
+                clf = f"A-2-4({self.group_index()})"
             else:
-                clf = f"A-2-6({self._grp_idx})"
+                clf = f"A-2-6({self.group_index()})"
 
         else:
             if self.plasticity_index <= 10:
-                clf = f"A-2-5({self._grp_idx})"
+                clf = f"A-2-5({self.group_index()})"
             else:
-                clf = f"A-2-7({self._grp_idx})"
+                clf = f"A-2-7({self.group_index()})"
 
         return clf
 
     def _classify_fine_soil(self) -> str:
         if self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
-                clf = f"A-4({self._grp_idx})"
+                clf = f"A-4({self.group_index()})"
             else:
-                clf = f"A-6({self._grp_idx})"
+                clf = f"A-6({self.group_index()})"
 
         else:
             if self.plasticity_index <= 10:
-                clf = f"A-5({self._grp_idx})"
+                clf = f"A-5({self.group_index()})"
             else:
                 if self.plasticity_index <= (self.liquid_limit - 30):
-                    clf = f"A-7-5({self._grp_idx})"
+                    clf = f"A-7-5({self.group_index()})"
                 else:
-                    clf = f"A-7-6({self._grp_idx})"
+                    clf = f"A-7-6({self.group_index()})"
 
         return clf
 
@@ -338,21 +380,26 @@ class AASHTO:
 
 
 @dataclass
-class USCS:
+class UnifiedSoilClassificationSystem:
     """Unified Soil Classification System (``USCS``).
 
-    The Unified Soil Classification System, initially developed by Casagrande
-    in 1948 and later modified in 1952, is widely utilized in engineering
-    projects involving soils. It is the most popular system for soil classification
-    and is similar to Casagrande's Classification System. The system relies on
-    Particle Size Distribution and Atterberg Limits for classification. Soils are
-    categorized into three main groups: coarse-grained, fine-grained, and highly
-    organic soils. Additionally, the system has been adopted by the American Society
-    for Testing and Materials (``ASTM``).
+    The Unified Soil Classification System, initially developed by Casagrande in
+    1948 and later modified in 1952, is widely utilized in engineering projects
+    involving soils. It is the most popular system for soil classification and
+    is similar to Casagrande's Classification System. The system relies on
+    Particle Size Distribution and Atterberg Limits for classification. Soils
+    are categorized into three main groups: coarse-grained, fine-grained, and
+    highly organic soils. Additionally, the system has been adopted by the
+    American Society for Testing and Materials (``ASTM``).
+
+    :param AtterbergLimits atterberg_limits:
+
+    :param ParticleSizeDistribution psd:
+
     """
 
     atterberg_limits: AtterbergLimits
-    psd: PSD
+    psd: ParticleSizeDistribution
 
     _: KW_ONLY
     organic: bool = False
@@ -390,8 +437,8 @@ class USCS:
         # Obtain Cc and Cu from grain size graph
         else:
             if self.psd.has_particle_sizes():
-                _soil_grd = self.psd.grade(coarse_soil)
-                clf = f"{coarse_soil}{_soil_grd}"
+                soil_grd = self.psd.grade(coarse_soil)
+                clf = f"{coarse_soil}{soil_grd}"
 
             else:
                 clf = f"{coarse_soil}{WELL_GRADED} or {coarse_soil}{POORLY_GRADED}"
@@ -399,8 +446,6 @@ class USCS:
         return clf
 
     def _classify_fine_soil(self) -> str:
-        clf: str
-
         if self.atterberg_limits.liquid_limit < 50:
             # Low LL
             if (self.atterberg_limits.above_A_line()) and (
