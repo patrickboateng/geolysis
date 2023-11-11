@@ -8,7 +8,6 @@ Exceptions (:mod:`geolab.exceptions`)
 .. autosummary:: 
 
     PSDValueError
-    PIValueError
     AllowableSettlementError
     EngineerTypeError
     FootingShapeError
@@ -17,11 +16,15 @@ Exceptions (:mod:`geolab.exceptions`)
 
 
 class PSDValueError(ArithmeticError):
-    """Exception raised when soil aggregates does not approximately sum to 100%."""
+    """Exception raised when soil aggregates does not approximately
+    sum to 100%.
+    """
 
 
 class AllowableSettlementError(ValueError):
-    """Exception raised when allowable settlement is greater than ``25.4mm``."""
+    """Exception raised when allowable settlement is greater than
+    ``25.4mm``.
+    """
 
 
 class EngineerTypeError(TypeError):
