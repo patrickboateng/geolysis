@@ -69,7 +69,7 @@ class TestAASHTOClassificationSystem:
     @pytest.mark.parametrize(
         "soil_params,classification",
         [
-            ((17.9, 3.4, 24.01), "A-2-4(0)"),
+            ((17.9, 3.4, 24.01), "A-1-b(0)"),
             ((37.7, 13.9, 47.44), "A-6(4)"),
             ((30.1, 13.7, 18.38), "A-2-6(0)"),
             ((61.7, 29.4, 52.09), "A-7-5(12)"),
@@ -77,6 +77,7 @@ class TestAASHTOClassificationSystem:
             ((30.2, 6.3, 11.18), "A-2-4(0)"),
             ((70.0, 32.0, 86), "A-7-5(20)"),
             ((45, 29, 60), "A-7-6(13)"),
+            ((30, 5, 10), "A-1-a(0)"),
         ],
     )
     def test_aashto(self, soil_params, classification):
