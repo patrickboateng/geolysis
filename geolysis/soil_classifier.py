@@ -335,18 +335,18 @@ class AASHTOClassificationSystem:
         return 0 if grp_idx <= 0 else trunc(grp_idx)
 
     def _classify_coarse_soil(self) -> str:
-        # A-3
+        # A-3, Fine sand
         if self.fines <= 10 and isclose(self.plasticity_index, 0):
             clf = f"A-3({self.group_index()})"
 
-        # A-1-a -> A-1-b
+        # A-1-a -> A-1-b, Stone fragments, gravel, and sand
         elif self.fines <= 15 and self.plasticity_index <= 6:
             clf = f"A-1-a({self.group_index()})"
 
         elif self.fines <= 25 and self.plasticity_index <= 6:
             clf = f"A-1-b({self.group_index()})"
 
-        # A-2-4 -> A-2-7
+        # A-2-4 -> A-2-7, Silty or clayey gravel and sand
         elif self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
                 clf = f"A-2-4({self.group_index()})"
@@ -362,6 +362,8 @@ class AASHTOClassificationSystem:
         return clf
 
     def _classify_fine_soil(self) -> str:
+        # A-4 -> A-5, Silty Soils
+        # A-6 -> A-7, Clayey Soils
         if self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
                 clf = f"A-4({self.group_index()})"
