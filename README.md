@@ -61,8 +61,8 @@ Classification of soil using `AASHTO` classification system.
 
     >>> from geolysis.soil_classifier import AASHTOClassificationSystem
     >>> aashto_classifier = AASHTOClassificationSystem(liquid_limit=37.7,
-    ...                            plasticity_index=13.9,
-    ...                            fines=47.44)
+    ...                                                plasticity_index=13.9,
+    ...                                                fines=47.44)
     >>> aashto_classifier.classify()
     'A-6(4)'
 
