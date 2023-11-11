@@ -330,13 +330,24 @@ class AASHTOClassificationSystem:
         x_2 = 1 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
         x_3 = 1 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
         x_4 = 1 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
-        grp_idx = x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
-        grp_idx = round(grp_idx, ndigits=0)
+        grp_idx = round(x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4, 0)
 
         return 0 if grp_idx <= 0 else trunc(grp_idx)
 
     def _classify_coarse_soil(self) -> str:
-        if self.liquid_limit <= 40:
+        # A-3
+        if self.fines <= 10 and isclose(self.plasticity_index, 0):
+            clf = f"A-3({self.group_index()})"
+
+        # A-1-a -> A-1-b
+        elif self.fines <= 15 and self.plasticity_index <= 6:
+            clf = f"A-1-a({self.group_index()})"
+
+        elif self.fines <= 25 and self.plasticity_index <= 6:
+            clf = f"A-1-b({self.group_index()})"
+
+        # A-2-4 -> A-2-7
+        elif self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
                 clf = f"A-2-4({self.group_index()})"
             else:
