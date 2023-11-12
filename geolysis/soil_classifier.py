@@ -74,11 +74,7 @@ class AtterbergLimits:
 
     def limit_plot_in_hatched_zone(self) -> bool:
         """Checks if soil sample plot in the hatched zone."""
-        return isclose(
-            self.plasticity_index,
-            self.A_line,
-            rel_tol=ERROR_TOLERANCE,
-        )
+        return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
     @property
     def plasticity_index(self) -> float:
@@ -394,21 +390,24 @@ class AASHTOClassificationSystem:
 
 @dataclass
 class UnifiedSoilClassificationSystem:
-    """Unified Soil Classification System (``USCS``).
+    """Unified Soil Classification (``USC``) System.
 
-    The Unified Soil Classification System, initially developed by Casagrande in
-    1948 and later modified in 1952, is widely utilized in engineering projects
-    involving soils. It is the most popular system for soil classification and
-    is similar to Casagrande's Classification System. The system relies on
-    Particle Size Distribution and Atterberg Limits for classification. Soils
-    are categorized into three main groups: coarse-grained, fine-grained, and
-    highly organic soils. Additionally, the system has been adopted by the
-    American Society for Testing and Materials (``ASTM``).
+    The Unified Soil Classification System, initially developed
+    by Casagrande in 1948 and later modified in 1952, is widely
+    utilized in engineering projects involving soils. It is the
+    most popular system for soil classification and is similar
+    to Casagrande's Classification System. The system relies on
+    particle size analysis and atterberg limits for classification.
+    Soils are categorized into three main groups: coarse-grained,
+    fine-grained, and highly organic soils. Additionally, the
+    system has been adopted by the American Society for Testing
+    and Materials (``ASTM``).
 
     :param AtterbergLimits atterberg_limits:
-
+        Water content at which soil changes from one state to
+        other
     :param ParticleSizeDistribution psd:
-
+        Distribution of soil particles in the soil sample
     """
 
     atterberg_limits: AtterbergLimits
@@ -424,13 +423,17 @@ class UnifiedSoilClassificationSystem:
         return f"{coarse_soil}{soil_grd}-{coarse_soil}{fine_soil}"
 
     def _classify_coarse_soil(self, coarse_soil: str) -> str:
+        # More than 12% pass No. 200 sieve
         if self.psd.fines > 12:
-            if self.atterberg_limits.limit_plot_in_hatched_zone():
-                clf = f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
-
-            elif self.atterberg_limits.above_A_line():
+            # Above A-line
+            if self.atterberg_limits.above_A_line():
                 clf = f"{coarse_soil}{CLAY}"
 
+            # Limit plot in hatched zone on plasticity chart
+            elif self.atterberg_limits.limit_plot_in_hatched_zone():
+                clf = f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
+
+            # Below A-line
             else:
                 clf = f"{coarse_soil}{SILT}"
 
@@ -461,23 +464,31 @@ class UnifiedSoilClassificationSystem:
     def _classify_fine_soil(self) -> str:
         if self.atterberg_limits.liquid_limit < 50:
             # Low LL
+            # Above A-line and PI > 7
             if (self.atterberg_limits.above_A_line()) and (
                 self.atterberg_limits.plasticity_index > 7
             ):
                 clf = f"{CLAY}{LOW_PLASTICITY}"
 
-            elif (not self.atterberg_limits.above_A_line()) or (
-                self.atterberg_limits.plasticity_index < 4
-            ):
+            # Limit plot in hatched area on plasticity chart
+            elif self.atterberg_limits.limit_plot_in_hatched_zone():
+                clf = f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+
+            # Below A-line or PI < 4
+            else:
                 if self.organic:
                     clf = f"{ORGANIC}{LOW_PLASTICITY}"
 
                 else:
                     clf = f"{SILT}{LOW_PLASTICITY}"
+            # elif (not self.atterberg_limits.above_A_line()) or (
+            #     self.atterberg_limits.plasticity_index < 4
+            # ):
+            #     if self.organic:
+            #         clf = f"{ORGANIC}{LOW_PLASTICITY}"
 
-            # Limits plot in hatched area on plasticity chart
-            else:
-                clf = f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+            #     else:
+            #         clf = f"{SILT}{LOW_PLASTICITY}"
 
         # High LL
         else:
@@ -495,7 +506,7 @@ class UnifiedSoilClassificationSystem:
         return clf
 
     def classify(self) -> str:
-        """Return the ``USCS`` classification of the soil."""
+        """Return the Unified Soil Classification."""
         # Coarse grained, Run Sieve Analysis
         if self.psd.fines < 50:
             if self.psd.gravel > self.psd.sand:
