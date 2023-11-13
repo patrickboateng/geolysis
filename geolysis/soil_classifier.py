@@ -2,7 +2,6 @@
 classification.
 """
 
-from dataclasses import KW_ONLY, dataclass
 from math import trunc
 
 from geolysis import ERROR_TOLERANCE, exceptions
@@ -66,9 +65,9 @@ class AtterbergLimits:
     @property
     def type_of_fines(self) -> str:
         """Return the type of fine soil, either CLAY or SILT."""
-        return CLAY if self.above_A_line() else SILT
+        return CLAY if self.above_A_LINE() else SILT
 
-    def above_A_line(self) -> bool:
+    def above_A_LINE(self) -> bool:
         """Checks if the soil sample is above A-Line."""
         return self.plasticity_index > self.A_line
 
@@ -229,14 +228,21 @@ class ParticleSizeDistribution:
 
         return POORLY_GRADED
 
-    def grade(self, coarse_soil: str) -> str:
+    def grade(self) -> str:
         """Return the grade of the soil sample."""
         # Gravel
-        if coarse_soil == GRAVEL:
+        if self.gravel > self.sand:
             return self._coarse_grade()
 
         # Sand
         return self._sand_grade()
+
+    @property
+    def type_of_coarse(self) -> str:
+        if self.gravel > self.sand:
+            return GRAVEL
+
+        return SAND
 
     @property
     @round_(precision=2)
@@ -388,7 +394,7 @@ class AASHTOClassificationSystem:
         return self._classify_fine_soil()
 
 
-@dataclass
+# @dataclass
 class UnifiedSoilClassificationSystem:
     """Unified Soil Classification (``USC``) System.
 
@@ -410,23 +416,31 @@ class UnifiedSoilClassificationSystem:
         Distribution of soil particles in the soil sample
     """
 
-    atterberg_limits: AtterbergLimits
-    psd: ParticleSizeDistribution
+    def __init__(
+        self,
+        atterberg_limits: AtterbergLimits,
+        psd: ParticleSizeDistribution,
+        *,
+        organic: bool = False,
+    ):
+        self.atterberg_limits = atterberg_limits
+        self.psd = psd
+        self.organic = organic
 
-    _: KW_ONLY
-    organic: bool = False
-
-    def _dual_soil_classifier(self, coarse_soil: str) -> str:
-        soil_grd = self.psd.grade(coarse_soil)
+    def _dual_soil_classifier(self) -> str:
+        soil_grd = self.psd.grade()
         fine_soil = self.atterberg_limits.type_of_fines
+        coarse_soil = self.psd.type_of_coarse
 
         return f"{coarse_soil}{soil_grd}-{coarse_soil}{fine_soil}"
 
-    def _classify_coarse_soil(self, coarse_soil: str) -> str:
+    def _classify_coarse_soil(self) -> str:
+        coarse_soil = self.psd.type_of_coarse
+
         # More than 12% pass No. 200 sieve
         if self.psd.fines > 12:
             # Above A-line
-            if self.atterberg_limits.above_A_line():
+            if self.atterberg_limits.above_A_LINE():
                 clf = f"{coarse_soil}{CLAY}"
 
             # Limit plot in hatched zone on plasticity chart
@@ -440,7 +454,7 @@ class UnifiedSoilClassificationSystem:
         elif 5 <= self.psd.fines <= 12:
             # Requires dual symbol based on graduation and plasticity chart
             if self.psd.has_particle_sizes():
-                clf = self._dual_soil_classifier(coarse_soil)
+                clf = self._dual_soil_classifier()
 
             else:
                 fine_soil = self.atterberg_limits.type_of_fines
@@ -453,7 +467,7 @@ class UnifiedSoilClassificationSystem:
         # Obtain Cc and Cu from grain size graph
         else:
             if self.psd.has_particle_sizes():
-                soil_grd = self.psd.grade(coarse_soil)
+                soil_grd = self.psd.grade()
                 clf = f"{coarse_soil}{soil_grd}"
 
             else:
@@ -465,7 +479,7 @@ class UnifiedSoilClassificationSystem:
         if self.atterberg_limits.liquid_limit < 50:
             # Low LL
             # Above A-line and PI > 7
-            if (self.atterberg_limits.above_A_line()) and (
+            if (self.atterberg_limits.above_A_LINE()) and (
                 self.atterberg_limits.plasticity_index > 7
             ):
                 clf = f"{CLAY}{LOW_PLASTICITY}"
@@ -481,19 +495,11 @@ class UnifiedSoilClassificationSystem:
 
                 else:
                     clf = f"{SILT}{LOW_PLASTICITY}"
-            # elif (not self.atterberg_limits.above_A_line()) or (
-            #     self.atterberg_limits.plasticity_index < 4
-            # ):
-            #     if self.organic:
-            #         clf = f"{ORGANIC}{LOW_PLASTICITY}"
-
-            #     else:
-            #         clf = f"{SILT}{LOW_PLASTICITY}"
 
         # High LL
         else:
             # Above A-Line
-            if self.atterberg_limits.above_A_line():
+            if self.atterberg_limits.above_A_LINE():
                 clf = f"{CLAY}{HIGH_PLASTICITY}"
 
             # Below A-Line
@@ -507,14 +513,10 @@ class UnifiedSoilClassificationSystem:
 
     def classify(self) -> str:
         """Return the Unified Soil Classification."""
-        # Coarse grained, Run Sieve Analysis
-        if self.psd.fines < 50:
-            if self.psd.gravel > self.psd.sand:
-                # Gravel
-                return self._classify_coarse_soil(coarse_soil=GRAVEL)
-
-            # Sand
-            return self._classify_coarse_soil(coarse_soil=SAND)
-
         # Fine grained, Run Atterberg
-        return self._classify_fine_soil()
+        if self.psd.fines > 50:
+            return self._classify_fine_soil()
+
+        # Coarse grained, Run Sieve Analysis
+        # Gravel or Sand
+        return self._classify_coarse_soil()
