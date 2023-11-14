@@ -213,3 +213,12 @@ class TestUnifiedSoilClassificationSystem:
         )
 
         assert uscs.classify() == classification
+
+    def test_soil_description(self):
+        atterberg_limits = AtterbergLimits(34.1, 21.1)
+        psd = ParticleSizeDistribution(47.88, 37.84, 14.28)
+        uscs = UnifiedSoilClassificationSystem(
+            atterberg_limits=atterberg_limits, psd=psd
+        )
+        clf = uscs.classify()
+        assert uscs.soil_description(clf) == "Clayey sands"
