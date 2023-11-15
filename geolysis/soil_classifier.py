@@ -3,6 +3,7 @@ classification.
 """
 
 from math import trunc
+from types import MappingProxyType
 
 from geolysis import ERROR_TOLERANCE, exceptions
 from geolysis.utils import isclose, round_
@@ -404,10 +405,17 @@ class UnifiedSoilClassificationSystem:
     most popular system for soil classification and is similar
     to Casagrande's Classification System. The system relies on
     particle size analysis and atterberg limits for classification.
-    Soils are categorized into three main groups: coarse-grained,
-    fine-grained, and highly organic soils. Additionally, the
-    system has been adopted by the American Society for Testing
-    and Materials (``ASTM``).
+
+    In this system, soils are first classified into two categories:
+
+    1. Coarse grained soils: If more than 50% of the soils is
+    retained on No. 200 (0.075 mm) sieve, it is designated as
+    coarse-grained soil.
+    1. Fine grained soils: If more than 50% of the soil passes
+    through No. 200 sieve, it is designated as fine grained soil.
+
+    Highly Organic soils are identified by visual inspection.
+    These soils are termed as Peat. (:math:`P_t`)
 
     :param AtterbergLimits atterberg_limits:
         Water content at which soil changes from one state to
@@ -415,6 +423,34 @@ class UnifiedSoilClassificationSystem:
     :param ParticleSizeDistribution psd:
         Distribution of soil particles in the soil sample
     """
+
+    soil_descriptions: MappingProxyType[str, str] = MappingProxyType(
+        {
+            "GW": "Well graded gravels",
+            "GP": "Poorly graded gravels",
+            "GM": "Silty gravels",
+            "GC": "Clayey gravels",
+            "GW-GM": "Well graded gravel with silt",
+            "GP-GM": "Poorly graded gravel with silt",
+            "GW-GC": "Well graded gravel with clay",
+            "GP-GC": "Poorly graded gravel with clay",
+            "SW": "Well graded sands",
+            "SP": "Poorly graded sands",
+            "SM": "Silty sands",
+            "SC": "Clayey sands",
+            "SW-SM": "Well graded sand with silt",
+            "SP-SM": "Poorly graded sand with silt",
+            "SW-SC": "Well graded sand with clay",
+            "SP-SC": "Poorly graded sand with clay",
+            "ML": "Inorganic silts of low plasticity",
+            "CL": "Inorganic clays of low plasticity",
+            "OL": "Organic silts of low plasticity",
+            "MH": "Inorganic silts of high plasticity",
+            "CH": "Inorganic clays of high plasticity",
+            "OH": "Organic silts of high plasticity",
+            "Pt": "Highly organic soils",
+        }
+    )
 
     def __init__(
         self,
@@ -520,3 +556,16 @@ class UnifiedSoilClassificationSystem:
         # Coarse grained, Run Sieve Analysis
         # Gravel or Sand
         return self._classify_coarse_soil()
+
+    @classmethod
+    def soil_description(cls, clf: str) -> str:
+        """Return the typical names of soils classified with ``USC``.
+
+        :param str clf:
+            Soil classification based on Unified Soil Classification
+            System
+
+        :raises KeyError:
+            When ``clf` is not a valid key
+        """
+        return cls.soil_descriptions[clf]
