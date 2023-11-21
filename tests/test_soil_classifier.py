@@ -203,6 +203,8 @@ class TestUnifiedSoilClassificationSystem:
             ((26.4, 19.4), (54.76, 45.24, 0), "ML-CL"),
             ((33, 21), (30, 30, 40), "GC"),
             ((34.46, 23.85), (18.09, 18.7, 63.21), "GC"),
+            ((45, 16), (59, 41, 0), "CL"),
+            ((55, 40), (85, 15, 0), "MH"),
         ],
     )
     def test_single_classification(self, al, psd, classification: str):
