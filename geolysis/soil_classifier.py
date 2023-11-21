@@ -162,13 +162,14 @@ class ParticleSizeDistribution:
     sizes of particles present in a soil. The analysis is done in
     two stages:
 
-    1. Sieve Analysis: It is meant for coarse grained soils
-    (particle size greater than 75 micron) which can easily pass
-    through a set of sieves. Coarse grained soils can be subdivided
-    into gravel fraction (particle size > 4.75 mm) and sand
-    fraction (75 micron < particle size < 4.75 mm).
-    1. Sedimentation Analysis: It meant for fine grained soils
-    (particle size smaller than 75 micron)
+    #. Sieve Analysis: It is meant for coarse grained soils
+       (particle size greater than 75 micron) which can easily pass
+       through a set of sieves. Coarse grained soils can be subdivided
+       into gravel fraction (particle size > 4.75 mm) and sand
+       fraction (75 micron < particle size < 4.75 mm).
+
+    #. Sedimentation Analysis: It meant for fine grained soils
+       (particle size smaller than 75 micron)
 
     :param float fines:
         Percentage of fines in soil sample (%)
@@ -337,7 +338,7 @@ class AASHTOClassificationSystem:
 
         return 0 if grp_idx <= 0 else trunc(grp_idx)
 
-    def _classify_coarse_soil(self) -> str:
+    def _coarse_soil_classifier(self) -> str:
         # A-3, Fine sand
         if self.fines <= 10 and isclose(self.plasticity_index, 0):
             clf = f"A-3({self.group_index()})"
@@ -364,7 +365,7 @@ class AASHTOClassificationSystem:
 
         return clf
 
-    def _classify_fine_soil(self) -> str:
+    def _fine_soil_classifier(self) -> str:
         # A-4 -> A-5, Silty Soils
         # A-6 -> A-7, Clayey Soils
         if self.liquid_limit <= 40:
@@ -389,10 +390,10 @@ class AASHTOClassificationSystem:
 
         # Coarse A1-A3
         if self.fines <= 35:
-            return self._classify_coarse_soil()
+            return self._coarse_soil_classifier()
 
         # Silts A4-A7
-        return self._classify_fine_soil()
+        return self._fine_soil_classifier()
 
 
 # @dataclass
@@ -408,11 +409,12 @@ class UnifiedSoilClassificationSystem:
 
     In this system, soils are first classified into two categories:
 
-    1. Coarse grained soils: If more than 50% of the soils is
-    retained on No. 200 (0.075 mm) sieve, it is designated as
-    coarse-grained soil.
-    1. Fine grained soils: If more than 50% of the soil passes
-    through No. 200 sieve, it is designated as fine grained soil.
+    #. Coarse grained soils: If more than 50% of the soils is
+       retained on No. 200 (0.075 mm) sieve, it is designated as
+       coarse-grained soil.
+
+    #. Fine grained soils: If more than 50% of the soil passes
+       through No. 200 sieve, it is designated as fine grained soil.
 
     Highly Organic soils are identified by visual inspection.
     These soils are termed as Peat. (:math:`P_t`)
@@ -470,7 +472,7 @@ class UnifiedSoilClassificationSystem:
 
         return f"{coarse_soil}{soil_grd}-{coarse_soil}{fine_soil}"
 
-    def _classify_coarse_soil(self) -> str:
+    def _coarse_soil_classifier(self) -> str:
         coarse_soil = self.psd.type_of_coarse
 
         # More than 12% pass No. 200 sieve
@@ -511,7 +513,7 @@ class UnifiedSoilClassificationSystem:
 
         return clf
 
-    def _classify_fine_soil(self) -> str:
+    def _fine_soil_classifier(self) -> str:
         if self.atterberg_limits.liquid_limit < 50:
             # Low LL
             # Above A-line and PI > 7
@@ -548,14 +550,14 @@ class UnifiedSoilClassificationSystem:
         return clf
 
     def classify(self) -> str:
-        """Return the Unified Soil Classification."""
+        """Return the Unified Soil Classification of the soil sample."""
         # Fine grained, Run Atterberg
         if self.psd.fines > 50:
-            return self._classify_fine_soil()
+            return self._fine_soil_classifier()
 
         # Coarse grained, Run Sieve Analysis
         # Gravel or Sand
-        return self._classify_coarse_soil()
+        return self._coarse_soil_classifier()
 
     @classmethod
     def soil_description(cls, clf: str) -> str:
@@ -566,6 +568,6 @@ class UnifiedSoilClassificationSystem:
             System
 
         :raises KeyError:
-            When ``clf` is not a valid key
+            When ``clf`` is not a valid key
         """
         return cls.soil_descriptions[clf]
