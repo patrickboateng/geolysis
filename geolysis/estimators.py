@@ -368,22 +368,22 @@ def bowles_soil_elastic_modulus(spt_n60: float) -> float:
 
 
 @round_(precision=1)
-def rankine_foundation_depth(
+def rankine_minimum_foundation_depth(
     allowable_bearing_capacity: float,
     soil_unit_weight: float,
     soil_friction_angle: float,
 ) -> float:
-    r"""Depth of foundation estimated using ``Rankine's`` formula.
+    r"""Minimum depth of foundation estimated using ``Rankine's`` formula
+    in meters.
 
     .. math::
 
         D_f=\dfrac{Q_{all}}{\gamma}\left(\dfrac{1 - \sin \phi}{1 + \sin \phi}\right)^2
-        \rightarrow (m)
 
     :Example:
 
-        >>> from geolysis.estimators import rankine_foundation_depth
-        >>> rankine_foundation_depth(350, 18, 35)
+        >>> from geolysis.estimators import rankine_minimum_foundation_depth
+        >>> rankine_minimum_foundation_depth(350, 18, 35)
         1.4
 
     :param allowable_bearing_capacity: allowable bearing capacity :math:`kN/m^2`

@@ -6,7 +6,7 @@ from geolysis.estimators import (
     SoilFrictionAngle,
     SoilUnitWeight,
     UndrainedShearStrength,
-    rankine_foundation_depth,
+    rankine_minimum_foundation_depth,
 )
 
 
@@ -48,7 +48,7 @@ def test_undrained_shear_strength():
 
 
 def test_foundation_depth():
-    est_depth = rankine_foundation_depth(
+    est_depth = rankine_minimum_foundation_depth(
         allowable_bearing_capacity=350,
         soil_unit_weight=18,
         soil_friction_angle=35,
