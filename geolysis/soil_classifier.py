@@ -172,7 +172,8 @@ class ParticleSizeDistribution:
        (particle size smaller than 75 micron)
 
     :param float fines:
-        Percentage of fines in soil sample (%)
+        Percentage of fines in soil sample i.e. the percentage of soil
+        sample passing through No. 200 sieve (0.075mm)
     :param float sand:
         Percentage of sand in soil sample (%)
     :param float gravel:
@@ -291,7 +292,8 @@ class AASHTOClassificationSystem:
         Range of water content over which soil remains in plastic
         condition
     :param float fines:
-        Percentage of fines in soil sample
+        Percentage of fines in soil sample i.e. the percentage of soil
+        sample passing through No. 200 sieve (0.075mm)
     """
 
     def __init__(
