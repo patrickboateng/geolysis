@@ -1,2 +1,0 @@
-``geolab`` Enhancement Proposals
-================================
