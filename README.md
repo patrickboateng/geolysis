@@ -12,6 +12,16 @@
 
 </div>
 
+## Project Links
+
+<!-- - [Homepage](https://github.com/patrickboateng/geolysis) -->
+
+<!-- - [Documentation](/docs) -->
+
+- [PyPi](https://pypi.org/project/geolysis/)
+- [Bug Reports](https://github.com/patrickboateng/geolysis/issues)
+- [Discussions](https://github.com/patrickboateng/geolysis/discussions)
+
 ## Table of Contents
 
 - [What is geolysis?](#what-is-geolysis)
@@ -22,7 +32,6 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
-- [Project Links](#project-links)
 
 ## What is geolysis?
 
@@ -88,12 +97,3 @@ the terms and conditions of this license.
 > [!IMPORTANT]
 > For questions or comments about `geolysis`, please ask them in the
 > [discussions forum](https://github.com/patrickboateng/geolysis/discussions)
-
-## Project Links
-
-- [Homepage](https://github.com/patrickboateng/geolysis)
-- [Documentation](/docs)
-- [PyPi](https://pypi.org/project/geolysis/)
-- [Source Code](https://github.com/patrickboateng/geolysis/)
-- [Bug Reports](https://github.com/patrickboateng/geolysis/issues)
-- [Discussions](https://github.com/patrickboateng/geolysis/discussions)
