@@ -1,16 +1,6 @@
 <div align="center">
 
-<h1> geolysis </h1>
-
-<h3>
-
-[Homepage](https://github.com/patrickboateng/geolysis) | [Documentation](/docs) |
-[PyPi](https://pypi.org/project/geolysis/) |
-[Source Code](https://github.com/patrickboateng/geolysis/) |
-[Bug Reports](https://github.com/patrickboateng/geolysis/issues) |
-[Discussions](https://github.com/patrickboateng/geolysis/discussions)
-
-</h3>
+# geolysis
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/patrickboateng/geolysis?style=flat)](https://github.com/patrickboateng/geolysis/stargazers)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/geolysis?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/geolysis/)
@@ -32,6 +22,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
+- [Project Links](#project-links)
 
 ## What is geolysis?
 
@@ -97,3 +88,12 @@ the terms and conditions of this license.
 > [!IMPORTANT]
 > For questions or comments about `geolysis`, please ask them in the
 > [discussions forum](https://github.com/patrickboateng/geolysis/discussions)
+
+## Project Links
+
+- [Homepage](https://github.com/patrickboateng/geolysis)
+- [Documentation](/docs)
+- [PyPi](https://pypi.org/project/geolysis/)
+- [Source Code](https://github.com/patrickboateng/geolysis/)
+- [Bug Reports](https://github.com/patrickboateng/geolysis/issues)
+- [Discussions](https://github.com/patrickboateng/geolysis/discussions)
