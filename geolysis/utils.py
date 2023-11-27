@@ -82,22 +82,24 @@ def sqrt(x: float, /) -> float:
 
 
 def prod(*args) -> float:
-    """Calculate the product of all the elements in the input iterable.
+    """Calculate the product of all the elements in the
+    input iterable.
 
     The default start value for the product is 1.
 
-    When the iterable is empty, return the start value. This function is
-    intended specifically for use with numeric values and may reject non-
-    numeric types.
+    When the iterable is empty, return the start value.
+    This function is intended specifically for use with
+    numeric values and may reject non-numeric types.
     """
     return math.prod(args)
 
 
 def round_(precision: Callable[..., float] | int) -> Callable:
-    """A decorator that rounds the result of a function to a specified number
-    of decimal places.
+    """A decorator that rounds the result of a function to
+    a specified number of decimal places.
 
-    This decorator can be used with functions that return a float.
+    This decorator can be used with functions that return
+    a float.
 
     .. code::
 
@@ -110,14 +112,18 @@ def round_(precision: Callable[..., float] | int) -> Callable:
             return pi * radius**2
 
 
-    :param precision: The number of decimal places to round to. It can be an
-                      integer or a function that returns a float.
-    :type precision: Callable[..., float] | int
+    :param Callable[..., float] | int precision:
+        The number of decimal places to round to. It can be
+        an integer or a function that returns a float.
 
-    :return: A decorator that rounds the result of the wrapped function.
-    :rtype: Callable[..., float]
+    :return:
+        A decorator that rounds the result of the wrapped
+        function.
+    :rtype:
+        Callable[..., float]
 
-    :raises TypeError: If precision is neither a function nor an integer.
+    :raises TypeError:
+        If precision is neither a function nor an integer.
     """
 
     def dec(
