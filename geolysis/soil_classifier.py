@@ -275,7 +275,7 @@ class ParticleSizeDistribution:
     coefficient_of_uniformity = uniformity_coefficient
 
 
-class AASHTOClassificationSystem:
+class AASHTOClassification:
     """American Association of State Highway and Transportation
     Officials (``AASHTO``) classification system.
 
@@ -322,15 +322,15 @@ class AASHTOClassificationSystem:
         For e.g., a ``GI`` of zero indicates a good subgrade, whereas
         a group index of 20 or greater shows a very poor subgrade.
 
+        .. math::
+
+            GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
+
         .. note::
 
             The ``GI`` must be mentioned even when it is zero, to
             indicate that the soil has been classified as per AASHTO
             system.
-
-        .. math::
-
-            GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
         """
         x_1 = 1 if (x_0 := self.fines - 35) < 0 else min(x_0, 40)
         x_2 = 1 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
@@ -399,7 +399,7 @@ class AASHTOClassificationSystem:
 
 
 # @dataclass
-class UnifiedSoilClassificationSystem:
+class UnifiedSoilClassification:
     """Unified Soil Classification (``USC``) System.
 
     The Unified Soil Classification System, initially developed
