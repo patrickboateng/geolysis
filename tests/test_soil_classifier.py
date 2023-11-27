@@ -3,10 +3,10 @@ import pytest
 from geolysis import ERROR_TOLERANCE
 from geolysis.exceptions import PSDValueError
 from geolysis.soil_classifier import (
-    AASHTOClassificationSystem,
+    AASHTOClassification,
     AtterbergLimits,
     ParticleSizeDistribution,
-    UnifiedSoilClassificationSystem,
+    UnifiedSoilClassification,
 )
 
 
@@ -81,7 +81,7 @@ class TestAASHTOClassificationSystem:
         ],
     )
     def test_aashto(self, soil_params, classification):
-        asshto_classifier = AASHTOClassificationSystem(*soil_params)
+        asshto_classifier = AASHTOClassification(*soil_params)
         assert asshto_classifier.classify() == classification
 
 
@@ -136,7 +136,7 @@ class TestUnifiedSoilClassificationSystem:
     ):
         atterberg_limits = AtterbergLimits(*al)
         psd = ParticleSizeDistribution(*psd, **particle_sizes)
-        uscs = UnifiedSoilClassificationSystem(
+        uscs = UnifiedSoilClassification(
             atterberg_limits=atterberg_limits, psd=psd
         )
 
@@ -185,7 +185,7 @@ class TestUnifiedSoilClassificationSystem:
     ):
         atterberg_limits = AtterbergLimits(*al)
         psd = ParticleSizeDistribution(*psd)
-        uscs = UnifiedSoilClassificationSystem(
+        uscs = UnifiedSoilClassification(
             atterberg_limits=atterberg_limits, psd=psd
         )
 
@@ -210,7 +210,7 @@ class TestUnifiedSoilClassificationSystem:
     def test_single_classification(self, al, psd, classification: str):
         atterberg_limits = AtterbergLimits(*al)
         psd = ParticleSizeDistribution(*psd)
-        uscs = UnifiedSoilClassificationSystem(
+        uscs = UnifiedSoilClassification(
             atterberg_limits=atterberg_limits, psd=psd
         )
 
@@ -218,6 +218,5 @@ class TestUnifiedSoilClassificationSystem:
 
     def test_soil_description(self):
         assert (
-            UnifiedSoilClassificationSystem.soil_description("SC")
-            == "Clayey sands"
+            UnifiedSoilClassification.soil_description("SC") == "Clayey sands"
         )
