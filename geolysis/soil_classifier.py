@@ -294,6 +294,9 @@ class AASHTOClassification:
     :param float fines:
         Percentage of fines in soil sample i.e. the percentage of soil
         sample passing through No. 200 sieve (0.075mm)
+    :param bool grp_idx:
+        Used to indicate whether the group index should be added to
+        the classification or not. Defaults to True.
     """
 
     def __init__(
@@ -301,10 +304,12 @@ class AASHTOClassification:
         liquid_limit: float,
         plasticity_index: float,
         fines: float,
+        add_group_index: bool = True,
     ):
         self.liquid_limit = liquid_limit
         self.plasticity_index = plasticity_index
         self.fines = fines
+        self.add_group_index = add_group_index
 
     def group_index(self) -> float:
         """Return the ``Group Index (GI)`` of the soil sample.
@@ -314,7 +319,7 @@ class AASHTOClassification:
         if any term in the parenthesis becomes negative, it is drop
         and not given a negative value. The maximum values of
         :math:`(F_{200} - 35)` and :math:`(F_{200} - 15)` are taken
-        as 40 and :math:`(LL - 4o)` and :math:`(PI - 10)` as 20.
+        as 40 and :math:`(LL - 40)` and :math:`(PI - 10)` as 20.
         If the computed value for ``GI`` is negative, it is reported
         as zero. In general, the rating for the pavement subgrade is
         inversely proportional to the ``GI`` (lower the ``GI``, better
@@ -343,49 +348,55 @@ class AASHTOClassification:
     def _coarse_soil_classifier(self) -> str:
         # A-3, Fine sand
         if self.fines <= 10 and isclose(self.plasticity_index, 0):
-            clf = f"A-3({self.group_index()})"
+            clf = f"A-3"
 
         # A-1-a -> A-1-b, Stone fragments, gravel, and sand
         elif self.fines <= 15 and self.plasticity_index <= 6:
-            clf = f"A-1-a({self.group_index()})"
+            clf = f"A-1-a"
 
         elif self.fines <= 25 and self.plasticity_index <= 6:
-            clf = f"A-1-b({self.group_index()})"
+            clf = f"A-1-b"
 
         # A-2-4 -> A-2-7, Silty or clayey gravel and sand
         elif self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
-                clf = f"A-2-4({self.group_index()})"
+                clf = f"A-2-4"
             else:
-                clf = f"A-2-6({self.group_index()})"
+                clf = f"A-2-6"
 
         else:
             if self.plasticity_index <= 10:
-                clf = f"A-2-5({self.group_index()})"
+                clf = f"A-2-5"
             else:
-                clf = f"A-2-7({self.group_index()})"
+                clf = f"A-2-7"
 
-        return clf
+        if self.add_group_index:
+            return clf + f"({self.group_index()})"
+        else:
+            return clf
 
     def _fine_soil_classifier(self) -> str:
         # A-4 -> A-5, Silty Soils
         # A-6 -> A-7, Clayey Soils
         if self.liquid_limit <= 40:
             if self.plasticity_index <= 10:
-                clf = f"A-4({self.group_index()})"
+                clf = f"A-4"
             else:
-                clf = f"A-6({self.group_index()})"
+                clf = f"A-6"
 
         else:
             if self.plasticity_index <= 10:
-                clf = f"A-5({self.group_index()})"
+                clf = f"A-5"
             else:
                 if self.plasticity_index <= (self.liquid_limit - 30):
-                    clf = f"A-7-5({self.group_index()})"
+                    clf = f"A-7-5"
                 else:
-                    clf = f"A-7-6({self.group_index()})"
+                    clf = f"A-7-6"
 
-        return clf
+        if self.add_group_index:
+            return clf + f"({self.group_index()})"
+        else:
+            return clf
 
     def classify(self) -> str:
         """Return the AASHTO classification of the soil sample."""
