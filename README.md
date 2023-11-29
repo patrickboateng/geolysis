@@ -2,11 +2,15 @@
 
 # geolysis
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/patrickboateng/geolysis?style=flat)](https://github.com/patrickboateng/geolysis/stargazers)
-[![PyPI Latest Release](https://img.shields.io/pypi/v/geolysis?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/geolysis/)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/geolysis.svg?style=flat)](https://pypi.python.org/pypi/geolysis/)
-[![license](https://img.shields.io/pypi/l/geolysis?style=flat)](https://opensource.org/license/mit/)
-[![GitHub last commit](https://img.shields.io/github/last-commit/patrickboateng/geolysis?logo=github&style=flat)](https://github.com/patrickboateng/geolysis/commits)
+[![GitHub Repo stars](https://img.shields.io/github/stars/patrickboateng/geolysis?style=social)](https://github.com/patrickboateng/geolysis/stargazers)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/geolysis?style=social&logo=pypi)](https://pypi.org/project/geolysis/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/geolysis.svg?logo=python&style=social)](https://pypi.python.org/pypi/geolysis/)
+[![license](https://img.shields.io/pypi/l/geolysis?style=social)](https://opensource.org/license/mit/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/patrickboateng/geolysis?logo=github&style=social)](https://github.com/patrickboateng/geolysis/commits)
+![GitHub language count](https://img.shields.io/github/languages/count/patrickboateng/geolysis?style=social)
+
+---
+
 [![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
 [![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml)
 
