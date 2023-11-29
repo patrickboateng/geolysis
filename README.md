@@ -9,7 +9,7 @@
 [![license](https://img.shields.io/pypi/l/geolysis?style=social)](https://opensource.org/license/mit/)
 ![GitHub language count](https://img.shields.io/github/languages/count/patrickboateng/geolysis?style=social)
 
----
+#
 
 [![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
 [![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml)
