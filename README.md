@@ -8,11 +8,12 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/patrickboateng/geolysis?logo=github&style=social)](https://github.com/patrickboateng/geolysis/commits)
 [![license](https://img.shields.io/pypi/l/geolysis?style=social)](https://opensource.org/license/mit/)
 ![GitHub language count](https://img.shields.io/github/languages/count/patrickboateng/geolysis?style=social)
+[![Python implementation](https://img.shields.io/pypi/implementation/geolysis?style=social)](https://pypi.org/project/geolysis)
 
 #
 
-[![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
-[![CI - Test](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml)
+[![CI-Unit-Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
+[![CI-Build-Test](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml)
 
 </div>
 
