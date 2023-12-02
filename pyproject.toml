@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -42,7 +42,7 @@ dynamic = ["version"]
 version = {attr = "geolysis.__version__"}
 
 [project.urls]
-# Homepage = "https://"
+Homepage = "https://github.com/patrickboateng/geolysis"
 # Documentation = "https://readthedocs.org"
 Repository = "https://github.com/patrickboateng/geolysis"
 Changelog = "https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md"
@@ -55,10 +55,10 @@ exclude = ["tests*"]
 namespaces = false
 
 [project.optional-dependencies]
-dev = ["wheel", "black", "pytest", "mypy", "coverage"]
+dev = ["black", "pytest", "mypy", "pytest-cov"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --verbose --color=auto --code-highlight=yes --strict-markers"
+addopts = "-ra --verbose --color=auto --code-highlight=yes --cov=geolysis --cov-branch --strict-markers"
 minversion = "6.0"
 testpaths = ["tests"]
 
