@@ -1,10 +1,8 @@
 import pytest
 
-from geolysis import ERROR_TOLERANCE, GeotechEng
-from geolysis.bearing_capacity import FoundationSize  # local_shear
-from geolysis.bearing_capacity.hansen import HansenFactors
+from geolysis import ERROR_TOLERANCE
+from geolysis.bearing_capacity import FoundationSize
 from geolysis.bearing_capacity.terzaghi import TerzaghiBearingCapacity
-from geolysis.bearing_capacity.vesic import VesicFactors
 
 
 class TestTerzaghiBearingCapacity:
