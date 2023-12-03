@@ -36,52 +36,52 @@ mean = statistics.mean
 isclose = math.isclose
 
 
-def deg2rad(x: float, /) -> float:
+def deg2rad(x: float | int, /) -> float:
     """Convert angle x from degrees to radians."""
     return math.radians(x)
 
 
-def rad2deg(x: float, /) -> float:
+def rad2deg(x: float | int, /) -> float:
     """Convert angle x from radians to degrees."""
     return math.degrees(x)
 
 
-def tan(x: float, /) -> float:
+def tan(x: float | int, /) -> float:
     """Return the tangent of x (measured in degrees)."""
     return math.tan(deg2rad(x))
 
 
-def cot(x: float, /) -> float:
+def cot(x: float | int, /) -> float:
     """Return the cotangent of x (measured in degrees)."""
     return 1 / tan(x)
 
 
-def sin(x: float, /) -> float:
+def sin(x: float | int, /) -> float:
     """Return the sine of x (measured in degrees)."""
     return math.sin(deg2rad(x))
 
 
-def cos(x: float, /) -> float:
+def cos(x: float | int, /) -> float:
     """Return the cosine of x (measured in degrees)."""
     return math.cos(deg2rad(x))
 
 
-def arctan(x: float, /) -> float:
+def arctan(x: float | int, /) -> float:
     """Return the arc tangent (measured in degrees) of x."""
     return rad2deg(math.atan(x))
 
 
-def log10(x: float, /) -> float:
+def log10(x: float | int, /) -> float:
     """Return the base 10 logarithm of x."""
     return math.log10(x)
 
 
-def sqrt(x: float, /) -> float:
+def sqrt(x: float | int, /) -> float:
     """Return the square root of x."""
     return math.sqrt(x)
 
 
-def prod(*args) -> float:
+def prod(*floats_or_ints) -> float:
     """Calculate the product of all the elements in the
     input iterable.
 
@@ -91,7 +91,7 @@ def prod(*args) -> float:
     This function is intended specifically for use with
     numeric values and may reject non-numeric types.
     """
-    return math.prod(args)
+    return math.prod(floats_or_ints)
 
 
 def round_(precision: Callable[..., float] | int) -> Callable:
@@ -110,6 +110,9 @@ def round_(precision: Callable[..., float] | int) -> Callable:
         @round_(precision=3)
         def area_of_circle(radius: float) -> float:
             return pi * radius**2
+
+    :Example:
+        >>>
 
 
     :param Callable[..., float] | int precision:
