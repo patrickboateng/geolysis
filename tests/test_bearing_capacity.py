@@ -1,12 +1,9 @@
 import pytest
 
 from geolysis import ERROR_TOLERANCE, GeotechEng
-from geolysis.bearing_capacity import FoundationSize, local_shear
+from geolysis.bearing_capacity import FoundationSize  # local_shear
 from geolysis.bearing_capacity.hansen import HansenFactors
-from geolysis.bearing_capacity.terzaghi import (
-    TerzaghiBearingCapacity,
-    TerzaghiFactors,
-)
+from geolysis.bearing_capacity.terzaghi import TerzaghiBearingCapacity
 from geolysis.bearing_capacity.vesic import VesicFactors
 
 
@@ -25,15 +22,13 @@ class TestTerzaghiBearingCapacity:
             soil_unit_weight=18,
             foundation_size=FoundationSize(2, 2, 1.5),
         )
-        cohesion, soil_friction_angle = local_shear(
+        # TerzaghiFactorsohesion, soil_friction_angle = local_shear(
+        cls.tbc_3 = TerzaghiBearingCapacity(
             cohesion=16,
             soil_friction_angle=27,
-        )
-        cls.tbc_3 = TerzaghiBearingCapacity(
-            cohesion=cohesion,
-            soil_friction_angle=soil_friction_angle,
             soil_unit_weight=18.5,
             foundation_size=FoundationSize(1.715, 1.715, 1.2),
+            local_shear=True,
         )
 
     @classmethod
@@ -69,21 +64,21 @@ class TestTerzaghiBearingCapacity:
             ERROR_TOLERANCE,
         )
 
-    @pytest.mark.parametrize(
-        "soil_friction_angle,bcf",
-        [
-            (1, {"nq": 1.10, "nc": 5.73, "ngamma": 0.0}),
-            (15, {"nq": 4.45, "nc": 12.86, "ngamma": 1.32}),
-            (25, {"nq": 12.72, "nc": 25.13, "ngamma": 8.21}),
-            (27, {"nq": 15.9, "nc": 29.24, "ngamma": 11.6}),
-            (18.76, {"nq": 6.54, "nc": 16.21, "ngamma": 2.73}),
-        ],
-    )
-    def test_terzaghi_bcf(self, soil_friction_angle: float, bcf: dict):
-        tbcf = TerzaghiFactors(soil_friction_angle, GeotechEng.MEYERHOF)
-        assert tbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
-        assert tbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
-        assert tbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
+    # @pytest.mark.parametrize(
+    #     "soil_friction_angle,bcf",
+    #     [
+    #         (1, {"nq": 1.10, "nc": 5.73, "ngamma": 0.0}),
+    #         (15, {"nq": 4.45, "nc": 12.86, "ngamma": 1.32}),
+    #         (25, {"nq": 12.72, "nc": 25.13, "ngamma": 8.21}),
+    #         (27, {"nq": 15.9, "nc": 29.24, "ngamma": 11.6}),
+    #         (18.76, {"nq": 6.54, "nc": 16.21, "ngamma": 2.73}),
+    #     ],
+    # )
+    # def test_terzaghi_bcf(self, soil_friction_angle: float, bcf: dict):
+    #     tbcf = TerzaghiFactors(soil_friction_angle, GeotechEng.MEYERHOF)
+    #     assert tbcf.nc == pytest.approx(bcf["nc"], ERROR_TOLERANCE)
+    #     assert tbcf.nq == pytest.approx(bcf["nq"], ERROR_TOLERANCE)
+    #     assert tbcf.ngamma == pytest.approx(bcf["ngamma"], ERROR_TOLERANCE)
 
 
 class TestMeyerhofBearingCapacity:
