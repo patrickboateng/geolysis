@@ -20,7 +20,6 @@ class TestTerzaghiBearingCapacity:
             soil_unit_weight=18,
             foundation_size=FoundationSize(2, 2, 1.5),
         )
-        # TerzaghiFactorsohesion, soil_friction_angle = local_shear(
         cls.tbc_3 = TerzaghiBearingCapacity(
             cohesion=16,
             soil_friction_angle=27,
