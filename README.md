@@ -9,8 +9,6 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/patrickboateng/geolysis?logo=github&style=social)](https://github.com/patrickboateng/geolysis/commits)
 [![license](https://img.shields.io/pypi/l/geolysis?style=social)](https://opensource.org/license/mit/)
 
-<!-- ![GitHub language count](https://img.shields.io/github/languages/count/patrickboateng/geolysis?style=social) -->
-
 #
 
 [![CI-Unit-Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
