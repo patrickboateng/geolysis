@@ -5,22 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "geolysis"
 description = "geolysis is an opensource software for geotechnical engineering analysis and modeling."
-readme = {file = "README.md", content-type = "text/markdown"}
+readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE.txt" }
 requires-python = ">=3.10"
 keywords = [
-    "finite-element-analysis", 
-    "geotechnical-engineering", 
-    "soil-classification", 
-    "settlement-analysis", 
+    "finite-element-analysis",
+    "geotechnical-engineering",
+    "soil-classification",
+    "settlement-analysis",
     "bearing-capacity-analysis",
 ]
-authors = [
-    {name = "Patrick Boateng", email = "boatengpato.pb@gmail.com"}
-]
-maintainers = [
-    {name = "Patrick Boateng", email = "boatengpato.pb@gmail.com"}
-]
+authors = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
+maintainers = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
 dependencies = []
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -39,7 +35,7 @@ classifiers = [
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]
-version = {attr = "geolysis.__version__"}
+version = { attr = "geolysis.__version__" }
 
 [project.urls]
 Homepage = "https://github.com/patrickboateng/geolysis"
@@ -50,8 +46,8 @@ Changelog = "https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md"
 Discussions = "https://github.com/patrickboateng/geolysis/discussions"
 
 [tool.setuptools.packages.find]
-include = ["geolysis*"] 
-exclude = ["tests*"]  
+include = ["geolysis*"]
+exclude = ["tests*"]
 namespaces = false
 
 [project.optional-dependencies]
@@ -83,3 +79,20 @@ close-quotes-on-newline = true
 [tool.pydocstyle]
 # convention = "pep257"
 ignore = ["D107", "D200"]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    isolated_build = True
+    min_version = 4.0
+    env_list =
+        py310
+        py39
+
+    [testenv]
+    deps = 
+        pytest 
+        pytest-cov
+
+    commands = pytest {posargs} tests
+"""
