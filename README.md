@@ -1,3 +1,8 @@
+[code_of_conduct_url]: https://github.com/patrickboateng/geolysis/blob/main/CODE_OF_CONDUCT.md/
+[contributing_url]: https://github.com/patrickboateng/geolysis/blob/main/docs/CONTRIBUTING.md#how-to-contribute
+[changelog_url]: https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md
+[license_url]: https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt
+
 # geolysis
 
 <div align="center">
@@ -39,13 +44,14 @@
 
 ## What is geolysis?
 
-`geolysis` is an open-source software for geotechnical engineering analysis and
-modeling. `geolysis` provides soil classification based on `USCS` and `AASHTO`
-standards, `bearing capacity analysis`,`estimation of soil engineering
-properties`, `settlement analysis`, and `finite element modeling`. The software
-assists geotechnical engineers in their day-to-day work, enabling them to
-efficiently perform a wide range of tasks and make informed decisions about
-design and construction. `geolysis` enhances efficiency and effectiveness,
+`geolysis` is an open-source software for geotechnical engineering
+analysis and modeling. `geolysis` provides soil classification based
+on `USCS` and `AASHTO` standards, `bearing capacity analysis`,
+`estimation of soil engineering properties`, `settlement analysis`,
+and `finite element modeling`. The software assists geotechnical
+engineers in their day-to-day work, enabling them to efficiently
+perform a wide range of tasks and make informed decisions about design
+and construction. `geolysis` enhances efficiency and effectiveness,
 allowing engineers to design and build better projects.
 
 ## Installation
@@ -74,25 +80,25 @@ Classification of soil using `AASHTO` classification system.
 
 ## Release History
 
-Check the [changelog](https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md)
+Check the [changelog][changelog_url]
 for release history.
 
 ## Code of Conduct
 
-This project has a [code of conduct](https://github.com/patrickboateng/geolysis/blob/main/CODE_OF_CONDUCT.md)
-that we expect all contributors to adhere to. Please read and follow it when
-participating in this project.
+This project has a [code of conduct][code_of_conduct_url] that we
+expect all contributors to adhere to. Please read and follow it
+when participating in this project.
 
 ## Contributing
 
 If you would like to contribute to this project, please read the
-[contributing guidelines](https://github.com/patrickboateng/geolysis/blob/main/docs/CONTRIBUTING.md#how-to-contribute)
+[contributing guidelines][contributing_url]
 
 ## License
 
-Distributed under the [**MIT**](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt)
-license. By using, distributing, or contributing to this project, you agree to
-the terms and conditions of this license.
+Distributed under the [**MIT**][license_url] license. By using,
+distributing, or contributing to this project, you agree to the
+terms and conditions of this license.
 
 ## Contact Information
 
