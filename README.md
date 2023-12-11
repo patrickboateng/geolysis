@@ -35,7 +35,7 @@
 
 - [What is geolysis?](#what-is-geolysis)
 - [Installation](#installation)
-- [Usage Example](#usage-example)
+- [Usage Example](#a-simple-example)
 - [Release History](#release-history)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
@@ -63,7 +63,7 @@ allowing engineers to design and build better projects.
 pip install geolysis
 ```
 
-## Usage example
+## A Simple Example
 
 Classification of soil using `AASHTO` classification system.
 
