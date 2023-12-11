@@ -10,16 +10,17 @@ class GeotechEng(enum.IntFlag):
 
     BAZARAA = 1
     GIBBS = 2
-    HANSEN = 4
-    HOUGH = 8
-    KULLHAWY = 16
-    LIAO = 32
-    MEYERHOF = 64
-    SKEMPTON = 128
-    STROUD = 256
-    TERZAGHI = 512
-    VESIC = 1024
-    WOLFF = 2048
+    HANSEN = 3
+    HOUGH = 4
+    KULLHAWY = 5
+    LIAO = 6
+    MEYERHOF = 7
+    SKEMPTON = 8
+    STROUD = 9
+    TERZAGHI = 10
+    VESIC = 11
+    WOLFF = 12
+    PECK = 13
 
     def __str__(self) -> str:
         return self.name
