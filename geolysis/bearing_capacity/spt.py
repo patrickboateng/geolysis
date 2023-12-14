@@ -2,38 +2,20 @@
 from typing import Sequence
 
 from geolysis import ERROR_TOLERANCE, GeotechEng
+from geolysis.exceptions import EngineerTypeError
 from geolysis.utils import isclose, log10, prod, round_, sqrt
 
 
 @round_(precision=2)
 def n_design(corrected_spt_nvalues: Sequence[float], t: bool = False) -> float:
-    r"""Returns the weighted average of the corrected SPT N-values
+    r"""Return the weighted average of the corrected SPT N-values
     in the foundation influence zone.
-
-    influence zone = :math:`D_f + 2B` or to a depth up to which soil
-    types are approximately the same.
-
-    B = width of foundation
-
-    .. math::
-
-        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n} \frac{1}{i^2}}
-
-    - :math:`n` |rarr| number of layers in the influence zone.
-    - :math:`N_i` |rarr| corrected N-value at ith layer from the
-      footing base.
-
-    .. note::
-
-        Alternatively, for ease in calculation, the lowest N-value from
-        the influence zone can be taken as the :math:`N_{design}` as
-        suggested by ``Terzaghi & Peck (1948)``.
 
     :param Sequence[float] corrected_spt_nvalues:
         Corrected SPT N-values in the foundation influence zone
     :param bool t:
         A flag used to specify that the minimum value in `corrected_spt_nvalues`
-        should be taken as the :py:func:`n_design`
+        should be taken as the :math:`N_{design}`
 
     :return: weighted average of corrected SPT N-values
     :rtype: float
@@ -56,12 +38,12 @@ def n_design(corrected_spt_nvalues: Sequence[float], t: bool = False) -> float:
 
 
 class SPTCorrections:
-    r"""Standard Penetration Test N-value correction for **Overburden
+    """Standard Penetration Test N-value correction for **Overburden
     Pressure** and **Dilatancy**.
 
-    The available overburden pressure corrections are :meth:`skempton_opc_1986`,
-    :meth:`bazaraa_peck_opc_1969`, :meth:`gibbs_holtz_opc_1957`,
-    :meth:`peck_et_al_opc_1974`, and :meth:`liao_whitman_opc_1986`.
+    The available overburden pressure corrections are ``Gibbs and Holtz (1957)``,
+    ``Peck et al (1974)``, ``Liao and Whitman (1986)``, ``Skempton (1986)``, and
+    ``Bazaraa and Peck (1969)``.
 
     :param float hammer_efficiency:
         hammer efficiency, defaults to 0.6
@@ -72,7 +54,7 @@ class SPTCorrections:
     :param float rod_length_correction:
         rod Length correction, defaults to 0.75
     :param float eop:
-        effective overburden pressure :math:`kN/m^2`
+        effective overburden pressure (:math:`kN/m^2`)
     """
 
     def __init__(
@@ -82,13 +64,11 @@ class SPTCorrections:
         borehole_diameter_correction: float = 1.0,
         sampler_correction: float = 1.0,
         rod_length_correction: float = 0.75,
-        # eop: float = 0.0,
     ):
         self.hammer_efficiency = hammer_efficiency
         self.borehole_diameter_correction = borehole_diameter_correction
         self.sampler_correction = sampler_correction
         self.rod_length_correction = rod_length_correction
-        # self.eop = eop
 
     @round_(precision=2)
     def spt_n60(self, recorded_spt_nval: int) -> float:
@@ -146,7 +126,6 @@ class SPTCorrections:
 
         if eop < std_pressure:
             msg = f"{eop} should be greater than or equal to {std_pressure}"
-
             raise ValueError(msg)
 
         spt_n60 = self.spt_n60(recorded_spt_nval)
@@ -229,15 +208,17 @@ class SPTCorrections:
         eop: float,
         eng: GeotechEng = GeotechEng.GIBBS,
     ) -> float:
-        """Return the overburden pressure spt correction.
+        """Return the overburden pressure corrected SPT N-value.
 
         :param int recorded_spt_nval:
             Measured SPT N-value in the field
-
-        :param GeotechEng eng:
+        :param float eop:
+            effective overburden pressure (:math:`kN/m^2`)
+        :kwparam GeotechEng eng:
             specifies the type of overburden pressure correction formula to use.
-            Available values are ``GeotechEng.GIBBS``, ``GeotechEng.BAZARAA``,
-            ``GeotechEng.PECK``, ``GeotechEng.LIAO``, and ``GeotechEng.SKEMPTON``
+            Available values are :class:`GeotechEng.GIBBS`, :class:`GeotechEng.PECK``,
+            :class:`GeotechEng.LIAO`, :class:`GeotechEng.SKEMPTON`, and
+            :class:`GeotechEng.BAZARAA`
         """
         if eng is GeotechEng.GIBBS:
             corrected_spt = self.gibbs_holtz_opc_1957(recorded_spt_nval, eop)
@@ -256,6 +237,6 @@ class SPTCorrections:
 
         else:
             msg = f"{eng} is not a valid type for overburden pressure spt correction"
-            raise TypeError(msg)
+            raise EngineerTypeError(msg)
 
         return corrected_spt
