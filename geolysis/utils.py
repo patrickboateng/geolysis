@@ -28,11 +28,9 @@ import math
 import statistics
 from typing import Callable
 
-from geolysis import DECIMAL_PLACES
-
 PI = math.pi
 exp = math.exp
-mean = statistics.mean
+mean = statistics.fmean
 isclose = math.isclose
 
 
@@ -94,7 +92,7 @@ def prod(*floats_or_ints) -> float:
     return math.prod(floats_or_ints)
 
 
-def round_(precision: Callable[..., float] | int) -> Callable:
+def round_(ndigits: Callable[..., float] | int) -> Callable:
     """A decorator that rounds the result of a function to
     a specified number of decimal places.
 
@@ -114,7 +112,6 @@ def round_(precision: Callable[..., float] | int) -> Callable:
     :Example:
         >>>
 
-
     :param Callable[..., float] | int precision:
         The number of decimal places to round to. It can be
         an integer or a function that returns a float.
@@ -133,22 +130,22 @@ def round_(precision: Callable[..., float] | int) -> Callable:
         func: Callable[..., float],
         /,
         *,
-        precision: int = DECIMAL_PLACES,
+        ndigits: int = 2,
     ) -> Callable[..., float]:
         # The inner decorator function that returns the wrapper function that
         # performs the rounding.
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> float:
-            return round(func(*args, **kwargs), ndigits=precision)
+            return round(func(*args, **kwargs), ndigits=ndigits)
 
         return wrapper
 
-    if callable(precision):
-        return dec(precision)  # return wrapper
+    if callable(ndigits):
+        return dec(ndigits)  # return wrapper
 
-    if isinstance(precision, int):  # type: ignore
-        return functools.partial(dec, precision=precision)  # return decorator
+    if isinstance(ndigits, int):  # type: ignore
+        return functools.partial(dec, ndigits=ndigits)  # return decorator
 
     msg = "precision should be a function to be decorated or an int."
     raise TypeError(msg)
