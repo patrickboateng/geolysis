@@ -2,7 +2,6 @@
 estimators.
 """
 
-from geolysis import GeotechEng
 from geolysis.utils import arctan, round_, sin
 
 
@@ -180,7 +179,7 @@ class UndrainedShearStrength:
 
 
 @round_(ndigits=2)
-def bowles_soil_elastic_modulus(spt_n60: float) -> float:
+def bowles_est_soil_elastic_modulus(spt_n60: float) -> float:
     r"""Return elastic modulus of soil estimated from ``Joseph Bowles``
     correlation.
 
@@ -195,7 +194,7 @@ def bowles_soil_elastic_modulus(spt_n60: float) -> float:
 
 
 @round_(ndigits=1)
-def rankine_minimum_foundation_depth(
+def rankine_est_min_foundation_depth(
     allowable_bearing_capacity: float,
     soil_unit_weight: float,
     soil_friction_angle: float,
@@ -214,7 +213,7 @@ def rankine_minimum_foundation_depth(
         depth of foundation (m)
     :rtype: float
     """
-    expr_1 = allowable_bearing_capacity / soil_unit_weight
-    expr_2 = (1 - sin(soil_friction_angle)) / (1 + sin(soil_friction_angle))
+    exp_1 = allowable_bearing_capacity / soil_unit_weight
+    exp_2 = (1 - sin(soil_friction_angle)) / (1 + sin(soil_friction_angle))
 
-    return expr_1 * (expr_2**2)
+    return exp_1 * (exp_2**2)
