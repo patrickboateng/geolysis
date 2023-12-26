@@ -9,8 +9,8 @@ def check_settlement(actual_settlement: float, allowable_settlement: float):
 
 
 class CircularFooting:
-    def __init__(self, width: float) -> None:
-        self.width = width
+    def __init__(self, diameter: float) -> None:
+        self.diameter = diameter
 
 
 class SquareFooting:
