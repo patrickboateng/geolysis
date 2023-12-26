@@ -1,32 +1,28 @@
-from geolysis.bearing_capacity import FootingShape, FoundationSize
+from geolysis.bearing_capacity import (
+    CircularFooting,
+    FoundationSize,
+    RectangularFooting,
+    SquareFooting,
+)
 from geolysis.utils import round_
 
 
-def bcf(foundation_size: FoundationSize) -> float:
-    """Return bearing capacity factor."""
-    Df = foundation_size.depth
-    B = foundation_size.width
-    L = foundation_size.length
+def nc4strpf(Df, B) -> float:
+    return min(5 * (1 + 0.2 * Df / B), 7.5)
 
-    if foundation_size.is_strip_footing():
-        _bcf = min(5 * (1 + 0.2 * Df / B), 7.5)
 
-    elif (
-        foundation_size.footing_shape is FootingShape.SQUARE
-        or foundation_size.footing_shape is FootingShape.CIRCULAR
-    ):
-        _bcf = min(6 * (1 + 0.2 * Df / B), 9)
+def nc4sqrf(Df, B) -> float:
+    return min(6 * (1 + 0.2 * Df / B), 9)
+
+
+def nc4rectf(Df, L, B) -> float:
+    if Df / B <= 2.5:
+        nc = 5 * (1 + 0.2 * B / L) * (1 + 0.2 * Df / B)
 
     else:
-        if Df / B <= 2.5:
-            _bcf = 5 * (1 + 0.2 * B / L) * (1 + 0.2 * Df / B)
+        nc = 7.5 * (1 + 0.2 * B / L)
 
-        else:
-            _bcf = 7.5 * (1 + 0.2 * B / L)
-
-        _bcf = min(_bcf, 9)
-
-    return _bcf
+    return min(nc, 9)
 
 
 @round_(ndigits=2)
@@ -42,8 +38,24 @@ def skempton_net_sbc_coh_1957(
     :param FoundationSize foundation_size:
         Foundation size i.e. width, length and depth of the foundation
     """
-    _bcf = bcf(foundation_size)
-    return 2 * spt_n_60 * _bcf
+    if isinstance(
+        foundation_size.footing_size, (SquareFooting, CircularFooting)
+    ):
+        nc = nc4sqrf(foundation_size.depth, foundation_size.footing_size.width)
+
+    elif isinstance(foundation_size.footing_size, RectangularFooting):
+        nc = nc4rectf(
+            foundation_size.depth,
+            foundation_size.footing_size.length,
+            foundation_size.footing_size.width,
+        )
+
+    else:
+        nc = nc4strpf(
+            foundation_size.depth, foundation_size.footing_size.width
+        )
+
+    return 2 * spt_n_60 * nc
 
 
 @round_(ndigits=2)
@@ -60,5 +72,20 @@ def skempton_net_abc_coh_1957(
     :param FoundationSize foundation_size:
         Foundation size i.e. width, length and depth of the foundation
     """
-    _bcf = bcf(foundation_size)
-    return 2 * spt_n_design * _bcf
+    if isinstance(
+        foundation_size.footing_size, (SquareFooting, CircularFooting)
+    ):
+        nc = nc4sqrf(foundation_size.depth, foundation_size.footing_size.width)
+
+    elif isinstance(foundation_size.footing_size, RectangularFooting):
+        nc = nc4rectf(
+            foundation_size.depth,
+            foundation_size.footing_size.length,
+            foundation_size.footing_size.width,
+        )
+
+    else:
+        nc = nc4strpf(
+            foundation_size.depth, foundation_size.footing_size.width
+        )
+    return 2 * spt_n_design * nc
