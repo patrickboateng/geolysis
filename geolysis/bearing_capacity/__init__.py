@@ -2,7 +2,6 @@
 
 from ._base import (
     CircularFooting,
-    FootingShape,
     FoundationSize,
     RectangularFooting,
     SquareFooting,
