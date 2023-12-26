@@ -39,7 +39,7 @@ jobs:
       # - name: Lint with flake8
       - name: Test with pytest and coverage
         run: |
-          coverage run --source=geolysis -m pytest tests/
+          pytest
 
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
