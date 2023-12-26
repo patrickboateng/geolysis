@@ -1,12 +1,9 @@
 import pytest
 
-from geolysis.bearing_capacity import FoundationSize
+from geolysis.bearing_capacity import FoundationSize, SquareFooting
 
 
-@pytest.fixture
-def fs():
-    return FoundationSize(
-        foundation_depth=1.5,
-        footing_length=1.2,
-        footing_width=1.2,
-    )
+@pytest.fixture(scope="function")
+def foundation_size():
+    fs = SquareFooting(1.2)
+    return FoundationSize(depth=1.5, footing_size=fs)

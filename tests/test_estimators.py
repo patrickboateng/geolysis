@@ -6,7 +6,8 @@ from geolysis.estimators import (
     SoilFrictionAngle,
     SoilUnitWeight,
     UndrainedShearStrength,
-    rankine_minimum_foundation_depth,
+    bowles_est_soil_elastic_modulus,
+    rankine_est_min_foundation_depth,
 )
 
 
@@ -43,14 +44,27 @@ def test_undrained_shear_strength():
     uss = UndrainedShearStrength(spt_n60=40)
     assert uss.stroud_1974() == pytest.approx(140, ERROR_TOLERANCE)
 
-    uss = UndrainedShearStrength(spt_n60=40, eop=108.3, plasticity_index=12)
+    uss.eop = 108.3
+    uss.plasticity_index = 12
+
     assert uss.skempton_1957() == pytest.approx(16.722, ERROR_TOLERANCE)
+
+    uss.k = 7.0
+
+    with pytest.raises(ValueError):
+        uss.stroud_1974()
+    # assert uss.stroud_1974()
 
 
 def test_foundation_depth():
-    est_depth = rankine_minimum_foundation_depth(
+    est_depth = rankine_est_min_foundation_depth(
         allowable_bearing_capacity=350,
         soil_unit_weight=18,
         soil_friction_angle=35,
     )
     assert est_depth == pytest.approx(1.4, ERROR_TOLERANCE)
+
+
+def test_soil_elastic_modulus():
+    est_elastic_modulus = bowles_est_soil_elastic_modulus(spt_n60=11)
+    assert est_elastic_modulus == pytest.approx(8320, ERROR_TOLERANCE)

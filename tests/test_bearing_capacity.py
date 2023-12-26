@@ -1,52 +1,99 @@
 import pytest
 
 from geolysis import ERROR_TOLERANCE
-from geolysis.bearing_capacity._base import FoundationSize
+from geolysis.bearing_capacity._base import (
+    RectangularFooting,
+    SquareFooting,
+)
 from geolysis.bearing_capacity.bowles import bowles_abc_chl_1997
 from geolysis.bearing_capacity.meyerhof import meyerhof_abc_chl_1956
+from geolysis.bearing_capacity.skempton import (
+    skempton_net_abc_coh_1957,
+    skempton_net_sbc_coh_1957,
+)
 from geolysis.bearing_capacity.terzaghi import terzaghi_peck_abc_chl_1948
 from geolysis.exceptions import AllowableSettlementError
 
 
-def test_meyerhof_bearing_capacity():
-    assert meyerhof_abc_chl_1956(
-        11, 20, FoundationSize(1.2, 1.2, 1.5)
-    ) == pytest.approx(138.24, ERROR_TOLERANCE)
+def test_skempton_net_sbc(foundation_size):
+    net_sbc = skempton_net_sbc_coh_1957(
+        spt_n_60=11, foundation_size=foundation_size
+    )
+    assert net_sbc == pytest.approx(165, ERROR_TOLERANCE)
 
-    assert meyerhof_abc_chl_1956(
-        11, 20, FoundationSize(1.4, 1.4, 1.5)
-    ) == pytest.approx(136.67, ERROR_TOLERANCE)
+    foundation_size.footing_size = RectangularFooting(length=1.4, width=1.2)
+    net_sbc = skempton_net_sbc_coh_1957(
+        spt_n_60=11, foundation_size=foundation_size
+    )
+    assert net_sbc == pytest.approx(161.07, ERROR_TOLERANCE)
+
+
+def test_skempton_net_abc(foundation_size):
+    net_abc = skempton_net_abc_coh_1957(
+        spt_n_design=10, foundation_size=foundation_size
+    )
+    assert net_abc == pytest.approx(150, ERROR_TOLERANCE)
+
+
+def test_meyerhof_abc(foundation_size):
+    m_abc = meyerhof_abc_chl_1956(
+        spt_n_val=11, actual_settlement=20, foundation_size=foundation_size
+    )
+    assert m_abc == pytest.approx(138.24, ERROR_TOLERANCE)
+
+    foundation_size.footing_size = SquareFooting(width=1.4)
+
+    m_abc = meyerhof_abc_chl_1956(
+        spt_n_val=11, actual_settlement=20, foundation_size=foundation_size
+    )
+    assert m_abc == pytest.approx(136.67, ERROR_TOLERANCE)
 
     with pytest.raises(AllowableSettlementError):
-        meyerhof_abc_chl_1956(11, 30, FoundationSize(1.2, 1.2, 1.5))
+        meyerhof_abc_chl_1956(
+            spt_n_val=11, actual_settlement=30, foundation_size=foundation_size
+        )
 
 
-def test_terzaghi_peck_bearing_capacity():
-    assert terzaghi_peck_abc_chl_1948(
-        11, 20, 1.2, FoundationSize(1.2, 1.2, 1.5)
-    ) == pytest.approx(60.37, ERROR_TOLERANCE)
-
-    assert terzaghi_peck_abc_chl_1948(
-        11, 20, 1.7, FoundationSize(1.2, 1.2, 1.5)
-    ) == pytest.approx(64.37, ERROR_TOLERANCE)
-
-    assert terzaghi_peck_abc_chl_1948(
-        11, 20, 1.7, FoundationSize(1.4, 1.4, 1.5)
-    ) == pytest.approx(59.01, ERROR_TOLERANCE)
-
-
-def test_bowles_bearing_capacity():
-    assert bowles_abc_chl_1997(
-        spt_n_design=11,
+def test_terzaghi_peck_abc(foundation_size):
+    t_abc = terzaghi_peck_abc_chl_1948(
+        spt_n_val=11,
         actual_settlement=20,
-        foundation_size=FoundationSize(1.2, 1.2, 1.5),
-    ) == pytest.approx(220.72)
+        water_depth=1.2,
+        foundation_size=foundation_size,
+    )
+    assert t_abc == pytest.approx(60.37, ERROR_TOLERANCE)
 
-    assert bowles_abc_chl_1997(
-        spt_n_design=11,
+    t_abc = terzaghi_peck_abc_chl_1948(
+        spt_n_val=11,
         actual_settlement=20,
-        foundation_size=FoundationSize(1.4, 1.4, 1.5),
-    ) == pytest.approx(204.66)
+        water_depth=1.7,
+        foundation_size=foundation_size,
+    )
+    assert t_abc == pytest.approx(64.37, ERROR_TOLERANCE)
+
+    foundation_size.footing_size = SquareFooting(1.4)
+
+    t_abc = terzaghi_peck_abc_chl_1948(
+        spt_n_val=11,
+        actual_settlement=20,
+        water_depth=1.7,
+        foundation_size=foundation_size,
+    )
+    assert t_abc == pytest.approx(59.01, ERROR_TOLERANCE)
+
+
+def test_bowles_abc(foundation_size):
+    b_abc = bowles_abc_chl_1997(
+        spt_n_design=11, actual_settlement=20, foundation_size=foundation_size
+    )
+    assert b_abc == pytest.approx(220.72, ERROR_TOLERANCE)
+
+    foundation_size.footing_size = SquareFooting(1.4)
+
+    b_abc = bowles_abc_chl_1997(
+        spt_n_design=11, actual_settlement=20, foundation_size=foundation_size
+    )
+    assert b_abc == pytest.approx(204.66, ERROR_TOLERANCE)
 
 
 # @pytest.mark.parametrize(
