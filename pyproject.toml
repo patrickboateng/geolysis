@@ -54,7 +54,7 @@ namespaces = false
 dev = ["black", "pytest", "mypy", "pytest-cov"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --verbose --color=auto --code-highlight=yes --cov=geolysis --strict-markers"
+addopts = "-ra --verbose --color=auto --code-highlight=yes --strict-markers"
 minversion = "6.0"
 testpaths = ["tests"]
 
