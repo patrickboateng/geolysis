@@ -20,7 +20,7 @@ LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
-def _check_size_distribution(fines: float, sand: float, gravel: float):
+def _chk_psd(fines, sand, gravel):
     total_aggregate = fines + sand + gravel
     if not isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
         msg = f"fines + sand + gravels = 100% not {total_aggregate}"
@@ -128,7 +128,7 @@ class ParticleSizeDistribution:
         self.d30 = d30
         self.d60 = d60
 
-        _check_size_distribution(self.fines, self.sand, self.gravel)
+        _chk_psd(self.fines, self.sand, self.gravel)
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
