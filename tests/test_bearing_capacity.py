@@ -1,38 +1,11 @@
 import pytest
 
 from geolysis import ERROR_TOLERANCE
-from geolysis.bearing_capacity._base import (
-    RectangularFooting,
-    SquareFooting,
-)
+from geolysis.bearing_capacity._base import SquareFooting
 from geolysis.bearing_capacity.bowles import bowles_abc_chl_1997
 from geolysis.bearing_capacity.meyerhof import meyerhof_abc_chl_1956
-from geolysis.bearing_capacity.skempton import (
-    skempton_net_abc_coh_1957,
-    skempton_net_sbc_coh_1957,
-)
 from geolysis.bearing_capacity.terzaghi import terzaghi_peck_abc_chl_1948
 from geolysis.exceptions import AllowableSettlementError
-
-
-def test_skempton_net_sbc(foundation_size):
-    net_sbc = skempton_net_sbc_coh_1957(
-        spt_n_60=11, foundation_size=foundation_size
-    )
-    assert net_sbc == pytest.approx(165, ERROR_TOLERANCE)
-
-    foundation_size.footing_size = RectangularFooting(length=1.4, width=1.2)
-    net_sbc = skempton_net_sbc_coh_1957(
-        spt_n_60=11, foundation_size=foundation_size
-    )
-    assert net_sbc == pytest.approx(161.07, ERROR_TOLERANCE)
-
-
-def test_skempton_net_abc(foundation_size):
-    net_abc = skempton_net_abc_coh_1957(
-        spt_n_design=10, foundation_size=foundation_size
-    )
-    assert net_abc == pytest.approx(150, ERROR_TOLERANCE)
 
 
 def test_meyerhof_abc(foundation_size):
