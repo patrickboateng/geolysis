@@ -1,34 +1,62 @@
+from dataclasses import dataclass
+
 from geolysis.exceptions import AllowableSettlementError
 
 
-def check_settlement(actual_settlement: float, allowable_settlement: float):
+def _chk_settlement(actual_settlement: float, allowable_settlement: float):
     if actual_settlement > allowable_settlement:
         msg = f"Settlement: {actual_settlement} should be less than or equal \
                 Allowable Settlement: {allowable_settlement}"
         raise AllowableSettlementError(msg)
 
 
+@dataclass
 class CircularFooting:
-    def __init__(self, diameter: float) -> None:
-        self.diameter = diameter
+    """Circular Footing Size.
+
+    :param float width:
+        Diameter of foundation footing
+    """
+
+    width: float
 
 
+@dataclass
 class SquareFooting:
-    def __init__(self, width: float) -> None:
-        self.width = width
+    """Square Footing Size.
+
+    :param float width:
+        Width of foundation footing
+    """
+
+    width: float
 
 
+@dataclass
 class RectangularFooting:
-    def __init__(self, length: float, width: float) -> None:
-        self.length = length
-        self.width = width
+    """Rectangular Footing Size.
+
+    :param float length:
+        Length of foundation footing
+    :param float width:
+        Width of foundation footing
+    """
+
+    length: float
+    width: float
 
 
+@dataclass
 class FoundationSize:
-    def __init__(
-        self,
-        depth: float,
-        footing_size: SquareFooting | RectangularFooting | CircularFooting,
-    ):
-        self.depth = depth
-        self.footing_size = footing_size
+    """A simple class representing a foundation.
+
+    :param float depth:
+        Depth of foundation.
+    :param footing_size:
+        Represents the type of footing size i.e. :class:`SquareFooting`,
+        :class:`RectangularFooting` or :class:`CircularFooting`
+    :type footing_size: SquareFooting | RectangularFooting | CircularFooting
+    """
+
+    depth: float
+    footing_size: SquareFooting | RectangularFooting | CircularFooting

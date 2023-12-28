@@ -6,23 +6,13 @@ from geolysis.bearing_capacity import (
 )
 from geolysis.utils import round_
 
-
-def nc4strpf(Df, B) -> float:
-    return min(5 * (1 + 0.2 * Df / B), 7.5)
-
-
-def nc4sqrf(Df, B) -> float:
-    return min(6 * (1 + 0.2 * Df / B), 9)
-
-
-def nc4rectf(Df, L, B) -> float:
-    if Df / B <= 2.5:
-        nc = 5 * (1 + 0.2 * B / L) * (1 + 0.2 * Df / B)
-
-    else:
-        nc = 7.5 * (1 + 0.2 * B / L)
-
-    return min(nc, 9)
+nc4stf = lambda Df, B: min(5 * (1 + 0.2 * Df / B), 7.5)
+nc4sqf = lambda Df, B: min(6 * (1 + 0.2 * Df / B), 9)
+nc4ref = (
+    lambda Df, L, B: min(5 * (1 + 0.2 * B / L) * (1 + 0.2 * Df / B), 9)
+    if Df / B <= 2.5
+    else min(7.5 * (1 + 0.2 * B / L), 9)
+)
 
 
 @round_(ndigits=2)
@@ -41,19 +31,17 @@ def skempton_net_sbc_coh_1957(
     if isinstance(
         foundation_size.footing_size, (SquareFooting, CircularFooting)
     ):
-        nc = nc4sqrf(foundation_size.depth, foundation_size.footing_size.width)
+        nc = nc4sqf(foundation_size.depth, foundation_size.footing_size.width)
 
     elif isinstance(foundation_size.footing_size, RectangularFooting):
-        nc = nc4rectf(
+        nc = nc4ref(
             foundation_size.depth,
             foundation_size.footing_size.length,
             foundation_size.footing_size.width,
         )
 
     else:
-        nc = nc4strpf(
-            foundation_size.depth, foundation_size.footing_size.width
-        )
+        nc = nc4stf(foundation_size.depth, foundation_size.footing_size.width)
 
     return 2 * spt_n_60 * nc
 
@@ -75,17 +63,15 @@ def skempton_net_abc_coh_1957(
     if isinstance(
         foundation_size.footing_size, (SquareFooting, CircularFooting)
     ):
-        nc = nc4sqrf(foundation_size.depth, foundation_size.footing_size.width)
+        nc = nc4sqf(foundation_size.depth, foundation_size.footing_size.width)
 
     elif isinstance(foundation_size.footing_size, RectangularFooting):
-        nc = nc4rectf(
+        nc = nc4ref(
             foundation_size.depth,
             foundation_size.footing_size.length,
             foundation_size.footing_size.width,
         )
 
     else:
-        nc = nc4strpf(
-            foundation_size.depth, foundation_size.footing_size.width
-        )
+        nc = nc4stf(foundation_size.depth, foundation_size.footing_size.width)
     return 2 * spt_n_design * nc

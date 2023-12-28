@@ -1,4 +1,4 @@
-from geolysis.bearing_capacity import FoundationSize, check_settlement
+from geolysis.bearing_capacity import FoundationSize, _chk_settlement
 from geolysis.utils import round_
 
 
@@ -23,7 +23,7 @@ def terzaghi_peck_abc_chl_1948(
 
     allowable_settlement = 25.4
 
-    check_settlement(actual_settlement, allowable_settlement)
+    _chk_settlement(actual_settlement, allowable_settlement)
 
     Df = foundation_size.depth
     B = foundation_size.footing_size.width

@@ -1,4 +1,4 @@
-from geolysis.bearing_capacity import FoundationSize, check_settlement
+from geolysis.bearing_capacity import FoundationSize, _chk_settlement
 from geolysis.utils import round_
 
 
@@ -22,10 +22,11 @@ def meyerhof_abc_chl_1956(
 
     allowable_settlement = 25.4
 
-    check_settlement(actual_settlement, allowable_settlement)
+    _chk_settlement(actual_settlement, allowable_settlement)
 
+    Df = foundation_size.depth
     B = foundation_size.footing_size.width
-    fd = min(1 + 0.33 * foundation_size.depth / B, 1.33)
+    fd = min(1 + 0.33 * Df / B, 1.33)
     settlement_ratio = actual_settlement / allowable_settlement
 
     if B <= 1.2:
