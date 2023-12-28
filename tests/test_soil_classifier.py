@@ -9,6 +9,7 @@ from geolysis.soil_classifier import (
     AASHTOClassification,
     AtterbergLimits,
     ParticleSizeDistribution,
+    ParticleSizes,
     UnifiedSoilClassification,
 )
 
@@ -35,16 +36,18 @@ class TestAtterbergLimits:
 
 
 class TestParticleSizeDistribution:
-    def test_uniformity_coefficient(self):
-        psd = PSD(fines=0, sand=0, gravel=100, d10=0.115, d30=0.53, d60=1.55)
-        assert psd.uniformity_coefficient == pytest.approx(
+    def test_particle_coeff(self):
+        psd = PSD(
+            fines=0,
+            sand=0,
+            gravel=100,
+            particle_sizes=ParticleSizes(d_10=0.115, d_30=0.53, d_60=1.55),
+        )
+        assert psd.coeff_of_uniformity == pytest.approx(
             13.48,
             rel=ERROR_TOLERANCE,
         )
-
-    def test_curvature_coefficient(self):
-        psd = PSD(fines=0, sand=0, gravel=100, d10=0.115, d30=0.53, d60=1.55)
-        assert psd.curvature_coefficient == pytest.approx(
+        assert psd.coeff_of_curvature == pytest.approx(
             1.58,
             rel=ERROR_TOLERANCE,
         )
@@ -88,49 +91,49 @@ class TestUnifiedSoilClassificationSystem:
             (
                 (30.8, 20.7),
                 (10.29, 81.89, 7.83),
-                {"d10": 0.07, "d30": 0.3, "d60": 0.8},
+                (0.07, 0.3, 0.8),
                 "SW-SC",
             ),
             (
                 (24.4, 14.7),
                 (9.77, 44.82, 45.41),
-                {"d10": 0.06, "d30": 0.6, "d60": 7},
+                (0.06, 0.6, 7),
                 "GP-GC",
             ),
             (
                 (49.5, 33.6),
                 (6.93, 91.79, 1.28),
-                {"d10": 0.153, "d30": 0.4, "d60": 1.2},
+                (0.153, 0.4, 1.2),
                 "SP-SM",
             ),
             (
                 (30.33, 23.42),
                 (8.93, 7.69, 83.38),
-                {"d10": 0.15, "d30": 18, "d60": 44},
+                (0.15, 18, 44),
                 "GP-GM",
             ),
             (
                 (35.32, 25.57),
                 (9.70, 5.63, 84.67),
-                {"d10": 0.06, "d30": 50, "d60": 55},
+                (0.06, 50, 55),
                 "GP-GM",
             ),
             (
                 (26.17, 19.69),
                 (12.00, 8.24, 79.76),
-                {"d10": 0.07, "d30": 15, "d60": 52},
+                (0.07, 15, 52),
                 "GP-GC",
             ),
             (
                 (30.59, 24.41),
                 (9.87, 19.03, 71.1),
-                {"d10": 0.07, "d30": 0.3, "d60": 0.8},
+                (0.07, 0.3, 0.8),
                 "GW-GM",
             ),
             (
                 (32.78, 22.99),
                 (3.87, 15.42, 80.71),
-                {"d10": 2.5, "d30": 6, "d60": 15},
+                (2.5, 6, 15),
                 "GP",
             ),
         ],
@@ -139,11 +142,13 @@ class TestUnifiedSoilClassificationSystem:
         self,
         al,
         psd,
-        particle_sizes: dict,
+        particle_sizes: tuple,
         classification: str,
     ):
         atterberg_limits = AtterbergLimits(*al)
-        psd = ParticleSizeDistribution(*psd, **particle_sizes)
+        psd = ParticleSizeDistribution(
+            *psd, particle_sizes=ParticleSizes(*particle_sizes)
+        )
         uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
 
         assert uscs.classify() == classification

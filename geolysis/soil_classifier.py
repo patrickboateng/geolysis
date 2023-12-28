@@ -4,6 +4,7 @@ classification.
 
 from math import trunc
 from types import MappingProxyType
+from typing import NamedTuple
 
 from geolysis import ERROR_TOLERANCE
 from geolysis.exceptions import PSDValueError
@@ -21,9 +22,9 @@ HIGH_PLASTICITY = "H"
 
 
 def _chk_psd(fines, sand, gravel):
-    total_aggregate = fines + sand + gravel
-    if not isclose(total_aggregate, 100, rel_tol=ERROR_TOLERANCE):
-        msg = f"fines + sand + gravels = 100% not {total_aggregate}"
+    total_agg = fines + sand + gravel
+    if not isclose(total_agg, 100.0, rel_tol=ERROR_TOLERANCE):
+        msg = f"fines + sand + gravels = 100% not {total_agg}"
         raise PSDValueError(msg)
 
 
@@ -89,6 +90,36 @@ class AtterbergLimits:
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100
 
 
+class ParticleSizes(NamedTuple):
+    d_10: float = 0
+    d_30: float = 0
+    d_60: float = 0
+
+    @property
+    def coeff_of_curvature(self) -> float:
+        return (self.d_30**2) / (self.d_60 * self.d_10)
+
+    @property
+    def coeff_of_uniformity(self) -> float:
+        return self.d_60 / self.d_10
+
+    def grade(self, coarse_soil: str) -> str:
+        if coarse_soil == GRAVEL:
+            if (
+                1 < self.coeff_of_curvature < 3
+                and self.coeff_of_uniformity >= 4
+            ):
+                return WELL_GRADED
+
+            return POORLY_GRADED
+
+        # Sand
+        if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 6:
+            return WELL_GRADED
+
+        return POORLY_GRADED
+
+
 class ParticleSizeDistribution:
     """Particle Size Distribution.
 
@@ -116,50 +147,23 @@ class ParticleSizeDistribution:
         fines: float,
         sand: float,
         gravel: float,
-        *,
-        d10: float = 0,
-        d30: float = 0,
-        d60: float = 0,
+        particle_sizes=ParticleSizes(0, 0, 0),
     ):
         self.fines = fines
         self.sand = sand
         self.gravel = gravel
-        self.d10 = d10
-        self.d30 = d30
-        self.d60 = d60
+        self.particle_sizes = particle_sizes
 
         _chk_psd(self.fines, self.sand, self.gravel)
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
-        return all((self.d10, self.d30, self.d60))
-
-    def _sand_grade(self) -> str:
-        if (
-            1 < self.curvature_coefficient < 3
-            and self.uniformity_coefficient >= 6
-        ):
-            return WELL_GRADED
-
-        return POORLY_GRADED
-
-    def _coarse_grade(self) -> str:
-        if (
-            1 < self.curvature_coefficient < 3
-            and self.uniformity_coefficient >= 4
-        ):
-            return WELL_GRADED
-
-        return POORLY_GRADED
+        return bool(all(self.particle_sizes))
 
     def grade(self) -> str:
         """Return the grade of the soil sample."""
-        # Gravel
-        if self.gravel > self.sand:
-            return self._coarse_grade()
-
-        # Sand
-        return self._sand_grade()
+        coarse_soil = self.type_of_coarse
+        return self.particle_sizes.grade(coarse_soil=coarse_soil)
 
     @property
     def type_of_coarse(self) -> str:
@@ -169,21 +173,14 @@ class ParticleSizeDistribution:
         return SAND
 
     @property
-    @round_(ndigits=2)
-    def curvature_coefficient(self) -> float:
+    def coeff_of_curvature(self) -> float:
         r"""Return the coefficient of curvature of the soil."""
-        return (self.d30**2) / (self.d60 * self.d10)
-
-    coefficient_of_curvature = curvature_coefficient
-    coefficient_of_gradation = curvature_coefficient
+        return self.particle_sizes.coeff_of_curvature
 
     @property
-    @round_(ndigits=2)
-    def uniformity_coefficient(self) -> float:
+    def coeff_of_uniformity(self) -> float:
         r"""Return the coefficient of uniformity of the soil."""
-        return self.d60 / self.d10
-
-    coefficient_of_uniformity = uniformity_coefficient
+        return self.particle_sizes.coeff_of_uniformity
 
 
 PSD = ParticleSizeDistribution
