@@ -31,11 +31,14 @@
 - [Bug Reports](https://github.com/patrickboateng/geolysis/issues)
 - [Discussions](https://github.com/patrickboateng/geolysis/discussions)
 
+> [!IMPORTANT]
+> Project documentation is underway
+
 ## Table of Contents
 
 - [What is geolysis?](#what-is-geolysis)
 - [Installation](#installation)
-- [Usage Example](#a-simple-example)
+- [Usage Example](#example)
 - [Release History](#release-history)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
@@ -44,39 +47,77 @@
 
 ## What is geolysis?
 
-`geolysis` is an open-source software for geotechnical engineering
-analysis and modeling. `geolysis` provides soil classification based
-on `USCS` and `AASHTO` standards, `bearing capacity analysis`,
-`estimation of soil engineering properties`, `settlement analysis`,
-and `finite element modeling`. The software assists geotechnical
-engineers in their day-to-day work, enabling them to efficiently
-perform a wide range of tasks and make informed decisions about design
-and construction. `geolysis` enhances efficiency and effectiveness,
-allowing engineers to design and build better projects.
+`geolysis` is an open-source software for geotechnical analysis and modeling.
+It provides features such as soil classifications
+(based on the `USCS` and `AASHTO` classification standards), estimating soil
+bearing capacity using SPT N-value, and estimating of soil engineering parameters
+such as Soil Unit Weight (moist, saturated, and submerged), Compression index,
+soil internal angle of friction, and undrained shear strength of soil.
+
+**Features to include in upcoming versions:**
+
+- Settlement analysis
+- Finite element modeling
+- Graphical User Interface (GUI)
+
+The motivation behind `geolysis` is to provide free software to assist geotechnical
+engineers in their day-to-day work and to expose civil engineering students
+(especially geotechnical students) to tools that can make them industry-ready
+geotechnical engineers right from college.
 
 ## Installation
-
-> [!WARNING]
-> Project is still under development.
 
 ```shell
 pip install geolysis
 ```
 
-## A Simple Example
+## Example
 
-Classification of soil using `AASHTO` classification system.
+### Classification of soil using `AASHTO` classification system
 
 ```python
-
-    >>> from geolysis.soil_classifier import AASHTOClassification
-    >>> aashto_classifier = AASHTOClassification(liquid_limit=37.7,
-    ...                                          plasticity_index=13.9,
-    ...                                          fines=47.44)
-    >>> aashto_classifier.classify()
-    'A-6(4)'
+>>> from geolysis.soil_classifier import AASHTO, AASHTOClassification
+>>> aashto_clf = AASHTOClassification(liquid_limit=37.7,
+...                                   plasticity_index=13.9,
+...                                   fines=47.44)
+>>> aashto_clf.classify()
+'A-6(4)'
+>>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
+>>> aashto_clf.classify()
+'A-2-4(0)'
 
 ```
+
+> [!NOTE] > `AASHTOClassification` and `AASHTO` can be used interchangeably
+> In other words `AASHTO` is an alias for `AASHTOClassification`
+
+### Classification of soil using `USCS` classification system
+
+```python
+>>> from geolysis.soil_classifier import (
+...    USCS,
+...    UnifiedSoilClassification,
+...    AtterbergLimits,
+...    PSD,
+...    ParticleSizes,
+...    )
+>>> al = AtterbergLimits(liquid_limit=35.83, plastic_limit=25.16)
+>>> psd = PSD(fines=68.94, sand=28.88, gravel=2.18)
+>>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
+>>> uscs_clf.classify()
+'ML'
+
+>>> al = AtterbergLimits(liquid_limit=30.8, plastic_limit=20.7)
+>>> particle_sizes = ParticleSizes(d_10=0.07, d_30=0.3, d_60=0.8)
+>>> psd = PSD(fines=10.29, sand=81.89, gravel=7.83, particle_sizes=particle_sizes)
+>>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
+>>> uscs_clf.classify()
+'SW-SC'
+
+```
+
+> [!NOTE] > `UnifiedSoilClassification` and `USCS` can be used interchangeably
+> In other words `USCS` is an alias for `UnifiedSoilClassification`
 
 ## Release History
 
