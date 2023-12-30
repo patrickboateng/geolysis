@@ -324,6 +324,11 @@ class UnifiedSoilClassification:
         Distribution of soil particles in the soil sample
     :kwparam organic:
         Indicates whether the soil is organic or not
+
+    .. note::
+
+        You can use :class:`UnifiedSoilClassification` and :class:`USCS`
+        interchangeably.
     """
 
     soil_descriptions = MappingProxyType(
