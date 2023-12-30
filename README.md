@@ -88,7 +88,8 @@ pip install geolysis
 
 ```
 
-> [!NOTE] > `AASHTOClassification` and `AASHTO` can be used interchangeably
+> [!NOTE]
+> `AASHTOClassification` and `AASHTO` can be used interchangeably
 > In other words `AASHTO` is an alias for `AASHTOClassification`
 
 ### Classification of soil using `USCS` classification system
@@ -116,7 +117,8 @@ pip install geolysis
 
 ```
 
-> [!NOTE] > `UnifiedSoilClassification` and `USCS` can be used interchangeably
+> [!NOTE]
+> `UnifiedSoilClassification` and `USCS` can be used interchangeably
 > In other words `USCS` is an alias for `UnifiedSoilClassification`
 
 ## Release History
