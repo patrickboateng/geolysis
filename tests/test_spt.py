@@ -2,12 +2,12 @@ from statistics import StatisticsError
 
 import pytest
 
-from geolysis import ERROR_TOLERANCE, GeotechEng
 from geolysis.bearing_capacity.spt import (
     SPTCorrections,
     spt_n_design,
     spt_n_val,
 )
+from geolysis.constants import ERROR_TOLERANCE, GeotechEng
 from geolysis.exceptions import EngineerTypeError
 
 
@@ -46,9 +46,9 @@ class TestSPTCorrections:
         ((15, 12.75), (8, 6.8), (7, 5.95), (26, 22.1)),
     )
     def test_spt_n60(self, recorded_spt_nval, n60):
-        assert self.spt_correction.spt_n60(recorded_spt_nval) == pytest.approx(
-            n60, ERROR_TOLERANCE
-        )
+        assert self.spt_correction.spt_n_60(
+            recorded_spt_nval
+        ) == pytest.approx(n60, ERROR_TOLERANCE)
 
     def test_dilatancy_correction(self):
         assert self.spt_correction.dilatancy_correction(

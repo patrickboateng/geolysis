@@ -1,7 +1,9 @@
+from typing import Sequence
+
 import pytest
 
-from geolysis import ERROR_TOLERANCE
-from geolysis.exceptions import PSDValueError
+from geolysis.constants import ERROR_TOLERANCE
+from geolysis.exceptions import PSDValueError, SoilClassificationError
 from geolysis.soil_classifier import (
     AASHTO,
     PSD,
@@ -59,18 +61,14 @@ class TestParticleSizeDistribution:
 
 class TestAASHTOClassificationSystem:
     @pytest.mark.parametrize(
-        "soil_params,classification",
+        "soil_params,clf",
         [
             ((30, 5, 10), "A-1-a(0)"),
             ((17.9, 3.4, 24.01), "A-1-b(0)"),
             ((0, 0, 9.5), "A-3(0)"),
-            ((0, 0, 9.5, False), "A-3"),
             ((30.2, 6.3, 11.18), "A-2-4(0)"),
-            ((43, 8, 30, False), "A-2-5"),
             ((30.1, 13.7, 18.38), "A-2-6(0)"),
-            ((43, 18, 30, False), "A-2-7"),
             ((35, 7, 40), "A-4(1)"),
-            ((35, 7, 40, False), "A-4"),
             ((48, 9, 40), "A-5(1)"),
             ((37.7, 13.9, 47.44), "A-6(4)"),
             ((61.7, 29.4, 52.09), "A-7-5(12)"),
@@ -79,14 +77,27 @@ class TestAASHTOClassificationSystem:
             ((45, 29, 60), "A-7-6(13)"),
         ],
     )
-    def test_aashto(self, soil_params, classification):
+    def test_aashto_with_grp_idx(self, soil_params: Sequence, clf: str):
         asshto_classifier = AASHTOClassification(*soil_params)
-        assert asshto_classifier.classify() == classification
+        assert asshto_classifier.classify() == clf
+
+    @pytest.mark.parametrize(
+        "soil_params,clf",
+        [
+            ((0, 0, 9.5), "A-3"),
+            ((43, 8, 30), "A-2-5"),
+            ((43, 18, 30), "A-2-7"),
+            ((35, 7, 40), "A-4"),
+        ],
+    )
+    def test_aashto_without_grp_idx(self, soil_params: Sequence, clf: str):
+        asshto_classifier = AASHTO(*soil_params, add_grp_idx=False)
+        assert asshto_classifier.classify() == clf
 
 
 class TestUnifiedSoilClassificationSystem:
     @pytest.mark.parametrize(
-        "al,psd,particle_sizes,classification",
+        "al,psd,particle_sizes,clf",
         [
             (
                 (30.8, 20.7),
@@ -140,21 +151,19 @@ class TestUnifiedSoilClassificationSystem:
     )
     def test_dual_classification(
         self,
-        al,
-        psd,
-        particle_sizes: tuple,
-        classification: str,
+        al: Sequence,
+        psd: Sequence,
+        particle_sizes: Sequence,
+        clf: str,
     ):
         atterberg_limits = AtterbergLimits(*al)
-        psd = ParticleSizeDistribution(
-            *psd, particle_sizes=ParticleSizes(*particle_sizes)
-        )
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
+        psd_ = PSD(*psd, particle_sizes=ParticleSizes(*particle_sizes))
+        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
-        assert uscs.classify() == classification
+        assert uscs.classify() == clf
 
     @pytest.mark.parametrize(
-        "al,psd,classification",
+        "al,psd,clf",
         [
             (
                 (30.8, 20.7),
@@ -191,18 +200,18 @@ class TestUnifiedSoilClassificationSystem:
     )
     def test_dual_classification_no_psd_coeff(
         self,
-        al,
-        psd,
-        classification: str,
+        al: Sequence,
+        psd: Sequence,
+        clf: str,
     ):
         atterberg_limits = AtterbergLimits(*al)
-        psd = ParticleSizeDistribution(*psd)
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
+        psd_ = ParticleSizeDistribution(*psd)
+        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
-        assert uscs.classify() == classification
+        assert uscs.classify() == clf
 
     @pytest.mark.parametrize(
-        "al,psd,classification",
+        "al,psd,clf",
         [
             ((34.1, 21.1), (47.88, 37.84, 14.28), "SC"),
             ((27.5, 13.8), (54.23, 45.69, 0.08), "CL"),
@@ -220,12 +229,14 @@ class TestUnifiedSoilClassificationSystem:
             ((35.83, 25.16), (68.94, 28.88, 2.18), "ML"),
         ],
     )
-    def test_single_classification(self, al, psd, classification: str):
+    def test_single_classification(
+        self, al: Sequence, psd: Sequence, clf: str
+    ):
         atterberg_limits = AtterbergLimits(*al)
-        psd = ParticleSizeDistribution(*psd)
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd)
+        psd_ = ParticleSizeDistribution(*psd)
+        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
-        assert uscs.classify() == classification
+        assert uscs.classify() == clf
 
     def test_single_classification_2(self):
         atterberg_limits = AtterbergLimits(35.83, 25.16)
@@ -247,5 +258,5 @@ class TestUnifiedSoilClassificationSystem:
         assert USCS.soil_description("SC") == "Clayey sands"
         assert USCS.soil_description(" SC ") == "Clayey sands"
 
-        with pytest.raises(KeyError):
+        with pytest.raises(SoilClassificationError):
             USCS.soil_description("A-2-4")

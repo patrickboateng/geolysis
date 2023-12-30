@@ -1,10 +1,10 @@
 import pytest
 
-from geolysis import ERROR_TOLERANCE
 from geolysis.bearing_capacity._base import SquareFooting
 from geolysis.bearing_capacity.bowles import bowles_abc_chl_1997
 from geolysis.bearing_capacity.meyerhof import meyerhof_abc_chl_1956
 from geolysis.bearing_capacity.terzaghi import terzaghi_peck_abc_chl_1948
+from geolysis.constants import ERROR_TOLERANCE
 from geolysis.exceptions import AllowableSettlementError
 
 

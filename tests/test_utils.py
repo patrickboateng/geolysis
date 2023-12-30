@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis import ERROR_TOLERANCE
+from geolysis.constants import ERROR_TOLERANCE
 from geolysis.utils import PI, cos, cot, deg2rad, rad2deg, round_, sin, tan
 
 
