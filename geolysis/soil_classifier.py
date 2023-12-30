@@ -198,9 +198,6 @@ class ParticleSizeDistribution:
         return self.particle_sizes.grade(coarse_soil=coarse_soil)
 
 
-PSD = ParticleSizeDistribution
-
-
 class AASHTOClassification:
     """American Association of State Highway and Transportation
     Officials (``AASHTO``) classification system.
@@ -310,9 +307,6 @@ class AASHTOClassification:
             return f"{clf}({self.group_index()})"
         else:
             return clf
-
-
-AASHTO = AASHTOClassification
 
 
 class UnifiedSoilClassification:
@@ -490,4 +484,9 @@ class UnifiedSoilClassification:
             return desc
 
 
+# *****************ALIASES*******************
+
+AL = AtterbergLimits
+PSD = ParticleSizeDistribution
+AASHTO = AASHTOClassification
 USCS = UnifiedSoilClassification
