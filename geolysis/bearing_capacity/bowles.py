@@ -9,7 +9,7 @@ def bowles_abc_chl_1997(
     foundation_size: FoundationSize,
 ):
     """Return allowable bearing capacity for cohesionless soils according to
-    ``Bowles (1997)``.
+    ``Bowles (1997)``. (:math:`kN/m^2`)
 
     :param float spt_n_design:
         Weighted average of corrected SPT N-values within the foundation

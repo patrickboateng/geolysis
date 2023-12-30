@@ -27,6 +27,10 @@ class AllowableSettlementError(ValueError):
     """
 
 
+class SoilClassificationError(ValueError):
+    """Exception raised for wrong soil classification."""
+
+
 class EngineerTypeError(TypeError):
     """Exception raised when a particular engineer is not allowed."""
 

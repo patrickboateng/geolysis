@@ -109,8 +109,7 @@ def round_(ndigits: Callable[..., float] | int) -> Callable:
         def area_of_circle(radius: float) -> float:
             return pi * radius**2
 
-    :Example:
-        >>>
+        # area_of_circle will return a value rounded to 3 d.p
 
     :param Callable[..., float] | int precision:
         The number of decimal places to round to. It can be

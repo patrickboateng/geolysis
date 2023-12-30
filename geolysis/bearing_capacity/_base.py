@@ -15,7 +15,7 @@ class CircularFooting:
     """Circular Footing Size.
 
     :param float width:
-        Diameter of foundation footing
+        Diameter of foundation footing (m)
     """
 
     width: float
@@ -26,7 +26,7 @@ class SquareFooting:
     """Square Footing Size.
 
     :param float width:
-        Width of foundation footing
+        Width of foundation footing (m)
     """
 
     width: float
@@ -37,9 +37,9 @@ class RectangularFooting:
     """Rectangular Footing Size.
 
     :param float length:
-        Length of foundation footing
+        Length of foundation footing (m)
     :param float width:
-        Width of foundation footing
+        Width of foundation footing (m)
     """
 
     length: float
@@ -51,7 +51,7 @@ class FoundationSize:
     """A simple class representing a foundation.
 
     :param float depth:
-        Depth of foundation.
+        Depth of foundation (m)
     :param footing_size:
         Represents the type of footing size i.e. :class:`SquareFooting`,
         :class:`RectangularFooting` or :class:`CircularFooting`

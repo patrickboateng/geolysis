@@ -10,7 +10,7 @@ def terzaghi_peck_abc_chl_1948(
     foundation_size: FoundationSize,
 ):
     """Return allowable bearing capacity for cohesionless soils according to
-    ``Terzaghi & Peck (1948)``.
+    ``Terzaghi & Peck (1948)``. (:math:`kN/m^2`)
 
     :param float spt_n_val:
         Average uncorrected SPT N-values within the foundation influence

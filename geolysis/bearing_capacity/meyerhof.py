@@ -9,7 +9,7 @@ def meyerhof_abc_chl_1956(
     foundation_size: FoundationSize,
 ):
     """Return allowable bearing capacity for cohesionless soils according to
-    ``Meyerhof (1956)``.
+    ``Meyerhof (1956)``. (:math:`kN/m^2`)
 
     :param float spt_n_val:
         Average uncorrected SPT N-values within the foundation influence

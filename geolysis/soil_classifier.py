@@ -6,19 +6,20 @@ from math import trunc
 from types import MappingProxyType
 from typing import NamedTuple
 
-from geolysis import ERROR_TOLERANCE
-from geolysis.exceptions import PSDValueError
-from geolysis.utils import isclose, round_
-
-GRAVEL = "G"
-SAND = "S"
-CLAY = "C"
-SILT = "M"
-WELL_GRADED = "W"
-POORLY_GRADED = "P"
-ORGANIC = "O"
-LOW_PLASTICITY = "L"
-HIGH_PLASTICITY = "H"
+from .constants import (
+    CLAY,
+    ERROR_TOLERANCE,
+    GRAVEL,
+    HIGH_PLASTICITY,
+    LOW_PLASTICITY,
+    ORGANIC,
+    POORLY_GRADED,
+    SAND,
+    SILT,
+    WELL_GRADED,
+)
+from .exceptions import PSDValueError, SoilClassificationError
+from .utils import isclose, round_
 
 
 def _chk_psd(fines, sand, gravel):
@@ -46,6 +47,11 @@ class AtterbergLimits:
         self.plastic_limit = plastic_limit
 
     @property
+    def plasticity_index(self) -> float:
+        """Return the plasticity index of the soil."""
+        return self.liquid_limit - self.plastic_limit
+
+    @property
     @round_(ndigits=2)
     def A_line(self) -> float:
         """Return the ``A-line`` which is used to determine if a soil
@@ -66,11 +72,7 @@ class AtterbergLimits:
         """Checks if soil sample plot in the hatched zone."""
         return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
-    @property
-    def plasticity_index(self) -> float:
-        """Return the plasticity index of the soil."""
-        return self.liquid_limit - self.plastic_limit
-
+    @round_(ndigits=2)
     def liquidity_index(self, nmc: float) -> float:
         r"""Return the liquidity index of the soil.
 
@@ -80,6 +82,7 @@ class AtterbergLimits:
         """
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100
 
+    @round_(ndigits=2)
     def consistency_index(self, nmc: float) -> float:
         r"""Return the consistency index of the soil.
 
@@ -91,15 +94,27 @@ class AtterbergLimits:
 
 
 class ParticleSizes(NamedTuple):
-    d_10: float = 0
-    d_30: float = 0
-    d_60: float = 0
+    """Size distribution of the soil sample.
+
+    :kwparam float d_10:
+        Diameter at which 30% of the soil by weight is finer
+    :kwparam float d_30:
+        Diameter at which 30% of the soil by weight is finer
+    :kwparam float d_60:
+        Diameter at which 60% of the soil by weight is finer
+    """
+
+    d_10: float
+    d_30: float
+    d_60: float
 
     @property
+    @round_(ndigits=2)
     def coeff_of_curvature(self) -> float:
         return (self.d_30**2) / (self.d_60 * self.d_10)
 
     @property
+    @round_(ndigits=2)
     def coeff_of_uniformity(self) -> float:
         return self.d_60 / self.d_10
 
@@ -130,12 +145,10 @@ class ParticleSizeDistribution:
         Percentage of sand in soil sample (%)
     :param float gravel:
         Percentage of gravel in soil sample (%)
-    :kwparam float d10:
-        Diameter at which 30% of the soil by weight is finer
-    :kwparam float d30:
-        Diameter at which 30% of the soil by weight is finer
-    :kwparam float d60:
-        Diameter at which 60% of the soil by weight is finer
+    :param ParticleSizes particle_sizes:
+        Size distribution in the soil sample. It is a namedtuple with
+        values for ``d_10``, ``d_30``, and ``d_60`` respectively.
+        Defaults to ParticleSizes(0, 0, 0)
 
     :raises PSDValueError:
         Raised when soil aggregates does not approximately sum
@@ -147,6 +160,7 @@ class ParticleSizeDistribution:
         fines: float,
         sand: float,
         gravel: float,
+        *,
         particle_sizes=ParticleSizes(0, 0, 0),
     ):
         self.fines = fines
@@ -156,17 +170,9 @@ class ParticleSizeDistribution:
 
         _chk_psd(self.fines, self.sand, self.gravel)
 
-    def has_particle_sizes(self) -> bool:
-        """Checks if soil sample has particle sizes."""
-        return bool(all(self.particle_sizes))
-
-    def grade(self) -> str:
-        """Return the grade of the soil sample."""
-        coarse_soil = self.type_of_coarse
-        return self.particle_sizes.grade(coarse_soil=coarse_soil)
-
     @property
     def type_of_coarse(self) -> str:
+        """Return the type of coarse material i.e. either gravel or sand."""
         if self.gravel > self.sand:
             return GRAVEL
 
@@ -182,6 +188,15 @@ class ParticleSizeDistribution:
         r"""Return the coefficient of uniformity of the soil."""
         return self.particle_sizes.coeff_of_uniformity
 
+    def has_particle_sizes(self) -> bool:
+        """Checks if soil sample has particle sizes."""
+        return bool(all(self.particle_sizes))
+
+    def grade(self) -> str:
+        """Return the grade of the soil sample."""
+        coarse_soil = self.type_of_coarse
+        return self.particle_sizes.grade(coarse_soil=coarse_soil)
+
 
 PSD = ParticleSizeDistribution
 
@@ -193,14 +208,18 @@ class AASHTOClassification:
     :param float liquid_limit:
         Water content beyond which soils flows under their own weight
     :param float plasticity_index:
-        Range of water content over which soil remains in plastic
-        condition
+        Range of water content over which soil remains in plastic condition
     :param float fines:
         Percentage of fines in soil sample i.e. the percentage of soil
         sample passing through No. 200 sieve (0.075mm)
-    :param bool grp_idx:
-        Used to indicate whether the group index should be added to
-        the classification or not. Defaults to True.
+    :kwparam bool add_grp_idx:
+        Used to indicate whether the group index should be added to the
+        classification or not. Defaults to True.
+
+    .. note::
+
+        You can use :class:`AASHTOClassification` and :class:`AASHTO`
+        interchangeably.
     """
 
     def __init__(
@@ -208,12 +227,13 @@ class AASHTOClassification:
         liquid_limit: float,
         plasticity_index: float,
         fines: float,
-        add_group_index: bool = True,
+        *,
+        add_grp_idx: bool = True,
     ):
         self.liquid_limit = liquid_limit
         self.plasticity_index = plasticity_index
         self.fines = fines
-        self.add_group_index = add_group_index
+        self.add_grp_idx = add_grp_idx
 
     def group_index(self) -> float:
         """Return the Group Index (GI) of the soil sample."""
@@ -221,13 +241,26 @@ class AASHTOClassification:
         x_2 = 1 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
         x_3 = 1 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
         x_4 = 1 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
+
         grp_idx = round(x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4, 0)
 
         return 0 if grp_idx <= 0 else trunc(grp_idx)
 
+    def classify(self) -> str:
+        """Return the AASHTO classification of the soil sample."""
+
+        # Silts A4-A7
+        if self.fines > 35:
+            return self._fine_soil_classifier()
+
+        # Coarse A1-A3
+        return self._coarse_soil_classifier()
+
     def _coarse_soil_classifier(self) -> str:
         # A-3, Fine sand
-        if self.fines <= 10 and isclose(self.plasticity_index, 0):
+        if self.fines <= 10 and isclose(
+            self.plasticity_index, 0, rel_tol=ERROR_TOLERANCE
+        ):
             clf = f"A-3"
 
         # A-1-a -> A-1-b, Stone fragments, gravel, and sand
@@ -250,7 +283,7 @@ class AASHTOClassification:
             else:
                 clf = f"A-2-7"
 
-        if self.add_group_index:
+        if self.add_grp_idx:
             return f"{clf}({self.group_index()})"
         else:
             return clf
@@ -273,20 +306,10 @@ class AASHTOClassification:
                 else:
                     clf = f"A-7-6"
 
-        if self.add_group_index:
+        if self.add_grp_idx:
             return f"{clf}({self.group_index()})"
         else:
             return clf
-
-    def classify(self) -> str:
-        """Return the AASHTO classification of the soil sample."""
-
-        # Silts A4-A7
-        if self.fines > 35:
-            return self._fine_soil_classifier()
-
-        # Coarse A1-A3
-        return self._coarse_soil_classifier()
 
 
 AASHTO = AASHTOClassification
@@ -303,7 +326,7 @@ class UnifiedSoilClassification:
         Indicates whether the soil is organic or not
     """
 
-    soil_descriptions: MappingProxyType[str, str] = MappingProxyType(
+    soil_descriptions = MappingProxyType(
         {
             "GW": "Well graded gravels",
             "GP": "Poorly graded gravels",
@@ -341,6 +364,16 @@ class UnifiedSoilClassification:
         self.atterberg_limits = atterberg_limits
         self.psd = psd
         self.organic = organic
+
+    def classify(self) -> str:
+        """Return the Unified Soil Classification of the soil sample."""
+        # Fine grained, Run Atterberg
+        if self.psd.fines > 50:
+            return self._fine_soil_classifier()
+
+        # Coarse grained, Run Sieve Analysis
+        # Gravel or Sand
+        return self._coarse_soil_classifier()
 
     def _dual_soil_classifier(self) -> str:
         soil_grd = self.psd.grade()
@@ -426,16 +459,6 @@ class UnifiedSoilClassification:
 
         return clf
 
-    def classify(self) -> str:
-        """Return the Unified Soil Classification of the soil sample."""
-        # Fine grained, Run Atterberg
-        if self.psd.fines > 50:
-            return self._fine_soil_classifier()
-
-        # Coarse grained, Run Sieve Analysis
-        # Gravel or Sand
-        return self._coarse_soil_classifier()
-
     @classmethod
     def soil_description(cls, clf: str) -> str:
         """Return the typical names of soils classified with ``USCS``.
@@ -444,11 +467,22 @@ class UnifiedSoilClassification:
             Soil classification based on Unified Soil Classification
             System
 
-        :raises KeyError:
-            When ``clf`` is not a valid key
+        :raises SoilClassificationError:
+            Exception raised when a wrong classification (``clf``) is provided.
         """
         clf = clf.strip()
-        return cls.soil_descriptions[clf]
+
+        try:
+            desc = cls.soil_descriptions[clf]
+        except KeyError:
+            msg = (
+                f"{clf} is not a valid ``USCS`` classification. "
+                "Use geolysis.soil_classifier.USCS.soil_descriptions.keys() "
+                "for all available classifications."
+            )
+            raise SoilClassificationError(msg)
+        else:
+            return desc
 
 
 USCS = UnifiedSoilClassification

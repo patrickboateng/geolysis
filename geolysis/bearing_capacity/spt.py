@@ -2,7 +2,7 @@
 from statistics import StatisticsError
 from typing import Sequence
 
-from geolysis import ERROR_TOLERANCE, GeotechEng
+from geolysis.constants import ERROR_TOLERANCE, GeotechEng
 from geolysis.exceptions import EngineerTypeError
 from geolysis.utils import isclose, log10, mean, prod, round_, sqrt
 
@@ -12,8 +12,8 @@ def spt_n_design(
     corrected_spt_n_vals: Sequence[float],
     t: bool = False,
 ) -> float:
-    """Return the weighted average of the corrected SPT N-values
-    in the foundation influence zone.
+    """Return the weighted average of the corrected SPT N-values in the
+    foundation influence zone.
 
     :param Sequence[float] corrected_spt_n_vals:
         Corrected SPT N-values within the foundation influence zone i.e.
@@ -100,7 +100,7 @@ class SPTCorrections:
         self.rod_length_correction = rod_length_correction
 
     @round_(ndigits=2)
-    def spt_n60(self, recorded_spt_n_val: int) -> float:
+    def spt_n_60(self, recorded_spt_n_val: int) -> float:
         """Return SPT N-value standardized for field procedures.
 
         :param int recorded_spt_n_val:
@@ -115,6 +115,7 @@ class SPTCorrections:
 
         return (correction * recorded_spt_n_val) / 0.6
 
+    @round_(ndigits=2)
     def gibbs_holtz_opc_1957(
         self,
         recorded_spt_n_val: int,
@@ -133,18 +134,19 @@ class SPTCorrections:
             msg = f"{eop} should be less than or equal to {std_pressure}"
             raise ValueError(msg)
 
-        spt_n60 = self.spt_n60(recorded_spt_n_val)
+        spt_n_60 = self.spt_n_60(recorded_spt_n_val)
 
-        corrected_spt = spt_n60 * (350 / (eop + 70))
-        spt_ratio = corrected_spt / spt_n60
+        corrected_spt = spt_n_60 * (350 / (eop + 70))
+        spt_ratio = corrected_spt / spt_n_60
 
         if 0.45 < spt_ratio < 2.0:
             return corrected_spt
 
         corrected_spt = corrected_spt / 2 if spt_ratio > 2.0 else corrected_spt
 
-        return min(corrected_spt, 2 * spt_n60)
+        return min(corrected_spt, 2 * spt_n_60)
 
+    @round_(ndigits=2)
     def peck_et_al_opc_1974(
         self,
         recorded_spt_n_val: int,
@@ -161,11 +163,12 @@ class SPTCorrections:
             msg = f"{eop} should be greater than or equal to {std_pressure}"
             raise ValueError(msg)
 
-        spt_n60 = self.spt_n60(recorded_spt_n_val)
-        corrected_spt = 0.77 * log10(2000 / eop) * spt_n60
+        spt_n_60 = self.spt_n_60(recorded_spt_n_val)
+        corrected_spt = 0.77 * log10(2000 / eop) * spt_n_60
 
-        return min(corrected_spt, 2 * spt_n60)
+        return min(corrected_spt, 2 * spt_n_60)
 
+    @round_(ndigits=2)
     def liao_whitman_opc_1986(
         self,
         recorded_spt_n_val: int,
@@ -176,11 +179,12 @@ class SPTCorrections:
         :param int recorded_spt_n_val:
             Measured SPT N-value in the field
         """
-        spt_n60 = self.spt_n60(recorded_spt_n_val)
-        corrected_spt = sqrt(100 / eop) * spt_n60
+        spt_n_60 = self.spt_n_60(recorded_spt_n_val)
+        corrected_spt = sqrt(100 / eop) * spt_n_60
 
-        return min(corrected_spt, 2 * spt_n60)
+        return min(corrected_spt, 2 * spt_n_60)
 
+    @round_(ndigits=2)
     def skempton_opc_1986(self, recorded_spt_n_val: int, eop: float) -> float:
         r"""Return the overburden pressure correction given by
         ``Skempton (1986).``
@@ -188,11 +192,12 @@ class SPTCorrections:
         :param int recorded_spt_n_val:
             Measured SPT N-value in the field
         """
-        spt_n60 = self.spt_n60(recorded_spt_n_val)
-        corr_spt = (2 / (1 + 0.01044 * eop)) * spt_n60
+        spt_n_60 = self.spt_n_60(recorded_spt_n_val)
+        corr_spt = (2 / (1 + 0.01044 * eop)) * spt_n_60
 
-        return min(corr_spt, 2 * spt_n60)
+        return min(corr_spt, 2 * spt_n_60)
 
+    @round_(ndigits=2)
     def bazaraa_peck_opc_1969(
         self,
         recorded_spt_n_val: int,
@@ -205,19 +210,19 @@ class SPTCorrections:
             Measured SPT N-value in the field
         """
 
-        spt_n60 = self.spt_n60(recorded_spt_n_val)
         std_pressure = 71.8
+        spt_n_60 = self.spt_n_60(recorded_spt_n_val)
 
         if isclose(eop, std_pressure, rel_tol=ERROR_TOLERANCE):
-            return spt_n60
+            return spt_n_60
 
         if eop < std_pressure:
-            corrected_spt = 4 * spt_n60 / (1 + 0.0418 * eop)
+            corrected_spt = 4 * spt_n_60 / (1 + 0.0418 * eop)
 
         else:
-            corrected_spt = 4 * spt_n60 / (3.25 + 0.0104 * eop)
+            corrected_spt = 4 * spt_n_60 / (3.25 + 0.0104 * eop)
 
-        return min(corrected_spt, 2 * spt_n60)
+        return min(corrected_spt, 2 * spt_n_60)
 
     @round_(ndigits=2)
     def dilatancy_correction(self, recorded_spt_n_val: int) -> float:
@@ -227,14 +232,13 @@ class SPTCorrections:
             Measured SPT N-value in the field
         """
 
-        spt_n60 = self.spt_n60(recorded_spt_n_val)
+        spt_n_60 = self.spt_n_60(recorded_spt_n_val)
 
-        if spt_n60 <= 15:
-            return spt_n60
+        if spt_n_60 <= 15:
+            return spt_n_60
 
-        return 15 + 0.5 * (spt_n60 - 15)
+        return 15 + 0.5 * (spt_n_60 - 15)
 
-    @round_(ndigits=2)
     def overburden_pressure_correction(
         self,
         recorded_spt_n_val: int,
