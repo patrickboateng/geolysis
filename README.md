@@ -38,7 +38,6 @@
 
 - [What is geolysis?](#what-is-geolysis)
 - [Installation](#installation)
-- [Usage Example](#example)
 - [Release History](#release-history)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
@@ -70,56 +69,6 @@ geotechnical engineers right from college.
 ```shell
 pip install geolysis
 ```
-
-## Example
-
-### Classification of soil using `AASHTO` classification system
-
-```python
->>> from geolysis.soil_classifier import AASHTO, AASHTOClassification
->>> aashto_clf = AASHTOClassification(liquid_limit=37.7,
-...                                   plasticity_index=13.9,
-...                                   fines=47.44)
->>> aashto_clf.classify()
-'A-6(4)'
->>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
->>> aashto_clf.classify()
-'A-2-4(0)'
-
-```
-
-> [!NOTE]
-> `AASHTOClassification` and `AASHTO` can be used interchangeably
-> In other words `AASHTO` is an alias for `AASHTOClassification`
-
-### Classification of soil using `USCS` classification system
-
-```python
->>> from geolysis.soil_classifier import (
-...    USCS,
-...    UnifiedSoilClassification,
-...    AtterbergLimits,
-...    PSD,
-...    ParticleSizes,
-...    )
->>> al = AtterbergLimits(liquid_limit=35.83, plastic_limit=25.16)
->>> psd = PSD(fines=68.94, sand=28.88, gravel=2.18)
->>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
->>> uscs_clf.classify()
-'ML'
-
->>> al = AtterbergLimits(liquid_limit=30.8, plastic_limit=20.7)
->>> particle_sizes = ParticleSizes(d_10=0.07, d_30=0.3, d_60=0.8)
->>> psd = PSD(fines=10.29, sand=81.89, gravel=7.83, particle_sizes=particle_sizes)
->>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
->>> uscs_clf.classify()
-'SW-SC'
-
-```
-
-> [!NOTE]
-> `UnifiedSoilClassification` and `USCS` can be used interchangeably
-> In other words `USCS` is an alias for `UnifiedSoilClassification`
 
 ## Release History
 
