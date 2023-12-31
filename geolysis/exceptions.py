@@ -13,6 +13,7 @@ Exceptions (:mod:`geolab.exceptions`)
     FootingShapeError
 
 """
+from statistics import StatisticsError
 
 
 class PSDValueError(ArithmeticError):
