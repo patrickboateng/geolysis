@@ -463,8 +463,7 @@ class UnifiedSoilClassification:
         """Return the typical names of soils classified with ``USCS``.
 
         :param str clf:
-            Soil classification based on Unified Soil Classification
-            System
+            Soil classification based on USCS
 
         :raises SoilClassificationError:
             Exception raised when a wrong classification (``clf``) is provided.
@@ -472,7 +471,7 @@ class UnifiedSoilClassification:
         clf = clf.strip()
 
         try:
-            desc = cls.soil_descriptions[clf]
+            return cls.soil_descriptions[clf]
         except KeyError:
             msg = (
                 f"{clf} is not a valid ``USCS`` classification. "
@@ -480,8 +479,6 @@ class UnifiedSoilClassification:
                 "for all available classifications."
             )
             raise SoilClassificationError(msg)
-        else:
-            return desc
 
 
 # *****************ALIASES*******************
