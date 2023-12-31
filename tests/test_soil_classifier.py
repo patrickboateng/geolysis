@@ -2,57 +2,34 @@ from typing import Sequence
 
 import pytest
 
-from geolysis.constants import ERROR_TOLERANCE
 from geolysis.exceptions import PSDValueError, SoilClassificationError
-from geolysis.soil_classifier import (
-    AASHTO,
-    PSD,
-    USCS,
-    AASHTOClassification,
-    AtterbergLimits,
-    ParticleSizeDistribution,
-    ParticleSizes,
-    UnifiedSoilClassification,
-)
+from geolysis.soil_classifier import AASHTO, AL, PSD, USCS, ParticleSizes
 
 
 class TestAtterbergLimits:
     @classmethod
     def setup_class(cls):
-        cls.atterberg_limits = AtterbergLimits(
-            liquid_limit=25,
-            plastic_limit=15,
-        )
+        cls.atterberg_limits = AL(liquid_limit=25, plastic_limit=15)
 
     def test_plasticity_index(self):
         plasticity_index = self.atterberg_limits.plasticity_index
-        assert plasticity_index == pytest.approx(10, rel=ERROR_TOLERANCE)
+        assert plasticity_index == 10
 
     def test_liquidity_index(self):
         liquidity_index = self.atterberg_limits.liquidity_index(nmc=20)
-        assert liquidity_index == pytest.approx(50, rel=ERROR_TOLERANCE)
+        assert liquidity_index == 50
 
     def test_consistency_index(self):
         consistency_index = self.atterberg_limits.consistency_index(nmc=20)
-        assert consistency_index == pytest.approx(50, rel=ERROR_TOLERANCE)
+        assert consistency_index == 50
 
 
 class TestParticleSizeDistribution:
     def test_particle_coeff(self):
-        psd = PSD(
-            fines=0,
-            sand=0,
-            gravel=100,
-            particle_sizes=ParticleSizes(d_10=0.115, d_30=0.53, d_60=1.55),
-        )
-        assert psd.coeff_of_uniformity == pytest.approx(
-            13.48,
-            rel=ERROR_TOLERANCE,
-        )
-        assert psd.coeff_of_curvature == pytest.approx(
-            1.58,
-            rel=ERROR_TOLERANCE,
-        )
+        ps = ParticleSizes(d_10=0.115, d_30=0.53, d_60=1.55)
+        psd = PSD(fines=0, sand=0, gravel=100, particle_sizes=ps)
+        assert psd.coeff_of_uniformity == 13.48
+        assert psd.coeff_of_curvature == 1.58
 
     def test_PSDValueError(self):
         with pytest.raises(PSDValueError):
@@ -78,7 +55,7 @@ class TestAASHTOClassificationSystem:
         ],
     )
     def test_aashto_with_grp_idx(self, soil_params: Sequence, clf: str):
-        asshto_classifier = AASHTOClassification(*soil_params)
+        asshto_classifier = AASHTO(*soil_params)
         assert asshto_classifier.classify() == clf
 
     @pytest.mark.parametrize(
@@ -156,7 +133,7 @@ class TestUnifiedSoilClassificationSystem:
         particle_sizes: Sequence,
         clf: str,
     ):
-        atterberg_limits = AtterbergLimits(*al)
+        atterberg_limits = AL(*al)
         psd_ = PSD(*psd, particle_sizes=ParticleSizes(*particle_sizes))
         uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
@@ -204,8 +181,8 @@ class TestUnifiedSoilClassificationSystem:
         psd: Sequence,
         clf: str,
     ):
-        atterberg_limits = AtterbergLimits(*al)
-        psd_ = ParticleSizeDistribution(*psd)
+        atterberg_limits = AL(*al)
+        psd_ = PSD(*psd)
         uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
         assert uscs.classify() == clf
@@ -232,25 +209,22 @@ class TestUnifiedSoilClassificationSystem:
     def test_single_classification(
         self, al: Sequence, psd: Sequence, clf: str
     ):
-        atterberg_limits = AtterbergLimits(*al)
-        psd_ = ParticleSizeDistribution(*psd)
+        atterberg_limits = AL(*al)
+        psd_ = PSD(*psd)
         uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
         assert uscs.classify() == clf
 
-    def test_single_classification_2(self):
-        atterberg_limits = AtterbergLimits(35.83, 25.16)
+    def test_organic_soils(self):
+        atterberg_limits = AL(35.83, 25.16)
         psd = PSD(fines=68.94, sand=28.88, gravel=2.18)
-        uscs = UnifiedSoilClassification(atterberg_limits, psd, organic=True)
+        uscs = USCS(atterberg_limits, psd, organic=True)
 
         assert uscs.classify() == "OL"
 
-        atterberg_limits.liquid_limit = 55
-        atterberg_limits.plastic_limit = 40
-
-        psd.fines = 85
-        psd.sand = 15
-        psd.gravel = 0
+        atterberg_limits = AL(55.0, 40.0)
+        psd = PSD(fines=85, sand=15, gravel=0)
+        uscs = USCS(atterberg_limits, psd, organic=True)
 
         assert uscs.classify() == "OH"
 
