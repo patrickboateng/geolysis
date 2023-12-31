@@ -30,8 +30,9 @@ from typing import Callable
 
 PI = math.pi
 exp = math.exp
-mean = statistics.fmean
+inf = math.inf
 isclose = math.isclose
+mean = statistics.fmean
 
 
 def deg2rad(x: float | int, /) -> float:
