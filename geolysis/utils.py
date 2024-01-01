@@ -30,7 +30,6 @@ from typing import Callable
 
 PI = math.pi
 exp = math.exp
-inf = math.inf
 isclose = math.isclose
 mean = statistics.fmean
 
