@@ -111,18 +111,16 @@ def round_(ndigits: Callable[..., float] | int) -> Callable:
 
         # area_of_circle will return a value rounded to 3 d.p
 
-    :param Callable[..., float] | int precision:
+    :param int ndigits:
         The number of decimal places to round to. It can be
         an integer or a function that returns a float.
 
     :return:
         A decorator that rounds the result of the wrapped
         function.
-    :rtype:
-        Callable[..., float]
+    :rtype: Callable[..., float]
 
-    :raises TypeError:
-        If precision is neither a function nor an integer.
+    :raises TypeError: If precision is not an integer.
     """
 
     def dec(
@@ -140,11 +138,8 @@ def round_(ndigits: Callable[..., float] | int) -> Callable:
 
         return wrapper
 
-    if callable(ndigits):
-        return dec(ndigits)  # return wrapper
-
     if isinstance(ndigits, int):  # type: ignore
         return functools.partial(dec, ndigits=ndigits)  # return decorator
 
-    msg = "precision should be a function to be decorated or an int."
+    msg = "ndigits should be an int."
     raise TypeError(msg)
