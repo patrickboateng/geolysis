@@ -15,7 +15,7 @@
 
 #
 
-![Coveralls branch](https://img.shields.io/coverallsCoverage/github/patrickboateng/geolysis)
+[![Coverage Status](https://coveralls.io/repos/github/patrickboateng/geolysis/badge.svg)](https://coveralls.io/github/patrickboateng/geolysis)
 [![CI-Unit-Test](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/unit-tests.yml)
 [![CI-Build-Test](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml/badge.svg)](https://github.com/patrickboateng/geolysis/actions/workflows/build.yml)
 
