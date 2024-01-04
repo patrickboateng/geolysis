@@ -2,136 +2,147 @@ from statistics import StatisticsError
 
 import pytest
 
+from geolysis import GeotechEng
 from geolysis.bearing_capacity.spt import (
     SPTCorrections,
+    spt_n_60,
     spt_n_design,
     spt_n_val,
+    std_recorded_spt_n_vals,
 )
-from geolysis.constants import GeotechEng
-from geolysis.exceptions import EngineerTypeError
+from geolysis.exceptions import EngineerTypeError, OverburdenPressureError
 
 
 def test_spt_n_design():
     assert spt_n_design([7.0, 15.0, 18.0]) == 9.0
-    assert spt_n_design([7.0, 15.0, 18.0], t=True) == 7.0
 
     with pytest.raises(StatisticsError):
         spt_n_design([])
 
 
 def test_spt_n_val():
-    assert spt_n_val([8.0, 10.0, 14.0]) == 10.67
+    assert spt_n_val([8.0, 10.0, 14.0]) == 11
 
     with pytest.raises(StatisticsError):
         spt_n_val([])
 
 
+def test_spt_n_60():
+    assert spt_n_60(15) == 11.25
+
+
+def test_std_recorded_spt_nvals():
+    assert std_recorded_spt_n_vals([10, 20, 30, 40, 50]) == [
+        7.5,
+        15.0,
+        22.5,
+        30.0,
+        37.5,
+    ]
+
+
 class TestSPTCorrections:
     @classmethod
     def setup_class(cls):
-        cls.spt_correction = SPTCorrections(
-            eop=103.8,
-            hammer_efficiency=0.6,
-            borehole_diameter_correction=1,
-            sampler_correction=1,
-            rod_length_correction=0.85,
-        )
-        cls.recorded_spt_n_vals = {1.5: 10, 3.0: 20, 4.5: 25}
+        cls.std_spt_n_vals = [7.5, 15.0, 22.5, 30.0, 37.5]
 
-    def test_skempton_opc(self):
-        corrected_spt_n_vals = self.spt_correction(
-            self.recorded_spt_n_vals, eng=GeotechEng.SKEMPTON
+    def test_opcs_gibbs(self):
+        opcs = SPTCorrections().overburden_pressure_correction(
+            std_spt_n_vals=self.std_spt_n_vals,
+            eop=100,
+            eng=GeotechEng.GIBBS,
         )
-        assert corrected_spt_n_vals == [7.2, 14.4, 20.4]
+        assert opcs == [7.72, 15.44, 23.16, 30.88, 38.6]
+
+    def test_opcs_peck(self):
+        opcs = SPTCorrections().overburden_pressure_correction(
+            std_spt_n_vals=self.std_spt_n_vals,
+            eop=100,
+            eng=GeotechEng.PECK,
+        )
+        assert opcs == [7.51, 15.03, 22.54, 30.05, 37.57]
+
+    def test_opcs_liao(self):
+        opcs = SPTCorrections().overburden_pressure_correction(
+            std_spt_n_vals=self.std_spt_n_vals,
+            eop=100,
+            eng=GeotechEng.LIAO,
+        )
+        assert opcs == [7.5, 15, 22.5, 30, 37.5]
+
+    def test_opcs_skempton(self):
+        opcs = SPTCorrections().overburden_pressure_correction(
+            std_spt_n_vals=self.std_spt_n_vals,
+            eop=100,
+            eng=GeotechEng.SKEMPTON,
+        )
+        assert opcs == [7.34, 14.68, 22.02, 29.35, 36.69]
+
+    def test_opcs_bazaraa(self):
+        opcs = SPTCorrections().overburden_pressure_correction(
+            std_spt_n_vals=self.std_spt_n_vals,
+            eop=100,
+            eng=GeotechEng.BAZARAA,
+        )
+        assert opcs == [6.99, 13.99, 20.98, 27.97, 34.97]
+
+    def test_opcs_error(self):
+        with pytest.raises(EngineerTypeError):
+            SPTCorrections().overburden_pressure_correction(
+                std_spt_n_vals=self.std_spt_n_vals,
+                eop=100,
+                eng=GeotechEng.STROUD,
+            )
+
+    def test_dilatancy_correction(self):
+        dcs = SPTCorrections().dilatancy_correction(
+            corrected_spt_n_vals=[7.34, 14.68, 22.02, 29.35, 36.69]
+        )
+        assert dcs == [7.34, 14.68, 18.51, 22.18, 25.84]
 
     def test_gibbs_holtz_opc(self):
-        corrected_spt_n_vals = self.spt_correction(
-            self.recorded_spt_n_vals, eng=GeotechEng.GIBBS
-        )
-        assert corrected_spt_n_vals == [7.55, 15.1, 21.4]
+        opc = SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=150)
+        assert opc == 31.82
 
-    def test_peck_et_al(self):
-        corrected_spt_n_vals = self.spt_correction(
-            self.recorded_spt_n_vals, eng=GeotechEng.PECK
-        )
-        assert corrected_spt_n_vals == [7.42, 14.84, 21.02]
+        opc = SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=80)
+        assert opc == 23.33
+
+    def test_gibbs_holtz_opc_error(self):
+        with pytest.raises(OverburdenPressureError):
+            SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=0)
+
+        with pytest.raises(OverburdenPressureError):
+            SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=300)
+
+    def test_peck_et_al_opc(self):
+        opc = SPTCorrections.peck_et_al_opc_1974(spt_n_60=20, eop=50)
+        assert opc == 24.67
+
+    def test_peck_et_al_opc_error(self):
+        with pytest.raises(OverburdenPressureError):
+            SPTCorrections.peck_et_al_opc_1974(spt_n_60=20, eop=0)
+
+        with pytest.raises(OverburdenPressureError):
+            SPTCorrections.peck_et_al_opc_1974(spt_n_60=20, eop=20)
 
     def test_liao_whitman_opc(self):
-        corrected_spt_n_vals = self.spt_correction(
-            self.recorded_spt_n_vals, eng=GeotechEng.LIAO
-        )
-        assert corrected_spt_n_vals == [7.36, 14.72, 20.86]
+        opc = SPTCorrections.liao_whitman_opc_1986(spt_n_60=20, eop=50)
+        assert opc == 28.28
+
+    def test_liao_whitman_opc_error(self):
+        with pytest.raises(OverburdenPressureError):
+            SPTCorrections.liao_whitman_opc_1986(spt_n_60=20, eop=0)
+
+    def test_skempton_opc(self):
+        opc = SPTCorrections.skempton_opc_1986(spt_n_60=20, eop=50)
+        assert opc == 26.28
 
     def test_bazaraa_peck_opc(self):
-        corrected_spt_n_vals = self.spt_correction(
-            self.recorded_spt_n_vals, eng=GeotechEng.BAZARAA
-        )
-        assert corrected_spt_n_vals == [6.93, 13.86, 19.63]
+        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=20, eop=71.8)
+        assert opc == 20
 
-    def test_exception(self):
-        with pytest.raises(EngineerTypeError):
-            self.spt_correction(self.recorded_spt_n_vals, eng=GeotechEng.HOUGH)
+        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=20, eop=60)
+        assert opc == 22.81
 
-    @pytest.mark.parametrize(
-        ("recorded_spt_nval", "n60"),
-        ((15, 12.75), (8, 6.8), (7, 5.95), (26, 22.1)),
-    )
-    def test_spt_n60(self, recorded_spt_nval, n60):
-        assert self.spt_correction.spt_n_60(recorded_spt_nval) == n60
-
-    @pytest.mark.parametrize(("corr_spt_n_val", "exp"), ((15, 15), (30, 22.5)))
-    def test_dilatancy_correction(self, corr_spt_n_val, exp):
-        assert self.spt_correction.dilatancy_correction(corr_spt_n_val) == exp
-
-    # def test_overburden_pressure(self):
-    #     # Gibbs and Holtz (1957)
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=103.8, eng=GeotechEng.GIBBS
-    #     ) == pytest.approx(12.84, ERROR_TOLERANCE)
-
-    #     with pytest.raises(ValueError):
-    #         self.spt_correction.overburden_pressure_correction(
-    #             spt_n_60=15, eop=300, eng=GeotechEng.GIBBS
-    #         )
-
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=200, eng=GeotechEng.GIBBS
-    #     ) == pytest.approx(16.53, ERROR_TOLERANCE)
-
-    #     # Peck et al (1974)
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=103.8, eng=GeotechEng.PECK
-    #     ) == pytest.approx(12.61, ERROR_TOLERANCE)
-
-    #     with pytest.raises(ValueError):
-    #         self.spt_correction.overburden_pressure_correction(
-    #             spt_n_60=15, eop=20, eng=GeotechEng.PECK
-    #         )
-
-    #     # Liao and Whitman (1986)
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=103.8, eng=GeotechEng.LIAO
-    #     ) == pytest.approx(12.51, ERROR_TOLERANCE)
-
-    #     # Skempton (1986)
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=103.8, eng=GeotechEng.SKEMPTON
-    #     ) == pytest.approx(12.24, ERROR_TOLERANCE)
-
-    #     # Bazaraa and Peck (1969)
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=71.8, eng=GeotechEng.BAZARAA
-    #     ) == pytest.approx(12.75, ERROR_TOLERANCE)
-
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=60.8, eng=GeotechEng.BAZARAA
-    #     ) == pytest.approx(14.4, ERROR_TOLERANCE)
-
-    #     assert self.spt_correction.overburden_pressure_correction(
-    #         spt_n_60=15, eop=103.8, eng=GeotechEng.BAZARAA
-    #     ) == pytest.approx(11.78, ERROR_TOLERANCE)
-
-    #     with pytest.raises(EngineerTypeError):
-    #         self.spt_correction.overburden_pressure_correction(
-    #             spt_n_60=15, eop=103.8, eng=GeotechEng.KULLHAWY
-    #         )
+        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=20, eop=80)
+        assert opc == 19.6

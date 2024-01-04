@@ -1,7 +1,18 @@
 import pytest
 
 from geolysis.constants import ERROR_TOLERANCE
-from geolysis.utils import PI, cos, cot, deg2rad, rad2deg, round_, sin, tan
+from geolysis.utils import (
+    PI,
+    cos,
+    cot,
+    deg2rad,
+    log10,
+    rad2deg,
+    round_,
+    sin,
+    sqrt,
+    tan,
+)
 
 
 def test_deg2rad():
@@ -26,6 +37,14 @@ def test_sin():
 
 def test_cos():
     assert cos(45) == pytest.approx(0.707, ERROR_TOLERANCE)
+
+
+def test_log():
+    assert log10(10) == pytest.approx(1, ERROR_TOLERANCE)
+
+
+def test_sqrt():
+    assert sqrt(25) == pytest.approx(5, ERROR_TOLERANCE)
 
 
 def test_round():

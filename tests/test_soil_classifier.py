@@ -25,11 +25,16 @@ class TestAtterbergLimits:
 
 
 class TestParticleSizeDistribution:
-    def test_particle_coeff(self):
+    @classmethod
+    def setup_class(cls):
         ps = ParticleSizes(d_10=0.115, d_30=0.53, d_60=1.55)
-        psd = PSD(fines=0, sand=0, gravel=100, particle_sizes=ps)
-        assert psd.coeff_of_uniformity == 13.48
-        assert psd.coeff_of_curvature == 1.58
+        cls.psd = PSD(fines=0, sand=0, gravel=100, particle_sizes=ps)
+
+    def test_coeff_of_uniformity(self):
+        assert self.psd.coeff_of_uniformity == 13.48
+
+    def test_coeff_of_curvature(self):
+        assert self.psd.coeff_of_curvature == 1.58
 
     def test_PSDValueError(self):
         with pytest.raises(PSDValueError):
@@ -76,54 +81,14 @@ class TestUnifiedSoilClassificationSystem:
     @pytest.mark.parametrize(
         "al,psd,particle_sizes,clf",
         [
-            (
-                (30.8, 20.7),
-                (10.29, 81.89, 7.83),
-                (0.07, 0.3, 0.8),
-                "SW-SC",
-            ),
-            (
-                (24.4, 14.7),
-                (9.77, 44.82, 45.41),
-                (0.06, 0.6, 7),
-                "GP-GC",
-            ),
-            (
-                (49.5, 33.6),
-                (6.93, 91.79, 1.28),
-                (0.153, 0.4, 1.2),
-                "SP-SM",
-            ),
-            (
-                (30.33, 23.42),
-                (8.93, 7.69, 83.38),
-                (0.15, 18, 44),
-                "GP-GM",
-            ),
-            (
-                (35.32, 25.57),
-                (9.70, 5.63, 84.67),
-                (0.06, 50, 55),
-                "GP-GM",
-            ),
-            (
-                (26.17, 19.69),
-                (12.00, 8.24, 79.76),
-                (0.07, 15, 52),
-                "GP-GC",
-            ),
-            (
-                (30.59, 24.41),
-                (9.87, 19.03, 71.1),
-                (0.07, 0.3, 0.8),
-                "GW-GM",
-            ),
-            (
-                (32.78, 22.99),
-                (3.87, 15.42, 80.71),
-                (2.5, 6, 15),
-                "GP",
-            ),
+            ((30.8, 20.7), (10.29, 81.89, 7.83), (0.07, 0.3, 0.8), "SW-SC"),
+            ((24.4, 14.7), (9.77, 44.82, 45.41), (0.06, 0.6, 7), "GP-GC"),
+            ((49.5, 33.6), (6.93, 91.79, 1.28), (0.153, 0.4, 1.2), "SP-SM"),
+            ((30.33, 23.42), (8.93, 7.69, 83.38), (0.15, 18, 44), "GP-GM"),
+            ((35.32, 25.57), (9.70, 5.63, 84.67), (0.06, 50, 55), "GP-GM"),
+            ((26.17, 19.69), (12.00, 8.24, 79.76), (0.07, 15, 52), "GP-GC"),
+            ((30.59, 24.41), (9.87, 19.03, 71.1), (0.07, 0.3, 0.8), "GW-GM"),
+            ((32.78, 22.99), (3.87, 15.42, 80.71), (2.5, 6, 15), "GP"),
         ],
     )
     def test_dual_classification(
@@ -142,36 +107,12 @@ class TestUnifiedSoilClassificationSystem:
     @pytest.mark.parametrize(
         "al,psd,clf",
         [
-            (
-                (30.8, 20.7),
-                (10.29, 81.89, 7.83),
-                "SW-SC,SP-SC",
-            ),
-            (
-                (24.4, 14.7),
-                (9.77, 44.82, 45.41),
-                "GW-GC,GP-GC",
-            ),
-            (
-                (49.5, 33.6),
-                (6.93, 91.79, 1.28),
-                "SW-SM,SP-SM",
-            ),
-            (
-                (30.33, 23.42),
-                (8.93, 7.69, 83.38),
-                "GW-GM,GP-GM",
-            ),
-            (
-                (35.32, 25.57),
-                (9.70, 5.63, 84.67),
-                "GW-GM,GP-GM",
-            ),
-            (
-                (26.17, 19.69),
-                (12.00, 8.24, 79.76),
-                "GW-GC,GP-GC",
-            ),
+            ((30.8, 20.7), (10.29, 81.89, 7.83), "SW-SC,SP-SC"),
+            ((24.4, 14.7), (9.77, 44.82, 45.41), "GW-GC,GP-GC"),
+            ((49.5, 33.6), (6.93, 91.79, 1.28), "SW-SM,SP-SM"),
+            ((30.33, 23.42), (8.93, 7.69, 83.38), "GW-GM,GP-GM"),
+            ((35.32, 25.57), (9.70, 5.63, 84.67), "GW-GM,GP-GM"),
+            ((26.17, 19.69), (12.00, 8.24, 79.76), "GW-GC,GP-GC"),
             ((32.78, 22.99), (3.87, 15.42, 80.71), "GW or GP"),
         ],
     )
@@ -207,7 +148,10 @@ class TestUnifiedSoilClassificationSystem:
         ],
     )
     def test_single_classification(
-        self, al: Sequence, psd: Sequence, clf: str
+        self,
+        al: Sequence,
+        psd: Sequence,
+        clf: str,
     ):
         atterberg_limits = AL(*al)
         psd_ = PSD(*psd)
@@ -215,16 +159,17 @@ class TestUnifiedSoilClassificationSystem:
 
         assert uscs.classify() == clf
 
-    def test_organic_soils(self):
-        atterberg_limits = AL(35.83, 25.16)
+    def test_organic_soils_low_plasticity(self):
+        atterberg_limits = AL(liquid_limit=35.83, plastic_limit=25.16)
         psd = PSD(fines=68.94, sand=28.88, gravel=2.18)
-        uscs = USCS(atterberg_limits, psd, organic=True)
+        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd, organic=True)
 
         assert uscs.classify() == "OL"
 
-        atterberg_limits = AL(55.0, 40.0)
+    def test_organic_soils_high_plasticity(self):
+        atterberg_limits = AL(liquid_limit=55.0, plastic_limit=40.0)
         psd = PSD(fines=85, sand=15, gravel=0)
-        uscs = USCS(atterberg_limits, psd, organic=True)
+        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd, organic=True)
 
         assert uscs.classify() == "OH"
 
