@@ -79,20 +79,7 @@ def sqrt(x: float | int, /) -> float:
     return math.sqrt(x)
 
 
-def prod(*floats_or_ints) -> float:
-    """Calculate the product of all the elements in the
-    input iterable.
-
-    The default start value for the product is 1.
-
-    When the iterable is empty, return the start value.
-    This function is intended specifically for use with
-    numeric values and may reject non-numeric types.
-    """
-    return math.prod(floats_or_ints)
-
-
-def round_(ndigits: Callable[..., float] | int) -> Callable:
+def round_(ndigits: int) -> Callable:
     """A decorator that rounds the result of a function to
     a specified number of decimal places.
 
@@ -127,11 +114,8 @@ def round_(ndigits: Callable[..., float] | int) -> Callable:
         func: Callable[..., float],
         /,
         *,
-        ndigits: int = 2,
+        ndigits: int,
     ) -> Callable[..., float]:
-        # The inner decorator function that returns the wrapper function that
-        # performs the rounding.
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> float:
             return round(func(*args, **kwargs), ndigits=ndigits)
