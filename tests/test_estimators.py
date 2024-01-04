@@ -4,67 +4,85 @@ from geolysis.constants import ERROR_TOLERANCE
 from geolysis.estimators import (
     CompressionIndexEst,
     SoilFrictionAngleEst,
-    SoilUnitWeight,
+    SoilUnitWeightEst,
     UndrainedShearStrengthEst,
 )
+from geolysis.exceptions import EstimatorError
 
 
-def test_compression_index():
-    assert CompressionIndexEst.skempton_1994(liquid_limit=35) == pytest.approx(
-        0.175, ERROR_TOLERANCE
-    )
-    assert CompressionIndexEst.terzaghi_et_al_1967(
-        liquid_limit=35
-    ) == pytest.approx(0.225, ERROR_TOLERANCE)
+class TestSoilUnitWeightEst:
+    @classmethod
+    def setup_class(cls):
+        cls.suw = SoilUnitWeightEst(spt_n_60=13)
 
-    assert CompressionIndexEst.hough_1957(void_ratio=0.78) == pytest.approx(
-        0.148, ERROR_TOLERANCE
-    )
+    def test_moist_wgt(self):
+        assert self.suw.moist_wgt == 17.3
 
+    def test_saturated_wgt(self):
+        assert self.suw.saturated_wgt == 18.75
 
-def test_soil_friction_angle():
-    assert SoilFrictionAngleEst.wolff_1989(spt_n_60=50) == pytest.approx(
-        40.75, ERROR_TOLERANCE
-    )
-
-    assert SoilFrictionAngleEst.wolff_1989(spt_n_60=40) == pytest.approx(
-        38.236, ERROR_TOLERANCE
-    )
-
-    assert SoilFrictionAngleEst.kullhawy_mayne_1990(
-        spt_n_60=40, eop=103.8, atm_pressure=101.325
-    ) == pytest.approx(46.874, ERROR_TOLERANCE)
+    def test_submerged_wgt(self):
+        assert self.suw.submerged_wgt == 8.93
 
 
-def test_soil_unit_weight():
-    suw = SoilUnitWeight(spt_n_60=13)
-    assert suw.est_moist_wgt == pytest.approx(17.3, ERROR_TOLERANCE)
-    assert suw.est_saturated_wgt == pytest.approx(18.75, ERROR_TOLERANCE)
-    assert suw.est_submerged_wgt == pytest.approx(8.93, ERROR_TOLERANCE)
+class TestCompressionIndexEst:
+    @classmethod
+    def setup_class(cls):
+        cls.est_comp_idx = CompressionIndexEst()
+
+    def test_terzaghi_et_al_ci(self):
+        assert (
+            self.est_comp_idx.terzaghi_et_al_ci_1967(liquid_limit=35) == 0.225
+        )
+
+    def test_skempton_ci(self):
+        assert self.est_comp_idx.skempton_ci_1994(liquid_limit=35) == 0.175
+
+    def test_hough_ci(self):
+        assert self.est_comp_idx.hough_ci_1957(void_ratio=0.78) == 0.148
 
 
-def test_undrained_shear_strength():
-    assert UndrainedShearStrengthEst.stroud_1974(spt_n_60=40) == pytest.approx(
-        140, ERROR_TOLERANCE
-    )
+class TestSoilFrictionAngleEst:
+    @classmethod
+    def setup_class(cls):
+        cls.est_sfa = SoilFrictionAngleEst()
 
-    assert UndrainedShearStrengthEst.skempton_1957(
-        eop=108.3, plasticity_index=12
-    ) == pytest.approx(16.722, ERROR_TOLERANCE)
+    def test_wolff_sfa(self):
+        assert self.est_sfa.wolff_sfa_1989(spt_n_60=50) == 40.75
 
-    with pytest.raises(ValueError):
-        UndrainedShearStrengthEst.stroud_1974(spt_n_60=30, k=7)
+    def test_kullhawy_mayne_sfa(self):
+        assert (
+            self.est_sfa.kullhawy_mayne_sfa_1990(
+                spt_n_60=40,
+                eop=103.8,
+                atm_pressure=101.325,
+            )
+            == 46.874
+        )
+
+    def test_kullhawy_mayne_sfa_error(self):
+        with pytest.raises(EstimatorError):
+            self.est_sfa.kullhawy_mayne_sfa_1990(
+                spt_n_60=40,
+                eop=103.8,
+                atm_pressure=0,
+            )
 
 
-# def test_foundation_depth():
-#     est_depth = rankine_est_min_foundation_depth(
-#         allowable_bearing_capacity=350,
-#         soil_unit_weight=18,
-#         soil_friction_angle=35,
-#     )
-#     assert est_depth == pytest.approx(1.4, ERROR_TOLERANCE)
+class TestUndrainedShearStrengthEst:
+    @classmethod
+    def setup_class(cls):
+        cls.est_uss = UndrainedShearStrengthEst()
 
+    def test_stroud_uss(self):
+        assert self.est_uss.stroud_uss_1974(spt_n_60=40) == 140
 
-# def test_soil_elastic_modulus():
-#     est_elastic_modulus = bowles_est_soil_elastic_modulus(spt_n60=11)
-#     assert est_elastic_modulus == pytest.approx(8320, ERROR_TOLERANCE)
+    def test_stroud_uss_error(self):
+        with pytest.raises(EstimatorError):
+            self.est_uss.stroud_uss_1974(spt_n_60=30, k=7)
+
+    def test_skempton_uss(self):
+        assert (
+            self.est_uss.skempton_uss_1957(eop=108.3, plasticity_index=12)
+            == 16.722
+        )
