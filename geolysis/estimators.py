@@ -2,13 +2,14 @@
 estimators.
 """
 
-from geolysis.utils import arctan, round_
+from geolysis.constants import ERROR_TOLERANCE
+from geolysis.exceptions import EstimatorError
+from geolysis.utils import arctan, isclose, round_
 
 
-class SoilUnitWeight:
+class SoilUnitWeightEst:
     """Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight
-    of soil sample using
-    :class:`SPT N60 <geolysis.bearing_capacity.spt.SPTCorrection.spt_n60>`.
+    of soil sample using :func:`geolysis.bearing_capacity.spt.spt_n60`
 
     :param float spt_n_60:
         SPT N-value standardized for field procedures.
@@ -21,19 +22,19 @@ class SoilUnitWeight:
 
     @property
     @round_(ndigits=2)
-    def est_moist_wgt(self) -> float:
+    def moist_wgt(self) -> float:
         """Return the moist unit weight for cohesionless soil."""
         return 16.0 + 0.1 * self.spt_n_60
 
     @property
     @round_(ndigits=2)
-    def est_saturated_wgt(self) -> float:
+    def saturated_wgt(self) -> float:
         """Return the saturated unit weight for cohesive soil."""
         return 16.8 + 0.15 * self.spt_n_60
 
     @property
     @round_(ndigits=2)
-    def est_submerged_wgt(self) -> float:
+    def submerged_wgt(self) -> float:
         """Return the submerged unit weight of cohesionless soil."""
         return 8.8 + 0.01 * self.spt_n_60
 
@@ -49,7 +50,7 @@ class CompressionIndexEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def terzaghi_et_al_1967(liquid_limit: float) -> float:
+    def terzaghi_et_al_ci_1967(liquid_limit: float) -> float:
         """Return the compression index of the soil using ``Terzaghi's``
         correlation.
 
@@ -60,7 +61,7 @@ class CompressionIndexEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def skempton_1994(liquid_limit: float) -> float:
+    def skempton_ci_1994(liquid_limit: float) -> float:
         """Return the compression index of the soil using ``Skempton's``
         correlation.
 
@@ -71,7 +72,7 @@ class CompressionIndexEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def hough_1957(void_ratio: float) -> float:
+    def hough_ci_1957(void_ratio: float) -> float:
         """Return the compression index of the soil using ``Hough's``
         correlation.
 
@@ -91,18 +92,17 @@ class SoilFrictionAngleEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def wolff_1989(spt_n_60: float) -> float:
+    def wolff_sfa_1989(spt_n_60: float) -> float:
         """Return the internal angle of friction using ``Wolff's`` correlation
         for granular soils (degrees).
 
-        :param float spt_n_60:
-            SPT N-value standardized for field procedures.
+        :param float spt_n_60: SPT N-value standardized for field procedures.
         """
         return 27.1 + (0.3 * spt_n_60) - (0.00054 * (spt_n_60**2))
 
     @staticmethod
     @round_(ndigits=3)
-    def kullhawy_mayne_1990(
+    def kullhawy_mayne_sfa_1990(
         spt_n_60: float,
         eop: float,
         atm_pressure: float,
@@ -122,6 +122,10 @@ class SoilFrictionAngleEst:
             Effective overburden pressure and atmospheric pressure should all
             be in the same unit.
         """
+        if isclose(atm_pressure, 0, rel_tol=ERROR_TOLERANCE):
+            msg = f"atm_pressure cannot be {atm_pressure}"
+            raise EstimatorError(msg)
+
         return arctan(
             (spt_n_60 / (12.2 + 20.3 * (eop / atm_pressure))) ** 0.34
         )
@@ -136,32 +140,28 @@ class UndrainedShearStrengthEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def stroud_1974(spt_n_60: float, k=3.5):
+    def stroud_uss_1974(spt_n_60: float, k=3.5):
         """Return the undrained shear strength using ``Stroud's`` correlation.
 
-        :param float spt_n60:
-            SPT N-value standardized for field procedures.
-        :param float k:
-            stroud parameter, defaults to 3.5
+        :param float spt_n_60: SPT N-value standardized for field procedures.
+        :param float k: stroud constants, defaults to 3.5
 
-        :raises ValueError: If ``k`` is not in the specified range.
+        :raises EstimatorError: If ``k`` is not in the specified range.
         """
         if 3.5 <= k <= 6.5:
             return k * spt_n_60
 
         msg = f"k should be in the range 3.5 <= k <= 6.5 not {k}"
-        raise ValueError(msg)
+        raise EstimatorError(msg)
 
     @staticmethod
     @round_(ndigits=3)
-    def skempton_1957(eop: float, plasticity_index: float):
+    def skempton_uss_1957(eop: float, plasticity_index: float):
         """Return the undrained shear strength using ``Skempton's``
         correlation.
 
-        :param float eop:
-            Effective overburden pressure :math:`kN/m^2`, defaults to 0
-        :param float plasticity_index:
-            Range of water content over which soil remains in plastic condition,
-            defaults to 0
+        :param float eop: Effective overburden pressure :math:`kN/m^2`
+        :param float plasticity_index: Range of water content over which
+            soil remains in plastic condition,
         """
         return eop * (0.11 + 0.0037 * plasticity_index)
