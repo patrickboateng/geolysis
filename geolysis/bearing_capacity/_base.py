@@ -20,11 +20,6 @@ class CircularFooting:
 
     width: float
 
-    @property
-    @round_(ndigits=2)
-    def area_of_footing(self):
-        return PI * self.width**2 / 4
-
 
 @dataclass
 class SquareFooting:
@@ -34,11 +29,6 @@ class SquareFooting:
     """
 
     width: float
-
-    @property
-    @round_(ndigits=2)
-    def area_of_footing(self):
-        return self.width**2
 
 
 @dataclass
@@ -51,11 +41,6 @@ class RectangularFooting:
 
     length: float
     width: float
-
-    @property
-    @round_(ndigits=2)
-    def area_of_footing(self):
-        return self.length * self.width
 
 
 @dataclass
