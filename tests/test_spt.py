@@ -16,6 +16,8 @@ from geolysis.exceptions import EngineerTypeError, OverburdenPressureError
 def test_spt_n_design():
     assert spt_n_design([7.0, 15.0, 18.0]) == 9.0
 
+
+def test_spt_n_design_error():
     with pytest.raises(StatisticsError):
         spt_n_design([])
 
@@ -23,6 +25,8 @@ def test_spt_n_design():
 def test_spt_n_val():
     assert spt_n_val([8.0, 10.0, 14.0]) == 11
 
+
+def test_spt_n_val_error():
     with pytest.raises(StatisticsError):
         spt_n_val([])
 
@@ -100,30 +104,33 @@ class TestSPTCorrections:
         )
         assert dcs == [7.34, 14.68, 18.51, 22.18, 25.84]
 
-    def test_gibbs_holtz_opc(self):
-        opc = SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=150)
-        assert opc == 31.82
+    @pytest.mark.parametrize(
+        ("spt_n_60", "eop", "corr"),
+        ((20, 150, 31.82), (20, 80, 23.33)),
+    )
+    def test_gibbs_holtz_opc(self, spt_n_60, eop, corr):
+        opc = SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=spt_n_60, eop=eop)
+        assert opc == corr
 
-        opc = SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=80)
-        assert opc == 23.33
-
-    def test_gibbs_holtz_opc_error(self):
+    @pytest.mark.parametrize(
+        ("spt_n_60", "eop"),
+        ((20, 0), (20, 300)),
+    )
+    def test_gibbs_holtz_opc_error(self, spt_n_60, eop):
         with pytest.raises(OverburdenPressureError):
-            SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=0)
-
-        with pytest.raises(OverburdenPressureError):
-            SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=20, eop=300)
+            SPTCorrections.gibbs_holtz_opc_1957(spt_n_60=spt_n_60, eop=eop)
 
     def test_peck_et_al_opc(self):
         opc = SPTCorrections.peck_et_al_opc_1974(spt_n_60=20, eop=50)
         assert opc == 24.67
 
-    def test_peck_et_al_opc_error(self):
+    @pytest.mark.parametrize(
+        ("spt_n_60", "eop"),
+        ((20, 0), (20, 20)),
+    )
+    def test_peck_et_al_opc_error(self, spt_n_60, eop):
         with pytest.raises(OverburdenPressureError):
-            SPTCorrections.peck_et_al_opc_1974(spt_n_60=20, eop=0)
-
-        with pytest.raises(OverburdenPressureError):
-            SPTCorrections.peck_et_al_opc_1974(spt_n_60=20, eop=20)
+            SPTCorrections.peck_et_al_opc_1974(spt_n_60=spt_n_60, eop=eop)
 
     def test_liao_whitman_opc(self):
         opc = SPTCorrections.liao_whitman_opc_1986(spt_n_60=20, eop=50)
@@ -137,12 +144,10 @@ class TestSPTCorrections:
         opc = SPTCorrections.skempton_opc_1986(spt_n_60=20, eop=50)
         assert opc == 26.28
 
-    def test_bazaraa_peck_opc(self):
-        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=20, eop=71.8)
-        assert opc == 20
-
-        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=20, eop=60)
-        assert opc == 22.81
-
-        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=20, eop=80)
-        assert opc == 19.6
+    @pytest.mark.parametrize(
+        ("spt_n_60", "eop", "corr"),
+        ((20, 71.8, 20), (20, 60, 22.81), (20, 80, 19.6)),
+    )
+    def test_bazaraa_peck_opc(self, spt_n_60, eop, corr):
+        opc = SPTCorrections.bazaraa_peck_opc_1969(spt_n_60=spt_n_60, eop=eop)
+        assert opc == corr
