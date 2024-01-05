@@ -5,44 +5,33 @@ import pytest
 from geolysis import GeotechEng
 from geolysis.bearing_capacity.spt import (
     SPTCorrections,
+    avg_uncorrected_spt_n_val,
     spt_n_60,
-    spt_n_design,
-    spt_n_val,
-    std_recorded_spt_n_vals,
+    weighted_avg_spt_n_val,
 )
 from geolysis.exceptions import EngineerTypeError, OverburdenPressureError
 
 
-def test_spt_n_design():
-    assert spt_n_design([7.0, 15.0, 18.0]) == 9.0
+def test_wgted_avg_spt_n_val():
+    assert weighted_avg_spt_n_val([7.0, 15.0, 18.0]) == 9.0
 
 
-def test_spt_n_design_error():
+def test_wgted_avg_spt_n_val_error():
     with pytest.raises(StatisticsError):
-        spt_n_design([])
+        weighted_avg_spt_n_val([])
 
 
-def test_spt_n_val():
-    assert spt_n_val([8.0, 10.0, 14.0]) == 11
+def test_avg_uncorrected_spt_n_val():
+    assert avg_uncorrected_spt_n_val([8.0, 10.0, 14.0]) == 11
 
 
 def test_spt_n_val_error():
     with pytest.raises(StatisticsError):
-        spt_n_val([])
+        avg_uncorrected_spt_n_val([])
 
 
 def test_spt_n_60():
     assert spt_n_60(15) == 11.25
-
-
-def test_std_recorded_spt_nvals():
-    assert std_recorded_spt_n_vals([10, 20, 30, 40, 50]) == [
-        7.5,
-        15.0,
-        22.5,
-        30.0,
-        37.5,
-    ]
 
 
 class TestSPTCorrections:

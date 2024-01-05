@@ -12,7 +12,7 @@ from geolysis.utils import isclose, log10, mean, round_, sqrt
 
 
 @round_(ndigits=0)
-def spt_n_design(corrected_spt_n_vals: Sequence[float]) -> float:
+def weighted_avg_spt_n_val(corrected_spt_n_vals: Sequence[float]) -> float:
     """Return the weighted average of the corrected SPT N-values in the
     foundation influence zone.
 
@@ -25,7 +25,7 @@ def spt_n_design(corrected_spt_n_vals: Sequence[float]) -> float:
     :raises StatisticError: If `corrected_spt_n_vals` is empty, StatisticError
         is raised
     """
-    if len(corrected_spt_n_vals) == 0:
+    if not corrected_spt_n_vals:
         msg = "spt_n_design requires at least one corrected spt n-value"
         raise StatisticsError(msg)
 
@@ -41,7 +41,7 @@ def spt_n_design(corrected_spt_n_vals: Sequence[float]) -> float:
 
 
 @round_(ndigits=0)
-def spt_n_val(uncorrected_spt_n_vals: Sequence[float]):
+def avg_uncorrected_spt_n_val(uncorrected_spt_n_vals: Sequence[float]):
     """Return the average of the corrected SPT N-values in the foundation
     influence zone.
 
@@ -53,7 +53,7 @@ def spt_n_val(uncorrected_spt_n_vals: Sequence[float]):
     :return: Average of corrected SPT N-values
     :rtype: float
     """
-    if len(uncorrected_spt_n_vals) == 0:
+    if not uncorrected_spt_n_vals:
         msg = "spt_n_val requires at least one corrected spt n-value"
         raise StatisticsError(msg)
 
@@ -85,10 +85,6 @@ def spt_n_60(
     )
 
     return (correction * recorded_spt_n_val) / 0.6
-
-
-def std_recorded_spt_n_vals(recorded_spt_n_vals: Sequence[float], **kwargs):
-    return list(map(partial(spt_n_60, **kwargs), recorded_spt_n_vals))
 
 
 class SPTCorrections:
@@ -127,8 +123,8 @@ class SPTCorrections:
     @staticmethod
     @round_(ndigits=2)
     def gibbs_holtz_opc_1957(spt_n_60: float, eop: float) -> float:
-        """Return the overburden pressure correction given by ``Gibbs and
-        Holtz (1957)``.
+        """Return the overburden pressure correction given by ``Gibbs and Holtz
+        (1957)``.
         """
 
         std_pressure = 280
