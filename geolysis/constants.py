@@ -13,8 +13,14 @@ LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
+class EngineerTypeError(TypeError):
+    pass
+
+
 class GeotechEng(enum.IntEnum):
-    """Represents a set of ``Geotechnical Engineers``."""
+    """Represents a set of names of Geotechnical Engineers whose theories have
+    been utilised in developing this package.
+    """
 
     BAZARAA = 1
     GIBBS = 2

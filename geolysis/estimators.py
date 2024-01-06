@@ -3,13 +3,17 @@ estimators.
 """
 
 from geolysis.constants import ERROR_TOLERANCE
-from geolysis.exceptions import EstimatorError
+
 from geolysis.utils import arctan, isclose, round_
+
+
+class EstimatorError(ValueError):
+    pass
 
 
 class SoilUnitWeightEst:
     """Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight
-    of soil sample using :func:`geolysis.bearing_capacity.spt.spt_n60`
+    of soil sample using :func:`geolysis.bearing_capacity.spt.spt_n_60`
 
     :param float spt_n_60:
         SPT N-value standardized for field procedures.

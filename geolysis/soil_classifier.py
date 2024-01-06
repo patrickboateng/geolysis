@@ -18,8 +18,15 @@ from .constants import (
     SILT,
     WELL_GRADED,
 )
-from .exceptions import PSDValueError, SoilClassificationError
 from .utils import isclose, round_
+
+
+class PSDValueError(ValueError):
+    pass
+
+
+class SoilClassificationError(ValueError):
+    pass
 
 
 def _chk_psd(fines, sand, gravel):
@@ -474,9 +481,9 @@ class UnifiedSoilClassification:
             return cls.soil_descriptions[clf]
         except KeyError:
             msg = (
-                f"{clf} is not a valid ``USCS`` classification. "
-                "Use geolysis.soil_classifier.USCS.soil_descriptions.keys() "
-                "for all available classifications."
+                f"{clf} is not a valid USCS classification. "
+                "Use geolysis.USCS.soil_descriptions.keys() "
+                "to obtain all available USCS  classifications."
             )
             raise SoilClassificationError(msg)
 
