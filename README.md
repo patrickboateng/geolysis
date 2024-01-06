@@ -47,16 +47,16 @@
 ## What is geolysis?
 
 `geolysis` is an open-source software for geotechnical analysis and modeling.
-It provides features such as soil classifications
-(based on the `USCS` and `AASHTO` classification standards), estimating soil
-bearing capacity using SPT N-value, and estimating of soil engineering parameters
-such as Soil Unit Weight (moist, saturated, and submerged), Compression index,
-soil internal angle of friction, and undrained shear strength of soil.
+It provides features such as `soil classifications`
+(based on the USCS and AASHTO classification standards), `estimating soil
+bearing capacity` using SPT N-value, and `estimating of soil engineering parameters`
+such as `Soil Unit Weight` (moist, saturated, and submerged), `Compression index`,
+`soil internal angle of friction`, and `undrained shear strength of soil`.
 
 **Features to include in upcoming versions:**
 
 - Settlement analysis
-- Finite element modeling
+- Discrete element method (DEM)
 
 The motivation behind `geolysis` is to provide free software to assist geotechnical
 engineers in their day-to-day work and to expose civil engineering students
