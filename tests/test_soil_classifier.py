@@ -2,8 +2,15 @@ from typing import Sequence
 
 import pytest
 
-from geolysis.exceptions import PSDValueError, SoilClassificationError
-from geolysis.soil_classifier import AASHTO, AL, PSD, USCS, ParticleSizes
+from geolysis.soil_classifier import (
+    AASHTO,
+    AL,
+    PSD,
+    USCS,
+    ParticleSizes,
+    PSDValueError,
+    SoilClassificationError,
+)
 
 
 class TestAtterbergLimits:

@@ -4,12 +4,14 @@ import pytest
 
 from geolysis import GeotechEng
 from geolysis.bearing_capacity.spt import (
+    OverburdenPressureError,
     SPTCorrections,
     avg_uncorrected_spt_n_val,
     spt_n_60,
     weighted_avg_spt_n_val,
 )
-from geolysis.exceptions import EngineerTypeError, OverburdenPressureError
+
+from geolysis.constants import EngineerTypeError
 
 
 def test_wgted_avg_spt_n_val():

@@ -1,13 +1,13 @@
 import pytest
 
-from geolysis.constants import ERROR_TOLERANCE
+from geolysis import ERROR_TOLERANCE
 from geolysis.estimators import (
     CompressionIndexEst,
+    EstimatorError,
     SoilFrictionAngleEst,
     SoilUnitWeightEst,
     UndrainedShearStrengthEst,
 )
-from geolysis.exceptions import EstimatorError
 
 
 class TestSoilUnitWeightEst:

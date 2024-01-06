@@ -1,13 +1,16 @@
 import pytest
 
-from geolysis.bearing_capacity import FoundationSize, SquareFooting
+from geolysis.bearing_capacity import (
+    AllowableSettlementError,
+    FoundationSize,
+    SquareFooting,
+)
 from geolysis.bearing_capacity.abc import (
     bowles_cohl_abc_1997,
     meyerhof_cohl_abc_1956,
     terzaghi_peck_cohl_abc_1948,
 )
 from geolysis.constants import ERROR_TOLERANCE
-from geolysis.exceptions import AllowableSettlementError
 
 
 @pytest.mark.parametrize(
