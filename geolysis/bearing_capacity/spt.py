@@ -1,14 +1,14 @@
 """This module provides classes for SPT Data Analysis."""
 from functools import partial
+from statistics import StatisticsError
 from typing import Sequence
 
-from geolysis.constants import ERROR_TOLERANCE, GeotechEng
-from geolysis.exceptions import (
-    EngineerTypeError,
-    OverburdenPressureError,
-    StatisticsError,
-)
+from geolysis.constants import ERROR_TOLERANCE, EngineerTypeError, GeotechEng
 from geolysis.utils import isclose, log10, mean, round_, sqrt
+
+
+class OverburdenPressureError(ValueError):
+    pass
 
 
 @round_(ndigits=0)

@@ -1,6 +1,17 @@
 from geolysis.utils import round_
 
-from ._base import FoundationSize, _chk_settlement
+from ._base import FoundationSize
+
+
+class AllowableSettlementError(ValueError):
+    pass
+
+
+def _chk_settlement(actual_settlement: float, allowable_settlement: float):
+    if actual_settlement > allowable_settlement:
+        msg = f"Settlement: {actual_settlement} should be less than or equal \
+                Allowable Settlement: {allowable_settlement}"
+        raise AllowableSettlementError(msg)
 
 
 @round_(ndigits=2)

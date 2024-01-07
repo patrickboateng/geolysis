@@ -1,14 +1,6 @@
 from dataclasses import dataclass
 
-from geolysis.exceptions import AllowableSettlementError
 from geolysis.utils import PI, round_
-
-
-def _chk_settlement(actual_settlement: float, allowable_settlement: float):
-    if actual_settlement > allowable_settlement:
-        msg = f"Settlement: {actual_settlement} should be less than or equal \
-                Allowable Settlement: {allowable_settlement}"
-        raise AllowableSettlementError(msg)
 
 
 @dataclass

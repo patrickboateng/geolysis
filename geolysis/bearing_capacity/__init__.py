@@ -6,5 +6,5 @@ from ._base import (
     FoundationSize,
     RectangularFooting,
     SquareFooting,
-    _chk_settlement,
 )
+from .abc import AllowableSettlementError
