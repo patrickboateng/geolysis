@@ -1,28 +1,6 @@
+"""This is a module for defining helpers which do not depend on the rest of
+``geolysis``.
 """
-.. currentmodule:: geolab.utils
-
-======================================
-Utility Function (:mod:`geolab.utils`)
-======================================
-
-.. autosummary:: 
-
-    exp
-    deg2rad
-    rad2deg
-    tan
-    sin
-    cos
-    arctan
-    log10
-    sqrt
-    prod
-    round_
-
-.. autodecorator:: round_
-
-"""
-
 import functools
 import math
 import statistics
@@ -80,8 +58,8 @@ def sqrt(x: float | int, /) -> float:
 
 
 def round_(ndigits: int) -> Callable:
-    """A decorator that rounds the result of a function to
-    a specified number of decimal places.
+    """A decorator that rounds the result of a function to a specified number
+    of decimal places.
 
     This decorator can be used with functions that return
     a float.
