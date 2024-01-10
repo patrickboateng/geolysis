@@ -3,7 +3,7 @@ from statistics import StatisticsError
 import pytest
 
 from geolysis import GeotechEng
-from geolysis.bearing_capacity.spt import (
+from geolysis.spt import (
     OverburdenPressureError,
     SPTCorrections,
     avg_uncorrected_spt_n_val,
