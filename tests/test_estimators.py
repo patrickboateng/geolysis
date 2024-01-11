@@ -1,6 +1,5 @@
 import pytest
 
-from geolysis import ERROR_TOLERANCE
 from geolysis.estimators import (
     CompressionIndexEst,
     EstimatorError,

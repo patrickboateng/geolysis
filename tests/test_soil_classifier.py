@@ -7,8 +7,8 @@ from geolysis.soil_classifier import (
     AL,
     PSD,
     USCS,
-    ParticleSizes,
     PSDValueError,
+    SizeDistribution,
     SoilClassificationError,
 )
 
@@ -34,8 +34,8 @@ class TestAtterbergLimits:
 class TestParticleSizeDistribution:
     @classmethod
     def setup_class(cls):
-        ps = ParticleSizes(d_10=0.115, d_30=0.53, d_60=1.55)
-        cls.psd = PSD(fines=0, sand=0, gravel=100, particle_sizes=ps)
+        ps = SizeDistribution(d_10=0.115, d_30=0.53, d_60=1.55)
+        cls.psd = PSD(fines=0, sand=0, gravel=100, size_dist=ps)
 
     def test_coeff_of_uniformity(self):
         assert self.psd.coeff_of_uniformity == 13.48
@@ -80,7 +80,7 @@ class TestAASHTOClassificationSystem:
         ],
     )
     def test_aashto_without_grp_idx(self, soil_params: Sequence, clf: str):
-        asshto_classifier = AASHTO(*soil_params, add_grp_idx=False)
+        asshto_classifier = AASHTO(*soil_params, add_group_idx=False)
         assert asshto_classifier.classify() == clf
 
 
@@ -106,7 +106,7 @@ class TestUnifiedSoilClassificationSystem:
         clf: str,
     ):
         atterberg_limits = AL(*al)
-        psd_ = PSD(*psd, particle_sizes=ParticleSizes(*particle_sizes))
+        psd_ = PSD(*psd, size_dist=SizeDistribution(*particle_sizes))
         uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
 
         assert uscs.classify() == clf

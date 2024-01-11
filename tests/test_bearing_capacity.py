@@ -10,7 +10,7 @@ from geolysis.bearing_capacity.abc import (
     meyerhof_cohl_abc_1956,
     terzaghi_peck_cohl_abc_1948,
 )
-from geolysis.constants import ERROR_TOLERANCE
+from geolysis.constants import ERROR_TOL
 
 
 @pytest.mark.parametrize(
@@ -27,7 +27,7 @@ def test_bowles_cohl_abc(spt_n_val, act_sett, found_depth, footing_dim, abc):
         actual_settlement=act_sett,
         foundation_size=fs,
     )
-    assert b_abc == pytest.approx(abc, ERROR_TOLERANCE)
+    assert b_abc == pytest.approx(abc, ERROR_TOL)
 
 
 @pytest.mark.parametrize(
@@ -44,7 +44,7 @@ def test_meyerhof_cohl_abc(spt_n_val, act_sett, found_depth, footing_dim, abc):
         actual_settlement=act_sett,
         foundation_size=fs,
     )
-    assert m_abc == pytest.approx(abc, ERROR_TOLERANCE)
+    assert m_abc == pytest.approx(abc, ERROR_TOL)
 
 
 def test_meyerhof_cohl_abc_error(foundation_size):
@@ -78,4 +78,4 @@ def test_terzaghi_peck_cohl_abc(
         water_depth=water_depth,
         foundation_size=fs,
     )
-    assert t_abc == pytest.approx(abc, ERROR_TOLERANCE)
+    assert t_abc == pytest.approx(abc, ERROR_TOL)
