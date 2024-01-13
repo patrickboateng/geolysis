@@ -35,11 +35,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      # - name: Test with pytest and coverage
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     coveralls --service=github
       - uses: actions/checkout@v3
       - name: Install Coverage
         run: |
