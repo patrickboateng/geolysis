@@ -28,17 +28,23 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install pytest coveralls coverage
-      - name: Run tests with coverage
-        run: coverage run --source=geolysis -m pytest tests/
+      - name: Test with pytest and coverage
+        run: pytest
 
   coverage:
     needs: test
     runs-on: ubuntu_latest
     steps:
-      - name: Test with pytest and coverage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Test with pytest and coverage
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     coveralls --service=github
+      - name: Test with coverage
         run: |
-          coveralls --service=github
-      # - name: Coveralls GitHub Action
-      #   uses: coverallsapp/github-action@v2.2.3
+          coverage run --source=geolysis -m pytest tests/
+          coverage lcov
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2.2.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
