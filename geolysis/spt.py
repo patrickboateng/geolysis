@@ -3,12 +3,12 @@ from functools import partial
 from statistics import StatisticsError
 from typing import Sequence
 
-from geolysis.constants import ERROR_TOLERANCE, EngineerTypeError, GeotechEng
+from geolysis.constants import ERROR_TOL, EngineerTypeError, GeotechEng
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 
 
 class OverburdenPressureError(ValueError):
-    pass
+    """Class for overburden pressure related errors."""
 
 
 @round_(ndigits=0)
@@ -16,14 +16,13 @@ def weighted_avg_spt_n_val(corrected_spt_n_vals: Sequence[float]) -> float:
     """Return the weighted average of the corrected SPT N-values in the
     foundation influence zone.
 
-    :param Sequence[float] corrected_spt_n_vals: Corrected SPT N-values
-        within the foundation influence zone i.e. :math:`D_f` to :math:`D_f + 2B`
+    :param Sequence[float] corrected_spt_n_vals: Corrected SPT N-values within the
+        foundation influence zone i.e. :math:`D_f` to :math:`D_f + 2B`
 
-    :return: weighted average of corrected SPT N-values
+    :return: Weighted average of corrected SPT N-values
     :rtype: float
 
-    :raises StatisticError: If `corrected_spt_n_vals` is empty, StatisticError
-        is raised
+    :raises StatisticError: If `corrected_spt_n_vals` is empty, StatisticError is raised.
     """
     if not corrected_spt_n_vals:
         msg = "spt_n_design requires at least one corrected spt n-value"
@@ -42,13 +41,12 @@ def weighted_avg_spt_n_val(corrected_spt_n_vals: Sequence[float]) -> float:
 
 @round_(ndigits=0)
 def avg_uncorrected_spt_n_val(uncorrected_spt_n_vals: Sequence[float]):
-    """Return the average of the corrected SPT N-values in the foundation
+    """Return the average of the uncorrected SPT N-values in the foundation
     influence zone.
 
-    :param Sequence[float] uncorrected_spt_n_vals:
-        Uncorrected SPT N-values within the foundation influence zone i.e.
-        :math:`D_f` |rarr| :math:`D_f + 2B`. Only water table correction
-        suggested
+    :param Sequence[float] uncorrected_spt_n_vals: Uncorrected SPT N-values within the
+        foundation influence zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`. Only water
+        table correction suggested.
 
     :return: Average of corrected SPT N-values
     :rtype: float
@@ -91,9 +89,13 @@ class SPTCorrections:
     """Standard Penetration Test N-value correction for **Overburden Pressure**
     and **Dilatancy**.
 
-    The available overburden pressure corrections are ``Gibbs & Holtz (1957)``,
-    ``Peck et al (1974)``, ``Liao & Whitman (1986)``, ``Skempton (1986)``, and
-    ``Bazaraa & Peck (1969)``.
+    .. rubric:: Available Overburden Pressure Corrections
+
+    - :meth:`Gibbs & Holtz (1957) <.gibbs_holtz_opc_1957>`
+    - :meth:`Peck et al (1974) <.peck_et_al_opc_1974>`
+    - :meth:`Liao & Whitman (1986) <.liao_whitman_opc_1986>`
+    - :meth:`Skempton (1986) <.skempton_opc_1986>`
+    - :meth:`Bazaraa & Peck (1969) <.bazaraa_peck_opc_1969>`
 
     The dilatancy correction presented here is given by ``Terzaghi & Peck (1948)``.
     """
@@ -152,9 +154,7 @@ class SPTCorrections:
         std_pressure = 24
 
         if eop <= 0 or eop < std_pressure:
-            msg = (
-                f"eop: {eop} should be greater than or equal to {std_pressure}"
-            )
+            msg = f"eop: {eop} >= {std_pressure}"
             raise OverburdenPressureError(msg)
 
         corrected_spt = 0.77 * log10(2000 / eop) * spt_n_60
@@ -165,7 +165,7 @@ class SPTCorrections:
     def liao_whitman_opc_1986(spt_n_60: float, eop: float) -> float:
         """Return the overburden pressure given by ``Liao Whitman (1986)``."""
         if eop <= 0:
-            msg = f"eop: {eop} greater than 0"
+            msg = f"eop: {eop} > 0"
             raise OverburdenPressureError(msg)
 
         corrected_spt = sqrt(100 / eop) * spt_n_60
@@ -189,7 +189,7 @@ class SPTCorrections:
 
         std_pressure = 71.8
 
-        if isclose(eop, std_pressure, rel_tol=ERROR_TOLERANCE):
+        if isclose(eop, std_pressure, rel_tol=ERROR_TOL):
             return spt_n_60
 
         if eop < std_pressure:

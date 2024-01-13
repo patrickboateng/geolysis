@@ -15,24 +15,20 @@ Exceptions
 ----------
 
 """
-from . import bearing_capacity
-from .constants import ERROR_TOLERANCE, EngineerTypeError, GeotechEng
-from .estimators import (
-    CompressionIndexEst,
-    SoilFrictionAngleEst,
-    SoilUnitWeightEst,
-    UndrainedShearStrengthEst,
-)
-from .soil_classifier import (
-    AASHTO,
-    AL,
-    PSD,
-    USCS,
-    AASHTOClassification,
-    AtterbergLimits,
-    ParticleSizeDistribution,
-    ParticleSizes,
-    UnifiedSoilClassification,
+from . import bearing_capacity, estimators, soil_classifier, spt
+from .constants import (
+    CLAY,
+    ERROR_TOL,
+    GRAVEL,
+    HIGH_PLASTICITY,
+    LOW_PLASTICITY,
+    ORGANIC,
+    POORLY_GRADED,
+    SAND,
+    SILT,
+    WELL_GRADED,
+    EngineerTypeError,
+    GeotechEng,
 )
 
 globals().update(GeotechEng.__members__)

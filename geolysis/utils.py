@@ -61,31 +61,26 @@ def round_(ndigits: int) -> Callable:
     """A decorator that rounds the result of a function to a specified number
     of decimal places.
 
-    This decorator can be used with functions that return
-    a float.
-
     .. code::
 
-        from math import pi
-
-        from geolab.utils import round_
+        from geolysis.utils import PI, round_
 
         @round_(precision=3)
         def area_of_circle(radius: float) -> float:
-            return pi * radius**2
+            return PI * radius**2
 
         # area_of_circle will return a value rounded to 3 d.p
 
-    :param int ndigits:
-        The number of decimal places to round to. It can be
-        an integer or a function that returns a float.
+    :param int ndigits: The number of decimal places to round to.
 
-    :return:
-        A decorator that rounds the result of the wrapped
-        function.
+    :return: A decorator that rounds the result of the wrapped function.
     :rtype: Callable[..., float]
 
-    :raises TypeError: If precision is not an integer.
+    :raises TypeError: If precision is not an int.
+
+    .. rubric:: Notes
+
+    This decorator can only be used with functions that return a float.
     """
 
     def dec(

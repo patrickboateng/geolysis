@@ -1,6 +1,6 @@
 import enum
 
-ERROR_TOLERANCE = 0.01
+ERROR_TOL = 0.01
 
 GRAVEL = "G"
 SAND = "S"
@@ -19,7 +19,7 @@ class EngineerTypeError(TypeError):
 
 class GeotechEng(enum.IntEnum):
     """Represents a set of names of Geotechnical Engineers whose theories have
-    been utilised in developing this package.
+    been utilised in developing ``geolysis``.
     """
 
     BAZARAA = 1

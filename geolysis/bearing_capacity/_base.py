@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from geolysis.utils import PI, round_
-
 
 @dataclass
 class CircularFooting:
@@ -40,7 +38,7 @@ class FoundationSize:
     """A simple class representing a foundation.
 
     :param float depth: Depth of foundation (m)
-    :param footing_size:Represents the type of footing size i.e. :class:`SquareFooting`,
+    :param footing_size: Represents the type of footing size i.e. :class:`SquareFooting`,
         :class:`RectangularFooting` or :class:`CircularFooting`
     :type footing_size: SquareFooting | RectangularFooting | CircularFooting
     """

@@ -23,13 +23,17 @@ def bowles_cohl_abc_1997(
     """Return allowable bearing capacity for cohesionless soils according to
     ``Bowles (1997)``. (:math:`kN/m^2`)
 
-    :param float spt_n_design:
-        Weighted average of corrected SPT N-values within the foundation
-        influence zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`.
-    :param FoundationSize foundation_size:
-        Foundation size i.e. width, length and depth of the foundation
-    :param float actual_settlement:
-        Measured settlement in the field (mm)
+    :param float spt_n_design: Weighted average of corrected SPT N-values within
+        the foundation influence zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`.
+    :param FoundationSize foundation_size: Foundation size which comprise depth of
+        foundation and the footing size. i.e. :class:`~._base.SquareFooting`,
+        :class:`~._base.RectangularFooting` and :class:`~._base.CircularFooting`.
+    :param float actual_settlement: Measured settlement in the field (mm)
+
+    .. seealso::
+
+        - :func:`.meyerhof_cohl_abc_1956`
+        - :func:`.terzaghi_peck_cohl_abc_1948`
     """
     allowable_settlement: float = 25.4
 
@@ -61,13 +65,17 @@ def meyerhof_cohl_abc_1956(
     """Return allowable bearing capacity for cohesionless soils according to
     ``Meyerhof (1956)``. (:math:`kN/m^2`)
 
-    :param float spt_n_val:
-        Average uncorrected SPT N-values within the foundation influence
-        zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`.
-    :param FoundationSize foundation_size:
-        Foundation size i.e. width, length and depth of the foundation
-    :param float actual_settlement:
-        Measured settlement in the field (mm)
+    :param float spt_n_val: Average uncorrected SPT N-values within the foundation
+        influence zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`.
+    :param FoundationSize foundation_size: Foundation size which comprise depth of
+        foundation and the footing size. i.e. :class:`~._base.SquareFooting`,
+        :class:`~._base.RectangularFooting` and :class:`~._base.CircularFooting`.
+    :param float actual_settlement: Measured settlement in the field (mm)
+
+    .. seealso::
+
+        - :func:`bowles_cohl_abc_1997`
+        - :func:`.terzaghi_peck_cohl_abc_1948`
     """
 
     allowable_settlement = 25.4
@@ -95,13 +103,17 @@ def terzaghi_peck_cohl_abc_1948(
     """Return allowable bearing capacity for cohesionless soils according to
     ``Terzaghi & Peck (1948)``. (:math:`kN/m^2`)
 
-    :param float spt_n_val:
-        Average uncorrected SPT N-values within the foundation influence
-        zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`.
-    :param FoundationSize foundation_size:
-        Foundation size i.e. width, length and depth of the foundation
-    :param float actual_settlement:
-        Measured settlement in the field (mm)
+    :param float spt_n_val: Average uncorrected SPT N-values within the foundation
+        influence zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`.
+    :param FoundationSize foundation_size: Foundation size which comprise depth of
+        foundation and the footing size. i.e. :class:`~._base.SquareFooting`,
+        :class:`~._base.RectangularFooting` and :class:`~._base.CircularFooting`.
+    :param float actual_settlement: Measured settlement in the field. (mm)
+
+    .. seealso::
+
+        - :func:`bowles_cohl_abc_1997`
+        - :func:`.meyerhof_cohl_abc_1956`
     """
 
     allowable_settlement = 25.4
