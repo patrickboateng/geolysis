@@ -1,0 +1,2 @@
+class EngineerTypeError(TypeError):
+    pass
