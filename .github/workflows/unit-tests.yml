@@ -33,7 +33,7 @@ jobs:
 
   coverage:
     needs: test
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-latest
     steps:
       # - name: Test with pytest and coverage
       #   env:
