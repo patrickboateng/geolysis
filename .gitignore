@@ -72,3 +72,5 @@ venv-*/
 
 # Sphinx generated files
 *generated
+*jupyter_execute
+*gen
