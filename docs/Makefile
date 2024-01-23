@@ -30,7 +30,7 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-build_docs:
+docs:
 	$(SPHINXAPIDOC) $(APIDOCOPTS)
 
 livehtml:
