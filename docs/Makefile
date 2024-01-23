@@ -7,6 +7,17 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
+CODEDIR       = ../geolysis/
+SPHINXAPIDOC  = sphinx-apidoc
+APIDIR        = $(SOURCEDIR)/reference
+APIDOCOPTS    = --force \
+				--implicit-namespace \
+				--module-first \
+				--separate \
+				-d 1 \
+				-o $(APIDIR) \
+				$(CODEDIR)
+
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -18,6 +29,9 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+build_docs:
+	$(SPHINXAPIDOC) $(APIDOCOPTS)
 
 livehtml:
 	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
