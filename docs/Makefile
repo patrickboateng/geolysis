@@ -14,7 +14,7 @@ APIDOCOPTS    = --force \
 				--implicit-namespace \
 				--module-first \
 				--separate \
-				-d 1 \
+				-d 4 \
 				-o $(APIDIR) \
 				$(CODEDIR)
 
