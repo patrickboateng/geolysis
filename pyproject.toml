@@ -9,7 +9,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE.txt" }
 requires-python = ">=3.10"
 keywords = [
-    "finite-element-analysis",
+    "discrete-element-method",
     "geotechnical-engineering",
     "soil-classification",
     "settlement-analysis",
@@ -72,8 +72,8 @@ style = "sphinx"
 black = true
 wrap-summaries = 79
 wrap-descriptions = 79
-# pre-summary-newline = true
-# make-summary-multi-line = true
+pre-summary-newline = true
+make-summary-multi-line = true
 close-quotes-on-newline = true
 
 [tool.pydocstyle]
