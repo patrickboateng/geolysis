@@ -3,17 +3,17 @@ from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 
 
+class AllowableSettlementError(ValueError):
+    """
+    Exception raised when actual settlement exceeds allowable settlement.
+    """
+
+
 def _chk_settlement(actual_settlement: float, allowable_settlement: float):
     if actual_settlement > allowable_settlement:
         errmsg = f"Settlement: {actual_settlement} should be less than or equal \
                 Allowable Settlement: {allowable_settlement}"
         raise AllowableSettlementError(errmsg)
-
-
-class AllowableSettlementError(ValueError):
-    """
-    Exception raised when actual settlement exceeds allowable settlement.
-    """
 
 
 class BowlesABC1997:
@@ -86,8 +86,8 @@ class BowlesABC1997:
             abc = (
                 11.98
                 * self.avg_corrected_spt_val
-                * self.fd
                 * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+                * self.fd
                 * settlement_ratio
             )
 
@@ -175,7 +175,7 @@ class MeyerhofABC1956:
             abc = (
                 8
                 * self.avg_uncorrected_spt_val
-                * ((self.f_width + 0.3) / self.f_width) ** 2
+                * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
                 * self.fd
                 * settlement_ratio
             )
