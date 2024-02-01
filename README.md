@@ -25,10 +25,9 @@
 
 ## Project Links
 
-<!-- - [Homepage](https://github.com/patrickboateng/geolysis) -->
-
 <!-- - [Documentation](/docs) -->
 
+- [Homepage](https://github.com/patrickboateng/geolysis)
 - [PyPi](https://pypi.org/project/geolysis/)
 - [Bug Reports](https://github.com/patrickboateng/geolysis/issues)
 - [Discussions](https://github.com/patrickboateng/geolysis/discussions)
@@ -40,6 +39,9 @@
 
 - [What is geolysis?](#what-is-geolysis)
 - [Installation](#installation)
+- [Soil Classification Example](#soil-classification-example)
+  - [AASHTO Classification](#aashto-classification)
+  - [USCS Classification](#uscs-classification)
 - [Release History](#release-history)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
@@ -71,13 +73,47 @@ can make them industry-ready geotechnical engineers right from college.
 pip install geolysis
 ```
 
+## Soil Classification Example
+
+### AASHTO Classification
+
+```python
+
+>>> from geolysis.soil_classifier import AASHTO
+>>> aashto_cls = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
+>>> aashto_cls.soil_class
+'A-2-4(0)'
+>>> aashto_cls.soil_desc
+'Silty or clayey gravel and sand'
+
+```
+
+### USCS Classification
+
+```python
+
+>>> from geolysis.soil_classifier import USCS
+>>> uscs_cls = USCS(liquid_limit=34.1, plastic_limit=21.1, fines=47.88,
+...                 sand=37.84, gravel=14.8)
+>>> uscs_cls.soil_class
+'SC'
+>>> uscs_cls.soil_desc
+'Clayey sands'
+>>> uscs_cls = USCS(liquid_limit=30.8, plastic_limit=20.7, fines=10.29,
+...                 sand=81.89, gravel=7.83, d_10=0.07, d_30=0.3, d_60=0.8)
+>>> uscs_cls.soil_class
+'SW-SC'
+>>> uscs_cls.soil_desc
+'Well graded sand with clay'
+
+```
+
 > [!NOTE]
 > First stable version yet to be released
 
 ## Release History
 
-Check the [changelog][changelog_url]
-for release history.
+Check the [changelog][changelog_url] for release history.
 
 ## Code of Conduct
 
