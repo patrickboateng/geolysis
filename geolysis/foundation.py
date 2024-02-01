@@ -37,7 +37,7 @@ class RectangularFooting:
     width: float
 
 
-FootingShape: TypeAlias = SquareFooting | RectangularFooting | CircularFooting
+_FootingShape: TypeAlias = SquareFooting | RectangularFooting | CircularFooting
 
 
 @dataclass
@@ -50,7 +50,7 @@ class FoundationSize:
     """
 
     depth: float
-    footing_shape: FootingShape
+    footing_shape: _FootingShape
 
     @property
     def width(self):
