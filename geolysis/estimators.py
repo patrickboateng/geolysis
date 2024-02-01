@@ -125,7 +125,7 @@ class SoilFrictionAngleEst:
     determined from the minimum value between ``Wolf (1989)`` and ``Kullhawy & Mayne (1990)``.
     """
 
-    unit = UNITS.degree
+    unit = UNITS.degrees
 
     @staticmethod
     @round_(ndigits=3)
