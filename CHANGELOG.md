@@ -1,4 +1,4 @@
-# `geolysis` Change Log
+# `geolysis` Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -7,8 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Soil Classifier
-- Bearing Capacity Analysis
-- Estimating Soil Engineering Parameters
+### Features Not Added Yet
+
 - Settlement Analysis
-- Modelling the behavior of Soils under loads using `FEM`
+- Modeling the behavior of Soils under loads using `DEM`
+
+## [0.1.0] - 2024-02-XX
+
+### Added
+
+- Soil classification
+  - AASHTO
+  - USCS
+- Standard Penetration Test corrections and analysis
+  - Energy correction
+  - Overburden pressure corrections
+  - Dilatancy correction
+  - SPT corrected weightage average
+  - SPT uncorrected average
+- Allowable bearing capacity analysis
+  - Bowles (1997)
+  - Meyerhof (1956)
+  - Terzaghi (1948)
+- Estimating soil parameters from other soil parameters
+  - Soil unit weight (moist, saturated, submerged)
+  - Compression index
+  - Soil friction angle
+  - Undrained shear strength
