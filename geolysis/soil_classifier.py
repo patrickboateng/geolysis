@@ -303,7 +303,7 @@ class PSD:
         """
         return self.size_dist.coeff_of_uniformity
 
-    def has_particle_sizes(self) -> bool:
+    def _has_particle_sizes(self) -> bool:
         """
         Checks if soil sample has particle sizes.
         """
@@ -584,7 +584,7 @@ class USCS:
 
         elif 5 <= self.psd.fines <= 12:
             # Requires dual symbol based on graduation and plasticity chart
-            if self.psd.has_particle_sizes():
+            if self.psd._has_particle_sizes():
                 soil_class = self._dual_soil_classifier()
 
             else:
@@ -597,7 +597,7 @@ class USCS:
         # Less than 5% pass No. 200 sieve
         # Obtain Cc and Cu from grain size graph
         else:
-            if self.psd.has_particle_sizes():
+            if self.psd._has_particle_sizes():
                 soil_class = f"{coarse_soil}{self.psd.grade()}"
 
             else:

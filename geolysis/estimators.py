@@ -54,7 +54,7 @@ class SoilUnitWeightEst:
 
         .. math::
 
-            \gamma_{submerged} = 8.8 + 0.01 \cdot N_{60}
+            \gamma_{sub} = 8.8 + 0.01 \cdot N_{60}
         """
         return 8.8 + 0.01 * self.spt_n_60
 
