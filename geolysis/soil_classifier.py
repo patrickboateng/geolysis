@@ -47,6 +47,7 @@ USCS_SOIL_DESC = MappingProxyType(
         "GP": "Poorly graded gravels",
         "GM": "Silty gravels",
         "GC": "Clayey gravels",
+        "GM-GC": "Gravelly clayey silt",
         "GW-GM": "Well graded gravel with silt",
         "GP-GM": "Poorly graded gravel with silt",
         "GW-GC": "Well graded gravel with clay",
@@ -55,16 +56,18 @@ USCS_SOIL_DESC = MappingProxyType(
         "SP": "Poorly graded sands",
         "SM": "Silty sands",
         "SC": "Clayey sands",
+        "SM-SC": "Sandy clayey silt",
         "SW-SM": "Well graded sand with silt",
         "SP-SM": "Poorly graded sand with silt",
         "SW-SC": "Well graded sand with clay",
         "SP-SC": "Poorly graded sand with clay",
-        "ML": "Inorganic silts of low plasticity",
-        "CL": "Inorganic clays of low plasticity",
-        "OL": "Organic silts of low plasticity",
-        "MH": "Inorganic silts of high plasticity",
-        "CH": "Inorganic clays of high plasticity",
-        "OH": "Organic silts of high plasticity",
+        "ML": "Inorganic silts with low plasticity",
+        "CL": "Inorganic clays with low plasticity",
+        "ML-CL": "Clayey silt with low plasticity",
+        "OL": "Organic clays with low plasticity",
+        "MH": "Inorganic silts with high plasticity",
+        "CH": "Inorganic clays with high plasticity",
+        "OH": "Organic silts with high plasticity",
         "Pt": "Highly organic soils",
     }
 )
@@ -367,7 +370,6 @@ class AASHTO:
         liquid_limit: float,
         plasticity_index: float,
         fines: float,
-        *,
         add_group_idx=True,
     ):
         self.liquid_limit = liquid_limit
@@ -408,7 +410,12 @@ class AASHTO:
         """
         Return the AASHTO description of the soil.
         """
-        return AASHTO_SOIL_DESC.get(self._classify())
+        tmp_state = self.add_group_idx
+        try:
+            self.add_group_idx = False
+            return AASHTO_SOIL_DESC[self._classify()]
+        finally:
+            self.add_group_idx = tmp_state
 
     def _classify(self) -> str:
         # Silts A4-A7
@@ -548,7 +555,7 @@ class USCS:
         """
         Return the USCS description of the soil.
         """
-        return USCS_SOIL_DESC.get(self._classify())
+        return USCS_SOIL_DESC[self._classify()]
 
     def _classify(self) -> str:
         # Fine grained, Run Atterberg
