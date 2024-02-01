@@ -1,75 +1,69 @@
-"""This is a module for defining helpers which do not depend on the rest of
-``geolysis``.
-"""
 import functools
 import math
-import statistics
-from typing import Callable
+from math import ceil, exp, isclose, log10
+from math import pi as PI
+from math import sqrt
+from statistics import fmean as mean
+from typing import Callable, TypeAlias
 
-PI = math.pi
-exp = math.exp
-isclose = math.isclose
-mean = statistics.fmean
+from typing_extensions import SupportsFloat, SupportsIndex
 
-
-def deg2rad(x: float | int, /) -> float:
-    """Convert angle x from degrees to radians."""
-    return math.radians(x)
+_SupportsFloatOrIndex: TypeAlias = SupportsFloat | SupportsIndex
 
 
-def rad2deg(x: float | int, /) -> float:
-    """Convert angle x from radians to degrees."""
-    return math.degrees(x)
+def deg2rad(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Convert angle x from degrees to radians.
+    """
+    return math.radians(__x)
 
 
-def tan(x: float | int, /) -> float:
-    """Return the tangent of x (measured in degrees)."""
-    return math.tan(deg2rad(x))
+def rad2deg(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Convert angle x from radians to degrees.
+    """
+    return math.degrees(__x)
 
 
-def cot(x: float | int, /) -> float:
-    """Return the cotangent of x (measured in degrees)."""
-    return 1 / tan(x)
+def tan(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Return the tangent of x (measured in degrees).
+    """
+    return math.tan(deg2rad(__x))
 
 
-def sin(x: float | int, /) -> float:
-    """Return the sine of x (measured in degrees)."""
-    return math.sin(deg2rad(x))
+def cot(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Return the cotangent of x (measured in degrees).
+    """
+    return 1 / tan(__x)
 
 
-def cos(x: float | int, /) -> float:
-    """Return the cosine of x (measured in degrees)."""
-    return math.cos(deg2rad(x))
+def sin(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Return the sine of x (measured in degrees).
+    """
+    return math.sin(deg2rad(__x))
 
 
-def arctan(x: float | int, /) -> float:
-    """Return the arc tangent (measured in degrees) of x."""
-    return rad2deg(math.atan(x))
+def cos(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Return the cosine of x (measured in degrees).
+    """
+    return math.cos(deg2rad(__x))
 
 
-def log10(x: float | int, /) -> float:
-    """Return the base 10 logarithm of x."""
-    return math.log10(x)
-
-
-def sqrt(x: float | int, /) -> float:
-    """Return the square root of x."""
-    return math.sqrt(x)
+def arctan(__x: _SupportsFloatOrIndex, /) -> float:
+    """
+    Return the arc tangent (measured in degrees) of x.
+    """
+    return rad2deg(math.atan(__x))
 
 
 def round_(ndigits: int) -> Callable:
-    """A decorator that rounds the result of a function to a specified number
-    of decimal places.
-
-    .. code::
-
-        from geolysis.utils import PI, round_
-
-        @round_(precision=3)
-        def area_of_circle(radius: float) -> float:
-            return PI * radius**2
-
-        # area_of_circle will return a value rounded to 3 d.p
+    """
+    A decorator that rounds the result of a function to a specified number of
+    decimal places.
 
     :param int ndigits: The number of decimal places to round to.
 
@@ -78,9 +72,10 @@ def round_(ndigits: int) -> Callable:
 
     :raises TypeError: If precision is not an int.
 
-    .. rubric:: Notes
+    .. note::
 
-    This decorator can only be used with functions that return a float.
+        This decorator can only be used with functions that return a float or a
+        datatype that implements ``__round__``.
     """
 
     def dec(
@@ -95,8 +90,8 @@ def round_(ndigits: int) -> Callable:
 
         return wrapper
 
-    if isinstance(ndigits, int):  # type: ignore
+    if isinstance(ndigits, int):
         return functools.partial(dec, ndigits=ndigits)  # return decorator
 
-    msg = "ndigits should be an int."
-    raise TypeError(msg)
+    err_msg = "ndigits should be an int."
+    raise TypeError(err_msg)
