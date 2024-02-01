@@ -1,2 +1,0 @@
-class EngineerTypeError(TypeError):
-    pass
