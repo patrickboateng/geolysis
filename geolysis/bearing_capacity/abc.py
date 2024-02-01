@@ -29,7 +29,7 @@ class BowlesABC1997:
     """
 
     MAX_TOL_SETTLEMENT = 25.4
-    unit = UNITS.kiloPascal
+    unit = UNITS.kilo_pascal
 
     def __init__(
         self,
@@ -120,7 +120,7 @@ class MeyerhofABC1956:
     """
 
     MAX_TOL_SETTLEMENT = 25.4
-    unit = UNITS.kiloPascal
+    unit = UNITS.kilo_pascal
 
     def __init__(
         self,
@@ -208,7 +208,7 @@ class TerzaghiABC1948:
     """
 
     MAX_TOL_SETTLEMENT = 25.4
-    unit = UNITS.kiloPascal
+    unit = UNITS.kilo_pascal
 
     def __init__(
         self,
