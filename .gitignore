@@ -74,4 +74,4 @@ venv-*/
 *generated
 *jupyter_execute
 *gen
-/docs/source/reference/*
+/docs/source/geolysis/*
