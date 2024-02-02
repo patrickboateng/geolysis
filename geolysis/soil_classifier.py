@@ -4,6 +4,8 @@ from typing import NamedTuple
 from .constants import ERROR_TOL
 from .utils import ceil, isclose, round_
 
+__all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
+
 
 def _chk_psd(fines: float, sand: float, gravel: float):
     total_agg = fines + sand + gravel

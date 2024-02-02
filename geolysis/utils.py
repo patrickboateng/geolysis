@@ -8,6 +8,17 @@ from typing import Callable, TypeAlias
 
 from typing_extensions import SupportsFloat, SupportsIndex
 
+__all__ = [
+    "deg2rad",
+    "rad2deg",
+    "tan",
+    "cot",
+    "sin",
+    "cos",
+    "arctan",
+    "round_",
+]
+
 _SupportsFloatOrIndex: TypeAlias = SupportsFloat | SupportsIndex
 
 

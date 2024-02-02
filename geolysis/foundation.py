@@ -1,6 +1,13 @@
 from dataclasses import dataclass
 from typing import TypeAlias
 
+__all__ = [
+    "CircularFooting",
+    "SquareFooting",
+    "RectangularFooting",
+    "FoundationSize",
+]
+
 
 @dataclass
 class CircularFooting:

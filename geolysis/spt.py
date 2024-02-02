@@ -4,6 +4,12 @@ from typing import Sequence
 from geolysis.constants import ERROR_TOL, UNITS
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 
+__all__ = [
+    "weighted_avg_spt_n_val",
+    "avg_uncorrected_spt_n_val",
+    "SPTCorrections",
+]
+
 
 class OverburdenPressureError(ValueError):
     """
