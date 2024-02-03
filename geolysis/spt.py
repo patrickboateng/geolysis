@@ -1,8 +1,16 @@
+import functools
 from statistics import StatisticsError
-from typing import Sequence
+from typing import Callable, Iterable, Sequence
 
 from geolysis.constants import ERROR_TOL, UNITS
-from geolysis.utils import isclose, log10, mean, round_, sqrt
+from geolysis.utils import (
+    SupportsFloatOrIndex,
+    isclose,
+    log10,
+    mean,
+    round_,
+    sqrt,
+)
 
 __all__ = [
     "weighted_avg_spt_n_val",
@@ -141,16 +149,31 @@ class SPTCorrections:
     unit = UNITS.unitless
 
     @staticmethod
+    def map(
+        __opc_func: Callable[..., SupportsFloatOrIndex],
+        standardized_spt_vals: Iterable[SupportsFloatOrIndex],
+        __dc_func: Callable[..., SupportsFloatOrIndex] | None = None,
+        **kwargs,
+    ):
+        opc_func = functools.partial(__opc_func, **kwargs)
+        corrected_spt_vals = map(opc_func, standardized_spt_vals)
+
+        if __dc_func:
+            corrected_spt_vals = map(__dc_func, corrected_spt_vals)  # type: ignore
+
+        return corrected_spt_vals
+
+    @staticmethod
     @round_(ndigits=2)
     def energy_correction(
         recorded_spt_val: float,
-        *,
         percentage_energy=0.6,
+        *,
         hammer_efficiency=0.6,
         borehole_diameter_correction=1,
         sampler_correction=1,
         rod_length_correction=0.75,
-    ) -> float:
+    ) -> SupportsFloatOrIndex:
         r"""
         Return SPT N-value standardized for field procedures.
 
