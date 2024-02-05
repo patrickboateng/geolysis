@@ -28,6 +28,9 @@ class BowlesABC1997:
         zone i.e. :math:`0.5B` to :math:`2B`.
     :param float tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
+
+    :ivar float f_depth: Depth of footing. (m)
+    :ivar float f_width: Width of footing. (m)
     """
 
     MAX_TOL_SETTLEMENT = 25.4
@@ -119,6 +122,9 @@ class MeyerhofABC1956:
         correction suggested.
     :param float tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
+
+    :var float f_depth: Depth of footing. (m)
+    :ivar float f_width: Width of footing. (m)
     """
 
     MAX_TOL_SETTLEMENT = 25.4
@@ -207,6 +213,9 @@ class TerzaghiABC1948:
         N-values within the foundation influence zone. i.e. :math:`D_f` to :math:`D_f + 2B`
     :param float tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
+
+    :var float f_depth: Depth of footing. (m)
+    :ivar float f_width: Width of footing. (m)
     """
 
     MAX_TOL_SETTLEMENT = 25.4
