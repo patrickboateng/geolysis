@@ -80,7 +80,7 @@ def weighted_avg_spt_n_val(corrected_spt_vals: Sequence[float]) -> float:
 
 
 @round_(ndigits=0)
-def avg_uncorrected_spt_n_val(uncorrected_spt_vals: Sequence[float]):
+def avg_uncorrected_spt_n_val(uncorrected_spt_vals: Sequence[float]) -> float:
     """
     Calculates the average of the uncorrected SPT N-values in the foundation
     influence zone.
@@ -115,7 +115,7 @@ class SPTCorrections:
 
     In cohesionless soils, penetration resistance is affected by overburden pressure.
     Soils with the same density but different confining pressures have varying penetration
-    numbers, with higher pressures leading to higher penetration numbers. As depth
+    numbers, with higher confining pressures leading to higher penetration numbers. As depth
     increases, confining pressure rises, causing underestimation of penetration numbers
     at shallow depths and overestimation at deeper depths. The need for corrections in
     Standard Penetration Test (SPT) values was acknowledged only in 1957 by Gibbs & Holtz,
@@ -150,16 +150,16 @@ class SPTCorrections:
 
     @staticmethod
     def map(
-        __opc_func: Callable[..., SupportsFloatOrIndex],
-        standardized_spt_vals: Iterable[SupportsFloatOrIndex],
-        __dc_func: Callable[..., SupportsFloatOrIndex] | None = None,
+        opc_func: Callable[..., SupportsFloatOrIndex],
+        standardized_spt_vals: Iterable[float],
+        dc_func: Callable[..., SupportsFloatOrIndex] | None = None,
         **kwargs,
     ):
-        opc_func = functools.partial(__opc_func, **kwargs)
+        opc_func = functools.partial(opc_func, **kwargs)
         corrected_spt_vals = map(opc_func, standardized_spt_vals)
 
-        if __dc_func:
-            corrected_spt_vals = map(__dc_func, corrected_spt_vals)  # type: ignore
+        if dc_func:
+            corrected_spt_vals = map(dc_func, corrected_spt_vals)
 
         return corrected_spt_vals
 
@@ -181,8 +181,6 @@ class SPTCorrections:
         SPT N-value as a function of the input driving energy and its dissipation around
         the sampler around the surrounding soil. The variations in testing procedures may
         be at least partially compensated by converting the measured N-value to :math:`N_{60}`.
-
-        .. rubric:: Mathematical Expression
 
         .. math::
 
@@ -277,8 +275,6 @@ class SPTCorrections:
         :param float corrected_spt_val: Corrected SPT N-value. This should be corrected
             using any of the overburden pressure corrections.
 
-        .. rubric:: Mathematical Expression
-
         .. math::
 
             (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \, (N_1)_{60} \gt 15
@@ -304,11 +300,8 @@ class SPTCorrections:
         Return the overburden pressure correction given by ``Gibbs and Holtz
         (1957)``.
 
-        :param float spt_n_60: SPT N-value standardized for field procedure. This can be
-            done using :meth:`~geolysis.spt.SPTCorrections.energy_correction`.
+        :param float spt_n_60: SPT N-value standardized for field procedures.
         :param float eop: Effective overburden pressure (:math:`kN/m^2`).
-
-        .. rubric:: Mathematical Expression
 
         .. math::
 
@@ -345,11 +338,8 @@ class SPTCorrections:
         r"""
         Return the overburden pressure given by ``Peck et al (1974)``.
 
-        :param float spt_n_60: SPT N-value standardized for field procedure. This can be
-            done using :meth:`~geolysis.spt.SPTCorrections.energy_correction`.
+        :param float spt_n_60: SPT N-value standardized for field procedures.
         :param float eop: Effective overburden pressure (:math:`kN/m^2`).
-
-        .. rubric:: Mathematical Expression
 
         .. math::
 
@@ -370,11 +360,8 @@ class SPTCorrections:
         r"""
         Return the overburden pressure given by ``Liao Whitman (1986)``.
 
-        :param float spt_n_60: SPT N-value standardized for field procedure. This can be
-            done using :meth:`~geolysis.spt.SPTCorrections.energy_correction`.
+        :param float spt_n_60: SPT N-value standardized for field procedures.
         :param float eop: Effective overburden pressure (:math:`kN/m^2`).
-
-        .. rubric:: Mathematical Expression
 
         .. math::
 
@@ -393,11 +380,8 @@ class SPTCorrections:
         r"""
         Return the overburden pressure correction given by ``Skempton (1986).``
 
-        :param float spt_n_60: SPT N-value standardized for field procedure. This can be
-            done using :meth:`~geolysis.spt.SPTCorrections.energy_correction`.
+        :param float spt_n_60: SPT N-value standardized for field procedures.
         :param float eop: Effective overburden pressure (:math:`kN/m^2`).
-
-        .. rubric:: Mathematical Expression
 
         .. math::
 
@@ -413,11 +397,8 @@ class SPTCorrections:
         Return the overburden pressure correction given by ``Bazaraa (1967)``
         and also by ``Peck and Bazaraa (1969)``.
 
-        :param float spt_n_60: SPT N-value standardized for field procedure. This can be
-            done using :meth:`~geolysis.spt.SPTCorrections.energy_correction`.
+        :param float spt_n_60: SPT N-value standardized for field procedures.
         :param float eop: Effective overburden pressure (:math:`kN/m^2`).
-
-        .. rubric:: Mathematical Expression
 
         .. math::
 
