@@ -1,6 +1,6 @@
 from typing import TypeAlias
 
-from geolysis.utils import SupportsFloatOrIndex
+from geolysis.utils import FloatOrInt
 
 __all__ = [
     "CircularFooting",
@@ -17,29 +17,29 @@ class CircularFooting:
     :param float diameter: Diameter of foundation footing. (m)
     """
 
-    def __init__(self, diameter: SupportsFloatOrIndex) -> None:
+    def __init__(self, diameter: FloatOrInt) -> None:
         self._diameter = diameter
 
     @property
-    def diameter(self) -> SupportsFloatOrIndex:
+    def diameter(self) -> FloatOrInt:
         """
         Diameter of foundation footing. (m)
         """
         return self._diameter
 
     @diameter.setter
-    def diameter(self, __val: SupportsFloatOrIndex):
+    def diameter(self, __val: FloatOrInt):
         self._diameter = __val
 
     @property
-    def width(self) -> SupportsFloatOrIndex:
+    def width(self) -> FloatOrInt:
         """
         Diameter of foundation footing. (m)
         """
         return self._diameter
 
     @width.setter
-    def width(self, __val: SupportsFloatOrIndex):
+    def width(self, __val: FloatOrInt):
         self.diameter = __val
 
 
@@ -50,31 +50,31 @@ class SquareFooting:
     :param SupportFloatOrIndex width: Width of foundation footing. (m)
     """
 
-    def __init__(self, width: SupportsFloatOrIndex):
+    def __init__(self, width: FloatOrInt):
         self._width = width
         self._length = width
 
     @property
-    def width(self) -> SupportsFloatOrIndex:
+    def width(self) -> FloatOrInt:
         """
         Width of foundation footing. (m)
         """
         return self._width
 
     @width.setter
-    def width(self, __val: SupportsFloatOrIndex):
+    def width(self, __val: FloatOrInt):
         self._width = __val
         self._length = __val
 
     @property
-    def length(self) -> SupportsFloatOrIndex:
+    def length(self) -> FloatOrInt:
         """
         Length of foundation footing. (m)
         """
         return self._length
 
     @length.setter
-    def length(self, __val: SupportsFloatOrIndex):
+    def length(self, __val: FloatOrInt):
         self.width = __val  # This will set the _width and _length attributes
 
 
@@ -88,32 +88,32 @@ class RectangularFooting:
 
     def __init__(
         self,
-        width: SupportsFloatOrIndex,
-        length=SupportsFloatOrIndex,
+        width: FloatOrInt,
+        length=FloatOrInt,
     ) -> None:
         self._width = width
         self._length = length
 
     @property
-    def width(self) -> SupportsFloatOrIndex:
+    def width(self) -> FloatOrInt:
         """
         Width of foundation footing. (m)
         """
         return self._width
 
     @width.setter
-    def width(self, __val: SupportsFloatOrIndex):
+    def width(self, __val: FloatOrInt):
         self._width = __val
 
     @property
-    def length(self) -> SupportsFloatOrIndex:
+    def length(self) -> FloatOrInt:
         """
         Length of foundation footing. (m)
         """
         return self._length
 
     @length.setter
-    def length(self, __val: SupportsFloatOrIndex):
+    def length(self, __val: FloatOrInt):
         self._length = __val
 
 
@@ -130,36 +130,36 @@ class FoundationSize:
 
     def __init__(
         self,
-        depth: SupportsFloatOrIndex,
+        depth: FloatOrInt,
         footing_shape: _FootingShape,
     ) -> None:
         self._depth = depth
         self.footing_shape = footing_shape
 
     @property
-    def depth(self) -> SupportsFloatOrIndex:
+    def depth(self) -> FloatOrInt:
         """
         Depth of foundation footing. (m)
         """
         return self._depth
 
     @depth.setter
-    def depth(self, __val: SupportsFloatOrIndex):
+    def depth(self, __val: FloatOrInt):
         self._depth = __val
 
     @property
-    def width(self) -> SupportsFloatOrIndex:
+    def width(self) -> FloatOrInt:
         """
         Width of foundation footing. (m)
         """
         return self.footing_shape.width
 
     @width.setter
-    def width(self, __val: SupportsFloatOrIndex):
+    def width(self, __val: FloatOrInt):
         self.footing_shape.width = __val
 
     @property
-    def length(self) -> SupportsFloatOrIndex:
+    def length(self) -> FloatOrInt:
         """
         Length of foundation footing. (m)
 

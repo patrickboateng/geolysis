@@ -19,52 +19,52 @@ __all__ = [
     "round_",
 ]
 
-_SupportsFloatOrIndex: TypeAlias = SupportsFloat | SupportsIndex
+FloatOrInt: TypeAlias = float | int
 
 
-def deg2rad(__x: _SupportsFloatOrIndex, /) -> float:
+def deg2rad(__x: FloatOrInt, /) -> float:
     """
     Convert angle x from degrees to radians.
     """
     return math.radians(__x)
 
 
-def rad2deg(__x: _SupportsFloatOrIndex, /) -> float:
+def rad2deg(__x: FloatOrInt, /) -> float:
     """
     Convert angle x from radians to degrees.
     """
     return math.degrees(__x)
 
 
-def tan(__x: _SupportsFloatOrIndex, /) -> float:
+def tan(__x: FloatOrInt, /) -> float:
     """
     Return the tangent of x (measured in degrees).
     """
     return math.tan(deg2rad(__x))
 
 
-def cot(__x: _SupportsFloatOrIndex, /) -> float:
+def cot(__x: FloatOrInt, /) -> float:
     """
     Return the cotangent of x (measured in degrees).
     """
     return 1 / tan(__x)
 
 
-def sin(__x: _SupportsFloatOrIndex, /) -> float:
+def sin(__x: FloatOrInt, /) -> float:
     """
     Return the sine of x (measured in degrees).
     """
     return math.sin(deg2rad(__x))
 
 
-def cos(__x: _SupportsFloatOrIndex, /) -> float:
+def cos(__x: FloatOrInt, /) -> float:
     """
     Return the cosine of x (measured in degrees).
     """
     return math.cos(deg2rad(__x))
 
 
-def arctan(__x: _SupportsFloatOrIndex, /) -> float:
+def arctan(__x: FloatOrInt, /) -> float:
     """
     Return the arc tangent (measured in degrees) of x.
     """

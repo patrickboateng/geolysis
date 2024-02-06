@@ -1,6 +1,6 @@
 from geolysis.constants import UNITS
 from geolysis.foundation import FoundationSize
-from geolysis.utils import round_
+from geolysis.utils import FloatOrInt, round_
 
 __all__ = ["BowlesABC1997", "MeyerhofABC1956", "TerzaghiABC1948"]
 
@@ -11,10 +11,12 @@ class AllowableSettlementError(ValueError):
     """
 
 
-def _chk_settlement(actual_settlement: float, allowable_settlement: float):
-    if actual_settlement > allowable_settlement:
-        errmsg = f"Settlement: {actual_settlement} should be less than or equal \
-                Allowable Settlement: {allowable_settlement}"
+def _chk_settlement(
+    tol_settlement: FloatOrInt, max_tol_settlement: FloatOrInt
+):
+    if tol_settlement > max_tol_settlement:
+        errmsg = f"Settlement: {tol_settlement} should be less than or equal \
+                Allowable Settlement: {max_tol_settlement}"
         raise AllowableSettlementError(errmsg)
 
 
@@ -23,10 +25,10 @@ class BowlesABC1997:
     Allowable bearing capacity for cohesionless soils according to ``Bowles
     (1997)``.
 
-    :param float avg_corrected_spt_val: Statistical average of corrected SPT N-value
+    :param FloatOrInt avg_corrected_spt_val: Statistical average of corrected SPT N-value
         (55% energy with overburden pressure correction) within the foundation influence
         zone i.e. :math:`0.5B` to :math:`2B`.
-    :param float tol_settlement: Tolerable settlement. (mm)
+    :param FloatOrInt tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
 
     :ivar float f_depth: Depth of footing. (m)
@@ -38,8 +40,8 @@ class BowlesABC1997:
 
     def __init__(
         self,
-        avg_corrected_spt_val: float,
-        tol_settlement: float,
+        avg_corrected_spt_val: FloatOrInt,
+        tol_settlement: FloatOrInt,
         foundation_size: FoundationSize,
     ) -> None:
         self.avg_corrected_spt_val = avg_corrected_spt_val
@@ -117,10 +119,10 @@ class MeyerhofABC1956:
     Allowable bearing capacity for cohesionless soils according to ``Meyerhof
     (1956)``.
 
-    :param float avg_uncorrected_spt_val: Average uncorrected SPT N-value within the
+    :param FloatOrInt avg_uncorrected_spt_val: Average uncorrected SPT N-value within the
         foundation influence zone i.e. :math:`D_f` to :math:`D_f + 2B`. Only water table
         correction suggested.
-    :param float tol_settlement: Tolerable settlement. (mm)
+    :param FloatOrInt tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
 
     :var float f_depth: Depth of footing. (m)
@@ -132,8 +134,8 @@ class MeyerhofABC1956:
 
     def __init__(
         self,
-        avg_uncorrected_spt_val: float,
-        tol_settlement: float,
+        avg_uncorrected_spt_val: FloatOrInt,
+        tol_settlement: FloatOrInt,
         foundation_size: FoundationSize,
     ) -> None:
         self.avg_uncorrected_spt_val = avg_uncorrected_spt_val
@@ -209,9 +211,10 @@ class TerzaghiABC1948:
     Allowable bearing capacity for cohesionless soils according to ``Terzaghi &
     Peck (1948)``.
 
-    :param float lowest_uncorrected_spt_val: Lowest (or average) uncorrected SPT
+    :param FloatOrInt lowest_uncorrected_spt_val: Lowest (or average) uncorrected SPT
         N-values within the foundation influence zone. i.e. :math:`D_f` to :math:`D_f + 2B`
-    :param float tol_settlement: Tolerable settlement. (mm)
+    :param FloatOrInt tol_settlement: Tolerable settlement. (mm)
+    :param FloatOrInt water_depth: Depth of water below ground surface. (m)
     :param FoundationSize foundation_size: Size of foundation.
 
     :var float f_depth: Depth of footing. (m)
@@ -223,9 +226,9 @@ class TerzaghiABC1948:
 
     def __init__(
         self,
-        lowest_uncorrected_spt_val: float,
-        tol_settlement: float,
-        water_depth: float,
+        lowest_uncorrected_spt_val: FloatOrInt,
+        tol_settlement: FloatOrInt,
+        water_depth: FloatOrInt,
         foundation_size: FoundationSize,
     ) -> None:
         self.lowest_uncorrected_spt_val = lowest_uncorrected_spt_val

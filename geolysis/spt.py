@@ -3,14 +3,7 @@ from statistics import StatisticsError
 from typing import Callable, Iterable, Sequence
 
 from geolysis.constants import ERROR_TOL, UNITS
-from geolysis.utils import (
-    SupportsFloatOrIndex,
-    isclose,
-    log10,
-    mean,
-    round_,
-    sqrt,
-)
+from geolysis.utils import FloatOrInt, isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "weighted_avg_spt_n_val",
@@ -150,9 +143,9 @@ class SPTCorrections:
 
     @staticmethod
     def map(
-        opc_func: Callable[..., SupportsFloatOrIndex],
+        opc_func: Callable[..., FloatOrInt],
         standardized_spt_vals: Iterable[float],
-        dc_func: Callable[..., SupportsFloatOrIndex] | None = None,
+        dc_func: Callable[..., FloatOrInt] | None = None,
         **kwargs,
     ):
         """
@@ -181,7 +174,7 @@ class SPTCorrections:
         borehole_diameter_correction=1,
         sampler_correction=1,
         rod_length_correction=0.75,
-    ) -> SupportsFloatOrIndex:
+    ) -> FloatOrInt:
         r"""
         Return SPT N-value standardized for field procedures.
 
