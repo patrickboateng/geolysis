@@ -108,9 +108,6 @@ pip install geolysis
 
 ```
 
-> [!NOTE]
-> First stable version yet to be released
-
 ## Release History
 
 Check the [changelog][changelog_url] for release history.
