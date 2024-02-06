@@ -2,15 +2,9 @@ from typing import Sequence
 
 import pytest
 
-from geolysis.soil_classifier import (
-    AASHTO,
-    AL,
-    PSD,
-    USCS,
-    PSDValueError,
-    SizeDistribution,
-    SoilClassificationError,
-)
+from geolysis.soil_classifier import AASHTO, PSD, USCS
+from geolysis.soil_classifier import AtterbergLimits as AL
+from geolysis.soil_classifier import PSDError
 
 
 class TestAtterbergLimits:
@@ -34,8 +28,9 @@ class TestAtterbergLimits:
 class TestParticleSizeDistribution:
     @classmethod
     def setup_class(cls):
-        ps = SizeDistribution(d_10=0.115, d_30=0.53, d_60=1.55)
-        cls.psd = PSD(fines=0, sand=0, gravel=100, size_dist=ps)
+        cls.psd = PSD(
+            fines=0, sand=0, gravel=100, d_10=0.115, d_30=0.53, d_60=1.55
+        )
 
     def test_coeff_of_uniformity(self):
         assert self.psd.coeff_of_uniformity == 13.48
@@ -43,8 +38,8 @@ class TestParticleSizeDistribution:
     def test_coeff_of_curvature(self):
         assert self.psd.coeff_of_curvature == 1.58
 
-    def test_PSDValueError(self):
-        with pytest.raises(PSDValueError):
+    def test_PSDError(self):
+        with pytest.raises(PSDError):
             PSD(fines=30, sand=30, gravel=30)
 
 
@@ -68,7 +63,7 @@ class TestAASHTOClassificationSystem:
     )
     def test_aashto_with_grp_idx(self, soil_params: Sequence, clf: str):
         asshto_classifier = AASHTO(*soil_params)
-        assert asshto_classifier.classify() == clf
+        assert asshto_classifier.soil_class == clf
 
     @pytest.mark.parametrize(
         "soil_params,clf",
@@ -80,13 +75,14 @@ class TestAASHTOClassificationSystem:
         ],
     )
     def test_aashto_without_grp_idx(self, soil_params: Sequence, clf: str):
-        asshto_classifier = AASHTO(*soil_params, add_group_idx=False)
-        assert asshto_classifier.classify() == clf
+        asshto_classifier = AASHTO(*soil_params)
+        asshto_classifier.add_group_idx = False
+        assert asshto_classifier.soil_class == clf
 
 
 class TestUnifiedSoilClassificationSystem:
     @pytest.mark.parametrize(
-        "al,psd,particle_sizes,clf",
+        "al,psd,size_dist,clf",
         [
             ((30.8, 20.7), (10.29, 81.89, 7.83), (0.07, 0.3, 0.8), "SW-SC"),
             ((24.4, 14.7), (9.77, 44.82, 45.41), (0.06, 0.6, 7), "GP-GC"),
@@ -102,14 +98,13 @@ class TestUnifiedSoilClassificationSystem:
         self,
         al: Sequence,
         psd: Sequence,
-        particle_sizes: Sequence,
+        size_dist: Sequence,
         clf: str,
     ):
-        atterberg_limits = AL(*al)
-        psd_ = PSD(*psd, size_dist=SizeDistribution(*particle_sizes))
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
-
-        assert uscs.classify() == clf
+        uscs = USCS(
+            *al, *psd, d_10=size_dist[0], d_30=size_dist[1], d_60=size_dist[2]
+        )
+        assert uscs.soil_class == clf
 
     @pytest.mark.parametrize(
         "al,psd,clf",
@@ -129,11 +124,8 @@ class TestUnifiedSoilClassificationSystem:
         psd: Sequence,
         clf: str,
     ):
-        atterberg_limits = AL(*al)
-        psd_ = PSD(*psd)
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
-
-        assert uscs.classify() == clf
+        uscs = USCS(*al, *psd)
+        assert uscs.soil_class == clf
 
     @pytest.mark.parametrize(
         "al,psd,clf",
@@ -160,29 +152,28 @@ class TestUnifiedSoilClassificationSystem:
         psd: Sequence,
         clf: str,
     ):
-        atterberg_limits = AL(*al)
-        psd_ = PSD(*psd)
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd_)
-
-        assert uscs.classify() == clf
+        uscs = USCS(*al, *psd)
+        assert uscs.soil_class == clf
 
     def test_organic_soils_low_plasticity(self):
-        atterberg_limits = AL(liquid_limit=35.83, plastic_limit=25.16)
-        psd = PSD(fines=68.94, sand=28.88, gravel=2.18)
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd, organic=True)
-
-        assert uscs.classify() == "OL"
+        uscs = USCS(
+            liquid_limit=35.83,
+            plastic_limit=25.16,
+            fines=68.94,
+            sand=28.88,
+            gravel=2.18,
+            organic=True,
+        )
+        assert uscs.soil_class == "OL"
 
     def test_organic_soils_high_plasticity(self):
-        atterberg_limits = AL(liquid_limit=55.0, plastic_limit=40.0)
-        psd = PSD(fines=85, sand=15, gravel=0)
-        uscs = USCS(atterberg_limits=atterberg_limits, psd=psd, organic=True)
+        uscs = USCS(
+            liquid_limit=55.0,
+            plastic_limit=40.0,
+            fines=85,
+            sand=15,
+            gravel=0,
+            organic=True,
+        )
 
-        assert uscs.classify() == "OH"
-
-    def test_soil_description(self):
-        assert USCS.soil_description("SC") == "Clayey sands"
-        assert USCS.soil_description(" SC ") == "Clayey sands"
-
-        with pytest.raises(SoilClassificationError):
-            USCS.soil_description("A-2-4")
+        assert uscs.soil_class == "OH"
