@@ -4,7 +4,14 @@ from typing import NamedTuple
 from .constants import ERROR_TOL
 from .utils import ceil, isclose, round_
 
-__all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
+__all__ = [
+    "AASHTO_SOIL_DESC",
+    "USCS_SOIL_DESC",
+    "AtterbergLimits",
+    "PSD",
+    "AASHTO",
+    "USCS",
+]
 
 
 def _chk_psd(fines: float, sand: float, gravel: float):
@@ -14,65 +21,67 @@ def _chk_psd(fines: float, sand: float, gravel: float):
         raise PSDError(errmsg)
 
 
+# Soil Symbols
 GRAVEL = "G"
 SAND = "S"
 SILT = "M"
 CLAY = "C"
+ORGANIC = "O"
+
+# Gradation Symbols
 WELL_GRADED = "W"
 POORLY_GRADED = "P"
-ORGANIC = "O"
+
+# Liquid Limit Symbols
 LOW_PLASTICITY = "L"
 HIGH_PLASTICITY = "H"
 
 
-AASHTO_SOIL_DESC = MappingProxyType(
-    {
-        "A-1-a": "Stone fragments, gravel, and sand",
-        "A-1-b": "Stone fragments, gravel, and sand",
-        "A-3": "Fine sand",
-        "A-2-4": "Silty or clayey gravel and sand",
-        "A-2-5": "Silty or clayey gravel and sand",
-        "A-2-6": "Silty or clayey gravel and sand",
-        "A-2-7": "Silty or clayey gravel and sand",
-        "A-4": "Silty soils",
-        "A-5": "Silty soils",
-        "A-6": "Clayey soils",
-        "A-7-5": "Clayey soils",
-        "A-7-6": "Clayey soils",
-    }
-)
+#: Descriptions for various AASHTO soil classes.
+AASHTO_SOIL_DESC = {
+    "A-1-a": "Stone fragments, gravel, and sand",
+    "A-1-b": "Stone fragments, gravel, and sand",
+    "A-3": "Fine sand",
+    "A-2-4": "Silty or clayey gravel and sand",
+    "A-2-5": "Silty or clayey gravel and sand",
+    "A-2-6": "Silty or clayey gravel and sand",
+    "A-2-7": "Silty or clayey gravel and sand",
+    "A-4": "Silty soils",
+    "A-5": "Silty soils",
+    "A-6": "Clayey soils",
+    "A-7-5": "Clayey soils",
+    "A-7-6": "Clayey soils",
+}
 
-
-USCS_SOIL_DESC = MappingProxyType(
-    {
-        "GW": "Well graded gravels",
-        "GP": "Poorly graded gravels",
-        "GM": "Silty gravels",
-        "GC": "Clayey gravels",
-        "GM-GC": "Gravelly clayey silt",
-        "GW-GM": "Well graded gravel with silt",
-        "GP-GM": "Poorly graded gravel with silt",
-        "GW-GC": "Well graded gravel with clay",
-        "GP-GC": "Poorly graded gravel with clay",
-        "SW": "Well graded sands",
-        "SP": "Poorly graded sands",
-        "SM": "Silty sands",
-        "SC": "Clayey sands",
-        "SM-SC": "Sandy clayey silt",
-        "SW-SM": "Well graded sand with silt",
-        "SP-SM": "Poorly graded sand with silt",
-        "SW-SC": "Well graded sand with clay",
-        "SP-SC": "Poorly graded sand with clay",
-        "ML": "Inorganic silts with low plasticity",
-        "CL": "Inorganic clays with low plasticity",
-        "ML-CL": "Clayey silt with low plasticity",
-        "OL": "Organic clays with low plasticity",
-        "MH": "Inorganic silts with high plasticity",
-        "CH": "Inorganic clays with high plasticity",
-        "OH": "Organic silts with high plasticity",
-        "Pt": "Highly organic soils",
-    }
-)
+#: Descriptions for various USCS soil classes.
+USCS_SOIL_DESC = {
+    "GW": "Well graded gravels",
+    "GP": "Poorly graded gravels",
+    "GM": "Silty gravels",
+    "GC": "Clayey gravels",
+    "GM-GC": "Gravelly clayey silt",
+    "GW-GM": "Well graded gravel with silt",
+    "GP-GM": "Poorly graded gravel with silt",
+    "GW-GC": "Well graded gravel with clay",
+    "GP-GC": "Poorly graded gravel with clay",
+    "SW": "Well graded sands",
+    "SP": "Poorly graded sands",
+    "SM": "Silty sands",
+    "SC": "Clayey sands",
+    "SM-SC": "Sandy clayey silt",
+    "SW-SM": "Well graded sand with silt",
+    "SP-SM": "Poorly graded sand with silt",
+    "SW-SC": "Well graded sand with clay",
+    "SP-SC": "Poorly graded sand with clay",
+    "ML": "Inorganic silts with low plasticity",
+    "CL": "Inorganic clays with low plasticity",
+    "ML-CL": "Clayey silt with low plasticity",
+    "OL": "Organic clays with low plasticity",
+    "MH": "Inorganic silts with high plasticity",
+    "CH": "Inorganic clays with high plasticity",
+    "OH": "Organic silts with high plasticity",
+    "Pt": "Highly organic soils",
+}
 
 
 class PSDError(ValueError):
@@ -193,8 +202,6 @@ class AtterbergLimits:
 class _SizeDistribution(NamedTuple):
     """
     Features obtained from the Particle Size Distribution graph.
-
-
     """
 
     d_10: float

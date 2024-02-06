@@ -155,6 +155,14 @@ class SPTCorrections:
         dc_func: Callable[..., SupportsFloatOrIndex] | None = None,
         **kwargs,
     ):
+        """
+        Returns an iterator from computing functions (``opc_func``, "dc_func") using
+        arguments from the iterable (``standard_spt_vals``).
+
+        :param Callable opc_func: Overburden pressure correction function to use.
+        :param Callable | None dc_func: Dilatancy correction function to use.
+        :param dict kwargs: Keyword arguments to pass to ```opc_func`.
+        """
         opc_func = functools.partial(opc_func, **kwargs)
         corrected_spt_vals = map(opc_func, standardized_spt_vals)
 
