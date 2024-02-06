@@ -6,8 +6,6 @@ from math import sqrt
 from statistics import fmean as mean
 from typing import Callable, TypeAlias
 
-from typing_extensions import SupportsFloat, SupportsIndex
-
 __all__ = [
     "deg2rad",
     "rad2deg",
