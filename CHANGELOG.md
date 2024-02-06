@@ -10,9 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features Not Added Yet
 
 - Settlement Analysis
-- Modeling the behavior of Soils under loads using `DEM`
+- Modeling the behavior of Soils under loads using Discrete Element Method (`DEM`)
 
-## [0.1.0] - 2024-02-XX
+## [0.2.0] - 2024-02-06
 
 ### Added
 
