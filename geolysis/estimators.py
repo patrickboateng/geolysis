@@ -17,8 +17,8 @@ class EstimatorError(ValueError):
 
 class SoilUnitWeightEst:
     """
-    Calculates the ``moist``, ``saturated`` and ``submerged`` unit weight of soil
-    sample using ``SPT N60``.
+    Estimates the ``moist``, ``saturated`` and ``submerged`` unit weight of soil
+    sample from ``SPT N60``.
 
     :param float spt_n_60: SPT N-value standardized for field procedures considering
         60% energy.
@@ -57,7 +57,7 @@ class SoilUnitWeightEst:
     @round_(ndigits=2)
     def submerged_wgt(self) -> float:
         r"""
-        Return the submerged unit weight of cohesionless soil. (:math:`kN/m^3`)
+        Return the submerged unit weight for cohesionless soil. (:math:`kN/m^3`)
 
         .. math::
 
@@ -68,11 +68,10 @@ class SoilUnitWeightEst:
 
 class CompressionIndexEst:
     """
-    The compression index of soil estimated from ``liquid limit`` or ``void
-    ratio``.
+    Estimates the compression index of soil from ``liquid limit`` or ``void ratio``.
 
     The available estimators are ``Terzaghi et al (1967)``, ``Skempton (1994)``,
-    and Hough (1957).
+    and ``Hough (1957)``.
     """
 
     unit = UNITS.unitless
@@ -81,11 +80,13 @@ class CompressionIndexEst:
     @round_(ndigits=3)
     def terzaghi_et_al_ci_1967(liquid_limit: float) -> float:
         """
-        Return the compression index of the soil using ``Terzaghi's``
-        correlation.
+        Return the compression index of soil from ``Terzaghi's`` correlation.
 
         :param float liquid_limit: Water content beyond which soils flow under their
             own weight. (%)
+
+        :return: Compression index of soil.
+        :rtype: float
 
         .. math::
 
@@ -97,11 +98,13 @@ class CompressionIndexEst:
     @round_(ndigits=3)
     def skempton_ci_1994(liquid_limit: float) -> float:
         """
-        Return the compression index of the soil using ``Skempton's``
-        correlation.
+        Return the compression index of soil from ``Skempton's`` correlation.
 
         :param float liquid_limit: Water content beyond which soils flows under their
             own weight. (%)
+
+        :return: Compression index of soil.
+        :rtype: float
 
         .. math::
 
@@ -113,9 +116,12 @@ class CompressionIndexEst:
     @round_(ndigits=3)
     def hough_ci_1957(void_ratio: float) -> float:
         """
-        Return the compression index of the soil using ``Hough's`` correlation.
+        Return the compression index of soil from ``Hough's`` correlation.
 
         :param float void_ratio: Ratio of the volume of voids to the volume of solids.
+
+        :return: Compression index of soil.
+        :rtype: float
 
         .. math::
 
@@ -126,7 +132,7 @@ class CompressionIndexEst:
 
 class SoilFrictionAngleEst:
     r"""
-    Estimation of the internal angle of friction using ``SPT N60``.
+    Estimates the internal angle of friction from ``SPT N60``.
 
     For cohesionless soils the coefficient of internal friction (:math:`\phi`) is
     determined from the minimum value between ``Wolf (1989)`` and ``Kullhawy & Mayne (1990)``.
@@ -138,11 +144,14 @@ class SoilFrictionAngleEst:
     @round_(ndigits=3)
     def wolff_sfa_1989(spt_n_60: float) -> float:
         r"""
-        Return the internal angle of friction using ``Wolff's`` correlation for
+        Return the internal angle of friction from ``Wolff's`` correlation for
         granular soils (degrees).
 
         :param float spt_n_60: SPT N-value standardized for field procedures considering
             60% energy.
+
+        :return: Internal angle of friction of soil. (degrees)
+        :rtype: float
 
         .. math::
 
@@ -158,14 +167,17 @@ class SoilFrictionAngleEst:
         atm_pressure: float,
     ) -> float:
         r"""
-        Return the internal angle of friction using ``Kullhawy & Mayne``
-        correlation for cohesionless soils (degrees).
+        Return the internal angle of friction from ``Kullhawy & Mayne``
+        correlation for cohesionless soils.
 
         :param float spt_n_60: SPT N-value standardized for field procedures.
         :param float eop: Effective overburden pressure, should be in the same unit as
             ``atm_pressure``.
         :param float atm_pressure: Atmospheric pressure, should be in the same unit as
             ``eop``.
+
+        :return: Internal angle of friction of soil. (degrees)
+        :rtype: float
 
         .. math::
 
@@ -192,18 +204,23 @@ class UndrainedShearStrengthEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def stroud_uss_1974(spt_n_60: float, k=3.5):
+    def stroud_uss_1974(spt_n_60: float, k=3.5) -> float:
         r"""
         Return the undrained shear strength using ``Stroud's`` correlation.
 
         :param float spt_n_60: SPT N-value standardized for field procedures.
-        :param float k: stroud constants, :math:`3.5 \le k \le 6.5`. defaults to 3.5
+        :param float k: stroud constants. defaults to 3.5
 
         :raises EstimatorError: If ``k`` is not in the specified range.
+
+        :return: Undrained shear strength of soil. (:math:`kN/m^2`)
+        :rtype: float
 
         .. math::
 
             C_u = k \cdot N_{60}
+
+        :math:`3.5 \le k \le 6.5`
         """
         if 3.5 <= k <= 6.5:
             return k * spt_n_60
@@ -213,13 +230,16 @@ class UndrainedShearStrengthEst:
 
     @staticmethod
     @round_(ndigits=3)
-    def skempton_uss_1957(eop: float, plasticity_index: float):
+    def skempton_uss_1957(eop: float, plasticity_index: float) -> float:
         r"""
         Return the undrained shear strength using ``Skempton's`` correlation.
 
         :param float eop: Effective overburden pressure. (:math:`kN/m^2`)
-        :param float plasticity_index: Range of water content over which soil remains in
-            plastic condition.
+        :param float plasticity_index: Range of water content over which soil remains
+            in plastic condition.
+
+        :return: Undrained shear strength of soil. (:math:`kN/m^2`)
+        :rtype: float
 
         .. math::
 
@@ -228,8 +248,8 @@ class UndrainedShearStrengthEst:
         .. note::
 
             The value of the ratio :math:`\frac{C_u}{\sigma_o}` determined in a
-            consolidated-undrained test on undisturbed samples is generally greater than
-            actual value because of anisotropic consolidation in the field. The actual
-            value is best determined by ``in-situ shear vane test``.
+            consolidated-undrained test on undisturbed samples is generally greater
+            than actual value because of anisotropic consolidation in the field.
+            The actual value is best determined by ``in-situ shear vane test``.
         """
         return eop * (0.11 + 0.0037 * plasticity_index)
