@@ -18,4 +18,4 @@ build:
 	py -m build
 
 upload:
-	twine upload ./dist/*
+	twine upload --repository geolysis ./dist/*
