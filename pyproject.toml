@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "geolysis"
 description = "geolysis is an opensource software for geotechnical engineering analysis and modeling."
 readme = { file = "README.md", content-type = "text/markdown" }
-license = { file = "LICENSE.txt" }
+license = { text = "MIT License" }
 requires-python = ">=3.10"
 keywords = [
     "discrete-element-method",
@@ -16,10 +16,9 @@ keywords = [
     "bearing-capacity-analysis",
 ]
 authors = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
-maintainers = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
 dependencies = []
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
