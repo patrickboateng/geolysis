@@ -33,3 +33,10 @@ We appreciate your interest and understanding as we navigate this early and cruc
 Your patience and support are instrumental in helping us create a better and more reliable product.
 
 Thank you for being part of our journey!
+
+
+.. toctree:: 
+   :maxdepth: 1
+
+   getting_started
+   

@@ -1,4 +1,4 @@
-:html_theme.sidebar_secondary.remove:
+.. :html_theme.sidebar_secondary.remove:
 
 **********************
 geolysis documentation
@@ -8,16 +8,16 @@ geolysis documentation
    :hidden:
 
    User Guide <user_guide/index>
-   API reference <reference/modules>
-   Development <contributors_guide>
+   API Reference <reference/geolysis/index>
+   Contributor's Guide <dev/index>
    Release notes <release_notes/index>
+   GEPs <geps/index>
 
-:doc:`geolysis </reference/geolysis>` is an open-source software for geotechnical 
-engineering analysis that offers a suite of powerful tools and features for soil 
-analysis and modeling. 
+``geolysis`` is an open-source software for geotechnical engineering analysis that 
+offers a suite of powerful tools and features for soil analysis and modeling. 
 
-Available features
-==================
+Features
+========
 
 - Provides soil classification based on AASHTO and USCS standards.
 - Allowable bearing capacity estimation from SPT N-value. 
@@ -28,9 +28,17 @@ Available features
   - Internal Angle of friction
   - Undrained Shear Strength 
 
-.. grid:: 2
-   :gutter: 3
+.. grid:: 3
+   :gutter: 2
 
+   .. grid-item-card::  
+      :link: user_guide/getting_started
+      :link-type: doc
+
+      :fas:`person-running;1em;sd-text-info` Getting Started
+      ^^^
+
+      New to geolysis? Check out the absolute beginners guide.
    .. grid-item-card::  
       :link: user_guide/index
       :link-type: doc
@@ -42,7 +50,7 @@ Available features
       of geolysis.
 
    .. grid-item-card::
-      :link: reference/modules
+      :link: reference/geolysis/index
       :link-type: doc
 
       :fas:`code;1em;sd-text-info` API Reference
@@ -52,7 +60,7 @@ Available features
       geolysis offers.
 
    .. grid-item-card::  
-      :link: contributors_guide
+      :link: dev/contributors_guide
       :link-type: doc
 
       :fas:`terminal;1em;sd-text-info` Contributor's Guide 
@@ -68,6 +76,16 @@ Available features
       ^^^
 
       Want to add to the codebase? Check out the contribution guidelines.
+
+   .. grid-item-card::  
+      :link: geps/index
+      :link-type: doc
+
+      :fas:`lightbulb;1em;sd-text-info` GEPs 
+      ^^^
+
+      Geolysis Enhancement Proposals (GEPs), documents describing major changes 
+      to be applied to the package. 
 
 .. note:: 
 

@@ -8,15 +8,16 @@
 
 import os
 import sys
-from importlib import metadata
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 
+import geolysis
 
-PACKAGE_VERSION = metadata.version("geolysis")
+PACKAGE_VERSION = geolysis.__version__
 
 project = "geolysis"
-copyright = f"2023, {project}"
+copyright = f"{datetime.now().year}, {project}"
 author = "Patrick Boateng"
 version = release = PACKAGE_VERSION
 
@@ -26,18 +27,22 @@ version = release = PACKAGE_VERSION
 extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autodoc.typehints",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
+    "sphinx.ext.graphviz",
+    "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.bibtex",
     "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
-    "jupyter_sphinx",
-    "enum_tools.autoenum",
+    "autoapi.extension",
+    # "jupyter_sphinx",
+    # "enum_tools.autoenum",
 ]
 
-templates_path = ["_templates", "_templates/autosummary"]
-exclude_patterns = []
+templates_path = ["_templates"]
+exclude_patterns = ["build"]
 
 rst_prolog = """.. include:: <isonum.txt>"""  # adds this string to the start of every .rst file
 
@@ -45,8 +50,15 @@ rst_prolog = """.. include:: <isonum.txt>"""  # adds this string to the start of
 # -- References ------------------------------
 # https://sphinxcontrib-bibtex.readthedocs.io/en/latest/quickstart.html
 
-bibtex_bibfiles = ["./refs.bib", "./article.bib"]
+bibtex_bibfiles = ["./citations/refs.bib", "./citations/article.bib"]
 bibtex_default_style = "unsrt"
+
+# --- API Documentation --------------------
+# https://sphinx-autoapi.readthedocs.io/en/latest/tutorials.html
+
+autoapi_dirs = ["../../geolysis"]
+autoapi_root = "reference/"
+autoapi_add_toctree_entry = False
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -58,8 +70,10 @@ html_favicon = "_static/logo.png"
 html_title = project
 html_static_path = ["_static"]
 html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
+    "custom.css",
 ]
+html_context = {"default_mode": "light"}
 
 html_theme_options = {
     "header_links_before_dropdown": 6,
@@ -95,3 +109,27 @@ html_theme_options = {
 # }
 
 mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+
+if os.environ.get("READTHEDOCS"):
+    from pathlib import Path
+
+    PROJECT_ROOT = Path(__file__).parent.parent
+    PACKAGE_ROOT = PROJECT_ROOT / project
+
+    def run_apidoc():
+        from sphinx.ext import apidoc
+
+        apidoc.main(
+            [
+                "--force",
+                "implicit-namespaces",
+                "--module-first",
+                "--separate",
+                "-o",
+                str(PROJECT_ROOT / "docs" / "reference"),
+                str(PACKAGE_ROOT),
+            ]
+        )
+
+    def setup(app):
+        app.connect("builder-inited", run_apidoc)
