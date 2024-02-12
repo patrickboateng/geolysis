@@ -11,7 +11,6 @@ geolysis documentation
    API Reference <reference/geolysis/index>
    Contributor's Guide <dev/index>
    Release notes <release_notes/index>
-   GEPs <geps/index>
 
 ``geolysis`` is an open-source software for geotechnical engineering analysis that 
 offers a suite of powerful tools and features for soil analysis and modeling. 
