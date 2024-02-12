@@ -145,12 +145,12 @@ class SPTCorrections:
     def map(
         opc_func: Callable[..., FloatOrInt],
         standardized_spt_vals: Iterable[float],
-        dc_func: Callable[..., FloatOrInt] | None = None,
+        dc_func: Callable[[float], FloatOrInt] | None = None,
         **kwargs,
     ):
         """
-        Returns an iterator from computing functions (``opc_func``, "dc_func") using
-        arguments from the iterable (``standard_spt_vals``).
+        Returns an iterator from computing functions (``opc_func``, "dc_func")
+        using arguments from the iterable (``standard_spt_vals``).
 
         :param Callable opc_func: Overburden pressure correction function to use.
         :param Callable | None dc_func: Dilatancy correction function to use.
@@ -324,7 +324,7 @@ class SPTCorrections:
             )
             raise OverburdenPressureError(err_msg)
 
-        corrected_spt = spt_n_60 * (350 / (eop + 70))
+        corrected_spt = spt_n_60 * (350.0 / (eop + 70))
         spt_ratio = corrected_spt / spt_n_60
 
         if 0.45 < spt_ratio < 2.0:
