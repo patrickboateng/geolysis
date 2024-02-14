@@ -1,0 +1,15 @@
+**********************************
+GEP 1 - GEP Purpose and Guidelines
+**********************************
+
+:GEP: 1
+:Title: GEP Purpose and Guidelines
+:Author: Patrick Boateng
+:Status: Active
+:Type: Process
+:Created: <date>
+
+What is a GEP?
+==============
+
+GEP stands for Geolysis Enhancement Proposal.
