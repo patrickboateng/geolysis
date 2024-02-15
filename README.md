@@ -50,22 +50,25 @@
 
 ## What is geolysis?
 
-`geolysis` is an open-source software for geotechnical analysis and modeling.
-It provides features such as `soil classifications`
-(based on the USCS and AASHTO classification standards), `estimating soil
-bearing capacity` using SPT N-value, and `estimating of soil engineering parameters`
-such as `Soil Unit Weight` (moist, saturated, and submerged), `Compression index`,
-`soil internal angle of friction`, and `undrained shear strength of soil`.
+`geolysis` is an open-source software for geotechnical
+analysis and modeling. It provides features such as
+`soil classifications` (based on the USCS and AASHTO
+classification standards), `estimating soil bearing capacity`
+using SPT N-value, and `estimating of soil engineering parameters`
+such as `Soil Unit Weight` (moist, saturated, and submerged),
+`compression index`, `soil internal angle of friction`, and
+`undrained shear strength of soil`.
 
 **Features to include in upcoming versions:**
 
 - Settlement analysis
 - Discrete element method (DEM)
 
-The motivation behind `geolysis` is to provide free software to assist
-geotechnical engineers in their day-to-day work and to expose civil
-engineering students (especially geotechnical students) to tools that
-can make them industry-ready geotechnical engineers right from college.
+The motivation behind `geolysis` is to provide free software
+to assist geotechnical engineers in their day-to-day work and
+to expose civil engineering students (especially geotechnical
+students) to tools that can make them industry-ready geotechnical
+engineers right from college.
 
 ## Installation
 
@@ -114,14 +117,14 @@ Check the [changelog][changelog_url] for release history.
 
 ## Code of Conduct
 
-This project has a [code of conduct][code_of_conduct_url] that we
-expect all contributors to adhere to. Please read and follow it
-when participating in this project.
+This project has a [code of conduct][code_of_conduct_url] that
+we expect all contributors to adhere to. Please read and follow
+it when participating in this project.
 
 ## Contributing
 
-If you would like to contribute to this project, please read the
-[contributing guidelines][contributing_url]
+If you would like to contribute to this project, please read
+the [contributing guidelines][contributing_url]
 
 ## License
 
