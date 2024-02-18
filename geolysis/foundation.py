@@ -14,7 +14,7 @@ class CircularFooting:
     """
     Circular Footing Size.
 
-    :param float diameter: Diameter of foundation footing. (m)
+    :param FloatOrInt diameter: Diameter of foundation footing. (m)
     """
 
     def __init__(self, diameter: FloatOrInt) -> None:
@@ -47,7 +47,7 @@ class SquareFooting:
     """
     Square Footing Size.
 
-    :param SupportFloatOrIndex width: Width of foundation footing. (m)
+    :param FloatOrInt width: Width of foundation footing. (m)
     """
 
     def __init__(self, width: FloatOrInt):
@@ -82,14 +82,14 @@ class RectangularFooting:
     """
     Rectangular Footing Size.
 
-    :param SupportFloatOrIndex length: Length of foundation footing. (m)
-    :param SupportFloatOrIndex width: Width of foundation footing. (m)
+    :param FloatOrInt width: Width of foundation footing. (m)
+    :param FloatOrInt length: Length of foundation footing. (m)
     """
 
     def __init__(
         self,
         width: FloatOrInt,
-        length=FloatOrInt,
+        length: FloatOrInt,
     ) -> None:
         self._width = width
         self._length = length
@@ -124,8 +124,9 @@ class FoundationSize:
     """
     A simple class representing a foundation structure.
 
-    :param float depth: Depth of foundation footing. (m)
-    :param FootingShape footing_shape: Represents the shape of the foundation footing.
+    :param FloatOrInt depth: Depth of foundation footing. (m)
+    :param _FootingShape footing_shape: Represents the shape of the
+        foundation footing.
     """
 
     def __init__(
