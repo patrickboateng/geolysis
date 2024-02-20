@@ -2,7 +2,7 @@
 ``geolysis`` 0.2.0 Release notes
 ********************************
 
-``geolysis`` **0.2.0** is the first stable release. The python
+``geolysis`` **0.2.0** is a pre-release version. The python
 versions supported are 3.10 - 3.12.
 
 
