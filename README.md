@@ -11,10 +11,8 @@
 
 <div align="center">
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/patrickboateng/geolysis?style=flat&logo=github)](https://github.com/patrickboateng/geolysis/stargazers)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/geolysis?style=flat&logo=pypi)](https://pypi.org/project/geolysis/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/geolysis.svg?logo=python&style=flat)](https://pypi.python.org/pypi/geolysis/)
-[![GitHub last commit](https://img.shields.io/github/last-commit/patrickboateng/geolysis?logo=github&style=flat)](https://github.com/patrickboateng/geolysis/commits)
 [![license](https://img.shields.io/pypi/l/geolysis?style=flat&logo=opensourceinitiative)](https://opensource.org/license/mit/)
 
 #
