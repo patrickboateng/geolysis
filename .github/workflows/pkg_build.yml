@@ -1,4 +1,4 @@
-name: Pkg build
+name: pkg build
 
 on: workflow_dispatch
 
