@@ -3,11 +3,9 @@
 [changelog_url]: https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md
 [license_url]: https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt
 
-<!-- <h1 align="center">
+<h1 align="center">
 <img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/source/_static/geolysis_logo.png" alt="logo" width="300">
-</h1><br> -->
-
-# geolysis
+</h1><br>
 
 <div align="center">
 
