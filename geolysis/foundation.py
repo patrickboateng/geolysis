@@ -30,7 +30,7 @@ class CircularFooting:
     """
     Circular Footing Size.
 
-    :param FloatOrInt diameter: Diameter of foundation footing. (m)
+    :param FloatOrInt width: Diameter of foundation footing. (m)
 
     .. note::
 
