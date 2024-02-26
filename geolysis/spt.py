@@ -44,18 +44,20 @@ def weighted_avg_spt_n_val(corrected_spt_vals: Sequence[float]) -> float:
     - :math:`n` = number of layers in the influence zone.
     - :math:`N_i` = corrected N-value at ith layer from the footing base.
 
-    .. note::
-
-        Alternatively, for ease in calculation, the lowest N-value from the influence zone
-        can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
-
     :param Sequence[float] corrected_spt_vals: Corrected SPT N-values within the
-        foundation influence zone i.e. :math:`D_f` to :math:`D_f + 2B`
+                                               foundation influence zone i.e.
+                                               :math:`D_f \rightarrow D_f + 2B`
+
+    :raises StatisticError: If ``corrected_spt_vals`` is empty, StatisticError is raised.
 
     :return: Weighted average of corrected SPT N-values
     :rtype: float
 
-    :raises StatisticError: If ``corrected_spt_vals`` is empty, StatisticError is raised.
+
+    .. note::
+
+        Alternatively, for ease in calculation, the lowest N-value from the influence zone
+        can be taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
     """
     if not corrected_spt_vals:
         err_msg = "spt_n_design requires at least one corrected spt n-value"
@@ -65,27 +67,30 @@ def weighted_avg_spt_n_val(corrected_spt_vals: Sequence[float]) -> float:
     total_den = 0.0
 
     for i, corrected_spt in enumerate(corrected_spt_vals, start=1):
-        idx_weight = 1 / i**2
-        total_num += idx_weight * corrected_spt
-        total_den += idx_weight
+        idx_wgt = 1 / i**2
+        total_num += idx_wgt * corrected_spt
+        total_den += idx_wgt
 
     return total_num / total_den
 
 
 @round_(ndigits=0)
-def avg_uncorrected_spt_n_val(uncorrected_spt_vals: Sequence[float]) -> float:
-    """
+def avg_uncorrected_spt_n_val(
+    uncorrected_spt_vals: Sequence[FloatOrInt],
+) -> float:
+    r"""
     Calculates the average of the uncorrected SPT N-values in the foundation
     influence zone.
 
     :param Sequence[float] uncorrected_spt_vals: Uncorrected SPT N-values within the
-        foundation influence zone i.e. :math:`D_f` |rarr| :math:`D_f + 2B`. Only water
-        table correction suggested.
+                                                 foundation influence zone i.e.
+                                                 :math:`D_f \rightarrrow D_f + 2B`.
+                                                 Only water table correction suggested.
+
+    :raises StatisticError: If ``uncorrected_spt_vals`` is empty, StatisticError is raised.
 
     :return: Average of corrected SPT N-values
     :rtype: float
-
-    :raises StatisticError: If ``uncorrected_spt_vals`` is empty, StatisticError is raised.
     """
     if not uncorrected_spt_vals:
         msg = "spt_n_val requires at least one corrected spt n-value"
@@ -101,18 +106,19 @@ class SPTCorrections:
     There are three (3) different SPT corrections namely:
 
     - Energy Correction / Correction for Field Procedures
-    - Overburden Pressure Corrections
+    - Overburden Pressure Corrections (OPC)
     - Dilatancy Correction
 
     Energy correction is used to standardized the SPT N-values for field procedures.
 
     In cohesionless soils, penetration resistance is affected by overburden pressure.
-    Soils with the same density but different confining pressures have varying penetration
-    numbers, with higher confining pressures leading to higher penetration numbers. As depth
-    increases, confining pressure rises, causing underestimation of penetration numbers
-    at shallow depths and overestimation at deeper depths. The need for corrections in
-    Standard Penetration Test (SPT) values was acknowledged only in 1957 by Gibbs & Holtz,
-    meaning data published before this, like Terzaghi's, are based on uncorrected values.
+    Soils with the same density but different confining pressures have varying
+    penetration numbers, with higher confining pressures leading to higher penetration
+    numbers. As depth increases, confining pressure rises, causing underestimation of
+    penetration numbers at shallow depths and overestimation at deeper depths. The need
+    for corrections in Standard Penetration Test (SPT) values was acknowledged only in
+    1957 by Gibbs & Holtz, meaning data published before this, like Terzaghi's, are
+    based on uncorrected values.
 
     The general formula for overburden pressure correction is:
 
@@ -124,13 +130,26 @@ class SPTCorrections:
 
     - :math:`C_N` = Overburden Pressure Correction Factor
 
-    Available overburden pressure corrections are given by the following authors:
+    .. list-table::
+        :header-rows: 1
 
-    - Gibbs & Holtz (1957)
-    - Peck et al (1974)
-    - Liao & Whitman (1986)
-    - Skempton (1986)
-    - Bazaraa & Peck (1969)
+        * - Available OPC
+          - Year Published
+
+        * - Gibbs & Holtz
+          - 1957
+
+        * - Bazaraa & Peck
+          - 1969
+
+        * - Peck et al
+          - 1974
+
+        * - Liao & Whitman
+          - 1986
+
+        * - Skempton
+          - 1986
 
     **Dilatancy Correction** is a correction for silty fine sands and fine sands below the
     water table that develop pore pressure which is not easily dissipated. The pore pressure
@@ -188,6 +207,8 @@ class SPTCorrections:
             N_{60} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{0.6}
 
         Where:
+
+        .. TODO - This should be a table
 
         - :math:`N_{60}` = Corrected SPT N-value for field procedures
         - :math:`E_{H}`  = Hammer efficiency
@@ -248,11 +269,11 @@ class SPTCorrections:
 
         :param float percentage_energy: Percentage energy reaching the tip of the sampler.
         :param int recorded_spt_val: Recorded SPT N-value from field.
-        :kwparam float hammer_efficiency: hammer efficiency, defaults to 0.6
-        :kwparam float borehole_diameter_correction: borehole diameter correction,
-            defaults to 1.0
-        :kwparam float sampler_correction: sampler correction, defaults to 1.0
-        :kwparam float rod_length_correction: rod Length correction, defaults to 0.75
+        :kwparam float hammer_efficiency: Hammer efficiency, defaults to 0.6
+        :kwparam float borehole_diameter_correction: Borehole diameter correction,
+                                                     defaults to 1.0
+        :kwparam float sampler_correction: Sampler correction, defaults to 1.0
+        :kwparam float rod_length_correction: Rod Length correction, defaults to 0.75
 
         .. note::
 
@@ -274,7 +295,7 @@ class SPTCorrections:
         Return the dilatancy spt correction.
 
         :param float corrected_spt_val: Corrected SPT N-value. This should be corrected
-            using any of the overburden pressure corrections.
+                                        using any of the overburden pressure corrections.
 
         .. math::
 
@@ -335,6 +356,38 @@ class SPTCorrections:
 
     @staticmethod
     @round_(ndigits=2)
+    def bazaraa_peck_opc_1969(spt_n_60: float, eop: float) -> float:
+        r"""
+        Return the overburden pressure correction given by ``Bazaraa (1967)``
+        and also by ``Peck and Bazaraa (1969)``.
+
+        :param float spt_n_60: SPT N-value standardized for field procedures.
+        :param float eop: Effective overburden pressure (:math:`kN/m^2`).
+
+        .. math::
+
+            C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
+
+            C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o}, \, \sigma_o \gt 71.8kN/m^2
+
+            C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
+        """
+
+        std_pressure = 71.8
+
+        if isclose(eop, std_pressure, rel_tol=ERROR_TOL):
+            return spt_n_60
+
+        if eop < std_pressure:
+            corrected_spt = 4 * spt_n_60 / (1 + 0.0418 * eop)
+
+        else:
+            corrected_spt = 4 * spt_n_60 / (3.25 + 0.0104 * eop)
+
+        return min(corrected_spt, 2 * spt_n_60)
+
+    @staticmethod
+    @round_(ndigits=2)
     def peck_et_al_opc_1974(spt_n_60: float, eop: float) -> float:
         r"""
         Return the overburden pressure given by ``Peck et al (1974)``.
@@ -389,36 +442,4 @@ class SPTCorrections:
             C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
         """
         corrected_spt = (2 / (1 + 0.01044 * eop)) * spt_n_60
-        return min(corrected_spt, 2 * spt_n_60)
-
-    @staticmethod
-    @round_(ndigits=2)
-    def bazaraa_peck_opc_1969(spt_n_60: float, eop: float) -> float:
-        r"""
-        Return the overburden pressure correction given by ``Bazaraa (1967)``
-        and also by ``Peck and Bazaraa (1969)``.
-
-        :param float spt_n_60: SPT N-value standardized for field procedures.
-        :param float eop: Effective overburden pressure (:math:`kN/m^2`).
-
-        .. math::
-
-            C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
-
-            C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o}, \, \sigma_o \gt 71.8kN/m^2
-
-            C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
-        """
-
-        std_pressure = 71.8
-
-        if isclose(eop, std_pressure, rel_tol=ERROR_TOL):
-            return spt_n_60
-
-        if eop < std_pressure:
-            corrected_spt = 4 * spt_n_60 / (1 + 0.0418 * eop)
-
-        else:
-            corrected_spt = 4 * spt_n_60 / (3.25 + 0.0104 * eop)
-
         return min(corrected_spt, 2 * spt_n_60)

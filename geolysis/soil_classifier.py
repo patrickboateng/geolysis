@@ -1,4 +1,3 @@
-from types import MappingProxyType
 from typing import NamedTuple
 
 from .constants import ERROR_TOL
@@ -17,8 +16,8 @@ __all__ = [
 def _chk_psd(fines: float, sand: float, gravel: float):
     total_agg = fines + sand + gravel
     if not isclose(total_agg, 100.0, rel_tol=ERROR_TOL):
-        errmsg = f"fines + sand + gravels = 100% not {total_agg}"
-        raise PSDError(errmsg)
+        err_msg = f"fines + sand + gravels = 100% not {total_agg}"
+        raise PSDError(err_msg)
 
 
 # Soil Symbols
@@ -95,17 +94,21 @@ class AtterbergLimits:
     """
     Water contents at which soil changes from one state to the other.
 
-    In 1911, a Swedish agriculture engineer ``Atterberg`` mentioned that a fined-grained
-    soil can exist in four states, namely, liquid, plastic, semi-solid or solid state.
+    In 1911, a Swedish agriculture engineer ``Atterberg`` mentioned that a
+    fined-grained soil can exist in four states, namely, liquid, plastic,
+    semi-solid or solid state.
 
     The main use of Atterberg Limits is in the classification of soils.
 
-    :param float liquid_limit: Water content beyond which soils flows under their own weight.
-        It can also be defined as the minimum moisture content at which a soil flows upon
-        application of a very small shear force.
-    :param float plastic_limit: Water content at which plastic deformation can be initiated.
-        It is also the minimum water content at which soil can be rolled into a thread 3mm
-        thick (molded without breaking)
+    :param float liquid_limit: Water content beyond which soils flows under
+                               their own weight. It can also be defined as
+                               the minimum moisture content at which a soil
+                               flows upon application of a very small shear
+                               force.
+    :param float plastic_limit: Water content at which plastic deformation
+                                can be initiated. It is also the minimum water
+                                content at which soil can be rolled into a
+                                thread 3mm thick (molded without breaking)
     """
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
@@ -117,9 +120,9 @@ class AtterbergLimits:
         """
         Return the plasticity index of the soil.
 
-        Plasticity index is the range of water content over which the soil remains in the
-        plastic state. It is also the numerical difference between the liquid limit and
-        plastic limit of the soil.
+        Plasticity index is the range of water content over which the soil
+        remains in the plastic state. It is also the numerical difference
+        between the liquid limit and plastic limit of the soil.
 
         .. math::
 
@@ -131,8 +134,8 @@ class AtterbergLimits:
     @round_(ndigits=2)
     def A_line(self) -> float:
         """
-        Return the ``A-line`` which is used to determine if a soil is clayey or
-        silty.
+        Return the ``A-line`` which is used to determine if a soil is clayey
+        or silty.
         """
         return 0.73 * (self.liquid_limit - 20)
 
@@ -160,14 +163,14 @@ class AtterbergLimits:
         r"""
         Return the liquidity index of the soil.
 
-        Liquidity index of a soil indicates the nearness of its water content
-        to its liquid limit. When the soil is at the plastic limit its liquidity
-        index is zero. Negative values of the liquidity index indicate that the
-        soil is in a hard (desiccated) state. It is also known as Water-Plasticity
-        ratio.
+        Liquidity index of a soil indicates the nearness of its ``natural water
+        content`` to its ``liquid limit``. When the soil is at the plastic limit
+        its liquidity index is zero. Negative values of the liquidity index
+        indicate that the soil is in a hard (desiccated) state. It is also known
+        as Water-Plasticity ratio.
 
         :param float nmc: Moisture contents of the soil in natural condition.
-            (Natural Moisture Content)
+                          (Natural Moisture Content)
 
         .. math::
 
@@ -180,17 +183,18 @@ class AtterbergLimits:
         r"""
         Return the consistency index of the soil.
 
-        Consistency index indicates the consistency (firmness) of soil. It shows the
-        nearness of the water content of the soil to its plastic limit. When the soil
-        is at the liquid limit, the consistency index is zero. The soil at consistency
-        index of zero will be extremely soft and has negligible shear strength. A soil
-        at a water content equal to the plastic limit has consistency index of 100%
-        indicating that the soil is relatively firm. A consistency index of greater than
-        100% shows the soil is relatively strong (semi-solid state). A negative value
-        indicate the soil is in the liquid state. It is also known as Relative Consistency.
+        Consistency index indicates the consistency (firmness) of soil. It shows
+        the nearness of the ``natural water content`` of the soil to its
+        ``plastic limit``. When the soil is at the liquid limit, the consistency
+        index is zero. The soil at consistency index of zero will be extremely
+        soft and has negligible shear strength. A soil at a water content equal
+        to the plastic limit has consistency index of 100% indicating that the
+        soil is relatively firm. A consistency index of greater than 100% shows
+        the soil is relatively strong (semi-solid state). A negative value indicate
+        the soil is in the liquid state. It is also known as Relative Consistency.
 
         :param float nmc: Moisture contents of the soil in natural condition.
-            (Natural Moisture Content)
+                          (Natural Moisture Content)
 
         .. math::
 
@@ -229,8 +233,8 @@ class _SizeDistribution(NamedTuple):
         Grade of soil sample. Soil grade can either be ``WELL_GRADED`` or
         ``POORLY_GRADED``.
 
-        :param str coarse_soil: Coarse fraction of the soil sample. Valid arguments
-            are ``GRAVEL`` or ``SAND``.
+        :param str coarse_soil: Coarse fraction of the soil sample. Valid
+                                arguments are ``GRAVEL`` or ``SAND``.
         """
         if coarse_soil == GRAVEL and (
             1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4
@@ -250,8 +254,8 @@ class _SizeDistribution(NamedTuple):
 
 class PSD:
     """
-    Quantitative proportions by mass of various sizes of particles present in a
-    soil.
+    Quantitative proportions by mass of various sizes of particles present in
+    a soil.
 
     Particle Size Distribution is a method of separation of soils into
     different fractions using a stack of sieves to measure the size of the
@@ -259,15 +263,15 @@ class PSD:
     distribution of the particle sizes.
 
     :param float fines: Percentage of fines in soil sample i.e. the percentage
-        of soil sample passing through No. 200 sieve (0.075mm)
-    :param float sand: Percentage of sand in soil sample (%)
-    :param float gravel: Percentage of gravel in soil sample (%)
-    :param float d_10: Diameter at which 10% of the soil by weight is finer.
-    :param float d_30: Diameter at which 30% of the soil by weight is finer.
-    :param float d_60: Diameter at which 60% of the soil by weight is finer.
+                        of soil sample passing through No. 200 sieve (0.075mm)
+    :param float sand: Percentage of sand in soil sample. (%)
+    :param float gravel: Percentage of gravel in soil sample. (%)
+    :param float d_10: Diameter at which 10% of the soil by weight is finer. (mm)
+    :param float d_30: Diameter at which 30% of the soil by weight is finer. (mm)
+    :param float d_60: Diameter at which 60% of the soil by weight is finer. (mm)
 
     :raises PSDError: Raised when soil aggregates does not approximately sum up
-        to 100%.
+                      to 100%.
     """
 
     def __init__(
@@ -339,39 +343,41 @@ class AASHTO:
     American Association of State Highway and Transportation Officials (AASHTO)
     classification system.
 
-    The AASHTO classification system is useful for classifying soils for highways. It
-    categorizes soils for highways based on particle size analysis and plasticity
-    characteristics. It classifies both coarse-grained and fine-grained soils into eight
-    main groups (A1-A7) with subgroups, along with a separate category (A8) for organic
-    soils.
+    The AASHTO classification system is useful for classifying soils for highways.
+    It categorizes soils for highways based on particle size analysis and
+    plasticity characteristics. It classifies both coarse-grained and fine-grained
+    soils into eight main groups (A1-A7) with subgroups, along with a separate
+    category (A8) for organic soils.
 
     - ``A1 ~ A3`` (Granular Materials) :math:`\le` 35% pass No. 200 sieve
     - ``A4 ~ A7`` (Silt-clay Materials) :math:`\ge` 36% pass No. 200 sieve
 
-    The Group Index ``(GI)`` is used to further evaluate soils with a group (subgroups).
+    The Group Index ``(GI)`` is used to further evaluate soils within a group.
     When calculating ``GI`` from the equation below, if any term in the parenthesis
-    becomes negative, it is drop and not given a negative value. The maximum values of
-    :math:`(F_{200} - 35)` and :math:`(F_{200} - 15)` are taken as 40 and :math:`(LL - 40)`
-    and :math:`(PI - 10)` as 20.
+    becomes negative, it is drop and not given a negative value. The maximum values
+    of :math:`(F_{200} - 35)` and :math:`(F_{200} - 15)` are taken as 40 and
+    :math:`(LL - 40)` and :math:`(PI - 10)` as 20.
 
     If the computed value for ``GI`` is negative, it is reported as zero.
 
-    In general, the rating for the pavement subgrade is inversely proportional to the ``GI``
-    (lower the ``GI``, better the material). For e.g., a ``GI`` of zero indicates a good
-    subgrade, whereas a group index of 20 or greater shows a very poor subgrade.
+    In general, the rating for the pavement subgrade is inversely proportional to
+    the ``GI`` (lower the ``GI``, better the material). For e.g., a ``GI`` of zero
+    indicates a good subgrade, whereas a group index of 20 or greater shows a very
+    poor subgrade.
 
     .. note::
 
-        The ``GI`` must be mentioned even when it is zero, to indicate that the soil has been
-        classified as per AASHTO system.
+        The ``GI`` must be mentioned even when it is zero, to indicate that the soil
+        has been classified as per AASHTO system.
 
-    :param float liquid_limit: Water content beyond which soils flows under their own weight.
-    :param float plasticity_index: Range of water content over which soil remains in plastic
-        condition.
+    :param float liquid_limit: Water content beyond which soils flows under their own
+                               weight.
+    :param float plasticity_index: Range of water content over which soil remains in
+                                   plastic condition.
     :param float fines: Percentage of fines in soil sample i.e. the percentage of soil
-        sample passing through No. 200 sieve (0.075mm).
-    :kwparam bool add_group_idx: Used to indicate whether the group index should be added to
-        the classification or not. Defaults to True.
+                        sample passing through No. 200 sieve (0.075mm).
+    :kwparam bool add_group_idx: Used to indicate whether the group index should be
+                                 added to the classification or not. Defaults to True.
     """
 
     def __init__(
@@ -483,50 +489,63 @@ class USCS:
     """
     Unified Soil Classification System (USCS).
 
-    The Unified Soil Classification System, initially developed by Casagrande in 1948 and
-    later modified in 1952, is widely utilized in engineering projects involving soils. It
-    is the most popular system for soil classification and is similar to Casagrande's
-    Classification System. The system relies on particle size analysis and atterberg limits
-    for classification.
+    The Unified Soil Classification System, initially developed by Casagrande in
+    1948 and later modified in 1952, is widely utilized in engineering projects
+    involving soils. It is the most popular system for soil classification and is
+    similar to Casagrande's Classification System. The system relies on particle
+    size analysis and atterberg limits for classification.
 
     In this system, soils are first classified into two categories:
 
-    - Coarse grained soils: If more than 50% of the soils is retained on No. 200 (0.075 mm)
-      sieve, it is designated as coarse-grained soil.
+    - Coarse grained soils: If more than 50% of the soils is retained on No. 200
+      (0.075 mm) sieve, it is designated as coarse-grained soil.
 
-    - Fine grained soils: If more than 50% of the soil passes through No. 200 sieve, it is
-      designated as fine grained soil.
+    - Fine grained soils: If more than 50% of the soil passes through No. 200 sieve,
+      it is designated as fine grained soil.
 
-    Highly Organic soils are identified by visual inspection. These soils are termed as Peat.
-    (:math:`P_t`)
+    Highly Organic soils are identified by visual inspection. These soils are termed
+    as Peat. (:math:`P_t`)
 
-    Soil symbols:
+    .. list-table::
+       :header-rows: 1
 
-    - G: Gravel
-    - S: Sand
-    - M: Silt
-    - C: Clay
-    - O: Organic Clay
-    - Pt: Peat
+       * - Soil Symbols
+         - Liquid Limit Symbols
+         - Gradation Symbols
 
-    Liquid limit symbols:
+       * - G: Gravel
+         - H: High Plasticity :math: `(LL > 50)`
+         - W: Well-graded
 
-    - H: High Plasticity :math:`(LL > 50)`
-    - L: Low Plasticity :math:`(LL < 50)`
+       * - S: Sand
+         - L: Low Plasticity :math:`(LL < 50)`
+         - P: Poorly-graded
 
-    Gradation symbols:
+       * - M: Silt
+         -
+         -
 
-    - W: Well-graded
-    - P: Poorly-graded
+       * - C: Clay
+         -
+         -
 
-    :param float liquid_limit: Water content beyond which soils flows under their own weight.
-        It can also be defined as the minimum moisture content at which a soil flows upon
-        application of a very small shear force.
+       * - O: Organic Clay
+         -
+         -
+
+       * - Pt: Peat
+         -
+         -
+
+    :param float liquid_limit: Water content beyond which soils flows under their
+                               own weight. It can also be defined as the minimum
+                               moisture content at which a soil flows upon application
+                               of a very small shear force.
     :param float plastic_limit: Water content at which plastic deformation can be initiated.
-        It is also the minimum water content at which soil can be rolled into a thread 3mm
-        thick (molded without breaking)
-    :param float fines: Percentage of fines in soil sample i.e. the percentage of soil sample
-        passing through No. 200 sieve (0.075mm)
+                                It is also the minimum water content at which soil can be
+                                rolled into a thread 3mm thick (molded without breaking)
+    :param float fines: Percentage of fines in soil sample i.e. The percentage of soil
+                        sample passing through No. 200 sieve (0.075mm)
     :param float sand: Percentage of sand in soil sample (%)
     :param float gravel: Percentage of gravel in soil sample (%)
     :param float d_10: Diameter at which 10% of the soil by weight is finer.

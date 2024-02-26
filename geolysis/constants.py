@@ -13,7 +13,7 @@ class UNITS:
         library unit system.
     """
 
-    kilo_pascal = "kPa"
-    kilo_newton_per_cubic_metre = "kN/m**3"
+    kPa = "kPa"
+    kN_m3 = "kN/m**3"
     degrees = "degrees"
     unitless = ""

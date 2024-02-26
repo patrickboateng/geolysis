@@ -25,18 +25,16 @@ class BowlesABC1997:
     Allowable bearing capacity for cohesionless soils according to ``Bowles
     (1997)``.
 
-    :param FloatOrInt avg_corrected_spt_val: Statistical average of corrected SPT N-value
-        (55% energy with overburden pressure correction) within the foundation influence
-        zone i.e. :math:`0.5B` to :math:`2B`.
+    :param FloatOrInt avg_corrected_spt_val: Statistical average of corrected
+                                             SPT N-value (55% energy with overburden
+                                             pressure correction) within the foundation
+                                             influence zone i.e. ``0.5B`` to ``2B``.
     :param FloatOrInt tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
-
-    :ivar float f_depth: Depth of footing. (m)
-    :ivar float f_width: Width of footing. (m)
     """
 
     MAX_TOL_SETTLEMENT = 25.4
-    unit = UNITS.kilo_pascal
+    unit = UNITS.kPa
 
     def __init__(
         self,
@@ -46,7 +44,10 @@ class BowlesABC1997:
     ) -> None:
         self.avg_corrected_spt_val = avg_corrected_spt_val
         self.tol_settlement = tol_settlement
+
+        #: Depth of footing. (m)
         self.f_depth = foundation_size.depth
+        #: Width of footing. (m)
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
@@ -85,20 +86,17 @@ class BowlesABC1997:
         settlement_ratio = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
         if self.f_width <= 1.2:
-            abc = (
+            return (
                 19.16 * self.avg_corrected_spt_val * self.fd * settlement_ratio
             )
 
-        else:
-            abc = (
-                11.98
-                * self.avg_corrected_spt_val
-                * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-                * self.fd
-                * settlement_ratio
-            )
-
-        return abc
+        return (
+            11.98
+            * self.avg_corrected_spt_val
+            * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+            * self.fd
+            * settlement_ratio
+        )
 
     @round_(ndigits=2)
     def abc_cohl_4_raft_foundation(self):
@@ -119,18 +117,16 @@ class MeyerhofABC1956:
     Allowable bearing capacity for cohesionless soils according to ``Meyerhof
     (1956)``.
 
-    :param FloatOrInt avg_uncorrected_spt_val: Average uncorrected SPT N-value within the
-        foundation influence zone i.e. :math:`D_f` to :math:`D_f + 2B`. Only water table
-        correction suggested.
+    :param FloatOrInt avg_uncorrected_spt_val: Average uncorrected SPT N-value
+                                               within the foundation influence
+                                               zone i.e. :math:`D_f` to :math:`D_f + 2B`.
+                                               Only water table correction suggested.
     :param FloatOrInt tol_settlement: Tolerable settlement. (mm)
     :param FoundationSize foundation_size: Size of foundation.
-
-    :var float f_depth: Depth of footing. (m)
-    :ivar float f_width: Width of footing. (m)
     """
 
     MAX_TOL_SETTLEMENT = 25.4
-    unit = UNITS.kilo_pascal
+    unit = UNITS.kPa
 
     def __init__(
         self,
@@ -140,7 +136,10 @@ class MeyerhofABC1956:
     ) -> None:
         self.avg_uncorrected_spt_val = avg_uncorrected_spt_val
         self.tol_settlement = tol_settlement
+
+        #: Depth of footing. (m)
         self.f_depth = foundation_size.depth
+        #: Width of footing. (m)
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
@@ -177,20 +176,17 @@ class MeyerhofABC1956:
         settlement_ratio = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
         if self.f_width <= 1.2:
-            abc = (
+            return (
                 12 * self.avg_uncorrected_spt_val * self.fd * settlement_ratio
             )
 
-        else:
-            abc = (
-                8
-                * self.avg_uncorrected_spt_val
-                * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-                * self.fd
-                * settlement_ratio
-            )
-
-        return abc
+        return (
+            8
+            * self.avg_uncorrected_spt_val
+            * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+            * self.fd
+            * settlement_ratio
+        )
 
     @round_(ndigits=2)
     def abc_cohl_4_raft_foundation(self):
@@ -211,18 +207,17 @@ class TerzaghiABC1948:
     Allowable bearing capacity for cohesionless soils according to ``Terzaghi &
     Peck (1948)``.
 
-    :param FloatOrInt lowest_uncorrected_spt_val: Lowest (or average) uncorrected SPT
-        N-values within the foundation influence zone. i.e. :math:`D_f` to :math:`D_f + 2B`
+    :param FloatOrInt lowest_uncorrected_spt_val: Lowest (or average) uncorrected
+                                                  SPT N-values within the foundation
+                                                  influence zone. i.e. :math:`D_f` to
+                                                  :math:`D_f + 2B`
     :param FloatOrInt tol_settlement: Tolerable settlement. (mm)
     :param FloatOrInt water_depth: Depth of water below ground surface. (m)
     :param FoundationSize foundation_size: Size of foundation.
-
-    :var float f_depth: Depth of footing. (m)
-    :ivar float f_width: Width of footing. (m)
     """
 
     MAX_TOL_SETTLEMENT = 25.4
-    unit = UNITS.kilo_pascal
+    unit = UNITS.kPa
 
     def __init__(
         self,
@@ -234,7 +229,10 @@ class TerzaghiABC1948:
         self.lowest_uncorrected_spt_val = lowest_uncorrected_spt_val
         self.tol_settlement = tol_settlement
         self.water_depth = water_depth
+
+        #: Depth of footing. (m)
         self.f_depth = foundation_size.depth
+        #: Width of footing. (m)
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
@@ -298,22 +296,20 @@ class TerzaghiABC1948:
         settlement_ratio = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
         if self.f_width <= 1.2:
-            abc = (
+            return (
                 12
                 * self.lowest_uncorrected_spt_val
                 * (1 / (self.cw * self.fd))
                 * settlement_ratio
             )
-        else:
-            abc = (
-                8
-                * self.lowest_uncorrected_spt_val
-                * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-                * (1 / (self.cw * self.fd))
-                * settlement_ratio
-            )
 
-        return abc
+        return (
+            8
+            * self.lowest_uncorrected_spt_val
+            * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+            * (1 / (self.cw * self.fd))
+            * settlement_ratio
+        )
 
     @round_(ndigits=2)
     def abc_cohl_4_raft_foundation(self):

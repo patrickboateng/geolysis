@@ -1,4 +1,5 @@
-from typing import TypeAlias
+from abc import abstractproperty
+from typing import Protocol
 
 from geolysis.utils import FloatOrInt
 
@@ -10,40 +11,61 @@ __all__ = [
 ]
 
 
-class CircularFooting:
+class _FootingShape(Protocol):
+
+    @abstractproperty
+    def width(self) -> FloatOrInt: ...
+
+    @width.setter
+    def width(self, __val: FloatOrInt): ...
+
+    @abstractproperty
+    def length(self) -> FloatOrInt: ...
+
+    @length.setter
+    def length(self, __val: FloatOrInt): ...
+
+
+class CircularFooting(_FootingShape):
     """
     Circular Footing Size.
 
     :param FloatOrInt diameter: Diameter of foundation footing. (m)
+
+    .. note::
+
+        The ``width`` and ``length`` properties refer to the diameter
+        of the circular footing. This is to make it compatible with
+        the protocol square and rectangular footing follow.
     """
 
-    def __init__(self, diameter: FloatOrInt) -> None:
-        self._diameter = diameter
-
-    @property
-    def diameter(self) -> FloatOrInt:
-        """
-        Diameter of foundation footing. (m)
-        """
-        return self._diameter
-
-    @diameter.setter
-    def diameter(self, __val: FloatOrInt):
-        self._diameter = __val
+    def __init__(self, width: FloatOrInt) -> None:
+        self._width = width
 
     @property
     def width(self) -> FloatOrInt:
         """
         Diameter of foundation footing. (m)
         """
-        return self._diameter
+        return self._width
 
     @width.setter
     def width(self, __val: FloatOrInt):
-        self.diameter = __val
+        self.width = __val
+
+    @property
+    def length(self) -> FloatOrInt:
+        """
+        Diameter of foundation footing. (m)
+        """
+        return self._width
+
+    @length.setter
+    def length(self, __val: FloatOrInt):
+        self.width = __val
 
 
-class SquareFooting:
+class SquareFooting(_FootingShape):
     """
     Square Footing Size.
 
@@ -75,10 +97,10 @@ class SquareFooting:
 
     @length.setter
     def length(self, __val: FloatOrInt):
-        self.width = __val  # This will set the _width and _length attributes
+        self.width = __val
 
 
-class RectangularFooting:
+class RectangularFooting(_FootingShape):
     """
     Rectangular Footing Size.
 
@@ -117,16 +139,13 @@ class RectangularFooting:
         self._length = __val
 
 
-_FootingShape: TypeAlias = SquareFooting | RectangularFooting | CircularFooting
-
-
 class FoundationSize:
     """
     A simple class representing a foundation structure.
 
     :param FloatOrInt depth: Depth of foundation footing. (m)
     :param _FootingShape footing_shape: Represents the shape of the
-        foundation footing.
+                                        foundation footing.
     """
 
     def __init__(
@@ -152,6 +171,11 @@ class FoundationSize:
     def width(self) -> FloatOrInt:
         """
         Width of foundation footing. (m)
+
+        .. note::
+
+            In the case of circular footing ``width`` refers to the
+            diameter.
         """
         return self.footing_shape.width
 
@@ -164,14 +188,13 @@ class FoundationSize:
         """
         Length of foundation footing. (m)
 
-        :raises AttributeError: Raises error if footing shape does not have a length
-            attribute.
-        """
-        if isinstance(self.footing_shape, (SquareFooting, RectangularFooting)):
-            return self.footing_shape.length
+        .. note::
 
-        else:
-            err_msg = (
-                f"{type(self.footing_shape)} have no attribute named length"
-            )
-            raise AttributeError(err_msg)
+            In the case of circular footing ``length`` refers to the
+            diameter.
+        """
+        return self.footing_shape.length
+
+    @length.setter
+    def length(self, __val: FloatOrInt):
+        self.footing_shape.length = __val
