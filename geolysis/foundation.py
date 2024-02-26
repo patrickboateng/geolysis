@@ -26,7 +26,7 @@ class _FootingShape(Protocol):
     def length(self, __val: FloatOrInt): ...
 
 
-class CircularFooting(_FootingShape):
+class CircularFooting:
     """
     Circular Footing Size.
 
@@ -65,7 +65,7 @@ class CircularFooting(_FootingShape):
         self.width = __val
 
 
-class SquareFooting(_FootingShape):
+class SquareFooting:
     """
     Square Footing Size.
 
@@ -100,7 +100,7 @@ class SquareFooting(_FootingShape):
         self.width = __val
 
 
-class RectangularFooting(_FootingShape):
+class RectangularFooting:
     """
     Rectangular Footing Size.
 
