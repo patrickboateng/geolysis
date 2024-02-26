@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+#: Error tolerance
 ERROR_TOL = 0.01
 
 
