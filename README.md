@@ -44,6 +44,7 @@
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
+- [Governance of this project](#governance-of-this-project)
 - [Contact Information](#contact-information)
 
 ## What is geolysis?
@@ -129,6 +130,12 @@ the [contributing guidelines][contributing_url]
 Distributed under the [**MIT**][license_url] license. By using,
 distributing, or contributing to this project, you agree to the
 terms and conditions of this license.
+
+## Governance of this project
+
+`geolysis` is still developing relatively rapidly, so please be
+patient if things change or features iterate and change quickly.
+Once `geolysis` hits 1.0, it will slow down considerably.
 
 ## Contact Information
 
