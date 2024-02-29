@@ -36,6 +36,7 @@
 ## Table of Contents
 
 - [What is geolysis?](#what-is-geolysis)
+- [Motivation](#motivation)
 - [Installation](#installation)
 - [Soil Classification Example](#soil-classification-example)
   - [AASHTO Classification](#aashto-classification)
@@ -61,6 +62,8 @@ estimating soil engineering parameters such as `soil unit weight`
 
 - Settlement analysis
 - Discrete element method (DEM)
+
+## Motivation
 
 The motivation behind `geolysis` is to provide free software
 to assist geotechnical engineers in their day-to-day work and
