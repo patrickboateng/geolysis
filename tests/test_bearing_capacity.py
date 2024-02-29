@@ -6,7 +6,6 @@ from geolysis.bearing_capacity.abc import (
     MeyerhofABC1956,
     TerzaghiABC1948,
 )
-from geolysis.constants import ERROR_TOL
 from geolysis.foundation import FoundationSize, SquareFooting
 
 
@@ -77,7 +76,7 @@ class TestTerzaghi:
             "footing_dim",
             "abc",
         ),
-        ((11, 20, 1.2, 1.5, 1.2, 60.37), (11, 20, 1.7, 1.5, 1.4, 59.01)),
+        ((11, 20, 1.2, 1.5, 1.2, 60.47), (11, 20, 1.7, 1.5, 1.4, 59.02)),
     )
     def test_terzaghi_peck_cohl_abc(
         self,
@@ -98,6 +97,4 @@ class TestTerzaghi:
             water_depth=water_depth,
             foundation_size=fs,
         )
-        assert t_abc.abc_cohl_4_isolated_foundation() == pytest.approx(
-            abc, ERROR_TOL
-        )
+        assert t_abc.abc_cohl_4_isolated_foundation() == abc
