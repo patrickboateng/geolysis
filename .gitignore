@@ -71,7 +71,4 @@ venv-*/
 .markdownlint.json
 
 # Sphinx generated files
-*generated
 *jupyter_execute
-*gen
-/docs/source/geolysis/*
