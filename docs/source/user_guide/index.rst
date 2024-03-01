@@ -1,42 +1,97 @@
-:html_theme.sidebar_secondary.remove:
-
-*******************
-geolysis user guide
-*******************
-
-Important Notice: Pre-Alpha Stage of Development
-================================================
-
-We would like to inform you that our project is currently in the **pre-alpha stage** of development. 
-This is an early phase where we are actively working on developing the core features and 
-functionalities of our software.
-
-**What this means for you:**
-
-#. **User Guide Incomplete**: As we are still in the process of defining and building the key components 
-   of our software, the User Guide is not yet fully developed. This means that the documentation you find 
-   here may be incomplete or subject to significant changes.
-
-#. **Expect Changes**: Since we are in the pre-alpha stage, please be aware that aspects of the software, 
-   including features, api, and user interface, are likely to undergo substantial revisions. We are 
-   constantly iterating and improving based on internal testing and early feedback.
-
-#. **Your Feedback is Valuable**: Although the User Guide is not complete, we highly value early feedback 
-   from users like you. If you are exploring our software at this stage, your insights and experiences are 
-   incredibly important to us.
-
-#. **Stay Updated**: We are working hard to progress to the next stages of development, where we will have 
-   a more stable and feature-rich version of our software. We encourage you to stay connected with us for 
-   future updates and releases.
-
-We appreciate your interest and understanding as we navigate this early and crucial phase of development. 
-Your patience and support are instrumental in helping us create a better and more reliable product.
-
-Thank you for being part of our journey!
-
+***************
+Getting Started
+***************
 
 .. toctree:: 
    :maxdepth: 1
+   :hidden:
 
-   getting_started
-   
+   abc
+   estimators
+   soil_classifier
+   spt
+ 
+
+Installation
+============
+
+``geolysis`` can be installed via `pip <https://pypi.org/project/geolysis>`_ 
+as follows for the supported operating systems.
+
+.. tabs::
+
+    .. group-tab:: Windows
+
+        .. code::
+
+            C:\> pip install geolysis
+
+    .. group-tab:: Linux/Unix
+
+        .. code::
+
+            $ pip3 install geolysis
+
+Version Check
+=============
+
+To see whether ``geolysis`` is already installed or to check if an install 
+has worked, run the following in a Python shell: ::
+
+    >>> import geolysis as gl
+    >>> print(gl.__version__)
+
+or, from the command line: 
+
+.. tabs:: 
+
+    .. group-tab:: Windows
+
+        .. code::
+
+            C:\> py -c "import geolysis; print(geolysis.__version__)"
+
+    .. group-tab:: Linux/Unix
+
+        .. code::
+
+            $ python3 -c "import geolysis; print(geolysis.__version__)"
+
+You'll see the version number if ``geolysis`` is installed and an
+error message otherwise.
+
+Importing
+=========
+
+``geolysis`` can be imported as follows: ::
+
+    >>> import geolysis as gl
+
+Most functions/classes of ``geolysis`` are found within submodules: ::
+
+    >>> spt_corr = gl.spt.SPTCorrections()
+
+A list of submodules and functions is found on the 
+:doc:`API Reference </reference/index>`  page.
+
+The :mod:`geolysis.spt` submodule provides a set of functions and 
+classes for analyzing and correcting SPT N-values. ::
+
+    >>> corrected_spt_n_vals = [7.0, 15.0, 18.0]
+    >>> gl.spt.weighted_avg_spt_n_val(corrected_spt_n_vals)
+    9.0
+
+It is recommended to import submodules as follows: ::
+
+    >>> from <pkg> import <submodule>
+    >>> from geolysis import spt
+
+Also it is recommended to import objects as follows: ::
+
+    >>> from <pkg>.<submodule> import object
+    >>> from geolysis.spt import SPTCorrections
+
+Or: ::
+
+    >>> from <pkg>.<subpkg>.<submodule> import object
+    >>> from geolysis.bearing_capacity.abc import BowlesABC1997
