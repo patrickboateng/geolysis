@@ -84,7 +84,7 @@ def avg_uncorrected_spt_n_val(
 
     :param Sequence[float] uncorrected_spt_vals: Uncorrected SPT N-values within the
                                                  foundation influence zone i.e.
-                                                 :math:`D_f \rightarrrow D_f + 2B`.
+                                                 :math:`D_f \rightarrow D_f + 2B`.
                                                  Only water table correction suggested.
 
     :raises StatisticError: If ``uncorrected_spt_vals`` is empty, StatisticError is raised.
@@ -168,12 +168,12 @@ class SPTCorrections:
         **kwargs,
     ):
         """
-        Returns an iterator from computing functions (``opc_func``, "dc_func")
+        Return an iterator from computing functions (``opc_func``, ``dc_func``)
         using arguments from the iterable (``standard_spt_vals``).
 
         :param Callable opc_func: Overburden pressure correction function to use.
         :param Callable | None dc_func: Dilatancy correction function to use.
-        :param dict kwargs: Keyword arguments to pass to ```opc_func`.
+        :param dict kwargs: Keyword arguments to pass to ``opc_func``.
         """
         opc_func = functools.partial(opc_func, **kwargs)
         corrected_spt_vals = map(opc_func, standardized_spt_vals)
@@ -208,14 +208,26 @@ class SPTCorrections:
 
         Where:
 
-        .. TODO - This should be a table
+        .. list-table::
+            :header-rows: 0
 
-        - :math:`N_{60}` = Corrected SPT N-value for field procedures
-        - :math:`E_{H}`  = Hammer efficiency
-        - :math:`C_{B}`  = Borehole diameter correction
-        - :math:`C_{S}`  = Sampler correction
-        - :math:`C_{R}`  = Rod length correction
-        - N              = Recorded SPT N-value in field
+            * - :math:`N_{60}`
+              - Corrected SPT N-value for field procedures
+
+            * - :math:`E_H`
+              - Hammer efficiency
+
+            * - :math:`C_B`
+              - Borehole diameter correction
+
+            * - :math:`C_S`
+              - Sampler correction
+
+            * - :math:`C_R`
+              - Rod length correction
+
+            * - N
+              - Recorded SPT N-value in field
 
         The values of :math:`E_H`, :math:`C_B`, :math:`C_S`, and :math:`C_R` can be found in
         the table below.
