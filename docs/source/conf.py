@@ -38,7 +38,7 @@ extensions = [
     # Third Party
     "sphinx_copybutton",
     "sphinx_design",
-    "sphinx_tabs.tabs",
+    # "sphinx_tabs.tabs",
     "sphinxcontrib.bibtex",
     "myst_parser",
     # "jupyter_sphinx",
