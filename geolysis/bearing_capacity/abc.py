@@ -52,6 +52,9 @@ class BowlesABC1997:
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
+    def __str__(self) -> str:
+        return "Bowles (1997)"
+
     @property
     def fd(self):
         r"""
@@ -143,6 +146,9 @@ class MeyerhofABC1956:
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
+
+    def __str__(self) -> str:
+        return "Meyerhof (1956)"
 
     @property
     def fd(self):
@@ -236,6 +242,9 @@ class TerzaghiABC1948:
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
+
+    def __str__(self) -> str:
+        return "Terzaghi (1948)"
 
     @property
     def fd(self):
