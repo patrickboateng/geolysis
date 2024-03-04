@@ -1,10 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap");
+@import url("https://fonts.cdnfonts.com/css/satoshi");
 
 /* body {
   font-family: "Source Sans Pro", sans-serif;
 } */
 
 html {
+  --pst-font-family-base: "Satoshi", Verdana, var(--pst-font-family-base-system);
   --pst-font-family-monospace: "Fira Code", Courier,
     var(--pst-font-family-monospace-system);
 }
