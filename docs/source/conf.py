@@ -105,9 +105,7 @@ html_theme_options = {
     "footer_end": ["theme-version"],
 }
 
-html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs", "sidebar-ethical-ads"]
-}
+html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 
 #     "navbar_align": "left",
 #     "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
