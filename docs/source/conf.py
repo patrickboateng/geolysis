@@ -89,6 +89,11 @@ html_context = {"default_mode": "dark"}
 
 # Define the json_url for our version switcher
 json_url = "https://geolysis.readthedocs.io/en/latest/_static/switcher.json"
+version_match = os.environ.get("READTHEDOCS_VERSION")
+
+# TODO: update this logic
+if version_match == "latest":
+    version_match = f"v{release}"
 
 html_theme_options = {
     "header_links_before_dropdown": 6,
@@ -115,7 +120,7 @@ html_theme_options = {
     "footer_start": ["copyright"],
     "footer_center": ["sphinx-version"],
     "footer_end": ["theme-version"],
-    "switcher": {"json_url": json_url, "version_match": version},
+    "switcher": {"json_url": json_url, "version_match": version_match},
 }
 
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
