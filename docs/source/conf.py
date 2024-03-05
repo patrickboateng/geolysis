@@ -83,22 +83,29 @@ html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
     "custom.css",
 ]
+html_js_files = ["pypi-icon.js"]
 html_context = {"default_mode": "dark"}
+
 
 # Define the json_url for our version switcher
 json_url = "https://geolysis.readthedocs.io/en/latest/_static/switcher.json"
 
 html_theme_options = {
     "header_links_before_dropdown": 6,
-    # "icon_links": [
-    #     {
-    #         "name": "GitHub",
-    #         "url": f"https://github.com/patrickboateng/{project}",
-    #         "icon": "fa-brands fa-github",
-    #         "type": "fontawesome",
-    #     },
-    # ],
-    "github_url": f"https://github.com/patrickboateng/{project}",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": f"https://github.com/patrickboateng/{project}",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": f"https://pypi.org/project/{project}",
+            "icon": "fa-custom fa-pypi",
+            "type": "fontawesome",
+        },
+    ],
     "navbar_align": "content",
     "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
     "navbar_persistent": [],
@@ -108,7 +115,7 @@ html_theme_options = {
     "footer_start": ["copyright"],
     "footer_center": ["sphinx-version"],
     "footer_end": ["theme-version"],
-    "switcher": {"version_match": version, "json_url": json_url},
+    "switcher": {"json_url": json_url, "version_match": version},
 }
 
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
