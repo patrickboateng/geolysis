@@ -22,8 +22,6 @@ copyright = f"2023 - {today.year}, {project}"
 author = "Patrick Boateng"
 version = release = PACKAGE_VERSION
 
-_today = today.strftime("%d-%b-%Y")
-
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
@@ -69,6 +67,9 @@ copybutton_prompt_text = (
 )
 copybutton_prompt_is_regexp = True
 
+# Myst
+myst_heading_anchors = 6
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
@@ -84,6 +85,9 @@ html_css_files = [
 ]
 html_context = {"default_mode": "dark"}
 
+# Define the json_url for our version switcher
+json_url = "https://geolysis.readthedocs.io/en/latest/_static/switcher.json"
+
 html_theme_options = {
     "header_links_before_dropdown": 6,
     # "icon_links": [
@@ -96,7 +100,7 @@ html_theme_options = {
     # ],
     "github_url": f"https://github.com/patrickboateng/{project}",
     "navbar_align": "content",
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
     "navbar_persistent": [],
     "secondary_sidebar_items": ["page-toc"],
     "show_prev_next": False,
@@ -104,6 +108,7 @@ html_theme_options = {
     "footer_start": ["copyright"],
     "footer_center": ["sphinx-version"],
     "footer_end": ["theme-version"],
+    "switcher": {"version_match": version, "json_url": json_url},
 }
 
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
