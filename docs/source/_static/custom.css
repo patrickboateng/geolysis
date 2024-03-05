@@ -17,3 +17,9 @@ div.prev-next-area {
   font-size: 0.8125rem;
   font-weight: 600;
 }
+
+footer.bd-footer {
+  font-family: "IBM Plex Sans", var(--pst-font-family-base);
+  font-size: 0.8125rem;
+  /* font-weight: 600; */
+}
