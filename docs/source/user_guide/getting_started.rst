@@ -80,10 +80,10 @@ It is recommended to import submodules as follows: ::
     >>> from <pkg> import <submodule>
     >>> from geolysis import spt
 
-Also it is recommended to import objects as follows: ::
+Also it is recommended to import functions/classes as follows: ::
 
-    >>> from <pkg>.<submodule> import object
-    >>> from geolysis.spt import SPTCorrections
+    >>> from <pkg>.<submodule> import function, class
+    >>> from geolysis.spt import weighted_avg_spt_n_val, SPTCorrections
 
 Or: ::
 
