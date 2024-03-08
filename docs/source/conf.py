@@ -36,10 +36,9 @@ extensions = [
     # Third Party
     "sphinx_copybutton",
     "sphinx_design",
-    # "sphinx_tabs.tabs",
     "sphinxcontrib.bibtex",
     "myst_parser",
-    # "jupyter_sphinx",
+    "autoapi.extension",
     # "enum_tools.autoenum",
 ]
 
@@ -54,11 +53,11 @@ rst_prolog = """.. include:: <isonum.txt>"""  # adds this string to the start of
 bibtex_bibfiles = ["./citations/book.bib", "./citations/article.bib"]
 bibtex_default_style = "unsrt"
 
-# --- Sphinx Tabs --------------------
-# https://sphinx-tabs.readthedocs.io/en/latest/
-
-sphinx_tabs_disable_css_loading = True
-sphinx_tabs_disable_tab_closing = True
+# Sphinx AutoAPI
+autoapi_dirs = ["../../geolysis"]
+autoapi_root = "reference"
+autoapi_add_toctree_entry = False
+autoapi_generate_api_docs = False
 
 #
 #
