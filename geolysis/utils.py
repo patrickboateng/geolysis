@@ -1,6 +1,6 @@
 import functools
 import math
-from math import ceil, exp, isclose, log10
+from math import ceil, exp, isclose, log, log10
 from math import pi as PI
 from math import sqrt
 from statistics import fmean as mean
