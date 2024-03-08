@@ -12,8 +12,8 @@ def influence_factor(footing_shape: _FootingShape) -> float:
 
     .. math::
 
-        I = \frac{1}{\pi}[ln(\frac{\sqrt{1 + m^2} + m}{\sqrt{1 + m^2} - m})
-            + m \cdot ln(\frac{\sqrt{1 + m^2} + 1}{\sqrt{1 + m^2} - 1})]
+        I = \frac{1}{\pi}\left[\ln(\frac{\sqrt{1 + m^2} + m}{\sqrt{1 + m^2} - m})
+            + m \cdot \ln(\frac{\sqrt{1 + m^2} + 1}{\sqrt{1 + m^2} - 1})\right]
     """
     m = footing_shape.length / footing_shape.width
     root = sqrt(1 + m**2)
@@ -36,7 +36,7 @@ def immediate_settlement_coh(
     :param FloatOrInt udl: Uniformly distributed load. (kN/m2)
     :param FloatOrInt elastic_mod: Elastic modulus of soil. (kN/m2)
     :param float poisson_ratio: Poisson ratio
-    :param FloatOrInt footing_shape: Shape of foundation footing.
+    :param FoundationSize foundation_size: Size of foundation.
     :param bool embedded: Indicates whether footing is embedded in the
                           soil or not. Defaults to False.
 
