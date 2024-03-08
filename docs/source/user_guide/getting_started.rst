@@ -66,7 +66,7 @@ Most functions/classes of ``geolysis`` are found within submodules: ::
     >>> spt_corr = gl.spt.SPTCorrections()
 
 A list of submodules and functions is found on the 
-:doc:`API Reference </reference/index>`  page.
+:doc:`API Reference </reference/geolysis/index>`  page.
 
 The :mod:`geolysis.spt` submodule provides a set of functions and 
 classes for analyzing and correcting SPT N-values. ::

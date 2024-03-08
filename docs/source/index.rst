@@ -8,7 +8,7 @@ geolysis documentation
    :hidden:
 
    User Guide          <user_guide/index>
-   API Reference       <reference/index>
+   API Reference       <reference/geolysis/index>
    Contributor's Guide <dev/index>
    Release notes       <release_notes/index>
 
@@ -56,7 +56,7 @@ Quick links
       concepts of geolysis.
 
    .. grid-item-card::
-      :link: reference/index
+      :link: reference/geolysis/index
       :link-type: doc
 
       :fas:`code;1em;sd-text-info` API Reference
