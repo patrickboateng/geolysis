@@ -56,6 +56,7 @@ bibtex_default_style = "unsrt"
 autoapi_dirs = ["../../geolysis"]
 autoapi_root = "reference"
 autoapi_add_toctree_entry = False
+autoapi_template_dir = "_templates/_autoapi_templates"
 # autoapi_generate_api_docs = False
 
 #
