@@ -8,17 +8,16 @@
 
 import os
 import sys
-from datetime import date, datetime
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 
 import geolysis
 
 PACKAGE_VERSION = geolysis.__version__
-today = datetime.now()
 
 project = "geolysis"
-copyright = f"2023 - {today.year}, {project}"
+copyright = f"2023 - {datetime.today().year}, {project}"
 author = "Patrick Boateng"
 version = release = PACKAGE_VERSION
 
@@ -57,7 +56,7 @@ bibtex_default_style = "unsrt"
 autoapi_dirs = ["../../geolysis"]
 autoapi_root = "reference"
 autoapi_add_toctree_entry = False
-autoapi_generate_api_docs = False
+# autoapi_generate_api_docs = False
 
 #
 #
