@@ -139,6 +139,49 @@ class RectangularFooting:
         self._length = __val
 
 
+class FootingSize:
+    """"""
+
+    def __init__(
+        self, thickness: FloatOrInt, footing_shape: _FootingShape
+    ) -> None:
+        self.footing_shape = footing_shape
+        self._thickness = thickness
+
+    @property
+    def thickness(self) -> FloatOrInt:
+        """
+        Thickness of foundation footing. (m)
+        """
+        return self._thickness
+
+    @thickness.setter
+    def thickness(self, __val: FloatOrInt):
+        self._thickness = __val
+
+    @property
+    def width(self) -> FloatOrInt:
+        """
+        Width of foundation footing. (m)
+        """
+        return self.footing_shape.width
+
+    @width.setter
+    def width(self, __val: FloatOrInt):
+        self.footing_shape.width = __val
+
+    @property
+    def length(self) -> FloatOrInt:
+        """
+        Length of foundation footing. (m)
+        """
+        return self.footing_shape.length
+
+    @length.setter
+    def length(self, __val: FloatOrInt):
+        self.footing_shape.length = __val
+
+
 class FoundationSize:
     """
     A simple class representing a foundation structure.
@@ -151,10 +194,10 @@ class FoundationSize:
     def __init__(
         self,
         depth: FloatOrInt,
-        footing_shape: _FootingShape,
+        footing_size: FootingSize,
     ) -> None:
         self._depth = depth
-        self.footing_shape = footing_shape
+        self.footing_size = footing_size
 
     @property
     def depth(self) -> FloatOrInt:
@@ -177,11 +220,11 @@ class FoundationSize:
             In the case of circular footing ``width`` refers to the
             diameter.
         """
-        return self.footing_shape.width
+        return self.footing_size.width
 
     @width.setter
     def width(self, __val: FloatOrInt):
-        self.footing_shape.width = __val
+        self.footing_size.width = __val
 
     @property
     def length(self) -> FloatOrInt:
@@ -193,8 +236,8 @@ class FoundationSize:
             In the case of circular footing ``length`` refers to the
             diameter.
         """
-        return self.footing_shape.length
+        return self.footing_size.length
 
     @length.setter
     def length(self, __val: FloatOrInt):
-        self.footing_shape.length = __val
+        self.footing_size.length = __val
