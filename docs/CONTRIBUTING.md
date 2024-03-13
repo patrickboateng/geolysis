@@ -62,8 +62,8 @@ these steps:
 If you have an idea for an enhancement or a new feature, please follow these
 steps:
 
-1. Check the [existing issues](https://github.com/your-project-repo/issues) to
-   see if the enhancement has already been suggested.
+1. Check the [existing issues](https://github.com/patrickboateng/geolysis/issues)
+   to see if the enhancement has already been suggested.
 1. If not, create a new issue, describing the enhancement in detail. Be clear
    about why it's valuable and how it should work.
 
