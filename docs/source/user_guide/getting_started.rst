@@ -5,6 +5,12 @@ Getting Started
 Installation
 ============
 
+We recommend using the latest version of python. ``geolysis`` supports
+python 3.10 and newer. We also recommend using a `virtual environment 
+<https://packaging.python.org/en/latest/tutorials/installing-packages/#creating-virtual-environments>`_
+in order to isolate your project dependencies from other projects and 
+the system.
+
 ``geolysis`` can be installed via `pip <https://pypi.org/project/geolysis>`_ 
 as follows for the supported operating systems.
 
