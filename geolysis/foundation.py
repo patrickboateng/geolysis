@@ -1,169 +1,180 @@
-from abc import abstractproperty
-from typing import Protocol
+from abc import abstractmethod
+from dataclasses import dataclass
+from typing import ClassVar, Literal, Optional, Protocol
 
+from geolysis.constants import GDict
+from geolysis.constants import UnitRegistry as ureg
 from geolysis.utils import FloatOrInt
 
 __all__ = [
+    "create_footing",
     "CircularFooting",
     "SquareFooting",
     "RectangularFooting",
+    "FootingSize",
     "FoundationSize",
 ]
 
 
+class FootingCreationError(TypeError):
+    pass
+
+
 class _FootingShape(Protocol):
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def width(self) -> FloatOrInt: ...
 
     @width.setter
     def width(self, __val: FloatOrInt): ...
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def length(self) -> FloatOrInt: ...
 
     @length.setter
     def length(self, __val: FloatOrInt): ...
 
 
+@dataclass
 class CircularFooting:
+    """A class representation of circular footing.
+
+    Parameters
+    ----------
+    width : float, unit=metre
+        Diameter of foundation footing.
+
+    Attributes
+    ----------
+    width : float, unit=metre
+    length : float, unit=metre
+    UNITS : GDict
+        Unit registry for attributes and values returned from
+        functions.
+
+    See Also
+    --------
+    SquareFooting, RectangularFooting
+
+    Notes
+    -----
+    The ``width`` and ``length`` properties refer to the diameter
+    of the circular footing. This is to make it compatible with the
+    protocol square and rectangular footing follow.
     """
-    Circular Footing Size.
 
-    :param FloatOrInt width: Diameter of foundation footing. (m)
-
-    .. note::
-
-        The ``width`` and ``length`` properties refer to the diameter
-        of the circular footing. This is to make it compatible with
-        the protocol square and rectangular footing follow.
-    """
-
-    def __init__(self, width: FloatOrInt) -> None:
-        self._width = width
+    width: float
+    UNITS: ClassVar = GDict(width=ureg.m, length=ureg.m)
 
     @property
-    def width(self) -> FloatOrInt:
-        """
-        Diameter of foundation footing. (m)
-        """
-        return self._width
-
-    @width.setter
-    def width(self, __val: FloatOrInt):
-        self.width = __val
-
-    @property
-    def length(self) -> FloatOrInt:
-        """
-        Diameter of foundation footing. (m)
-        """
-        return self._width
+    def length(self) -> float:
+        """Diameter of foundation footing."""
+        return self.width
 
     @length.setter
-    def length(self, __val: FloatOrInt):
+    def length(self, __val: float):
         self.width = __val
 
 
+@dataclass
 class SquareFooting:
-    """
-    Square Footing Size.
+    """A class representation of square footing.
 
-    :param FloatOrInt width: Width of foundation footing. (m)
+    Parameters
+    ----------
+    width : float, unit=metre
+        Width of foundation footing.
+
+    Attributes
+    ----------
+    width : float, unit=metre
+    length : float, unit=metre
+    UNITS : GDict
+        Unit registry for attributes and values returned from
+        functions.
+
+    See Also
+    --------
+    CircularFooting, RectangularFooting
     """
 
-    def __init__(self, width: FloatOrInt):
-        self._width = width
-        self._length = width
+    width: float
+    UNITS: ClassVar = GDict(width=ureg.m, length=ureg.m)
 
     @property
-    def width(self) -> FloatOrInt:
-        """
-        Width of foundation footing. (m)
-        """
-        return self._width
-
-    @width.setter
-    def width(self, __val: FloatOrInt):
-        self._width = __val
-        self._length = __val
-
-    @property
-    def length(self) -> FloatOrInt:
-        """
-        Length of foundation footing. (m)
-        """
-        return self._length
+    def length(self) -> float:
+        """Length of foundation footing."""
+        return self.width
 
     @length.setter
-    def length(self, __val: FloatOrInt):
+    def length(self, __val: float):
         self.width = __val
 
 
+@dataclass
 class RectangularFooting:
+    """A class representation of rectangular footing.
+
+    Parameters
+    ----------
+    width : float, unit=metre
+        Width of foundation footing.
+    length : float, unit=metre
+        Length of foundation footing.
+
+    Attributes
+    ----------
+    width : float, unit=metre
+    length : float, unit=metre
+    UNITS : GDict
+        Unit registry for attributes and values returned from
+        functions.
+
+    See Also
+    --------
+    CircularFooting, SquareFooting
     """
-    Rectangular Footing Size.
 
-    :param FloatOrInt width: Width of foundation footing. (m)
-    :param FloatOrInt length: Length of foundation footing. (m)
-    """
-
-    def __init__(
-        self,
-        width: FloatOrInt,
-        length: FloatOrInt,
-    ) -> None:
-        self._width = width
-        self._length = length
-
-    @property
-    def width(self) -> FloatOrInt:
-        """
-        Width of foundation footing. (m)
-        """
-        return self._width
-
-    @width.setter
-    def width(self, __val: FloatOrInt):
-        self._width = __val
-
-    @property
-    def length(self) -> FloatOrInt:
-        """
-        Length of foundation footing. (m)
-        """
-        return self._length
-
-    @length.setter
-    def length(self, __val: FloatOrInt):
-        self._length = __val
+    width: float
+    length: float
+    UNITS: ClassVar = GDict(width=ureg.m, length=ureg.m)
 
 
+@dataclass
 class FootingSize:
-    """"""
+    """Size of foundation footing.
 
-    def __init__(
-        self, thickness: FloatOrInt, footing_shape: _FootingShape
-    ) -> None:
-        self.footing_shape = footing_shape
-        self._thickness = thickness
+    Parameters
+    ----------
+    thickness : float, unit=metre
+        Thickness of foundation footing.
+    footing_shape : _FootingShape
+        Shape of foundation footing.
 
-    @property
-    def thickness(self) -> FloatOrInt:
-        """
-        Thickness of foundation footing. (m)
-        """
-        return self._thickness
+    Attributes
+    ----------
+    thickness : float, unit=metre
+    width : float, unit=metre
+    length : float, unit=metre
+    footing_shape : _FootingShape
+    UNITS : GDict
+        Unit registry for attributes and values returned from
+        functions.
 
-    @thickness.setter
-    def thickness(self, __val: FloatOrInt):
-        self._thickness = __val
+    See Also
+    --------
+    FoundationSize
+    """
+
+    thickness: FloatOrInt
+    footing_shape: _FootingShape
+    UNITS: ClassVar = GDict(thickness=ureg.m, width=ureg.m, length=ureg.m)
 
     @property
     def width(self) -> FloatOrInt:
-        """
-        Width of foundation footing. (m)
-        """
+        """Width of foundation footing."""
         return self.footing_shape.width
 
     @width.setter
@@ -172,9 +183,7 @@ class FootingSize:
 
     @property
     def length(self) -> FloatOrInt:
-        """
-        Length of foundation footing. (m)
-        """
+        """Length of foundation footing."""
         return self.footing_shape.length
 
     @length.setter
@@ -182,62 +191,125 @@ class FootingSize:
         self.footing_shape.length = __val
 
 
+@dataclass
 class FoundationSize:
-    """
-    A simple class representing a foundation structure.
+    """A simple class representing a foundation structure.
 
-    :param FloatOrInt depth: Depth of foundation footing. (m)
-    :param _FootingShape footing_shape: Represents the shape of the
-                                        foundation footing.
+    Parameters
+    ----------
+    depth : float, unit=metre
+        Depth of foundation footing.
+    footing_shape : _FootingShape
+        Represents the shape of the foundation footing.
+
+    Attributes
+    ----------
+    depth : float, unit=metre
+    thickness : float, unit=metre
+    width : float, unit=metre
+    length : float, unit=metre
+    footing_size : FootingSize
+    UNITS : GDict
+        Unit registry for attributes and values returned from
+        functions.
+
+    See Also
+    --------
+    FootingSize
     """
 
-    def __init__(
-        self,
-        depth: FloatOrInt,
-        footing_size: FootingSize,
-    ) -> None:
-        self._depth = depth
-        self.footing_size = footing_size
+    depth: float
+    footing_size: FootingSize
+    UNITS: ClassVar = GDict(
+        depth=ureg.m, thickness=ureg.m, width=ureg.m, length=ureg.m
+    )
 
     @property
-    def depth(self) -> FloatOrInt:
-        """
-        Depth of foundation footing. (m)
-        """
-        return self._depth
+    def thickness(self) -> float:
+        """Thickness of foundation footing."""
+        return self.footing_size.thickness
 
-    @depth.setter
-    def depth(self, __val: FloatOrInt):
-        self._depth = __val
+    @thickness.setter
+    def thickness(self, __val: float):
+        self.footing_size.thickness = __val
 
     @property
-    def width(self) -> FloatOrInt:
-        """
-        Width of foundation footing. (m)
-
-        .. note::
-
-            In the case of circular footing ``width`` refers to the
-            diameter.
-        """
+    def width(self) -> float:
+        """Width of foundation footing."""
         return self.footing_size.width
 
     @width.setter
-    def width(self, __val: FloatOrInt):
+    def width(self, __val: float):
         self.footing_size.width = __val
 
     @property
-    def length(self) -> FloatOrInt:
-        """
-        Length of foundation footing. (m)
-
-        .. note::
-
-            In the case of circular footing ``length`` refers to the
-            diameter.
-        """
+    def length(self) -> float:
+        """Length of foundation footing."""
         return self.footing_size.length
 
     @length.setter
-    def length(self, __val: FloatOrInt):
+    def length(self, __val: float):
         self.footing_size.length = __val
+
+
+def create_footing(
+    thickness: float,
+    width: float,
+    length: Optional[float] = None,
+    footing_type: Literal["square", "rectangular", "circular"] = "square",
+) -> FootingSize:
+    """A factory function that encapsulate the creation of a foundation
+    footing.
+
+    Parameters
+    ----------
+    thickness : float, unit=metre
+        Thickness of foundation footing.
+    width : float, unit=metre
+        Width of foundation footing.
+    length : float, optional, unit=metre
+        Length of foundation footing.
+    footing_type : {"square", "rectangular", "circular"}, default="square"
+        Shape of foundation footing.
+
+    Returns
+    -------
+    FootingSize
+        Size of foundation footing.
+
+    Raises
+    ------
+    FootingCreationError
+        Exception raised when footing is not created successfully.
+
+    Examples
+    --------
+        >>> from geolysis.foundation import create_footing
+        >>> square_footing = create_footing(thickness=0.3, width=1.2,
+        ...                                 footing_type="square")
+        >>> square_footing
+        FootingSize(thickness=0.3, footing_shape=SquareFooting(width=1.2))
+        >>> square_footing.footing_shape
+        SquareFooting(width=1.2)
+        >>> square_footing.width
+        1.2
+        >>> square_footing.length
+        1.2
+    """
+    footing_shape: _FootingShape
+
+    if footing_type == "square":
+        footing_shape = SquareFooting(width=width)
+    elif footing_type == "circular":
+        footing_shape = CircularFooting(width=width)
+    elif footing_type == "rectangular" and length is not None:
+        footing_shape = RectangularFooting(width=width, length=length)
+    else:
+        err_msg = (
+            "Supported footing types are square, rectangular, and circular"
+            "if rectangular footing is specified, the length parameter should"
+            "be a valid value not None"
+        )
+        raise FootingCreationError(err_msg)
+
+    return FootingSize(thickness=thickness, footing_shape=footing_shape)
