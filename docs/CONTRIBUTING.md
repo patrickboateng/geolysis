@@ -1,4 +1,4 @@
-# `geolysis` Contribution Guidelines
+# geolysis Contribution Guidelines
 
 Thank you for your interest in contributing to `geolysis`!
 We welcome contributions from the community to help make this
