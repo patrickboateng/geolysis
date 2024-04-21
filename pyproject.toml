@@ -53,9 +53,10 @@ namespaces = false
 dev = ["black", "pytest", "mypy", "pytest-cov"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --verbose --color=auto --code-highlight=yes --strict-markers"
+addopts = "-ra --verbose --strict-markers --doctest-modules"
 minversion = "6.0"
-testpaths = ["tests"]
+testpaths = ["tests", "geolysis"]
+doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NUMBER"]
 
 [tool.black]
 line-length = 79
@@ -78,20 +79,3 @@ close-quotes-on-newline = true
 [tool.pydocstyle]
 # convention = "pep257"
 ignore = ["D107", "D200"]
-
-[tool.tox]
-legacy_tox_ini = """
-    [tox]
-    isolated_build = True
-    min_version = 4.0
-    env_list =
-        py310
-        py39
-
-    [testenv]
-    deps = 
-        pytest 
-        pytest-cov
-
-    commands = pytest {posargs} tests
-"""
