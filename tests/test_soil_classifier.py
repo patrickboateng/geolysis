@@ -4,7 +4,7 @@ import pytest
 
 from geolysis.soil_classifier import AASHTO, PSD, USCS
 from geolysis.soil_classifier import AtterbergLimits as AL
-from geolysis.soil_classifier import PSDError
+from geolysis.soil_classifier import PSDAggSumError
 
 
 class TestAtterbergLimits:
@@ -39,7 +39,7 @@ class TestParticleSizeDistribution:
         assert self.psd.coeff_of_curvature == 1.58
 
     def test_PSDError(self):
-        with pytest.raises(PSDError):
+        with pytest.raises(PSDAggSumError):
             PSD(fines=30, sand=30, gravel=30)
 
 
@@ -63,7 +63,7 @@ class TestAASHTOClassificationSystem:
     )
     def test_aashto_with_grp_idx(self, soil_params: Sequence, clf: str):
         asshto_classifier = AASHTO(*soil_params)
-        assert asshto_classifier.soil_class == clf
+        assert asshto_classifier.soil_class() == clf
 
     @pytest.mark.parametrize(
         "soil_params,clf",
@@ -77,7 +77,7 @@ class TestAASHTOClassificationSystem:
     def test_aashto_without_grp_idx(self, soil_params: Sequence, clf: str):
         asshto_classifier = AASHTO(*soil_params)
         asshto_classifier.add_group_idx = False
-        assert asshto_classifier.soil_class == clf
+        assert asshto_classifier.soil_class() == clf
 
 
 class TestUnifiedSoilClassificationSystem:
@@ -104,7 +104,7 @@ class TestUnifiedSoilClassificationSystem:
         uscs = USCS(
             *al, *psd, d_10=size_dist[0], d_30=size_dist[1], d_60=size_dist[2]
         )
-        assert uscs.soil_class == clf
+        assert uscs.soil_class() == clf
 
     @pytest.mark.parametrize(
         "al,psd,clf",
@@ -115,7 +115,7 @@ class TestUnifiedSoilClassificationSystem:
             ((30.33, 23.42), (8.93, 7.69, 83.38), "GW-GM,GP-GM"),
             ((35.32, 25.57), (9.70, 5.63, 84.67), "GW-GM,GP-GM"),
             ((26.17, 19.69), (12.00, 8.24, 79.76), "GW-GC,GP-GC"),
-            ((32.78, 22.99), (3.87, 15.42, 80.71), "GW or GP"),
+            ((32.78, 22.99), (3.87, 15.42, 80.71), "GW,GP"),
         ],
     )
     def test_dual_classification_no_psd_coeff(
@@ -125,7 +125,7 @@ class TestUnifiedSoilClassificationSystem:
         clf: str,
     ):
         uscs = USCS(*al, *psd)
-        assert uscs.soil_class == clf
+        assert uscs.soil_class() == clf
 
     @pytest.mark.parametrize(
         "al,psd,clf",
@@ -153,7 +153,7 @@ class TestUnifiedSoilClassificationSystem:
         clf: str,
     ):
         uscs = USCS(*al, *psd)
-        assert uscs.soil_class == clf
+        assert uscs.soil_class() == clf
 
     def test_organic_soils_low_plasticity(self):
         uscs = USCS(
@@ -164,7 +164,7 @@ class TestUnifiedSoilClassificationSystem:
             gravel=2.18,
             organic=True,
         )
-        assert uscs.soil_class == "OL"
+        assert uscs.soil_class() == "OL"
 
     def test_organic_soils_high_plasticity(self):
         uscs = USCS(
@@ -176,4 +176,4 @@ class TestUnifiedSoilClassificationSystem:
             organic=True,
         )
 
-        assert uscs.soil_class == "OH"
+        assert uscs.soil_class() == "OH"

@@ -8,7 +8,6 @@ from geolysis.utils import (
     deg2rad,
     log10,
     rad2deg,
-    round_,
     sin,
     sqrt,
     tan,
@@ -45,8 +44,3 @@ def test_log():
 
 def test_sqrt():
     assert sqrt(25) == pytest.approx(5, ERROR_TOL)
-
-
-def test_round():
-    with pytest.raises(TypeError):
-        round_(ndigits=2.02)  # type: ignore
