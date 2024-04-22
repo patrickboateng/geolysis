@@ -42,7 +42,7 @@ jobs:
           python -m pip install pytest coverage pint
       - name: Test with coverage
         run: |
-          coverage run --source=geolysis -m pytest tests/
+          coverage run -m pytest 
           coverage lcov
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
