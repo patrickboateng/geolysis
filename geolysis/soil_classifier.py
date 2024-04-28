@@ -1,5 +1,4 @@
-from abc import abstractmethod
-from typing import Mapping, NamedTuple, Protocol
+from typing import NamedTuple
 
 from geolysis.constants import ERROR_TOL
 from geolysis.utils import ceil, isclose, round_
@@ -56,9 +55,9 @@ class _SoilGradation(NamedTuple):
         """Coefficient of curvature of soil sample."""
         try:
             return (self.d_30**2) / (self.d_60 * self.d_10)
-        except ZeroDivisionError as error:
+        except ZeroDivisionError:
             err_msg = "d_10, d_30, and d_60 cannot be 0"
-            raise SoilGradationError(err_msg) from error
+            raise SoilGradationError(err_msg)
 
     @property
     @round_(ndigits=2)
@@ -66,7 +65,7 @@ class _SoilGradation(NamedTuple):
         """Coefficient of uniformity of soil sample."""
         try:
             return self.d_60 / self.d_10
-        except ZeroDivisionError as error:
+        except ZeroDivisionError:
             err_msg = "d_10, d_30, and d_60 cannot be 0"
             raise SoilGradationError(err_msg)
 
@@ -80,6 +79,7 @@ class _SoilGradation(NamedTuple):
             Coarse fraction of the soil sample. Valid arguments are :data:`GRAVEL`
             or :data:`SAND`.
         """
+
         if coarse_soil == GRAVEL and (
             1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4
         ):
@@ -340,7 +340,7 @@ class PSD:
     >>> psd = PSD(fines=10.29, sand=81.89, gravel=7.83,
     ...           d_10=0.07, d_30=0.30, d_60=0.8)
     >>> psd.d_10, psd.d_30, psd.d_60
-    (0.07, 0.30, 0.8)
+    (0.07, 0.3, 0.8)
     >>> psd.coeff_of_curvature
     1.61
     >>> psd.coeff_of_uniformity
@@ -463,7 +463,7 @@ class AASHTO:
     >>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3,
     ...                     fines=11.18)
     >>> aashto_clf.group_index()
-    0
+    0.0
     >>> aashto_clf.soil_class()
     'A-2-4(0)'
     >>> aashto_clf.soil_desc()
@@ -510,7 +510,7 @@ class AASHTO:
             soil_class = self._coarse_soil_classifier()
 
         return (
-            f"{soil_class}({self.group_index()})"
+            f"{soil_class}({self.group_index():.0f})"
             if self.add_group_idx
             else soil_class
         )
@@ -575,9 +575,7 @@ class AASHTO:
         c = 1 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
         d = 1 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
 
-        grp_idx = round(a * (0.2 + 0.005 * b) + 0.01 * c * d, 0)
-
-        return 0 if grp_idx <= 0 else ceil(grp_idx)
+        return round(a * (0.2 + 0.005 * b) + 0.01 * c * d, 0)
 
 
 class USCS:
@@ -657,7 +655,8 @@ class USCS:
     >>> uscs_clf.soil_desc()
     'Well graded sand with clay'
 
-    Soil gradation (d_10, d_30, d_60) is needed to obtain soil description
+    Soil gradation (d_10, d_30, d_60) is needed to obtain soil description for
+    certain type of soils.
 
     >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7,
     ...                 fines=10.29, sand=81.89, gravel=7.83)

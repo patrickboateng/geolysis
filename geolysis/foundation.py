@@ -35,9 +35,11 @@ class _FootingShape(Protocol):
     @length.setter
     def length(self, __val: float): ...
 
+    @property
     @abstractmethod
     def area(self) -> float: ...
 
+    @property
     @abstractmethod
     def perimeter(self) -> float: ...
 
@@ -58,6 +60,8 @@ class CircularFooting:
         Diameter of foundation footing.
     length : float, unit=metre
         Diameter of foundation footing.
+    area : float, unit = :math:`m^2`
+    perimeter : float, unit=metre
 
     See Also
     --------
@@ -79,9 +83,9 @@ class CircularFooting:
     1.2
     >>> circ_footing.length
     1.2
-    >>> circ_footing.area()
+    >>> circ_footing.area
     1.131
-    >>> circ_footing.perimeter()
+    >>> circ_footing.perimeter
     3.7699
 
     >>> circ_footing.width = 1.4
@@ -91,6 +95,12 @@ class CircularFooting:
     1.4
     >>> circ_footing.diameter
     1.4
+
+    >>> circ_footing.length = 1.5
+    >>> circ_footing.width
+    1.5
+    >>> circ_footing.diameter
+    1.5
     """
 
     diameter: float
@@ -111,11 +121,13 @@ class CircularFooting:
     def length(self, __val: float):
         self.diameter = __val
 
+    @property
     @round_
     def area(self) -> float:
         """Area of circular footing. |rarr| :math:`m^2`"""
         return PI * (self.diameter**2) / 4
 
+    @property
     @round_
     def perimeter(self) -> float:
         """Perimeter of circular footing. |rarr| m"""
@@ -136,6 +148,8 @@ class SquareFooting:
     width : float, unit=metre
     length : float, unit=metre
         Length of foundation footing.
+    area : float, unit = :math:`m^2`
+    perimeter : float, unit=metre
 
     See Also
     --------
@@ -149,10 +163,14 @@ class SquareFooting:
     1.2
     >>> sqr_footing.length
     1.2
-    >>> sqr_footing.area()
+    >>> sqr_footing.area
     1.44
-    >>> sqr_footing.perimeter()
+    >>> sqr_footing.perimeter
     4.8
+
+    >>> sqr_footing.length = 1.4
+    >>> sqr_footing.width
+    1.4
     """
 
     width: float
@@ -165,11 +183,13 @@ class SquareFooting:
     def length(self, __val: float):
         self.width = __val
 
+    @property
     @round_
     def area(self) -> float:
         """Area of square footing. |rarr| :math:`m^2`"""
         return self.width**2
 
+    @property
     @round_
     def perimeter(self) -> float:
         """Perimeter of square footing. |rarr| m"""
@@ -191,6 +211,8 @@ class RectangularFooting:
     ----------
     width : float, unit=metre
     length : float, unit=metre
+    area : float, unit = :math:`m^2`
+    perimeter : float, unit=metre
 
     See Also
     --------
@@ -204,20 +226,22 @@ class RectangularFooting:
     1.2
     >>> rect_footing.length
     1.4
-    >>> rect_footing.area()
+    >>> rect_footing.area
     1.68
-    >>> rect_footing.perimeter()
+    >>> rect_footing.perimeter
     5.2
     """
 
     width: float
     length: float
 
+    @property
     @round_
     def area(self) -> float:
         """Area of rectangular footing. |rarr| :math:`m^2`"""
         return self.length * self.width
 
+    @property
     @round_
     def perimeter(self) -> float:
         """Perimeter of rectangular footing. |rarr| m"""
@@ -243,6 +267,9 @@ class FootingSize:
     length : float, unit=metre
         Length of foundation footing.
     footing_shape : _FootingShape
+    area : float, unit = :math:`m^2`
+    perimeter : float, unit=metre
+    volume : float, unit = :math:`m^3`
 
     See Also
     --------
@@ -259,12 +286,20 @@ class FootingSize:
     1.2
     >>> footing_size.length
     1.2
-    >>> footing_size.area()
+    >>> footing_size.area
     1.44
-    >>> footing_size.perimeter()
+    >>> footing_size.perimeter
     4.8
-    >>> footing_size.volume()
+    >>> footing_size.volume
     0.648
+
+    >>> footing_size.length = 1.4
+    >>> footing_size.width
+    1.4
+
+    >>> footing_size.width = 1.5
+    >>> footing_size.length
+    1.5
     """
 
     thickness: float
@@ -286,18 +321,21 @@ class FootingSize:
     def length(self, __val: float):
         self.footing_shape.length = __val
 
+    @property
     def area(self) -> float:
         """Area of foundation footing. |rarr| :math:`m^2`"""
-        return self.footing_shape.area()
+        return self.footing_shape.area
 
+    @property
     def perimeter(self) -> float:
         """Perimeter of foundation footing. |rarr| m"""
-        return self.footing_shape.perimeter()
+        return self.footing_shape.perimeter
 
+    @property
     @round_
     def volume(self) -> float:
         """Volume of foundation footing. |rarr| :math:`m^3`"""
-        return self.area() * self.thickness
+        return self.area * self.thickness
 
 
 @dataclass
@@ -323,6 +361,9 @@ class FoundationSize:
     footing_shape : _FootingShape
         Represents the shape of the foundation footing.
     footing_size : FootingSize
+    area : float, unit = :math:`m^2`
+    perimeter : float, unit=metre
+    volume : float, unit = :math:`m^3`
 
     See Also
     --------
@@ -330,7 +371,8 @@ class FoundationSize:
 
     Examples
     --------
-    >>> from geolysis.foundation import FoundationSize, create_footing
+    >>> from geolysis.foundation import (FoundationSize, create_footing,
+    ...                                  CircularFooting)
     >>> footing_size = create_footing(thickness=0.45, width=1.2,
     ...                               footing_shape="square")
     >>> foundation_size = FoundationSize(depth=1.5, footing_size=footing_size)
@@ -342,12 +384,27 @@ class FoundationSize:
     1.2
     >>> foundation_size.width
     1.2
-    >>> foundation_size.area()
+    >>> foundation_size.area
     1.44
-    >>> foundation_size.perimeter()
+    >>> foundation_size.perimeter
     4.8
-    >>> foundation_size.volume()
+    >>> foundation_size.volume
     2.16
+
+    >>> foundation_size.thickness = 0.3
+    >>> foundation_size.thickness
+    0.3
+    >>> foundation_size.width = 1.4
+    >>> foundation_size.width
+    1.4
+    >>> foundation_size.length = 1.5
+    >>> foundation_size.length
+    1.5
+
+    >>> footing_shape = CircularFooting(diameter=1.5)
+    >>> foundation_size.footing_shape = footing_shape
+    >>> foundation_size.footing_shape
+    CircularFooting(diameter=1.5)
     """
 
     depth: float
@@ -381,18 +438,25 @@ class FoundationSize:
     def footing_shape(self) -> _FootingShape:
         return self.footing_size.footing_shape
 
+    @footing_shape.setter
+    def footing_shape(self, __val: _FootingShape):
+        self.footing_size.footing_shape = __val
+
+    @property
     def area(self) -> float:
         """Area of foundation. |rarr| :math:`m^2`"""
-        return self.footing_size.area()
+        return self.footing_size.area
 
+    @property
     def perimeter(self) -> float:
         """Perimeter of foundation. |rarr| m"""
-        return self.footing_size.perimeter()
+        return self.footing_size.perimeter
 
+    @property
     @round_
     def volume(self) -> float:
         """Volume of foundation. |rarr| :math:`m^3`"""
-        return self.area() * self.depth
+        return self.area * self.depth
 
 
 def create_footing(
@@ -412,7 +476,7 @@ def create_footing(
         Width of foundation footing.
     length : float, optional, unit=metre
         Length of foundation footing.
-    footing_type : {"square", "rectangular", "circular"}, default="square"
+    footing_shape : {"square", "rectangular", "circular"}, default="square"
         Shape of foundation footing.
 
     Returns
@@ -434,26 +498,47 @@ def create_footing(
     FootingSize(thickness=0.3, footing_shape=SquareFooting(width=1.2))
     >>> square_footing.footing_shape
     SquareFooting(width=1.2)
-    >>> square_footing.width
-    1.2
-    >>> square_footing.length
-    1.2
+
+    >>> circ_footing = create_footing(thickness=0.4, width=1.4,
+    ...                               footing_shape="circular")
+    >>> circ_footing
+    FootingSize(thickness=0.4, footing_shape=CircularFooting(diameter=1.4))
+    >>> circ_footing.footing_shape
+    CircularFooting(diameter=1.4)
+
+    >>> rect_footing = create_footing(thickness=0.5, width=1.3, length=1.4,
+    ...                               footing_shape="rectangular")
+    >>> rect_footing
+    FootingSize(thickness=0.5, footing_shape=RectangularFooting(width=1.3, length=1.4))
+    >>> rect_footing.footing_shape
+    RectangularFooting(width=1.3, length=1.4)
+
+    >>> create_footing(thickness=0.5, width=1.3, footing_shape="rectangular")
+    Traceback (most recent call last):
+        ...
+    FootingCreationError: The length of the footing must be provided
+
+    >>> create_footing(thickness=0.5, width=1.3, footing_shape="hexagonal")
+    Traceback (most recent call last):
+        ...
+    FootingCreationError: Supported footing shapes are square, rectangular, and circular
     """
     _footing_shape: _FootingShape
 
-    if footing_shape == "square":
-        _footing_shape = SquareFooting(width=width)
-    elif footing_shape == "circular":
-        _footing_shape = CircularFooting(diameter=width)
-    elif footing_shape == "rectangular" and length is not None:
-        _footing_shape = RectangularFooting(width=width, length=length)
-    else:
-        err_msg = (
-            "Supported footing types are square, rectangular, and circular"
-            "if rectangular footing is specified, the length parameter should"
-            "be a valid value not None"
-        )
-        raise FootingCreationError(err_msg)
+    match footing_shape:
+        case "square":
+            _footing_shape = SquareFooting(width=width)
+        case "circular":
+            _footing_shape = CircularFooting(diameter=width)
+        case "rectangular":
+            if length:
+                _footing_shape = RectangularFooting(width=width, length=length)
+            else:
+                err_msg = "The length of the footing must be provided"
+                raise FootingCreationError(err_msg)
+        case _:
+            err_msg = "Supported footing shapes are square, rectangular, and circular"
+            raise FootingCreationError(err_msg)
 
     return FootingSize(thickness=thickness, footing_shape=_footing_shape)
 

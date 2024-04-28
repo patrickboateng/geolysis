@@ -1,10 +1,9 @@
-from typing import Optional, Sequence
+from typing import Sequence
 
 from geolysis.foundation import FoundationSize
-from geolysis.spt import SPT, SPTCorrection
 from geolysis.utils import floor, round_
 
-__all__ = ["BowlesABC1997", "MeyerhofABC1956", "TerzaghiABC1948"]
+__all__ = ["BowlesABC", "MeyerhofABC", "TerzaghiABC"]
 
 
 class SettlementError(ValueError):
@@ -20,34 +19,29 @@ def _chk_settlement(tol_settlement: float, max_tol_settlement: float):
 ERR_MSG = "recorded_spt_n_vals should be a Sequence[int] or float or int"
 
 
-class BowlesABC1997:
+class BowlesABC:
     r"""Allowable bearing capacity for cohesionless soils according to
     ``Bowles (1997)``.
 
     Parameters
     ----------
-    recorded_spt_n_vals : Sequence[int] | float
-        If ``recorded_spt_n_vals`` is a Sequence, it is taken as ``recorded SPT N-values``
-        within the foundation influence zone i.e ``0.5B`` to ``2B``. If it is a float, then
-        it is taken as ``corrected SPT N-value``
+    corrected_spt_number : float
+        Statistical average of corrected SPT N-value (55% energy with overburden
+        pressure correction) within the foundation influence zone i.e ``0.5B`` to
+        ``2B``.
     tol_settlement : float, unit=millimetre
         Tolerable settlement.
     foundation_size : FoundationSize
         Size of foundation.
-    eop : float, default=None, unit= :math:`kN/m^2`
-        Effective overburden pressure. If ``recorded_SPT_N_vals`` is a Sequence, then ``eop``
-        is required to calculate the ``corrected SPT N-value``
 
     Attributes
     ----------
+    corrected_spt_number : float
     tol_settlement : float
     f_depth : float
         Depth of foundation
     f_width : float
         Width of foundation footing
-    N_1_55 : float
-        Statistical average of corrected SPT N-value (55% energy with overburden
-        pressure correction)
     FD : float
         Depth factor.
     MAX_TOL_SETTLEMENT : float
@@ -73,18 +67,14 @@ class BowlesABC1997:
 
     Examples
     --------
-    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import BowlesABC1997
+    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import BowlesABC
     >>> from geolysis.foundation import create_foundation
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape="square")
-    >>> recorded_spt_n_vals = [8, 15, 23, 30, 38]
-
-    >>> bowles_abc = BowlesABC1997(recorded_spt_n_vals=recorded_spt_n_vals,
-    ...                            tol_settlement=20.0,
-    ...                            foundation_size=foundation_size, eop=100.0)
-    >>> bowles_abc.N_1_55
-    17
+    >>> bowles_abc = BowlesABC(corrected_spt_number=17.0,
+    ...                        tol_settlement=20.0,
+    ...                        foundation_size=foundation_size)
     >>> bowles_abc.abc_4_pad_foundation()
     341.11
     >>> bowles_abc.abc_4_mat_foundation()
@@ -94,15 +84,8 @@ class BowlesABC1997:
     >>> bowles_abc.abc_4_pad_foundation()
     316.29
 
-    >>> bowles_abc = BowlesABC1997(recorded_spt_n_vals=11.0, tol_settlement=20.0,
-    ...                            foundation_size=foundation_size)
-    >>> bowles_abc.abc_4_pad_foundation()
-    220.72
-    >>> bowles_abc.abc_4_mat_foundation()
-    138.01
-
-    >>> BowlesABC1997(recorded_spt_n_vals=11.0, tol_settlement=30.0,
-    ...               foundation_size=foundation_size)
+    >>> BowlesABC(corrected_spt_number=11.0, tol_settlement=30.0,
+    ...           foundation_size=foundation_size)
     Traceback (most recent call last):
         ...
     SettlementError: tol_settlement should not be greater than 25.4.
@@ -113,42 +96,18 @@ class BowlesABC1997:
 
     def __init__(
         self,
-        recorded_spt_n_vals: Sequence[int] | float,
+        corrected_spt_number: float,
         tol_settlement: float,
         foundation_size: FoundationSize,
-        eop: float = 100.0,
     ) -> None:
 
-        if isinstance(recorded_spt_n_vals, Sequence):
-            self._avg_corr_spt_n_val = self._calculate_spt_avg(
-                recorded_spt_n_vals, eop
-            )
-        if isinstance(recorded_spt_n_vals, (float, int)):
-            self._avg_corr_spt_n_val = recorded_spt_n_vals
-
+        self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
 
         self.f_depth = foundation_size.depth
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
-
-    @staticmethod
-    def _calculate_spt_avg(
-        recorded_spt_n_vals: Sequence[int], eop: float
-    ) -> float:
-        corrected_spts: list[float] = []
-
-        for recorded_spt in recorded_spt_n_vals:
-            spt_correction = SPTCorrection(
-                recorded_spt_n_val=recorded_spt,
-                eop=eop,
-                energy_percentage=0.55,
-            )
-            corrected_spt = spt_correction.bazaraa_peck_opc_1969()
-            corrected_spts.append(corrected_spt)
-
-        return SPT(corrected_spt_n_vals=corrected_spts).average()
 
     @property
     def FD(self) -> float:
@@ -160,7 +119,7 @@ class BowlesABC1997:
 
     @property
     def N_1_55(self) -> float:
-        return floor(self._avg_corr_spt_n_val)
+        return self.corrected_spt_number
 
     @round_(ndigits=2)
     def abc_4_pad_foundation(self) -> float:
@@ -186,42 +145,35 @@ class BowlesABC1997:
         return 11.98 * self.N_1_55 * self.FD * self.SR
 
 
-class MeyerhofABC1956:
+class MeyerhofABC:
     r"""Allowable bearing capacity for cohesionless soils according to
     ``Meyerhof (1956)``.
 
     Parameters
     ----------
-    recorded_spt_n_vals : Sequence[int] | float
-        If ``recorded_spt_n_vals`` is a Sequence, it is taken as ``recorded SPT N-values``
-        within the foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B``. If it is
-        a float, then it is taken as ``average uncorrected SPT N-value``. Only water table
-        correction is suggested.
+    corrected_spt_number : float
+        Average uncorrected SPT N-value (60% energy with dilatancy (water) correction
+        if applicable) within the foundation influence zone i.e :math:`D_f` to
+        :math:`D_f + 2B`
     tol_settlement : float, unit=millimetre
         Tolerable settlement
     foundation_size : FoundationSize
         Size of foundation.
-    wtc : bool, default=False
-        Indicates whether to apply water correction factors when calculating for
-        bearing capacities.
 
     Attributes
     ----------
+    corrected_spt_number : float
     tol_settlement : float
     f_depth : float
         Depth of foundation footing
     f_width : float
         Width of foundation footing
-    N_1_60 : float
-        Average uncorrected SPT N-value (60% energy with dilatancy (water) correction
-        if applicable)
     FD : float
         Depth factor
     MAX_TOL_SETTLEMENT : float
 
     Notes
     -----
-
     Allowable bearing capacity for ``isolated/pad/spread`` foundations:
 
     .. math::
@@ -240,17 +192,13 @@ class MeyerhofABC1956:
 
     Examples
     --------
-    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import MeyerhofABC1956
+    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import MeyerhofABC
     >>> from geolysis.foundation import create_foundation
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape="square")
-    >>> recorded_spt_n_vals = [8, 15, 23, 30, 38]
-
-    >>> meyerhof_abc = MeyerhofABC1956(recorded_spt_n_vals=recorded_spt_n_vals, tol_settlement=20.0,
-    ...                              foundation_size=foundation_size)
-    >>> meyerhof_abc.N_1_60
-    17
+    >>> meyerhof_abc = MeyerhofABC(corrected_spt_number=17.0, tol_settlement=20.0,
+    ...                            foundation_size=foundation_size)
     >>> meyerhof_abc.abc_4_pad_foundation()
     213.64
     >>> meyerhof_abc.abc_4_mat_foundation()
@@ -260,17 +208,8 @@ class MeyerhofABC1956:
     >>> meyerhof_abc.abc_4_pad_foundation()
     211.21
 
-    >>> meyerhof_abc = MeyerhofABC1956(recorded_spt_n_vals=recorded_spt_n_vals, tol_settlement=20.0,
-    ...                                foundation_size=foundation_size, wtc=True)
-    >>> meyerhof_abc.N_1_60
-    14
-    >>> meyerhof_abc.abc_4_pad_foundation()
-    175.94
-    >>> meyerhof_abc.abc_4_mat_foundation()
-    117.29
-
-    >>> MeyerhofABC1956(recorded_spt_n_vals=11.0, tol_settlement=30.0,
-    ...                 foundation_size=foundation_size)
+    >>> MeyerhofABC(corrected_spt_number=15, tol_settlement=30.0,
+    ...             foundation_size=foundation_size)
     Traceback (most recent call last):
         ...
     SettlementError: tol_settlement should not be greater than 25.4.
@@ -281,42 +220,18 @@ class MeyerhofABC1956:
 
     def __init__(
         self,
-        recorded_spt_n_vals: Sequence[int] | float,
+        corrected_spt_number: float,
         tol_settlement: float,
         foundation_size: FoundationSize,
-        wtc=False,
     ) -> None:
 
-        if isinstance(recorded_spt_n_vals, Sequence):
-            self._avg_corr_spt_n_val = self._calculate_spt_avg(
-                recorded_spt_n_vals, wtc
-            )
-        if isinstance(recorded_spt_n_vals, (float, int)):
-            self._avg_corr_spt_n_val = recorded_spt_n_vals
-
+        self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
 
         self.f_depth = foundation_size.depth
         self.f_width = foundation_size.width
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
-
-    @staticmethod
-    def _calculate_spt_avg(
-        recorded_spt_n_vals: Sequence[int], wtc: bool
-    ) -> float:
-        corrected_spts: list[float] = []
-
-        for recorded_spt in recorded_spt_n_vals:
-            spt_correction = SPTCorrection(recorded_spt_n_val=recorded_spt)
-            corrected_spt = (
-                spt_correction.terzaghi_peck_dc_1948()
-                if wtc
-                else spt_correction.energy_correction()
-            )
-            corrected_spts.append(corrected_spt)
-
-        return SPT(corrected_spt_n_vals=corrected_spts).average()
 
     @property
     def FD(self) -> float:
@@ -328,7 +243,7 @@ class MeyerhofABC1956:
 
     @property
     def N_1_60(self) -> float:
-        return floor(self._avg_corr_spt_n_val)
+        return self.corrected_spt_number
 
     @round_(ndigits=2)
     def abc_4_pad_foundation(self) -> float:
@@ -355,16 +270,15 @@ class MeyerhofABC1956:
         return 8 * self.N_1_60 * self.FD * self.SR
 
 
-class TerzaghiABC1948:
+class TerzaghiABC:
     r"""Allowable bearing capacity for cohesionless soils according to
     ``Terzaghi & Peck (1948)``.
 
     Parameters
     ----------
-    recorded_spt_n_vals : Sequence[int] | float
-        If ``recorded_spt_n_vals`` is a Sequence, it is taken as ``recorded SPT N-values``
-        within the foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B``. If it
-        is a float, then it is taken as ``average uncorrected SPT N-value``.
+    corrected_spt_number : float
+        Lowest (or average) uncorrected SPT N-value (60% energy) within the
+        foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B`
     tol_settlement : float, unit=millimetre
         Tolerable settlement.
     water_depth : float, unit=metre
@@ -374,14 +288,13 @@ class TerzaghiABC1948:
 
     Attributes
     ----------
+    corrected_spt_number : float
     tol_settlement : float
     water_depth : float
     f_depth : float
         Depth of foundation
     f_width : float
         Width of foundation footing
-    N_60 : float
-        Lowest uncorrected SPT N-value (60% energy)
     FD : float
         Depth factor
     CW : float
@@ -394,9 +307,9 @@ class TerzaghiABC1948:
 
     .. math::
 
-        q_a(kPa) = 12N \dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
+        q_a(kPa) &= 12N \dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
 
-        q_a(kPa) = 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2\dfrac{1}{c_w f_d}
+        q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2\dfrac{1}{c_w f_d}
                     \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
 
     Allowable bearing capacity for ``raft/mat`` foundations:
@@ -417,16 +330,13 @@ class TerzaghiABC1948:
 
     Examples
     --------
-    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import TerzaghiABC1948
+    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import TerzaghiABC
     >>> from geolysis.foundation import create_foundation
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape="square")
-    >>> recorded_spt_n_vals = [8, 15, 23, 30, 38]
-
-    >>> terzaghi_abc = TerzaghiABC1948(recorded_spt_n_vals=recorded_spt_n_vals,
-    ...                                tol_settlement=20.0, water_depth=1.2,
-    ...                                foundation_size=foundation_size)
+    >>> terzaghi_abc = TerzaghiABC(corrected_spt_number=6, tol_settlement=20.0,
+    ...                            water_depth=1.2, foundation_size=foundation_size)
     >>> terzaghi_abc.N_1_60
     6
     >>> terzaghi_abc.abc_4_pad_foundation()
@@ -440,6 +350,12 @@ class TerzaghiABC1948:
     32.26
     >>> terzaghi_abc.abc_4_mat_foundation()
     21.75
+
+    >>> TerzaghiABC(corrected_spt_number=15, tol_settlement=30.0,
+    ...             water_depth=1.8, foundation_size=foundation_size)
+    Traceback (most recent call last):
+        ...
+    SettlementError: tol_settlement should not be greater than 25.4.
     """
 
     #: Maximum allowable settlement. (mm)
@@ -447,19 +363,13 @@ class TerzaghiABC1948:
 
     def __init__(
         self,
-        recorded_spt_n_vals: Sequence[int] | float,
+        corrected_spt_number: float,
         tol_settlement: float,
         water_depth: float,
         foundation_size: FoundationSize,
     ) -> None:
 
-        if isinstance(recorded_spt_n_vals, Sequence):
-            self._avg_corr_spt_n_val = self._calculate_spt_avg(
-                recorded_spt_n_vals
-            )
-        if isinstance(recorded_spt_n_vals, (float, int)):
-            self._avg_corr_spt_n_val = recorded_spt_n_vals
-
+        self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
         self.water_depth = water_depth
 
@@ -468,20 +378,9 @@ class TerzaghiABC1948:
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
-    @staticmethod
-    def _calculate_spt_avg(recorded_SPT_N_vals: Sequence[float]) -> float:
-        corrected_spts: list[float] = []
-
-        for recorded_spt in recorded_SPT_N_vals:
-            spt_correction = SPTCorrection(recorded_spt_n_val=recorded_spt)
-            corrected_spt = spt_correction.energy_correction()
-            corrected_spts.append(corrected_spt)
-
-        return SPT(corrected_spt_n_vals=corrected_spts).min()
-
     @property
     def N_1_60(self) -> float:
-        return floor(self._avg_corr_spt_n_val)
+        return self.corrected_spt_number
 
     @property
     def SR(self) -> float:

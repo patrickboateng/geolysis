@@ -24,6 +24,8 @@ class UnitRegistry:
         kilo Pascal or kilo Newton per square metres
     kN_m3
         kilo Newton per cubic metres
+    square_meters, square_metres, m2
+    cubic_meters, cubic_metres, m3
     degrees, deg
     unitless
 
@@ -35,14 +37,14 @@ class UnitRegistry:
     Examples
     --------
     >>> from pint import Quantity as Q_
-    >>> from geolysis.estimators import SoilUnitWeightEst
+    >>> from geolysis.estimators import SoilUnitWeight
     >>> from geolysis.constants import UnitRegistry as UReg
 
-    >>> suw_est = SoilUnitWeightEst(spt_n_60=25)
-    >>> suw_est.moist_wgt()
+    >>> suw_est = SoilUnitWeight(std_spt_number=25)
+    >>> suw_est.moist_wgt
     18.5
 
-    >>> quant = Q_(suw_est.moist_wgt(), UReg.kN_m3)
+    >>> quant = Q_(suw_est.moist_wgt, UReg.kN_m3)
     >>> quant
     <Quantity(18.5, 'kilonewton / meter ** 3')>
     """
