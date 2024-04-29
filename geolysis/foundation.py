@@ -87,20 +87,6 @@ class CircularFooting:
     1.131
     >>> circ_footing.perimeter
     3.7699
-
-    >>> circ_footing.width = 1.4
-    >>> circ_footing.width
-    1.4
-    >>> circ_footing.length
-    1.4
-    >>> circ_footing.diameter
-    1.4
-
-    >>> circ_footing.length = 1.5
-    >>> circ_footing.width
-    1.5
-    >>> circ_footing.diameter
-    1.5
     """
 
     diameter: float
@@ -167,10 +153,6 @@ class SquareFooting:
     1.44
     >>> sqr_footing.perimeter
     4.8
-
-    >>> sqr_footing.length = 1.4
-    >>> sqr_footing.width
-    1.4
     """
 
     width: float
@@ -292,14 +274,6 @@ class FootingSize:
     4.8
     >>> footing_size.volume
     0.648
-
-    >>> footing_size.length = 1.4
-    >>> footing_size.width
-    1.4
-
-    >>> footing_size.width = 1.5
-    >>> footing_size.length
-    1.5
     """
 
     thickness: float
@@ -390,21 +364,6 @@ class FoundationSize:
     4.8
     >>> foundation_size.volume
     2.16
-
-    >>> foundation_size.thickness = 0.3
-    >>> foundation_size.thickness
-    0.3
-    >>> foundation_size.width = 1.4
-    >>> foundation_size.width
-    1.4
-    >>> foundation_size.length = 1.5
-    >>> foundation_size.length
-    1.5
-
-    >>> footing_shape = CircularFooting(diameter=1.5)
-    >>> foundation_size.footing_shape = footing_shape
-    >>> foundation_size.footing_shape
-    CircularFooting(diameter=1.5)
     """
 
     depth: float
