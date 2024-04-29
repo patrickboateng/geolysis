@@ -1,7 +1,5 @@
-from typing import Sequence
-
 from geolysis.foundation import FoundationSize
-from geolysis.utils import floor, round_
+from geolysis.utils import round_
 
 __all__ = ["BowlesABC", "MeyerhofABC", "TerzaghiABC"]
 
@@ -14,9 +12,6 @@ def _chk_settlement(tol_settlement: float, max_tol_settlement: float):
     if tol_settlement > max_tol_settlement:
         err_msg = "tol_settlement should not be greater than 25.4."
         raise SettlementError(err_msg)
-
-
-ERR_MSG = "recorded_spt_n_vals should be a Sequence[int] or float or int"
 
 
 class BowlesABC:
