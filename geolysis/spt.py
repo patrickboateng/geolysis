@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from dataclasses import KW_ONLY, dataclass
 from statistics import StatisticsError
-from typing import Literal, Optional, Protocol, Sequence
+from typing import Protocol, Sequence
 
 from geolysis.constants import ERROR_TOL
 from geolysis.utils import isclose, log10, mean, round_, sqrt
@@ -68,7 +68,7 @@ class SPT:
     >>> SPT(corrected_spt_numbers=[])
     Traceback (most recent call last):
         ...
-    StatisticsError: spt_n_design requires at least one spt n-value
+    StatisticsError: corrected_spt_numbers requires at least one SPT N-value
     """
 
     def __init__(self, corrected_spt_numbers: Sequence[float]) -> None:
@@ -417,7 +417,6 @@ class PeckOPC(_OPC):
         if __val < self.STD_PRESSURE:
             err_msg = f"eop = {__val} cannot be less than 24"
             raise OPCError(err_msg)
-
         self._eop = __val
 
     @property
@@ -480,7 +479,6 @@ class LiaoWhitmanOPC(_OPC):
         if __val <= 0:
             err_msg = f"eop = {__val} cannot be less than or equal to 0"
             raise OPCError(err_msg)
-
         self._eop = __val
 
     @property
