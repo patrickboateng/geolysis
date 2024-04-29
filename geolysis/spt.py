@@ -154,7 +154,7 @@ class EnergyCorrection:
     sampler_correction : float, default=1.0
         Sampler correction
     rod_length_correction : float, default=0.75
-        Rod Length correction
+        Rod length correction
 
     Attributes
     ----------
@@ -208,7 +208,7 @@ class EnergyCorrection:
         return self.correction * self.recorded_spt_number
 
 
-class OPC(Protocol):
+class _OPC(Protocol):
     std_spt_number: float
     eop: float
 
@@ -224,7 +224,7 @@ class OPC(Protocol):
 
 
 @dataclass
-class GibbsHoltzOPC(OPC):
+class GibbsHoltzOPC(_OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
     Parameters
@@ -267,14 +267,8 @@ class GibbsHoltzOPC(OPC):
         self.std_spt_number = std_spt_number
         self.eop = eop
 
-    def _check_eop(self, eop: float) -> None:
-        if eop <= 0:
-            err_msg = f"{eop = } cannot be less than or equal to 0"
-            raise OPCError(err_msg)
-
-        if eop > self.STD_PRESSURE:
-            err_msg = f"{eop = } should be less than {self.STD_PRESSURE}"
-            raise OPCError(err_msg)
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
 
     @property
     def eop(self) -> float:
@@ -282,7 +276,13 @@ class GibbsHoltzOPC(OPC):
 
     @eop.setter
     def eop(self, __val: float):
-        self._check_eop(__val)
+        if __val <= 0:
+            err_msg = f"eop = {__val} cannot be less than or equal to 0"
+            raise OPCError(err_msg)
+
+        if __val > self.STD_PRESSURE:
+            err_msg = f"eop = {__val} should be less than {self.STD_PRESSURE}"
+            raise OPCError(err_msg)
         self._eop = __val
 
     @property
@@ -303,7 +303,7 @@ class GibbsHoltzOPC(OPC):
 
 
 @dataclass
-class BazaraaPeckOPC(OPC):
+class BazaraaPeckOPC(_OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and also
     by ``Peck and Bazaraa (1969)``.
 
@@ -366,7 +366,7 @@ class BazaraaPeckOPC(OPC):
 
 
 @dataclass
-class PeckOPC(OPC):
+class PeckOPC(_OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
     Parameters
@@ -405,10 +405,8 @@ class PeckOPC(OPC):
         self.std_spt_number = std_spt_number
         self.eop = eop
 
-    def _check_eop(self, eop: float):
-        if eop < self.STD_PRESSURE:
-            err_msg = f"{eop = } cannot be less than 24"
-            raise OPCError(err_msg)
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
 
     @property
     def eop(self) -> float:
@@ -416,13 +414,16 @@ class PeckOPC(OPC):
 
     @eop.setter
     def eop(self, __val: float):
-        self._check_eop(__val)
+        if __val < self.STD_PRESSURE:
+            err_msg = f"eop = {__val} cannot be less than 24"
+            raise OPCError(err_msg)
+
         self._eop = __val
 
     @property
     @round_(ndigits=2)
     def correction(self) -> float:
-        return 0.77 * log10(2000 / self._eop)
+        return 0.77 * log10(2000 / self.eop)
 
     @property
     def corrected_spt_number(self) -> float:
@@ -430,7 +431,7 @@ class PeckOPC(OPC):
 
 
 @dataclass
-class LiaoWhitmanOPC(OPC):
+class LiaoWhitmanOPC(_OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
     Parameters
@@ -467,10 +468,8 @@ class LiaoWhitmanOPC(OPC):
         self.std_spt_number = std_spt_number
         self.eop = eop
 
-    def _check_eop(self, eop):
-        if eop <= 0:
-            err_msg = f"{eop = } cannot be less than or equal to 0"
-            raise OPCError(err_msg)
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
 
     @property
     def eop(self) -> float:
@@ -478,13 +477,16 @@ class LiaoWhitmanOPC(OPC):
 
     @eop.setter
     def eop(self, __val: float):
-        self._check_eop(__val)
+        if __val <= 0:
+            err_msg = f"eop = {__val} cannot be less than or equal to 0"
+            raise OPCError(err_msg)
+
         self._eop = __val
 
     @property
     @round_(ndigits=2)
     def correction(self) -> float:
-        return sqrt(100 / self._eop)
+        return sqrt(100 / self.eop)
 
     @property
     def corrected_spt_number(self) -> float:
@@ -492,7 +494,7 @@ class LiaoWhitmanOPC(OPC):
 
 
 @dataclass
-class SkemptonOPC(OPC):
+class SkemptonOPC(_OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
     Parameters
@@ -575,8 +577,7 @@ class DilatancyCorrection:
     18.75
     """
 
-    def __init__(self, spt_number: float) -> None:
-        self.spt_number = spt_number
+    spt_number: float
 
     @property
     @round_(ndigits=2)
@@ -585,170 +586,3 @@ class DilatancyCorrection:
             return self.spt_number
 
         return 15 + 0.5 * (self.spt_number - 15)
-
-
-# class SPTCorrection:
-#     r"""SPT N-value correction for **Overburden Pressure** and **Dilatancy**.
-
-#     There are three (3) different SPT corrections namely:
-
-#     - :meth:`Energy Correction <energy_correction>`
-#     - Overburden Pressure Corrections (OPC)
-#         - :meth:`Gibbs & Holtz (1957) <gibbs_holtz_opc_1957>`
-#         - :meth:`Bazaraa & Peck (1969) <bazaraa_peck_opc_1969>`
-#         - :meth:`Peck et al (1974) <peck_et_al_opc_1974>`
-#         - :meth:`Liao Whitman (1986) <liao_whitman_opc_1986>`
-#         - :meth:`Skempton (1986) <skempton_opc_1986>`
-#     - :meth:`Dilatancy Correction <terzaghi_peck_dc_1948>`
-
-#     The ``energy correction`` is to be applied irrespective of the type of soil.
-
-#     Parameters
-#     ----------
-#     recorded_spt_n_val : float
-#         Recorded SPT N-value from field.
-#     eop : float, default=100.0, unit = :math:`kN/m^2`
-#         Effective overburden pressure.
-#     energy_percentage : float, default=0.6
-#         Energy percentage reaching the tip of the sampler.
-#     hammer_efficiency : float, default=0.6
-#         Hammer efficiency, defaults to 0.6
-#     borehole_diameter_correction : float, default=1.0
-#         Borehole diameter correction
-#     sampler_correction : float, default=1.0
-#         Sampler correction
-#     rod_length_correction : float, default=0.75
-#         Rod Length correction
-#     opc_func : Literal["gibbs", "bazaraa", "peck", "liao", "skempton"], default=None
-#         Overburden pressure correction to use when correcting for dilatancy.
-
-#     Attributes
-#     ----------
-#     recorded_spt_n_val : float
-#     eop: float, unit = :math:`kN/m^2`
-#     energy_percentage : float
-#     hammer_efficiency : float
-#     borehole_diameter_correction : float
-#     sampler_correction : float
-#     rod_length_correction : float
-#     opc_func : str
-
-#     Notes
-#     -----
-#     The general formula for overburden pressure correction is:
-
-#     .. math:: (N_1)_{60} = C_N \cdot N_{60} \le 2 \cdot N_{60}
-
-#     Energy correction is given by the formula:
-
-#     .. math:: N_{60} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{0.6}
-
-#     ``Gibbs & Holtz`` overburden pressure correction is given by the formula:
-
-#     .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
-
-#     :math:`\frac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_{60}}`
-#     is greater than 2.0, :math:`N_c` should be divided by 2.0 to obtain the design value
-#     used in finding the bearing capacity of the soil.
-
-#     ``Bazaraa & Peck`` overburden pressure correction is given by the formula:
-
-#     .. math::
-
-#         C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
-
-#         C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o}, \, \sigma_o \gt 71.8kN/m^2
-
-#         C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
-
-#     ``Peck et al`` overburden pressure correction is given by the formula:
-
-#     .. math:: C_N = 0.77 \log \left( \dfrac{2000}{\sigma_o} \right)
-
-#     ``Liao & Whitman`` overburden pressure correction is given by the formula:
-
-#     .. math:: C_N = \sqrt{\dfrac{100}{\sigma_o}}
-
-#     ``Skempton`` overburden pressure correction is given by the formula:
-
-#     .. math:: C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
-
-#     For coarse sand, this correction is not required. In applying this correction,
-#     overburden pressure correction is applied first and then dilatancy correction
-#     is applied.
-
-#     Dilatancy correction is given by the formula:
-
-#     .. math::
-
-#         (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \, (N_1)_{60} \gt 15
-
-#         (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
-
-#     Examples
-#     --------
-#     >>> from geolysis.spt import SPTCorrection
-#     >>> spt_correction = SPTCorrection(recorded_spt_n_val=30, eop=100, opc_func="gibbs")
-
-#     Energy Correction
-
-#     >>> spt_correction.energy_correction()
-#     22.5
-
-#     Overburden Pressure Corrections
-
-#     >>> spt_correction.gibbs_holtz_opc_1957()
-#     23.16
-#     >>> spt_correction.bazaraa_peck_opc_1969()
-#     20.98
-#     >>> spt_correction.peck_et_al_opc_1974()
-#     22.54
-#     >>> spt_correction.liao_whitman_opc_1986()
-#     22.5
-#     >>> spt_correction.skempton_opc_1986()
-#     22.02
-
-#     Dilatancy Correction
-
-#     >>> spt_correction.terzaghi_peck_dc_1948()
-#     19.08
-#     """
-
-#     def __init__(
-#         self,
-#         recorded_spt_n_val: float,
-#         eop: float = 100.0,
-#         *,
-#         energy_percentage=0.6,
-#         hammer_efficiency=0.6,
-#         borehole_diameter_correction=1.0,
-#         sampler_correction=1.0,
-#         rod_length_correction=0.75,
-#         opc_func: Optional[
-#             Literal["gibbs", "bazaraa", "peck", "liao", "skempton"]
-#         ] = None,
-#     ) -> None:
-#         self.recorded_spt_n_val = recorded_spt_n_val
-#         self.eop = eop
-#         self.energy_percentage = energy_percentage
-#         self.hammer_efficiency = hammer_efficiency
-#         self.borehole_diameter_correction = borehole_diameter_correction
-#         self.sampler_correction = sampler_correction
-#         self.rod_length_correction = rod_length_correction
-#         self.opc_func = opc_func
-
-#     @round_(ndigits=2)
-#     def terzaghi_peck_dc_1948(self) -> float:
-#         """Return the dilatancy spt correction given by ``Terzaghi & Peck (1948)``."""
-
-#     @round_(ndigits=2)
-#     def peck_et_al_opc_1974(self) -> float:
-#         """Return the overburden pressure given by ``Peck et al (1974)``."""
-
-#     @round_(ndigits=2)
-#     def liao_whitman_opc_1986(self) -> float:
-#         """Return the overburden pressure given by ``Liao Whitman (1986)``."""
-
-#     @round_(ndigits=2)
-#     def skempton_opc_1986(self) -> float:
-#         """Return the overburden pressure correction given by ``Skempton (1986).``"""
