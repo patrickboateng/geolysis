@@ -79,3 +79,10 @@ close-quotes-on-newline = true
 [tool.pydocstyle]
 # convention = "pep257"
 ignore = ["D107", "D200"]
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
