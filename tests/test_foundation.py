@@ -40,7 +40,6 @@ class TestFootingSize(unittest.TestCase):
 
 
 class TestFoundationSize(unittest.TestCase):
-    ...
 
     def testAttributes(self):
         footing_size = create_footing(
