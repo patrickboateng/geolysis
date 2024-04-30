@@ -69,7 +69,7 @@ class SoilUnitWeight:
     8.95
     """
 
-    def __init__(self, std_spt_number) -> None:
+    def __init__(self, std_spt_number: float) -> None:
         self.std_spt_number = std_spt_number
 
     @property
@@ -173,7 +173,7 @@ class SkemptonCompressionIndex:
     @property
     @round_(ndigits=3)
     def compression_index(self) -> float:
-        """Return the compression index of soil from ``Skempton's`` correlation."""
+        """Return the compression index of soil."""
         return 0.007 * (self.liquid_limit - 10.0)
 
 
@@ -210,6 +210,7 @@ class HoughCompressionIndex:
     @property
     @round_(ndigits=3)
     def compression_index(self) -> float:
+        """Return the compression index of soil."""
         return 0.29 * (self.void_ratio - 0.27)
 
 
@@ -254,6 +255,7 @@ class WolffSoilFrictionAngle:
     @property
     @round_(ndigits=2)
     def soil_friction_angle(self) -> float:
+        """Return the internal angle of friction of soil."""
         return (
             27.1
             + (0.3 * self.std_spt_number)
@@ -313,6 +315,7 @@ class KullhawyMayneSoilFrictionAngle:
 
     @property
     def atm_pressure(self) -> float:
+        """Atmospheric pressure."""
         return self._atm_pressure
 
     @atm_pressure.setter
@@ -325,6 +328,7 @@ class KullhawyMayneSoilFrictionAngle:
     @property
     @round_(ndigits=3)
     def soil_friction_angle(self) -> float:
+        """Return the internal angle of friction of soil."""
         angle = self.std_spt_number / (
             12.2 + 20.3 * (self.eop / self.atm_pressure)
         )
@@ -384,11 +388,12 @@ class StroudUndrainedShearStrength:
 
     @property
     def k(self) -> float:
+        """Stroud constant."""
         return self._k
 
     @k.setter
     def k(self, __val: float):
-        if not (3.5 <= __val <= 6.5):
+        if not 3.5 <= __val <= 6.5:
             err_msg = "k = {__val} should be in the range 3.5 <= k <= 6.5"
             raise EstimatorError(err_msg)
         self._k = __val
@@ -396,6 +401,7 @@ class StroudUndrainedShearStrength:
     @property
     @round_(ndigits=2)
     def undrained_shear_strength(self) -> float:
+        """Return the undrained shear strength of soil."""
         return self.k * self.std_spt_number
 
 
@@ -446,4 +452,5 @@ class SkemptonUndrainedShearStrength:
     @property
     @round_(ndigits=2)
     def undrained_shear_strength(self) -> float:
+        """Return the undrained shear strength of soil."""
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)

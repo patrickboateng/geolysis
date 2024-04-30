@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 from geolysis.constants import ERROR_TOL
-from geolysis.utils import ceil, isclose, round_
+from geolysis.utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
@@ -49,25 +49,23 @@ class _SoilGradation(NamedTuple):
     d_30: float
     d_60: float
 
+    ERR_MSG = "d_10, d_30, and d_60 cannot be 0"
+
     @property
     @round_(ndigits=2)
     def coeff_of_curvature(self) -> float:
-        """Coefficient of curvature of soil sample."""
         try:
             return (self.d_30**2) / (self.d_60 * self.d_10)
-        except ZeroDivisionError:
-            err_msg = "d_10, d_30, and d_60 cannot be 0"
-            raise SoilGradationError(err_msg)
+        except ZeroDivisionError as e:
+            raise SoilGradationError(self.ERR_MSG) from e
 
     @property
     @round_(ndigits=2)
     def coeff_of_uniformity(self) -> float:
-        """Coefficient of uniformity of soil sample."""
         try:
             return self.d_60 / self.d_10
-        except ZeroDivisionError:
-            err_msg = "d_10, d_30, and d_60 cannot be 0"
-            raise SoilGradationError(err_msg)
+        except ZeroDivisionError as e:
+            raise SoilGradationError(self.ERR_MSG) from e
 
     def grade(self, coarse_soil: str) -> str:
         """Grade of soil sample. Soil grade can either be ``WELL_GRADED`` or
@@ -121,19 +119,8 @@ class AtterbergLimits:
     liquid_limit : float
     plastic_limit : float
     plasticity_index : float
-        Plasticity index (PI) is the range of water content over which the
-        soil remains in the plastic state. It is also the numerical difference
-        between the liquid limit and plastic limit of the soil.
-
-        .. math:: PI = LL - PL
-
     A_line : float
-        The ``A-line`` is used to determine if a soil is clayey or silty.
-
-        .. math:: A = 0.73(LL - 20)
-
     type_of_fines : str
-        Determines whether the soil is either :data:`CLAY` or :data:`SILT`.
 
     Methods
     -------
@@ -180,15 +167,28 @@ class AtterbergLimits:
     @property
     @round_(ndigits=2)
     def plasticity_index(self) -> float:
+        """Plasticity index (PI) is the range of water content over which the
+        soil remains in the plastic state.
+
+        It is also the numerical difference between the liquid limit and plastic
+        limit of the soil.
+
+        .. math:: PI = LL - PL
+        """
         return self.liquid_limit - self.plastic_limit
 
     @property
     @round_(ndigits=2)
     def A_line(self) -> float:
+        """The ``A-line`` is used to determine if a soil is clayey or silty.
+
+        .. math:: A = 0.73(LL - 20)
+        """
         return 0.73 * (self.liquid_limit - 20)
 
     @property
     def type_of_fines(self) -> str:
+        """Determines whether the soil is either :data:`CLAY` or :data:`SILT`."""
         return CLAY if self.above_A_LINE() else SILT
 
     def above_A_LINE(self) -> bool:
@@ -288,24 +288,9 @@ class PSD:
     d_30 : float
     d_60 : float
     coeff_of_curvature : float
-        Coefficient of curvature :math:`(C_c)` is given by the formula:
-
-        .. math:: C_c = \dfrac{D^2_{30}}{D_{60} \times D_{10}}
-
-        For the soil to be well graded, the value of :math:`C_c` must be
-        between 1 and 3.
     coeff_of_uniformity : float
-        Coefficient of uniformity :math:`(C_u)` is given by the formula:
-
-        .. math:: C_u = \dfrac{D_{60}}{D_{10}}
-
-        :math:`C_u` value greater than 4 to 6 classifies the soil as well
-        graded. When :math:`C_u` is less than 4, it is classified as poorly
-        graded or uniformly graded soil. Higher values of :math:`C_u`
-        indicates that the soil mass consists of soil particles with
-        different size ranges
     type_of_coarse : str
-        Determines whether the soil is either :data:`GRAVEL` or :data:`SAND`.
+
 
     Raises
     ------
@@ -373,32 +358,57 @@ class PSD:
             err_msg = f"fines + sand + gravels = 100% not {total_agg}"
             raise PSDAggSumError(err_msg)
 
-    def _has_particle_sizes(self) -> bool:
+    def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
         return all(self.size_dist)
 
     @property
     def d_10(self) -> float:
+        """Diameter at which 10% of the soil by weight is finer."""
         return self.size_dist.d_10
 
     @property
     def d_30(self) -> float:
+        """Diameter at which 30% of the soil by weight is finer."""
         return self.size_dist.d_30
 
     @property
     def d_60(self) -> float:
+        """Diameter at which 60% of the soil by weight is finer."""
         return self.size_dist.d_60
 
     @property
     def type_of_coarse(self) -> str:
+        """Determines whether the soil is either :data:`GRAVEL` or :data:`SAND`."""
         return GRAVEL if self.gravel > self.sand else SAND
 
     @property
     def coeff_of_curvature(self) -> float:
+        r"""Coefficient of curvature of soil sample.
+
+        Coefficient of curvature :math:`(C_c)` is given by the formula:
+
+        .. math:: C_c = \dfrac{D^2_{30}}{D_{60} \times D_{10}}
+
+        For the soil to be well graded, the value of :math:`C_c` must be
+        between 1 and 3.
+        """
         return self.size_dist.coeff_of_curvature
 
     @property
     def coeff_of_uniformity(self) -> float:
+        r"""Coefficient of uniformity of soil sample.
+
+        Coefficient of uniformity :math:`(C_u)` is given by the formula:
+
+        .. math:: C_u = \dfrac{D_{60}}{D_{10}}
+
+        :math:`C_u` value greater than 4 to 6 classifies the soil as well
+        graded. When :math:`C_u` is less than 4, it is classified as poorly
+        graded or uniformly graded soil. Higher values of :math:`C_u`
+        indicates that the soil mass consists of soil particles with
+        different size ranges
+        """
         return self.size_dist.coeff_of_uniformity
 
     def grade(self) -> str:
@@ -664,7 +674,7 @@ class USCS:
     >>> soil_class
     'SW-SC,SP-SC'
     >>> uscs_clf.soil_desc()
-    ''
+    'Well graded sand with clay or Poorly graded sand with clay'
     """
 
     SOIL_DESCRIPTIONS = {
@@ -756,7 +766,7 @@ class USCS:
 
         elif 5 <= self.psd.fines <= 12:
             # Requires dual symbol based on graduation and plasticity chart
-            if self.psd._has_particle_sizes():
+            if self.psd.has_particle_sizes():
                 soil_class = self._dual_soil_classifier()
 
             else:
@@ -769,7 +779,7 @@ class USCS:
         # Less than 5% pass No. 200 sieve
         # Obtain Cc and Cu from grain size graph
         else:
-            if self.psd._has_particle_sizes():
+            if self.psd.has_particle_sizes():
                 soil_class = f"{coarse_soil}{self.psd.grade()}"
 
             else:
@@ -823,6 +833,10 @@ class USCS:
     def soil_desc(self) -> str:
         """Return the USCS description of the soil."""
         soil_class = self.soil_class()
-        return (
-            USCS.SOIL_DESCRIPTIONS[soil_class] if len(soil_class) <= 5 else ""
-        )
+        if "," in soil_class:
+            _soil_desc = [
+                USCS.SOIL_DESCRIPTIONS[_class]
+                for _class in soil_class.split(",")
+            ]
+            return " or ".join(_soil_desc)
+        return USCS.SOIL_DESCRIPTIONS[soil_class]

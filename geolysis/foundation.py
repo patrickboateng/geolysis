@@ -57,9 +57,7 @@ class CircularFooting:
     ----------
     diameter : float, unit=metre
     width : float, unit=metre
-        Diameter of foundation footing.
     length : float, unit=metre
-        Diameter of foundation footing.
     area : float, unit = :math:`m^2`
     perimeter : float, unit=metre
 
@@ -93,6 +91,7 @@ class CircularFooting:
 
     @property
     def width(self) -> float:
+        """Diameter of foundation footing."""
         return self.diameter
 
     @width.setter
@@ -101,6 +100,7 @@ class CircularFooting:
 
     @property
     def length(self) -> float:
+        """Diameter of foundation footing."""
         return self.diameter
 
     @length.setter
@@ -133,7 +133,6 @@ class SquareFooting:
     ----------
     width : float, unit=metre
     length : float, unit=metre
-        Length of foundation footing.
     area : float, unit = :math:`m^2`
     perimeter : float, unit=metre
 
@@ -144,14 +143,14 @@ class SquareFooting:
     Examples
     --------
     >>> from geolysis.foundation import SquareFooting
-    >>> sqr_footing = SquareFooting(width=1.2)
-    >>> sqr_footing.width
+    >>> sq_footing = SquareFooting(width=1.2)
+    >>> sq_footing.width
     1.2
-    >>> sqr_footing.length
+    >>> sq_footing.length
     1.2
-    >>> sqr_footing.area
+    >>> sq_footing.area
     1.44
-    >>> sqr_footing.perimeter
+    >>> sq_footing.perimeter
     4.8
     """
 
@@ -159,6 +158,7 @@ class SquareFooting:
 
     @property
     def length(self) -> float:
+        """Length of foundation footing."""
         return self.width
 
     @length.setter
@@ -245,9 +245,7 @@ class FootingSize:
     ----------
     thickness : float, unit=metre
     width : float, unit=metre
-        Width of foundation footing.
     length : float, unit=metre
-        Length of foundation footing.
     footing_shape : _FootingShape
     area : float, unit = :math:`m^2`
     perimeter : float, unit=metre
@@ -281,6 +279,7 @@ class FootingSize:
 
     @property
     def width(self) -> float:
+        """Width of foundation footing."""
         return self.footing_shape.width
 
     @width.setter
@@ -289,6 +288,7 @@ class FootingSize:
 
     @property
     def length(self) -> float:
+        """Length of foundation footing."""
         return self.footing_shape.length
 
     @length.setter
@@ -327,13 +327,9 @@ class FoundationSize:
     ----------
     depth : float, unit=metre
     thickness : float, unit=metre
-        Thickness of foundation footing.
     width : float, unit=metre
-        Width of foundation footing.
     length : float, unit=metre
-        Length of foundation footing.
     footing_shape : _FootingShape
-        Represents the shape of the foundation footing.
     footing_size : FootingSize
     area : float, unit = :math:`m^2`
     perimeter : float, unit=metre
@@ -371,6 +367,7 @@ class FoundationSize:
 
     @property
     def thickness(self) -> float:
+        """Thickness of foundation footing."""
         return self.footing_size.thickness
 
     @thickness.setter
@@ -379,6 +376,7 @@ class FoundationSize:
 
     @property
     def width(self) -> float:
+        """Width of foundation footing."""
         return self.footing_size.width
 
     @width.setter
@@ -387,6 +385,7 @@ class FoundationSize:
 
     @property
     def length(self) -> float:
+        """Length of foundation footing."""
         return self.footing_size.length
 
     @length.setter
@@ -395,6 +394,7 @@ class FoundationSize:
 
     @property
     def footing_shape(self) -> _FootingShape:
+        """Represents the shape of the foundation footing."""
         return self.footing_size.footing_shape
 
     @footing_shape.setter
@@ -521,7 +521,7 @@ def create_foundation(
         Width of foundation footing.
     length : float, optional, unit=metre
         Length of foundation footing.
-    footing_type : {"square", "rectangular", "circular"}, default="square"
+    footing_shape : {"square", "rectangular", "circular"}, default="square"
         Shape of foundation footing.
 
     Returns

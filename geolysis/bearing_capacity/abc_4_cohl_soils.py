@@ -34,11 +34,8 @@ class BowlesABC:
     corrected_spt_number : float
     tol_settlement : float
     f_depth : float
-        Depth of foundation
     f_width : float
-        Width of foundation footing
     FD : float
-        Depth factor.
     MAX_TOL_SETTLEMENT : float
 
     Notes
@@ -98,22 +95,43 @@ class BowlesABC:
 
         self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
-
-        self.f_depth = foundation_size.depth
-        self.f_width = foundation_size.width
+        self.foundation_size = foundation_size
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
     @property
+    def f_depth(self) -> float:
+        """Depth of foundation."""
+        return self.foundation_size.depth
+
+    @f_depth.setter
+    def f_depth(self, __val: float):
+        self.foundation_size.depth = __val
+
+    @property
+    def f_width(self) -> float:
+        """Width of foundation footing."""
+        return self.foundation_size.width
+
+    @f_width.setter
+    def f_width(self, __val):
+        self.foundation_size.width = __val
+
+    @property
     def FD(self) -> float:
+        """Depth factor."""
         return min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
 
     @property
     def SR(self) -> float:
+        """Settlement ratio"""
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
     @property
     def N_1_55(self) -> float:
+        """Statistical average of corrected SPT N-value (55% energy with
+        overburden pressure correction) within the foundation influence zone.
+        """
         return self.corrected_spt_number
 
     @round_(ndigits=2)
@@ -160,11 +178,8 @@ class MeyerhofABC:
     corrected_spt_number : float
     tol_settlement : float
     f_depth : float
-        Depth of foundation footing
     f_width : float
-        Width of foundation footing
     FD : float
-        Depth factor
     MAX_TOL_SETTLEMENT : float
 
     Notes
@@ -175,7 +190,8 @@ class MeyerhofABC:
 
         q_a(kPa) &= 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
 
-        q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
+        q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(\dfrac{S}{25.4}\right),
+                    \ B \ \gt 1.2m
 
     Allowable bearing capacity for ``raft/mat`` foundations:
 
@@ -222,22 +238,43 @@ class MeyerhofABC:
 
         self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
-
-        self.f_depth = foundation_size.depth
-        self.f_width = foundation_size.width
+        self.foundation_size = foundation_size
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
     @property
+    def f_depth(self) -> float:
+        """Depth of foundation."""
+        return self.foundation_size.depth
+
+    @f_depth.setter
+    def f_depth(self, __val: float):
+        self.foundation_size.depth = __val
+
+    @property
+    def f_width(self) -> float:
+        """Width of foundation footing."""
+        return self.foundation_size.width
+
+    @f_width.setter
+    def f_width(self, __val):
+        self.foundation_size.width = __val
+
+    @property
     def FD(self) -> float:
+        """Depth factor."""
         return min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
 
     @property
     def SR(self) -> float:
+        """Settlement ratio."""
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
     @property
     def N_1_60(self) -> float:
+        """Average uncorrected SPT N-value (60% energy with dilatancy (water)
+        correction if applicable) within the foundation influence zone.
+        """
         return self.corrected_spt_number
 
     @round_(ndigits=2)
@@ -287,9 +324,7 @@ class TerzaghiABC:
     tol_settlement : float
     water_depth : float
     f_depth : float
-        Depth of foundation
     f_width : float
-        Width of foundation footing
     FD : float
         Depth factor
     CW : float
@@ -367,28 +402,50 @@ class TerzaghiABC:
         self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
         self.water_depth = water_depth
-
-        self.f_depth = foundation_size.depth
-        self.f_width = foundation_size.width
+        self.foundation_size = foundation_size
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
     @property
+    def f_depth(self) -> float:
+        """Depth of foundation."""
+        return self.foundation_size.depth
+
+    @f_depth.setter
+    def f_depth(self, __val: float):
+        self.foundation_size.depth = __val
+
+    @property
+    def f_width(self) -> float:
+        """Width of foundation footing."""
+        return self.foundation_size.width
+
+    @f_width.setter
+    def f_width(self, __val):
+        self.foundation_size.width = __val
+
+    @property
     def N_1_60(self) -> float:
+        """Lowest (or average) uncorrected SPT N-value (60% energy) within the
+        foundation influence zone.
+        """
         return self.corrected_spt_number
 
     @property
     def SR(self) -> float:
+        """Settlement ratio."""
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
     @property
     @round_(ndigits=2)
     def FD(self):
+        """Depth factor."""
         return min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
 
     @property
     @round_(ndigits=2)
     def CW(self):
+        """Water correction factor."""
         return (
             min(2 - self.f_depth / (2 * self.f_width), 2)
             if self.water_depth <= self.f_depth

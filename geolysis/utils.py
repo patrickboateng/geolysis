@@ -1,10 +1,7 @@
 import functools
 import math
-from dataclasses import dataclass
-from math import ceil, exp, floor, isclose, log, log10
-from math import pi as PI
-from math import sqrt
-from statistics import fmean as mean
+from math import exp, isclose, log, log10, pi, sqrt
+from statistics import fmean
 from typing import Callable
 
 from geolysis.constants import DECIMAL_PLACES
@@ -19,6 +16,10 @@ __all__ = [
     "arctan",
     "round_",
 ]
+
+PI = pi
+
+mean = fmean
 
 
 def deg2rad(__x: float, /) -> float:
@@ -54,9 +55,6 @@ def cos(__x: float, /) -> float:
 def arctan(__x: float, /) -> float:
     """Return the arc tangent (measured in degrees) of x."""
     return rad2deg(math.atan(__x))
-
-
-from dataclasses import dataclass
 
 
 def round_(ndigits: int | Callable) -> Callable:
@@ -106,11 +104,11 @@ def round_(ndigits: int | Callable) -> Callable:
 
         return wrapper
 
-    # See if we're being called as @round or @round_().
+    # See if we're being called as @round_ or @round_().
     if isinstance(ndigits, int):
         # We're called with parens.
         return functools.partial(dec, ndigits=ndigits)
-    elif callable(ndigits):
+    if callable(ndigits):
         # We're called as @round_ without parens.
         f = ndigits
         return dec(f)

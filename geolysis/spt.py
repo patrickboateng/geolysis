@@ -23,7 +23,8 @@ class OPCError(ValueError):
 
 
 class SPT:
-    r"""Standard Penetration Test.
+    r"""A class for calculating the design value (:math:`N_{design}`) from a list
+    of SPT N-values.
 
     Parameters
     ----------
@@ -43,7 +44,7 @@ class SPT:
 
     Notes
     -----
-    Weighted average :math:`(N_{design})` is given by the formula:
+    Weighted average is given by the formula:
 
     .. math::
 
@@ -51,7 +52,7 @@ class SPT:
 
     Average is given by the formula:
 
-    .. math::  N_{avg} = \dfrac{\sum_{i=1}^{n}N_i}{n}
+    .. math::  N_{design} = \dfrac{\sum_{i=1}^{n}N_i}{n}
 
     Examples
     --------
@@ -88,7 +89,7 @@ class SPT:
     @round_(ndigits=2)
     def weighted_average(self) -> float:
         """Calculates the weighted average of the corrected SPT N-values in the
-        foundation influence zone. (:math:`N_{design}`)
+        foundation influence zone.
 
         Due to uncertainty in field procedure in standard penetration test and also
         to consider all the N-value in the influence zone of a foundation, a method
@@ -111,7 +112,7 @@ class SPT:
 
     @round_(ndigits=2)
     def average(self) -> float:
-        """Calculates the average of the uncorrected SPT N-values in the foundation
+        """Calculates the average of the corrected SPT N-values in the foundation
         influence zone.
         """
         return mean(self.corrected_spt_numbers)
@@ -237,9 +238,10 @@ class GibbsHoltzOPC(_OPC):
     Attributes
     ----------
     std_spt_number : float
-    eop: float, unit = :math:`kN/m^2`
+    eop : float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
+    STD_PRESSURE: float
 
     Notes
     -----
@@ -247,7 +249,7 @@ class GibbsHoltzOPC(_OPC):
 
     .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
 
-    :math:`\frac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if :math:`\frac{N_c}{N_{60}}`
+    :math:`\dfrac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if :math:`\dfrac{N_c}{N_{60}}`
     is greater than 2.0, :math:`N_c` should be divided by 2.0 to obtain the design value
     used in finding the bearing capacity of the soil.
 
@@ -261,7 +263,8 @@ class GibbsHoltzOPC(_OPC):
     23.18
     """
 
-    STD_PRESSURE = 280
+    #: Maximum effective overburden pressure.
+    STD_PRESSURE = 280.0
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
         self.std_spt_number = std_spt_number
@@ -272,6 +275,7 @@ class GibbsHoltzOPC(_OPC):
 
     @property
     def eop(self) -> float:
+        """Effective overburden pressure."""
         return self._eop
 
     @eop.setter
@@ -317,9 +321,10 @@ class BazaraaPeckOPC(_OPC):
     Attributes
     ----------
     std_spt_number : float
-    eop: float, unit = :math:`kN/m^2`
+    eop : float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
+    STD_PRESSURE : float
 
     Notes
     -----
@@ -346,6 +351,7 @@ class BazaraaPeckOPC(_OPC):
     std_spt_number: float
     eop: float
 
+    #: Maximum effective overburden pressure.
     STD_PRESSURE = 71.8
 
     @property
@@ -382,6 +388,7 @@ class PeckOPC(_OPC):
     eop: float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
+    STD_PRESSURE : float
 
     Notes
     -----
@@ -399,6 +406,7 @@ class PeckOPC(_OPC):
     22.5
     """
 
+    #: Maximum effective overburden pressure.
     STD_PRESSURE = 24.0
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
