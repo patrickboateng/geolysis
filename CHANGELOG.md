@@ -10,27 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features Not Added Yet
 
 - Settlement Analysis
-- Modeling the behavior of Soils under loads using Discrete Element Method (`DEM`)
 
 ## [0.2.0] - 2024-02-06
 
 ### Added
 
-- Soil classification
-  - AASHTO
-  - USCS
-- Standard Penetration Test corrections and analysis
-  - Energy correction
-  - Overburden pressure corrections
-  - Dilatancy correction
-  - SPT corrected weightage average
-  - SPT uncorrected average
-- Allowable bearing capacity analysis
-  - Bowles (1997)
-  - Meyerhof (1956)
-  - Terzaghi (1948)
-- Estimating soil parameters from other soil parameters
-  - Soil unit weight (moist, saturated, submerged)
-  - Compression index
-  - Soil friction angle
-  - Undrained shear strength
+- Soil classification (`AASHTO`, `USCS`)
+- Standard Penetration Test corrections and analysis (`Energy Correction`,
+  `Overburden Pressure Corrections`, `Dilatancy Correction`, `SPT N-Design`)
+- Allowable Bearing Capacity Analysis (`Bowles (1997)`, `Meyerhof (1956)`,
+  `Terzaghi (1948)`)
+- Estimating soil parameters (`Soil Unit Weight`, `Compression Index`,
+  `Internal Angle of Friction`, `Undrained Shear Strength`)
+
+## [1.0.0] - 2024-XX-XX
