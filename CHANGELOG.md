@@ -23,4 +23,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Estimating soil parameters (`Soil Unit Weight`, `Compression Index`,
   `Internal Angle of Friction`, `Undrained Shear Strength`)
 
-## [1.0.0] - 2024-XX-XX
+## [0.3.0] - 2024-XX-XX
