@@ -4,7 +4,7 @@
 [license_url]: https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt
 
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/source/_static/geolysis_logo.png" alt="logo" width="300">
+<img src="docs/source/_static/geolysis_logo.png" alt="logo" width="300">
 </h1><br>
 
 <div align="center">
@@ -22,47 +22,38 @@
 
 </div>
 
+`geolysis` is an open-source software for geotechnical analysis
+and modeling.
+
+**Features to include in upcoming versions:**
+
+- Settlement analysis
+
+`geolysis` runs on python 3.10 - 3.12.
+
 ## Project Links
 
-<!-- - [Documentation](/docs) -->
-
-- [Homepage](https://github.com/patrickboateng/geolysis)
+- [Documentation](https://geolysis.readthedocs.org/en/latest)
+- [Repo](https://github.com/patrickboateng/geolysis)
 - [PyPi](https://pypi.org/project/geolysis/)
 - [Bug Reports](https://github.com/patrickboateng/geolysis/issues)
 - [Discussions](https://github.com/patrickboateng/geolysis/discussions)
 
-> [!IMPORTANT]
-> Project documentation is underway
+<!-- > [!IMPORTANT]
+> Project documentation is underway -->
 
 ## Table of Contents
 
-- [What is geolysis?](#what-is-geolysis)
 - [Motivation](#motivation)
 - [Installation](#installation)
-- [Soil Classification Example](#soil-classification-example)
-  - [AASHTO Classification](#aashto-classification)
-  - [USCS Classification](#uscs-classification)
+- [Getting Started](#getting-started)
+  - [Soil Classification Example](#soil-classification-example)
 - [Release History](#release-history)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
 - [Governance of this project](#governance-of-this-project)
 - [Contact Information](#contact-information)
-
-## What is geolysis?
-
-`geolysis` is an open-source software for geotechnical analysis
-and modeling. It provides features such as `soil classifications`
-(based on the `USCS` and `AASHTO` classification standards),
-estimating `soil bearing capacity` using the SPT N-value, and
-estimating soil engineering parameters such as `soil unit weight`
-(`moist`, `saturated`, and `submerged`), `compression index`,
-`soil internal angle of friction`, and `undrained shear strength of soil`.
-
-**Features to include in upcoming versions:**
-
-- Settlement analysis
-- Discrete element method (DEM)
 
 ## Motivation
 
@@ -78,9 +69,11 @@ engineers right from college.
 pip install geolysis
 ```
 
-## Soil Classification Example
+## Getting Started
 
-### AASHTO Classification
+### Soil Classification Example
+
+AASHTO classification
 
 ```python
 
@@ -93,7 +86,7 @@ pip install geolysis
 
 ```
 
-### USCS Classification
+USCS Classification
 
 ```python
 
@@ -112,6 +105,8 @@ pip install geolysis
 'Well graded sand with clay'
 
 ```
+
+<!-- See the [Quick start section] of the docs for more examples. -->
 
 ## Release History
 
