@@ -21,9 +21,9 @@ class FootingCreationError(TypeError):
 
 
 class Shape(enum.IntEnum):
-    CIRCLE = C = enum.auto()
-    SQUARE = S = enum.auto()
-    RECTANGLE = R = enum.auto()
+    CIRCLE = enum.auto()
+    SQUARE = enum.auto()
+    RECTANGLE = enum.auto()
 
 
 class _FootingShape(Protocol):
