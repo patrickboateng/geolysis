@@ -86,3 +86,8 @@ exclude_also = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.run]
+branch = true
