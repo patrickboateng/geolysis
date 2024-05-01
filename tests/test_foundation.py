@@ -4,6 +4,7 @@ from geolysis.foundation import (
     CircularFooting,
     FootingSize,
     FoundationSize,
+    Shape,
     SquareFooting,
     create_footing,
 )
@@ -43,7 +44,7 @@ class TestFoundationSize(unittest.TestCase):
 
     def testAttributes(self):
         footing_size = create_footing(
-            thickness=0.45, width=1.2, footing_shape="square"
+            thickness=0.45, width=1.2, footing_shape=Shape.SQUARE
         )
         foundation_size = FoundationSize(depth=1.5, footing_size=footing_size)
         foundation_size.thickness = 0.3

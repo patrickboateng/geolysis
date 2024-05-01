@@ -60,10 +60,10 @@ class BowlesABC:
     Examples
     --------
     >>> from geolysis.bearing_capacity.abc_4_cohl_soils import BowlesABC
-    >>> from geolysis.foundation import create_foundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
-    ...                                     width=1.2, footing_shape="square")
+    ...                                     width=1.2, footing_shape=Shape.SQUARE)
     >>> bowles_abc = BowlesABC(corrected_spt_number=17.0,
     ...                        tol_settlement=20.0,
     ...                        foundation_size=foundation_size)
@@ -204,10 +204,10 @@ class MeyerhofABC:
     Examples
     --------
     >>> from geolysis.bearing_capacity.abc_4_cohl_soils import MeyerhofABC
-    >>> from geolysis.foundation import create_foundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
-    ...                                     width=1.2, footing_shape="square")
+    ...                                     width=1.2, footing_shape=Shape.SQUARE)
     >>> meyerhof_abc = MeyerhofABC(corrected_spt_number=17.0, tol_settlement=20.0,
     ...                            foundation_size=foundation_size)
     >>> meyerhof_abc.abc_4_pad_foundation()
@@ -361,10 +361,10 @@ class TerzaghiABC:
     Examples
     --------
     >>> from geolysis.bearing_capacity.abc_4_cohl_soils import TerzaghiABC
-    >>> from geolysis.foundation import create_foundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
-    ...                                     width=1.2, footing_shape="square")
+    ...                                     width=1.2, footing_shape=Shape.SQUARE)
     >>> terzaghi_abc = TerzaghiABC(corrected_spt_number=6, tol_settlement=20.0,
     ...                            water_depth=1.2, foundation_size=foundation_size)
     >>> terzaghi_abc.N_1_60
