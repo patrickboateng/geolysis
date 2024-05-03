@@ -28,10 +28,10 @@ class SPT:
 
     Parameters
     ----------
-    corrected_spt_numbers : Sequence[float]
+    spt_numbers : Sequence[float]
         SPT N-values within the foundation influence zone. i.e. :math:`D_f`
-        to :math:`D_f + 2B`. ``corrected_spt_numbers`` can either be **corrected**
-        or **uncorrected**.
+        to :math:`D_f + 2B`. ``spt_numbers`` can either be **corrected** or
+        **uncorrected** SPT N-values.
 
     Attributes
     ----------
@@ -40,7 +40,7 @@ class SPT:
     Raises
     ------
     StatisticError
-        If ``corrected_spt_numbers`` is empty, StatisticError is raised.
+        If ``spt_numbers`` is empty, StatisticError is raised.
 
     Notes
     -----
@@ -57,8 +57,8 @@ class SPT:
     Examples
     --------
     >>> from geolysis.spt import SPT
-    >>> corrected_spt_numbers = [7.0, 15.0, 18.0]
-    >>> spt_avg = SPT(corrected_spt_numbers=corrected_spt_numbers)
+    >>> spt_numbers = [7.0, 15.0, 18.0]
+    >>> spt_avg = SPT(spt_numbers=spt_numbers)
     >>> spt_avg.weighted_average()
     9.37
     >>> spt_avg.average()
@@ -66,23 +66,23 @@ class SPT:
     >>> spt_avg.min()
     7.0
 
-    >>> SPT(corrected_spt_numbers=[])
+    >>> SPT(spt_numbers=[])
     Traceback (most recent call last):
         ...
-    StatisticsError: corrected_spt_numbers requires at least one SPT N-value
+    StatisticsError: spt_numbers requires at least one SPT N-value
     """
 
-    def __init__(self, corrected_spt_numbers: Sequence[float]) -> None:
-        self.corrected_spt_numbers = corrected_spt_numbers
+    def __init__(self, spt_numbers: Sequence[float]) -> None:
+        self.spt_numbers = spt_numbers
 
     @property
-    def corrected_spt_numbers(self) -> Sequence[float]:
+    def spt_numbers(self) -> Sequence[float]:
         return self._corrected_spt_numbers
 
-    @corrected_spt_numbers.setter
-    def corrected_spt_numbers(self, __val: Sequence[float]):
+    @spt_numbers.setter
+    def spt_numbers(self, __val: Sequence[float]):
         if not __val:
-            err_msg = "corrected_spt_numbers requires at least one SPT N-value"
+            err_msg = "spt_numbers requires at least one SPT N-value"
             raise StatisticsError(err_msg)
         self._corrected_spt_numbers = __val
 
@@ -103,7 +103,7 @@ class SPT:
         sum_total = 0.0
         total_wgts = 0.0
 
-        for i, corrected_spt in enumerate(self.corrected_spt_numbers, start=1):
+        for i, corrected_spt in enumerate(self.spt_numbers, start=1):
             wgt = 1 / i**2
             sum_total += wgt * corrected_spt
             total_wgts += wgt
@@ -115,14 +115,14 @@ class SPT:
         """Calculates the average of the corrected SPT N-values in the foundation
         influence zone.
         """
-        return mean(self.corrected_spt_numbers)
+        return mean(self.spt_numbers)
 
     @round_(ndigits=2)
     def min(self) -> float:
         """For ease in calculation, the lowest N-value from the influence zone can be
         taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
         """
-        return min(self.corrected_spt_numbers)
+        return min(self.spt_numbers)
 
 
 class _SPTCorrection(Protocol):
@@ -308,8 +308,8 @@ class GibbsHoltzOPC(_OPC):
 
 @dataclass
 class BazaraaPeckOPC(_OPC):
-    r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and also
-    by ``Peck and Bazaraa (1969)``.
+    r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
+    also by ``Peck and Bazaraa (1969)``.
 
     Parameters
     ----------
