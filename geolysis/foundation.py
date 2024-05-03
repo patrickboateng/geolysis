@@ -1,7 +1,7 @@
 import enum
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Literal, Optional, Protocol
+from typing import Optional, Protocol
 
 from geolysis.utils import PI, round_
 
