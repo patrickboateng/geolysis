@@ -6,3 +6,4 @@ Release Notes
     :maxdepth: 1
 
     geolysis 0.2.0 release notes <0.2.0-notes>
+    geolysis 0.3.0 release notes <0.3.0-notes>
