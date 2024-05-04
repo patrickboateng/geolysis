@@ -77,14 +77,14 @@ class SPT:
 
     @property
     def spt_numbers(self) -> Sequence[float]:
-        return self._corrected_spt_numbers
+        return self._spt_numbers
 
     @spt_numbers.setter
     def spt_numbers(self, __val: Sequence[float]):
         if not __val:
             err_msg = "spt_numbers requires at least one SPT N-value"
             raise StatisticsError(err_msg)
-        self._corrected_spt_numbers = __val
+        self._spt_numbers = __val
 
     @round_(ndigits=2)
     def weighted_average(self) -> float:
