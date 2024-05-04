@@ -49,7 +49,7 @@ class _SoilGradation(NamedTuple):
     d_30: float
     d_60: float
 
-    ERR_MSG = "d_10, d_30, and d_60 cannot be 0"
+    ERR_MSG: str = "d_10, d_30, and d_60 cannot be 0"
 
     @property
     @round_(ndigits=2)
