@@ -1,0 +1,20 @@
+********************************
+``geolysis`` 0.3.0 Release notes
+********************************
+
+``geolysis`` **0.3.0** is an alpha release version. The 
+python versions supported are 3.10 - 3.12.
+
+Changed
+=======
+
+- The overall API has changed from version 0.2.0 to 0.3.0.
+  Check out the `API docs <https://geolysis.rtfd.io/en/latest>`_ 
+  if you are upgrading from 0.2.0 or new to ``geolysis``.
+
+Added
+=====
+
+- All the features available in 0.2.0 are still available
+  in the 0.3.0 release, but the API for accessing them has 
+  changed.
