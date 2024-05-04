@@ -29,7 +29,7 @@ and modeling.
 
 - Settlement analysis
 
-`geolysis` runs on python 3.10 - 3.12.
+`geolysis` runs on Python 3.10 - 3.12.
 
 ## Project Links
 
