@@ -5,27 +5,17 @@
 ``geolysis`` **0.2.0** is a pre-release version. The python
 versions supported are 3.10 - 3.12.
 
-
 Features
 ========
 
-- Performing soil classification using ``USCS`` and ``AASHTO`` 
-  standards.
-- Correcting Standard Penetration Number (SPT) N-values using 
-  various correction methods such as ``energy correction``, 
-  ``overburden pressure correction`` and ``dilatancy correction``.
-  Also, analysing SPT N-values and finding a representative SPT
-  N-value from the foundation influence zone can be performed
-  using ``SPT corrected weightage average`` and 
-  ``SPT uncorrected average``.
-- Allowable Bearing Capacity can be performed using bearing
-  capacity theories established by ``Bowles (1997)``,
-  ``Meyerhof (1956)``, and ``Terzaghi (1948)``.
-- Estimating soil parameters such as ``soil unit weight``
-  (moist, saturated, submerged), ``compression index``, ``soil
-  friction angle``, and ``undrained shear strength`` from other
-  parameters such as ``SPT N60``, ``liquid limit``, ``void ratio``
-  etc.
+- Soil classification (``AASHTO``, ``USCS``)
+- Standard Penetration Test corrections and analysis (``Energy Correction``,
+  ``Overburden Pressure Corrections``, ``Dilatancy Correction``,
+  ``SPT N-Design``)
+- Allowable Bearing Capacity Analysis (``Bowles (1997)``, ``Meyerhof (1956)``,
+  ``Terzaghi (1948)``)
+- Estimating soil parameters (``Soil Unit Weight``, ``Compression Index``,
+  ``Internal Angle of Friction``, ``Undrained Shear Strength``)
 
 Contributors
 ============
