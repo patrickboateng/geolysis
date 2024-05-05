@@ -8,7 +8,7 @@ Installation
 We recommend using the latest version of python. ``geolysis`` supports
 python 3.10 and newer. We also recommend using a `virtual environment 
 <https://packaging.python.org/en/latest/tutorials/installing-packages/#creating-virtual-environments>`_
-in order to isolate your project dependencies from other projects and 
+in order to isolate your project dependencies from other projects and
 the system.
 
 ``geolysis`` can be installed via `pip <https://pypi.org/project/geolysis>`_ 
@@ -59,39 +59,3 @@ or, from the command line:
 
 You'll see the version number if ``geolysis`` is installed and an
 error message otherwise.
-
-Importing
-=========
-
-``geolysis`` can be imported as follows: ::
-
-    >>> import geolysis as gl
-
-Most functions/classes of ``geolysis`` are found within submodules: ::
-
-    >>> spt_corr = gl.spt.SPTCorrections()
-
-A list of submodules and functions is found on the 
-:doc:`API Reference </reference/geolysis/index>`  page.
-
-The :mod:`geolysis.spt` submodule provides a set of functions and 
-classes for analyzing and correcting SPT N-values. ::
-
-    >>> corrected_spt_n_vals = [7.0, 15.0, 18.0]
-    >>> gl.spt.weighted_avg_spt_n_val(corrected_spt_n_vals)
-    9.0
-
-It is recommended to import submodules as follows: ::
-
-    >>> from <pkg> import <submodule>
-    >>> from geolysis import spt
-
-Also it is recommended to import functions/classes as follows: ::
-
-    >>> from <pkg>.<submodule> import function, class
-    >>> from geolysis.spt import weighted_avg_spt_n_val, SPTCorrections
-
-Or: ::
-
-    >>> from <pkg>.<subpkg>.<submodule> import object
-    >>> from geolysis.bearing_capacity.abc import BowlesABC1997
