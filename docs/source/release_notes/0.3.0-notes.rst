@@ -1,20 +1,44 @@
-********************************
-``geolysis`` 0.3.0 Release notes
-********************************
+************************
+May 2024 (Version 0.3.0)
+************************
 
-``geolysis`` **0.3.0** is an alpha release version. The 
-python versions supported are 3.10 - 3.12.
+:Editor: Patrick Boateng
 
-Changed
-=======
+Welcome to the May 2024 release of ``geolysis``. ``geolysis`` 
+0.3.0 is an alpha release version. 
+
+Python Versions Supported 
+=========================
+
+The Python versions supported are:
+
+- `3.10 <https://docs.python.org/3/whatsnew/3.10.html>`_
+- `3.11 <https://docs.python.org/3/whatsnew/3.11.html>`_
+- `3.12 <https://docs.python.org/3/whatsnew/3.12.html>`_
+
+Summary - Release Highlights
+============================
 
 - The overall API has changed from version 0.2.0 to 0.3.0.
   Check out the `API docs <https://geolysis.rtfd.io/en/latest>`_ 
   if you are upgrading from 0.2.0 or new to ``geolysis``.
 
-Added
-=====
-
 - All the features available in 0.2.0 are still available
   in the 0.3.0 release, but the API for accessing them has 
   changed.
+
+New Features
+============
+
+- There were no new updates in the 0.3.0 release. All features 
+  available in version 0.2.0 has been deprecated and removed.
+
+- The overall API has changed from version 0.2.0 to 0.3.0.
+  Check out the `API docs <https://geolysis.rtfd.io/en/latest>`_ 
+  if you are upgrading from 0.2.0 or new to ``geolysis``.
+
+Thank You
+=========
+
+Last but certainly not least, a big *Thank You* to all the 
+contributors of ``geolysis``.

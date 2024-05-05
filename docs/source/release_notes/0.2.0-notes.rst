@@ -1,12 +1,29 @@
-********************************
-``geolysis`` 0.2.0 Release notes
-********************************
+*****************************
+February 2024 (Version 0.2.0)
+*****************************
 
-``geolysis`` **0.2.0** is a pre-release version. The python
-versions supported are 3.10 - 3.12.
+:Editor: Patrick Boateng
 
-Features
-========
+.. warning:: 
+
+    This version has been deprecated and is not recommended
+    for use in any project.
+
+Welcome to the February 2024 and the first release of 
+``geolysis``. ``geolysis`` 0.2.0 is a **pre-release** 
+version. 
+
+Python Versions Supported 
+=========================
+
+The Python versions supported are:
+
+- `3.10 <https://docs.python.org/3/whatsnew/3.10.html>`_
+- `3.11 <https://docs.python.org/3/whatsnew/3.11.html>`_
+- `3.12 <https://docs.python.org/3/whatsnew/3.12.html>`_
+
+Summary - Release Highlights
+============================
 
 - Soil classification (``AASHTO``, ``USCS``)
 - Standard Penetration Test corrections and analysis (``Energy Correction``,
@@ -21,3 +38,9 @@ Contributors
 ============
 
 - Patrick Boateng
+
+Thank You
+=========
+
+Last but certainly not least, a big *Thank You* to all the 
+contributors of ``geolysis``.
