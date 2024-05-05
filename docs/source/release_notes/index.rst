@@ -5,5 +5,5 @@ Release Notes
 .. toctree::
     :maxdepth: 1
 
-    geolysis 0.2.0 release notes <0.2.0-notes>
-    geolysis 0.3.0 release notes <0.3.0-notes>
+    0.2.0 release notes [Feb 2024] <0.2.0-notes>
+    0.3.0 release notes [May 2024] <0.3.0-notes>
