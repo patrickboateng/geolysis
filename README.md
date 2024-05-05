@@ -25,11 +25,8 @@
 `geolysis` is an open-source software for geotechnical analysis
 and modeling.
 
-**Features to include in upcoming versions:**
-
-- Settlement analysis
-
-`geolysis` runs on Python 3.10 - 3.12.
+Check out the [release notes](https://geolysis.rtfd.io/release_notes/index.html)
+for features.
 
 ## Project Links
 
@@ -91,8 +88,8 @@ USCS Classification
 ```python
 
 >>> from geolysis.soil_classifier import USCS
->>> uscs_cls = USCS(liquid_limit=34.1, plastic_limit=21.1, fines=47.88,
-...                 sand=37.84, gravel=14.8)
+>>> uscs_cls = USCS(liquid_limit=34.1, plastic_limit=21.1,
+...                 fines=47.88, sand=37.84, gravel=14.8)
 >>> uscs_cls.soil_class()
 'SC'
 >>> uscs_cls.soil_desc()
