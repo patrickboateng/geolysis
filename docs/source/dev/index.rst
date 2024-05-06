@@ -1,10 +1,10 @@
-.. include:: ../../CONTRIBUTING.md
-    :parser: myst_parser.sphinx_
+Contributor's Guide
+===================
 
 .. toctree:: 
-    :maxdepth: 1
-    :hidden:
+    :maxdepth: 2
 
-    Code of conduct <code_of_conduct>
-    
-.. Code documentation <how_to_doc_code>
+    Change History          <changes>
+    Code of Conduct         <code_of_conduct>
+    Contribution Guidelines <contributing>
+    Style Guide             <style_guide>
