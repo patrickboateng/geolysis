@@ -1,6 +1,6 @@
-************************
-May 2024 (Version 0.3.0)
-************************
+****************
+May 2024 [0.3.0]
+****************
 
 :Editor: Patrick Boateng
 
@@ -37,8 +37,8 @@ New Features
   Check out the `API docs <https://geolysis.rtfd.io/en/latest>`_ 
   if you are upgrading from 0.2.0 or new to ``geolysis``.
 
-Features to Include in Upcoming Versions
-========================================
+Upcoming Features
+=================
 
 - Settlement Analysis
 
