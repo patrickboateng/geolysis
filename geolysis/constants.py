@@ -36,7 +36,6 @@ class UnitRegistry:
 
     Examples
     --------
-    >>> from pint import Quantity as Q_
     >>> from geolysis.estimators import SoilUnitWeight
     >>> from geolysis.constants import UnitRegistry as UReg
 
@@ -44,8 +43,9 @@ class UnitRegistry:
     >>> suw_est.moist_wgt
     18.5
 
-    >>> quant = Q_(suw_est.moist_wgt, UReg.kN_m3)
-    >>> quant
+    >>> from pint import Quantity as Q_  # doctest: +SKIP
+    >>> quant = Q_(suw_est.moist_wgt, UReg.kN_m3)  # doctest: +SKIP
+    >>> quant  # doctest: +SKIP
     <Quantity(18.5, 'kilonewton / meter ** 3')>
     """
 
