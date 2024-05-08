@@ -35,7 +35,7 @@ class SPT:
 
     Attributes
     ----------
-    corrected_spt_n_vals : Sequence[float]
+    spt_numbers : Sequence[float]
 
     Raises
     ------
