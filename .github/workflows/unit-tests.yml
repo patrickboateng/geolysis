@@ -44,6 +44,7 @@ jobs:
       - name: Test with coverage.py
         run: |
           coverage run -m --rcfile=pyproject.toml pytest 
+          coverage report -m
           coverage lcov
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
