@@ -1,10 +1,10 @@
-# geolysis Contribution Guidelines
+# Contribution Guidelines
 
 Thank you for your interest in contributing to `geolysis`!
 We welcome contributions from the community to help make this
 project better. Before you get started, please take a moment
 to read and understand these contribution guidelines.
-Following these guidelines helps maintain a productive and
+Following these guidelines helps maintain a productive and a
 welcoming community for everyone involved.
 
 Not a coder? Not a problem! `geolysis` is multi-faceted, and
@@ -15,6 +15,7 @@ like to get help with:
 - Developing educational content
 - Website design and development
 - Writing technical documentation
+- Branding (logo design etc.)
 
 This project has a [code of conduct](code_of_conduct) that we
 expect all contributors to adhere to. Please read and follow
@@ -54,18 +55,19 @@ these steps:
 
 1. Check the [existing issues](https://github.com/patrickboateng/geolysis/issues)
    to see if the issue has already been reported.
-1. If not, create a new issue, describing the problem in detail. Include steps
-   to reproduce if possible and any relevant error messages or logs.
+1. If not, create a new issue, describing the problem in detail.
+   Include steps to reproduce if possible and any relevant error
+   messages.
 
 ### Suggesting Enhancements
 
-If you have an idea for an enhancement or a new feature, please follow these
-steps:
+If you have an idea for an enhancement or a new feature, please
+follow these steps:
 
 1. Check the [existing issues](https://github.com/patrickboateng/geolysis/issues)
    to see if the enhancement has already been suggested.
-1. If not, create a new issue, describing the enhancement in detail. Be clear
-   about why it's valuable and how it should work.
+1. If not, create a new issue, describing the enhancement in detail.
+   Be clear about why it's valuable and how it should work.
 
 ### Development process - summary
 
@@ -83,7 +85,7 @@ these steps:
      git clone https://github.com/your-username/geolysis.git
      ```
 
-   - Change the directory:
+   - Move into the `geolysis` directory:
 
      ```sh
      cd geolysis
@@ -117,14 +119,17 @@ these steps:
      git checkout -b your-branch-name
      ```
 
-   - Make your changes, following the [coding guidelines](#coding-guidelines).
+   - Make your changes, following the [style guide](./style_guide.rst).
+     _Make sure to read the style guide before contributing code to the
+     `geolysis` project_.
 
-   - Commit locally as you porgress (`git add` and `git commit`).
+   - Commit locally as you progress (`git add` and `git commit`).
      Use a [properly formatted](https://cbea.ms/git-commit/)
      commit message, write tests that fail before your change and
      pass afterward (both new and existing tests), run all
      [tests locally](#testing). Be sure to document any changed
-     behavior in docstrings, keeping to `sphinx` docstring standard.
+     behavior in docstrings, keeping to the
+     [style guide](style_guide.rst#code-documentation).
 
 1. To submit your contribution:
 
@@ -153,44 +158,26 @@ these steps:
      merging. Approval means the core team member has carefully
      reviewed the changes, and the PR is ready for merging.
 
-## Coding Guidelines
-
-- Set up your editor to follow [PEP 8](https://www.python.org/dev/peps/pep-0008/)
-  (remove trailing white space, no tabs, etc.). Check code with
-  pylint/flake8.
-
-- Use the following import conventions
-
-  ```py
-  import geolysis as gl
-  ```
-
-- All code should have tests (see [testing](#testing) below for more
-  details).
-- All code should be [documented](how_to_doc_code.rst).
-- No changes are ever merged without review and approval by a core
-  team member. Please ask politely on the PR if you get no response
-  to your pull request within a week.
-
 ## Testing
 
 Running geolysis test suite locally requires some additional
 packages, such as [pytest](https://pytest.org/) and
 [coverage.py](https://coverage.readthedocs.io/en/7.3.2/)
 
-- To run the tests, run:
+- To run the tests, run the pytest command with no arguments as
+  follows:
 
   ```sh
-  pytest tests
+  pytest
   ```
 
 - To measure the test coverage, run:
 
   ```sh
-  coverage run -m pytest tests
+  coverage run --rcfile=pyproject.toml -m pytest
   ```
 
-- Use `coverage report` to report on the results:
+- Use `coverage report` to view report on the results:
 
   ```sh
   coverage report -m
@@ -210,8 +197,7 @@ packages, such as [pytest](https://pytest.org/) and
 
 Improvements to documentation are always appreciated. If you
 make changes to the code, please update the documentation as
-needed. See [code documentation](how_to_doc_code.rst)
-for more information.
+needed. See [style guide](style_guide.rst) for more information.
 
 ## Community
 
@@ -225,6 +211,8 @@ collaborate with other contributors:
 By contributing to this project, you agree that your contributions
 will be licensed under the project's
 [LICENSE](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt).
+
+## Thank You
 
 Thank you for your interest in contributing to `geolysis`! We appreciate
 your help in making this project a success.
