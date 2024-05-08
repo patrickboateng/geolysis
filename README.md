@@ -4,7 +4,7 @@
 [license_url]: https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt
 
 <h1 align="center">
-<img src="docs/source/_static/geolysis_logo.png" alt="logo" width="300">
+<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/source/_static/geolysis_logo.png" alt="logo" width="300">
 </h1><br>
 
 <div align="center">
