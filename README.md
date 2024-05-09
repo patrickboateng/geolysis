@@ -3,7 +3,7 @@
 [changelog_url]: https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md
 [license_url]: https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt
 
-<h1 align="center" style="font-size: 300px;">GeoLysis</h1>
+# GeoLysis
 
 <div align="center">
 
