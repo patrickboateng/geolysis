@@ -1,3 +1,4 @@
+import unittest
 from typing import Sequence
 
 import pytest
@@ -7,43 +8,43 @@ from geolysis.soil_classifier import AtterbergLimits as AL
 from geolysis.soil_classifier import PSDAggSumError
 
 
-class TestAtterbergLimits:
-    @classmethod
-    def setup_class(cls):
-        cls.atterberg_limits = AL(liquid_limit=25, plastic_limit=15)
+class TestAL(unittest.TestCase):
 
-    def test_plasticity_index(self):
+    def setUp(self) -> None:
+        self.atterberg_limits = AL(liquid_limit=25, plastic_limit=15)
+
+    def testPlasticityIndex(self):
         plasticity_index = self.atterberg_limits.plasticity_index
-        assert plasticity_index == 10
+        self.assertAlmostEqual(plasticity_index, 10)
 
-    def test_liquidity_index(self):
+    def testLiquidityIndex(self):
         liquidity_index = self.atterberg_limits.liquidity_index(nmc=20)
-        assert liquidity_index == 50
+        self.assertAlmostEqual(liquidity_index, 50)
 
-    def test_consistency_index(self):
+    def testConsistencyIndex(self):
         consistency_index = self.atterberg_limits.consistency_index(nmc=20)
-        assert consistency_index == 50
+        self.assertAlmostEqual(consistency_index, 50)
 
 
-class TestParticleSizeDistribution:
-    @classmethod
-    def setup_class(cls):
-        cls.psd = PSD(
+class TestPSD(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.psd = PSD(
             fines=0, sand=0, gravel=100, d_10=0.115, d_30=0.53, d_60=1.55
         )
 
-    def test_coeff_of_uniformity(self):
-        assert self.psd.coeff_of_uniformity == 13.48
+    def testCoeffOfUniformity(self):
+        self.assertAlmostEqual(self.psd.coeff_of_uniformity, 13.4783)
 
-    def test_coeff_of_curvature(self):
-        assert self.psd.coeff_of_curvature == 1.58
+    def testCoeffOfCurvature(self):
+        self.assertAlmostEqual(self.psd.coeff_of_curvature, 1.5759)
 
-    def test_PSDError(self):
-        with pytest.raises(PSDAggSumError):
+    def testPSDError(self):
+        with self.assertRaises(PSDAggSumError):
             PSD(fines=30, sand=30, gravel=30)
 
 
-class TestAASHTOClassificationSystem:
+class TestAASHTO:
     @pytest.mark.parametrize(
         "soil_params,clf",
         [
@@ -80,7 +81,7 @@ class TestAASHTOClassificationSystem:
         assert asshto_classifier.soil_class() == clf
 
 
-class TestUnifiedSoilClassificationSystem:
+class TestUSCS:
     @pytest.mark.parametrize(
         "al,psd,size_dist,clf",
         [
