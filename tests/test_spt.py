@@ -36,7 +36,8 @@ class TestBazaraaPeckOPC(unittest.TestCase):
         self.assertEqual(cor.correction, 1.0)
 
         cor.eop = 54.8
-        self.assertAlmostEqual(cor.correction, 1.22)
+        self.assertAlmostEqual(cor.correction, 1.2156)
+        self.assertAlmostEqual(cor.corrected_spt_number, 13.8578)
 
 
 class TestPeckOPC(unittest.TestCase):
