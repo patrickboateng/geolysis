@@ -3,9 +3,7 @@
 [changelog_url]: https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md
 [license_url]: https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt
 
-<h1 align="center">
-<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/source/_static/geolysis_logo.png" alt="logo" width="300">
-</h1><br>
+# GeoLysisCore
 
 <div align="center">
 
@@ -22,8 +20,18 @@
 
 #
 
-`geolysis` is an open-source software for geotechnical analysis
-and modeling.
+`GeoLysisCore` is an open-source software that provides features for
+analyzing geotechnical results obtained from laboratory and field
+tests. Some of the features implemented include soil classification,
+standard penetration test analysis (such as SPT $N_{design}$ and SPT
+N-value corrections),and calculating the allowable bearing capacity of
+soils from Standard Penetration Test N-values. There are more features
+underway, which include settlement analysis, ultimate bearing capacity
+analysis, etc.
+
+`GeoLysisCore` is the foundation application on which other parts of the
+application will depend. Developers can also use `GeoLysisCore` to power
+their applications.
 
 Check out the [release notes](https://geolysis.rtfd.io/release_notes/index.html)
 for features.
@@ -54,11 +62,17 @@ for features.
 
 ## Motivation
 
-The motivation behind `geolysis` is to provide free software
-to assist geotechnical engineers in their day-to-day work and
-to expose civil engineering students (especially geotechnical
-students) to tools that can make them industry-ready geotechnical
-engineers right from college.
+`GeoLysisCore` is a free software package designed specifically to
+assist developers in building applications that can solve complex
+geotechnical problems. Whether you're working on soil mechanics,
+rock mechanics, or any other geotechnical field, `GeoLysisCore`
+provides a powerful set of tools that can help you design and
+develop robust solutions. With an intuitive API and a wide range
+of features, this software is an essential tool for anyone who
+needs to work with geotechnical data on a regular basis. Whether
+you're a seasoned geotechnical engineer or a new developer just
+getting started in the field, `GeoLysisCore` is the ideal solution
+for all your software development needs.
 
 ## Installation
 
@@ -128,14 +142,14 @@ terms and conditions of this license.
 
 ## Governance of this project
 
-`geolysis` is still developing relatively rapidly, so please be
+`GeoLysisCore` is still developing relatively rapidly, so please be
 patient if things change or features iterate and change quickly.
-Once `geolysis` hits 1.0, it will slow down considerably.
+Once `GeoLysisCore` hits 1.0, it will slow down considerably.
 
 ## Contact Information
 
 - [**LinkedIn**](https://linkedin.com/in/patrickboateng/)
 
 > [!IMPORTANT]
-> For questions or comments about `geolysis`, please ask them in the
+> For questions or comments about `GeoLysisCore`, please ask them in the
 > [discussions forum](https://github.com/patrickboateng/geolysis/discussions)
