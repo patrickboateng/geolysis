@@ -1,13 +1,25 @@
 import unittest
 
+import pytest
+
 from geolysis.foundation import (
     CircularFooting,
+    FootingCreationError,
     FootingSize,
     FoundationSize,
     Shape,
     SquareFooting,
     create_footing,
 )
+
+
+def test_create_footing():
+
+    with pytest.raises(FootingCreationError):
+        create_footing(thickness=0.5, width=1.3, footing_shape=Shape.RECTANGLE)
+
+    with pytest.raises(FootingCreationError):
+        create_footing(thickness=0.5, width=1.3, footing_shape="hexagonal")  # type: ignore
 
 
 class TestCircularFooting(unittest.TestCase):
