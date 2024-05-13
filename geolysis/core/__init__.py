@@ -1,5 +1,5 @@
 from geolysis.core import (
-    bearing_capacity,
+    abc_4_cohl_soils,
     constants,
     estimators,
     foundation,

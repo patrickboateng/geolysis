@@ -1,6 +1,6 @@
 import unittest
 
-from geolysis.core.bearing_capacity.abc_4_cohl_soils import (
+from geolysis.core.abc_4_cohl_soils import (
     BowlesABC,
     MeyerhofABC,
     SettlementError,
