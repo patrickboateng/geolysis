@@ -1,12 +1,12 @@
 import unittest
 
-from geolysis.bearing_capacity.abc_4_cohl_soils import (
+from geolysis.core.bearing_capacity.abc_4_cohl_soils import (
     BowlesABC,
     MeyerhofABC,
     SettlementError,
     TerzaghiABC,
 )
-from geolysis.foundation import Shape, create_foundation
+from geolysis.core.foundation import Shape, create_foundation
 
 
 class TestBowlesABC(unittest.TestCase):

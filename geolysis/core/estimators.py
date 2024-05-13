@@ -2,13 +2,8 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Protocol
 
-from geolysis.constants import ERROR_TOL
-
-# from geolysis.constants import UnitRegistry as ureg
-from geolysis.utils import arctan, isclose, round_
-
-# from typing import Optional
-
+from .constants import ERROR_TOL
+from .utils import arctan, isclose, round_
 
 __all__ = [
     "SoilUnitWeight",
@@ -27,50 +22,8 @@ class EstimatorError(ValueError):
 
 
 @dataclass
-class SoilUnitWeight:
-    r"""Estimates the ``moist``, ``saturated`` and ``submerged`` unit weight of
-    soil sample from ``SPT N60``.
-
-    Parameters
-    ----------
-    std_spt_number : float
-        SPT N-value standardized for field procedures considering 60% energy.
-
-    Attributes
-    ----------
-    std_spt_number : float
-    moist_wgt : float
-    saturated_wgt : float
-    submerged_wgt : float
-
-    Notes
-    -----
-    The following formulae below are used for estimating the ``moist``, ``saturated``,
-    and ``submerged`` unit weight respectively.
-
-    .. math::
-
-        \gamma_{moist} &= 16.0 + 0.1 \cdot N_{60}
-
-        \gamma_{sat} &= 16.8 + 0.15 \cdot N_{60}
-
-        \gamma_{sub} &= 8.8 + 0.01 \cdot N_{60}
-
-    Examples
-    --------
-    >>> from geolysis.estimators import SoilUnitWeight
-
-    >>> suw_est = SoilUnitWeight(std_spt_number=15)
-    >>> suw_est.moist_wgt
-    17.5
-    >>> suw_est.saturated_wgt
-    19.05
-    >>> suw_est.submerged_wgt
-    8.95
-    """
-
-    def __init__(self, std_spt_number: float) -> None:
-        self.std_spt_number = std_spt_number
+class MoistUnitWeight:
+    std_spt_number: float
 
     @property
     @round_
@@ -78,6 +31,11 @@ class SoilUnitWeight:
         """Return the ``moist unit weight`` for cohesionless soils.
         |rarr| :math:`kN/m^3`"""
         return 16.0 + 0.1 * self.std_spt_number
+
+
+@dataclass
+class SaturatedUnitWeight:
+    std_spt_number: float
 
     @property
     @round_
@@ -87,6 +45,11 @@ class SoilUnitWeight:
         """
         return 16.8 + 0.15 * self.std_spt_number
 
+
+@dataclass
+class SubmergedUnitWeight:
+    std_spt_number: float
+
     @property
     @round_
     def submerged_wgt(self) -> float:
@@ -94,6 +57,75 @@ class SoilUnitWeight:
         |rarr| :math:`kN/m^3`
         """
         return 8.8 + 0.01 * self.std_spt_number
+
+
+# @dataclass
+# class SoilUnitWeight:
+#     r"""Estimates the ``moist``, ``saturated`` and ``submerged`` unit weight
+#     of soil sample from ``SPT N60``.
+
+#     Parameters
+#     ----------
+#     std_spt_number : float
+#         SPT N-value standardized for field procedures considering 60% energy.
+
+#     Attributes
+#     ----------
+#     std_spt_number : float
+#     moist_wgt : float
+#     saturated_wgt : float
+#     submerged_wgt : float
+
+#     Notes
+#     -----
+#     The following formulae below are used for estimating the ``moist``, ``saturated``,
+#     and ``submerged`` unit weight respectively.
+
+#     .. math::
+
+#         \gamma_{moist} &= 16.0 + 0.1 \cdot N_{60}
+
+#         \gamma_{sat} &= 16.8 + 0.15 \cdot N_{60}
+
+#         \gamma_{sub} &= 8.8 + 0.01 \cdot N_{60}
+
+#     Examples
+#     --------
+#     >>> from geolysis.estimators import SoilUnitWeight
+
+#     >>> suw_est = SoilUnitWeight(std_spt_number=15.0)
+#     >>> suw_est.moist_wgt
+#     17.5
+#     >>> suw_est.saturated_wgt
+#     19.05
+#     >>> suw_est.submerged_wgt
+#     8.95
+#     """
+
+#     std_spt_number: float
+
+#     @property
+#     @round_
+#     def moist_wgt(self) -> float:
+#         """Return the ``moist unit weight`` for cohesionless soils.
+#         |rarr| :math:`kN/m^3`"""
+#         return 16.0 + 0.1 * self.std_spt_number
+
+#     @property
+#     @round_
+#     def saturated_wgt(self) -> float:
+#         """Return the ``saturated unit weight`` for cohesive soils.
+#         |rarr| :math:`kN/m^3`
+#         """
+#         return 16.8 + 0.15 * self.std_spt_number
+
+#     @property
+#     @round_
+#     def submerged_wgt(self) -> float:
+#         """Return the ``submerged unit weight`` for cohesionless soils.
+#         |rarr| :math:`kN/m^3`
+#         """
+#         return 8.8 + 0.01 * self.std_spt_number
 
 
 class _CompressionIndexEst(Protocol):
@@ -125,7 +157,7 @@ class TerzaghiCompressionIndex:
 
     Examples
     --------
-    >>> from geolysis.estimators import TerzaghiCompressionIndex
+    >>> from geolysis.core.estimators import TerzaghiCompressionIndex
     >>> comp_idx_est = TerzaghiCompressionIndex(liquid_limit=40.0)
     >>> comp_idx_est.compression_index
     0.27
@@ -134,7 +166,7 @@ class TerzaghiCompressionIndex:
     liquid_limit: float
 
     @property
-    @round_(ndigits=3)
+    @round_
     def compression_index(self) -> float:
         """Return the compression index of soil."""
         return 0.009 * (self.liquid_limit - 10.0)
@@ -162,7 +194,7 @@ class SkemptonCompressionIndex:
 
     Examples
     --------
-    >>> from geolysis.estimators import SkemptonCompressionIndex
+    >>> from geolysis.core.estimators import SkemptonCompressionIndex
     >>> comp_idx_est = SkemptonCompressionIndex(liquid_limit=40.0)
     >>> comp_idx_est.compression_index
     0.21
@@ -171,7 +203,7 @@ class SkemptonCompressionIndex:
     liquid_limit: float
 
     @property
-    @round_(ndigits=3)
+    @round_
     def compression_index(self) -> float:
         """Return the compression index of soil."""
         return 0.007 * (self.liquid_limit - 10.0)
@@ -199,16 +231,16 @@ class HoughCompressionIndex:
 
     Examples
     --------
-    >>> from geolysis.estimators import HoughCompressionIndex
+    >>> from geolysis.core.estimators import HoughCompressionIndex
     >>> comp_idx_est = HoughCompressionIndex(void_ratio=0.78)
     >>> comp_idx_est.compression_index
-    0.148
+    0.1479
     """
 
     void_ratio: float
 
     @property
-    @round_(ndigits=3)
+    @round_
     def compression_index(self) -> float:
         """Return the compression index of soil."""
         return 0.29 * (self.void_ratio - 0.27)
@@ -243,17 +275,17 @@ class WolffSoilFrictionAngle:
 
     Examples
     --------
-    >>> from geolysis.estimators import WolffSoilFrictionAngle
+    >>> from geolysis.core.estimators import WolffSoilFrictionAngle
 
-    >>> sfa_est = WolffSoilFrictionAngle(std_spt_number=15)
+    >>> sfa_est = WolffSoilFrictionAngle(std_spt_number=15.0)
     >>> sfa_est.soil_friction_angle
-    31.48
+    31.4785
     """
 
     std_spt_number: float
 
     @property
-    @round_(ndigits=2)
+    @round_
     def soil_friction_angle(self) -> float:
         """Return the internal angle of friction of soil."""
         return (
@@ -275,7 +307,8 @@ class KullhawyMayneSoilFrictionAngle:
         Effective overburden pressure, ``eop`` should be in the same unit as
         ``atm_pressure``.
     atm_pressure : float, unit = :math:`kN/m^2`
-        Atmospheric pressure, ``atm_pressure`` should be in the same unit as ``eop``.
+        Atmospheric pressure, ``atm_pressure`` should be in the same unit as
+        ``eop``.
 
     Attributes
     ----------
@@ -283,6 +316,11 @@ class KullhawyMayneSoilFrictionAngle:
     eop : float
     atm_pressure : float
     soil_friction_angle : float
+
+    Raises
+    ------
+    EstimatorError
+        Raised when ``atm_pressure`` is close to zero.
 
     Notes
     -----
@@ -295,17 +333,12 @@ class KullhawyMayneSoilFrictionAngle:
 
     Examples
     --------
-    >>> from geolysis.estimators import KullhawyMayneSoilFrictionAngle
+    >>> from geolysis.core.estimators import KullhawyMayneSoilFrictionAngle
 
-    >>> sfa_est = KullhawyMayneSoilFrictionAngle(std_spt_number=15, eop=103.8,
+    >>> sfa_est = KullhawyMayneSoilFrictionAngle(std_spt_number=15.0, eop=103.8,
     ...                                          atm_pressure=101.3)
     >>> sfa_est.soil_friction_angle
-    37.41
-
-    >>> sfa_est.atm_pressure = 0.0
-    Traceback (most recent call last):
-        ...
-    EstimatorError: atm_pressure = 0.0 cannot be close to 0.0
+    37.4103
     """
 
     def __init__(self, std_spt_number: float, eop: float, atm_pressure: float):
@@ -326,7 +359,7 @@ class KullhawyMayneSoilFrictionAngle:
         self._atm_pressure = __val
 
     @property
-    @round_(ndigits=3)
+    @round_
     def soil_friction_angle(self) -> float:
         """Return the internal angle of friction of soil."""
         angle = self.std_spt_number / (
@@ -361,7 +394,7 @@ class StroudUndrainedShearStrength:
     Raises
     ------
     EstimatorError
-        If ``k`` is not in the specified range. :math:`3.5 \le k \le 6.5`
+        Raised If ``k`` is not in the specified range. :math:`3.5 \le k \le 6.5`
 
     Notes
     -----
@@ -371,15 +404,11 @@ class StroudUndrainedShearStrength:
 
     Examples
     --------
-    >>> from geolysis.estimators import StroudUndrainedShearStrength
+    >>> from geolysis.core.estimators import StroudUndrainedShearStrength
 
-    >>> uss_est = StroudUndrainedShearStrength(std_spt_number=10)
+    >>> uss_est = StroudUndrainedShearStrength(std_spt_number=10.0)
     >>> uss_est.undrained_shear_strength
     35.0
-    >>> uss_est.k = 7
-    Traceback (most recent call last):
-        ...
-    EstimatorError: k = 7 should be in the range 3.5 <= k <= 6.5
     """
 
     def __init__(self, std_spt_number: float, k=3.5) -> None:
@@ -399,7 +428,7 @@ class StroudUndrainedShearStrength:
         self._k = __val
 
     @property
-    @round_(ndigits=2)
+    @round_
     def undrained_shear_strength(self) -> float:
         """Return the undrained shear strength of soil."""
         return self.k * self.std_spt_number
@@ -422,11 +451,6 @@ class SkemptonUndrainedShearStrength:
     plasticity_index : float
     undrained_shear_strength : float
 
-    Raises
-    ------
-    EstimatorError
-        If ``k`` is not in the specified range. :math:`3.5 \le k \le 6.5`
-
     Notes
     -----
     Undrained Shear Strength is given by the formula:
@@ -440,17 +464,17 @@ class SkemptonUndrainedShearStrength:
 
     Examples
     --------
-    >>> from geolysis.estimators import SkemptonUndrainedShearStrength
+    >>> from geolysis.core.estimators import SkemptonUndrainedShearStrength
     >>> uss_est = SkemptonUndrainedShearStrength(eop=76.8, plasticity_index=25.7)
     >>> uss_est.undrained_shear_strength
-    15.75
+    15.7509
     """
 
     eop: float
     plasticity_index: float
 
     @property
-    @round_(ndigits=2)
+    @round_
     def undrained_shear_strength(self) -> float:
         """Return the undrained shear strength of soil."""
         return self.eop * (0.11 + 0.0037 * self.plasticity_index)

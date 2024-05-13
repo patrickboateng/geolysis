@@ -1,6 +1,6 @@
 import unittest
 
-from geolysis.estimators import (
+from geolysis.core.estimators import (
     EstimatorError,
     KullhawyMayneSoilFrictionAngle,
     StroudUndrainedShearStrength,

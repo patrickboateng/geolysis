@@ -1,5 +1,5 @@
-from geolysis.foundation import FoundationSize
-from geolysis.utils import round_
+from geolysis.core.foundation import FoundationSize
+from geolysis.core.utils import round_
 
 __all__ = ["BowlesABC", "MeyerhofABC", "TerzaghiABC"]
 
@@ -46,7 +46,7 @@ class BowlesABC:
 
         q_a(kPa) &= 19.16(N_1)_{55} f_d\left(\dfrac{S}{25.4}\right), \ B \ \le \ 1.2m
 
-        q_a(kPa) &= 11.8(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d
+        q_a(kPa) &= 11.98(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d
                     \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
 
     Allowable bearing capacity for ``raft/mat`` foundations:
@@ -59,8 +59,8 @@ class BowlesABC:
 
     Examples
     --------
-    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import BowlesABC
-    >>> from geolysis.foundation import create_foundation, Shape
+    >>> from geolysis.core.bearing_capacity.abc_4_cohl_soils import BowlesABC
+    >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape=Shape.SQUARE)
@@ -68,19 +68,9 @@ class BowlesABC:
     ...                        tol_settlement=20.0,
     ...                        foundation_size=foundation_size)
     >>> bowles_abc.abc_4_pad_foundation()
-    341.11
+    341.1083
     >>> bowles_abc.abc_4_mat_foundation()
-    213.28
-
-    >>> bowles_abc.f_width = 1.4
-    >>> bowles_abc.abc_4_pad_foundation()
-    316.29
-
-    >>> BowlesABC(corrected_spt_number=11.0, tol_settlement=30.0,
-    ...           foundation_size=foundation_size)
-    Traceback (most recent call last):
-        ...
-    SettlementError: tol_settlement should not be greater than 25.4.
+    213.2817
     """
 
     #: Maximum tolerable settlement. (mm)
@@ -134,7 +124,7 @@ class BowlesABC:
         """
         return self.corrected_spt_number
 
-    @round_(ndigits=2)
+    @round_
     def abc_4_pad_foundation(self) -> float:
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
@@ -150,7 +140,7 @@ class BowlesABC:
             * self.SR
         )
 
-    @round_(ndigits=2)
+    @round_
     def abc_4_mat_foundation(self) -> float:
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
@@ -203,27 +193,17 @@ class MeyerhofABC:
 
     Examples
     --------
-    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import MeyerhofABC
-    >>> from geolysis.foundation import create_foundation, Shape
+    >>> from geolysis.core.bearing_capacity.abc_4_cohl_soils import MeyerhofABC
+    >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape=Shape.SQUARE)
     >>> meyerhof_abc = MeyerhofABC(corrected_spt_number=17.0, tol_settlement=20.0,
     ...                            foundation_size=foundation_size)
     >>> meyerhof_abc.abc_4_pad_foundation()
-    213.64
+    213.6378
     >>> meyerhof_abc.abc_4_mat_foundation()
-    142.43
-
-    >>> meyerhof_abc.f_width = 1.4
-    >>> meyerhof_abc.abc_4_pad_foundation()
-    211.21
-
-    >>> MeyerhofABC(corrected_spt_number=15, tol_settlement=30.0,
-    ...             foundation_size=foundation_size)
-    Traceback (most recent call last):
-        ...
-    SettlementError: tol_settlement should not be greater than 25.4.
+    142.4252
     """
 
     #: Maximum tolerable settlement. (mm)
@@ -277,7 +257,7 @@ class MeyerhofABC:
         """
         return self.corrected_spt_number
 
-    @round_(ndigits=2)
+    @round_
     def abc_4_pad_foundation(self) -> float:
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
@@ -294,7 +274,7 @@ class MeyerhofABC:
             * self.SR
         )
 
-    @round_(ndigits=2)
+    @round_
     def abc_4_mat_foundation(self) -> float:
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
@@ -360,32 +340,19 @@ class TerzaghiABC:
 
     Examples
     --------
-    >>> from geolysis.bearing_capacity.abc_4_cohl_soils import TerzaghiABC
-    >>> from geolysis.foundation import create_foundation, Shape
+    >>> from geolysis.core.bearing_capacity.abc_4_cohl_soils import TerzaghiABC
+    >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape=Shape.SQUARE)
-    >>> terzaghi_abc = TerzaghiABC(corrected_spt_number=6, tol_settlement=20.0,
+    >>> terzaghi_abc = TerzaghiABC(corrected_spt_number=17, tol_settlement=20.0,
     ...                            water_depth=1.2, foundation_size=foundation_size)
     >>> terzaghi_abc.N_1_60
-    6
+    17
     >>> terzaghi_abc.abc_4_pad_foundation()
-    32.87
+    93.4574
     >>> terzaghi_abc.abc_4_mat_foundation()
-    21.91
-
-    >>> terzaghi_abc.f_width = 1.4
-    >>> terzaghi_abc.water_depth = 1.7
-    >>> terzaghi_abc.abc_4_pad_foundation()
-    32.26
-    >>> terzaghi_abc.abc_4_mat_foundation()
-    21.75
-
-    >>> TerzaghiABC(corrected_spt_number=15, tol_settlement=30.0,
-    ...             water_depth=1.8, foundation_size=foundation_size)
-    Traceback (most recent call last):
-        ...
-    SettlementError: tol_settlement should not be greater than 25.4.
+    62.3049
     """
 
     #: Maximum allowable settlement. (mm)
@@ -437,13 +404,13 @@ class TerzaghiABC:
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
     @property
-    @round_(ndigits=2)
+    @round_
     def FD(self):
         """Depth factor."""
         return min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
 
     @property
-    @round_(ndigits=2)
+    @round_
     def CW(self):
         """Water correction factor."""
         return (
@@ -452,7 +419,7 @@ class TerzaghiABC:
             else min(2 - self.water_depth / (2 * self.f_width), 2)
         )
 
-    @round_(ndigits=2)
+    @round_
     def abc_4_pad_foundation(self) -> float:
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
@@ -468,7 +435,7 @@ class TerzaghiABC:
             * self.SR
         )
 
-    @round_(ndigits=2)
+    @round_
     def abc_4_mat_foundation(self) -> float:
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`

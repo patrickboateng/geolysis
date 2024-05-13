@@ -1,6 +1,6 @@
 import unittest
 
-from geolysis.spt import (
+from geolysis.core.spt import (
     SPT,
     BazaraaPeckOPC,
     DilatancyCorrection,

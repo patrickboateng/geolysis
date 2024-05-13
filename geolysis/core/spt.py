@@ -3,8 +3,8 @@ from dataclasses import KW_ONLY, dataclass
 from statistics import StatisticsError
 from typing import Protocol, Sequence
 
-from geolysis.constants import ERROR_TOL
-from geolysis.utils import isclose, log10, mean, round_, sqrt
+from .constants import ERROR_TOL
+from .utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "SPT",
@@ -40,7 +40,7 @@ class SPT:
     Raises
     ------
     StatisticError
-        If ``spt_numbers`` is empty, StatisticError is raised.
+        Raised If ``spt_numbers`` is empty.
 
     Notes
     -----
@@ -56,20 +56,15 @@ class SPT:
 
     Examples
     --------
-    >>> from geolysis.spt import SPT
+    >>> from geolysis.core.spt import SPT
     >>> spt_numbers = [7.0, 15.0, 18.0]
     >>> spt_avg = SPT(spt_numbers=spt_numbers)
     >>> spt_avg.weighted_average()
-    9.37
+    9.3673
     >>> spt_avg.average()
-    13.33
+    13.3333
     >>> spt_avg.min()
     7.0
-
-    >>> SPT(spt_numbers=[])
-    Traceback (most recent call last):
-        ...
-    StatisticsError: spt_numbers requires at least one SPT N-value
     """
 
     def __init__(self, spt_numbers: Sequence[float]) -> None:
@@ -86,7 +81,7 @@ class SPT:
             raise StatisticsError(err_msg)
         self._spt_numbers = __val
 
-    @round_(ndigits=2)
+    @round_
     def weighted_average(self) -> float:
         """Calculates the weighted average of the corrected SPT N-values in the
         foundation influence zone.
@@ -110,14 +105,14 @@ class SPT:
 
         return sum_total / total_wgts
 
-    @round_(ndigits=2)
+    @round_
     def average(self) -> float:
         """Calculates the average of the corrected SPT N-values in the foundation
         influence zone.
         """
         return mean(self.spt_numbers)
 
-    @round_(ndigits=2)
+    @round_
     def min(self) -> float:
         """For ease in calculation, the lowest N-value from the influence zone can be
         taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
@@ -173,9 +168,11 @@ class EnergyCorrection:
     .. math::
         N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{ENERGY}
 
+    ``ENERGY``: 0.6, 0.55, etc
+
     Examples
     --------
-    >>> from geolysis.spt import EnergyCorrection
+    >>> from geolysis.core.spt import EnergyCorrection
     >>> energy_cor = EnergyCorrection(recorded_spt_number=30)
     >>> energy_cor.correction
     0.75
@@ -194,7 +191,7 @@ class EnergyCorrection:
     rod_length_correction = 0.75
 
     @property
-    @round_(ndigits=2)
+    @round_
     def correction(self) -> float:
         return (
             self.hammer_efficiency
@@ -204,7 +201,7 @@ class EnergyCorrection:
         ) / self.energy_percentage
 
     @property
-    @round_(ndigits=2)
+    @round_
     def corrected_spt_number(self) -> float:
         return self.correction * self.recorded_spt_number
 
@@ -218,7 +215,7 @@ class _OPC(Protocol):
     def correction(self) -> float: ...
 
     @property
-    @round_(ndigits=2)
+    @round_
     def corrected_spt_number(self) -> float:
         corrected_spt = self.correction * self.std_spt_number
         return min(corrected_spt, 2 * self.std_spt_number)
@@ -255,12 +252,12 @@ class GibbsHoltzOPC(_OPC):
 
     Examples
     --------
-    >>> from geolysis.spt import GibbsHoltzOPC
+    >>> from geolysis.core.spt import GibbsHoltzOPC
     >>> opc_cor = GibbsHoltzOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.correction
-    2.06
+    2.0588
     >>> opc_cor.corrected_spt_number
-    23.18
+    23.1615
     """
 
     #: Maximum effective overburden pressure.
@@ -290,12 +287,12 @@ class GibbsHoltzOPC(_OPC):
         self._eop = __val
 
     @property
-    @round_(ndigits=2)
+    @round_
     def correction(self) -> float:
         return 350.0 / (self.eop + 70)
 
     @property
-    @round_(ndigits=2)
+    @round_
     def corrected_spt_number(self) -> float:
         corrected_spt = self.correction * self.std_spt_number
         spt_ratio = corrected_spt / self.std_spt_number
@@ -340,12 +337,12 @@ class BazaraaPeckOPC(_OPC):
 
     Examples
     --------
-    >>> from geolysis.spt import BazaraaPeckOPC
+    >>> from geolysis.core.spt import BazaraaPeckOPC
     >>> opc_cor = BazaraaPeckOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.correction
-    0.93
+    0.9324
     >>> opc_cor.corrected_spt_number
-    20.93
+    20.979
     """
 
     std_spt_number: float
@@ -355,7 +352,7 @@ class BazaraaPeckOPC(_OPC):
     STD_PRESSURE = 71.8
 
     @property
-    @round_(ndigits=2)
+    @round_
     def correction(self) -> float:
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=ERROR_TOL):
             correction = 1.0
@@ -398,7 +395,7 @@ class PeckOPC(_OPC):
 
     Examples
     --------
-    >>> from geolysis.spt import PeckOPC
+    >>> from geolysis.core.spt import PeckOPC
     >>> opc_cor = PeckOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.correction
     1.0
@@ -428,7 +425,7 @@ class PeckOPC(_OPC):
         self._eop = __val
 
     @property
-    @round_(ndigits=2)
+    @round_
     def correction(self) -> float:
         return 0.77 * log10(2000 / self.eop)
 
@@ -463,7 +460,7 @@ class LiaoWhitmanOPC(_OPC):
 
     Examples
     --------
-    >>> from geolysis.spt import LiaoWhitmanOPC
+    >>> from geolysis.core.spt import LiaoWhitmanOPC
     >>> opc_cor = LiaoWhitmanOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.correction
     1.0
@@ -490,7 +487,7 @@ class LiaoWhitmanOPC(_OPC):
         self._eop = __val
 
     @property
-    @round_(ndigits=2)
+    @round_
     def correction(self) -> float:
         return sqrt(100 / self.eop)
 
@@ -525,19 +522,19 @@ class SkemptonOPC(_OPC):
 
     Examples
     --------
-    >>> from geolysis.spt import SkemptonOPC
+    >>> from geolysis.core.spt import SkemptonOPC
     >>> opc_cor = SkemptonOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.correction
-    0.98
+    0.9785
     >>> opc_cor.corrected_spt_number
-    22.05
+    22.0163
     """
 
     std_spt_number: float
     eop: float
 
     @property
-    @round_(ndigits=2)
+    @round_
     def correction(self) -> float:
         return 2 / (1 + 0.01044 * self.eop)
 
@@ -577,7 +574,7 @@ class DilatancyCorrection:
 
     Examples
     --------
-    >>> from geolysis.spt import DilatancyCorrection
+    >>> from geolysis.core.spt import DilatancyCorrection
     >>> dil_cor = DilatancyCorrection(spt_number=22.5)
     >>> dil_cor.corrected_spt_number
     18.75
@@ -586,7 +583,7 @@ class DilatancyCorrection:
     spt_number: float
 
     @property
-    @round_(ndigits=2)
+    @round_
     def corrected_spt_number(self) -> float:
         if self.spt_number <= 15:
             return self.spt_number

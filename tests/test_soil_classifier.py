@@ -3,9 +3,9 @@ from typing import Sequence
 
 import pytest
 
-from geolysis.soil_classifier import AASHTO, PSD, USCS
-from geolysis.soil_classifier import AtterbergLimits as AL
-from geolysis.soil_classifier import PSDAggSumError
+from geolysis.core.soil_classifier import AASHTO, PSD, USCS
+from geolysis.core.soil_classifier import AtterbergLimits as AL
+from geolysis.core.soil_classifier import PSDAggSumError
 
 
 class TestAL(unittest.TestCase):

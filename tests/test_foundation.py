@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 
-from geolysis.foundation import (
+from geolysis.core.foundation import (
     CircularFooting,
     FootingCreationError,
     FootingSize,

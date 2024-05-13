@@ -1,7 +1,7 @@
-from typing import NamedTuple
+from typing import ClassVar, NamedTuple
 
-from geolysis.constants import ERROR_TOL
-from geolysis.utils import isclose, round_
+from .constants import ERROR_TOL
+from .utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
@@ -52,7 +52,7 @@ class _SoilGradation(NamedTuple):
     ERR_MSG: str = "d_10, d_30, and d_60 cannot be 0"
 
     @property
-    @round_(ndigits=2)
+    @round_
     def coeff_of_curvature(self) -> float:
         try:
             return (self.d_30**2) / (self.d_60 * self.d_10)
@@ -60,7 +60,7 @@ class _SoilGradation(NamedTuple):
             raise SoilGradationError(self.ERR_MSG) from e
 
     @property
-    @round_(ndigits=2)
+    @round_
     def coeff_of_uniformity(self) -> float:
         try:
             return self.d_60 / self.d_10
@@ -131,7 +131,7 @@ class AtterbergLimits:
 
     Examples
     --------
-    >>> from geolysis.soil_classifier import AtterbergLimits as AL
+    >>> from geolysis.core.soil_classifier import AtterbergLimits as AL
 
     >>> atterberg_limits = AL(liquid_limit=55.44, plastic_limit=33.31)
     >>> atterberg_limits.plasticity_index
@@ -165,7 +165,7 @@ class AtterbergLimits:
         self.plastic_limit = plastic_limit
 
     @property
-    @round_(ndigits=2)
+    @round_
     def plasticity_index(self) -> float:
         """Plasticity index (PI) is the range of water content over which the
         soil remains in the plastic state.
@@ -178,7 +178,7 @@ class AtterbergLimits:
         return self.liquid_limit - self.plastic_limit
 
     @property
-    @round_(ndigits=2)
+    @round_
     def A_line(self) -> float:
         """The ``A-line`` is used to determine if a soil is clayey or silty.
 
@@ -201,7 +201,7 @@ class AtterbergLimits:
         """
         return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
-    @round_(ndigits=2)
+    @round_
     def liquidity_index(self, nmc: float) -> float:
         r"""Return the liquidity index of the soil.
 
@@ -225,7 +225,7 @@ class AtterbergLimits:
         """
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100
 
-    @round_(ndigits=2)
+    @round_
     def consistency_index(self, nmc: float) -> float:
         r"""Return the consistency index of the soil.
 
@@ -301,7 +301,7 @@ class PSD:
 
     Examples
     --------
-    >>> from geolysis.soil_classifier import PSD
+    >>> from geolysis.core.soil_classifier import PSD
 
     >>> psd = PSD(fines=30.25, sand=53.55, gravel=16.20)
     >>> soil_type = psd.type_of_coarse
@@ -468,7 +468,7 @@ class AASHTO:
 
     Examples
     --------
-    >>> from geolysis.soil_classifier import AASHTO
+    >>> from geolysis.core.soil_classifier import AASHTO
 
     >>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3,
     ...                     fines=11.18)
@@ -642,7 +642,7 @@ class USCS:
 
     Examples
     --------
-    >>> from geolysis.soil_classifier import USCS
+    >>> from geolysis.core.soil_classifier import USCS
 
     >>> uscs_clf = USCS(liquid_limit=34.1, plastic_limit=21.1,
     ...                 fines=47.88, sand=37.84, gravel=14.28)

@@ -3,7 +3,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
-from geolysis.utils import PI, round_
+from .utils import PI, round_
 
 __all__ = [
     "create_footing",
@@ -24,6 +24,15 @@ class Shape(enum.IntEnum):
     CIRCLE = enum.auto()
     SQUARE = enum.auto()
     RECTANGLE = enum.auto()
+
+
+# class _SquareArea:
+
+#     def __get__(self, instance, owner_cls): ...
+
+#     def __set__(self, instance, value): ...
+
+#     def __set_name__(self, owner_cls, property_name): ...
 
 
 class _FootingShape(Protocol):
@@ -80,7 +89,7 @@ class CircularFooting:
 
     Examples
     --------
-    >>> from geolysis.foundation import CircularFooting
+    >>> from geolysis.core.foundation import CircularFooting
     >>> circ_footing = CircularFooting(diameter=1.2)
     >>> circ_footing.diameter
     1.2
@@ -149,7 +158,7 @@ class SquareFooting:
 
     Examples
     --------
-    >>> from geolysis.foundation import SquareFooting
+    >>> from geolysis.core.foundation import SquareFooting
     >>> sq_footing = SquareFooting(width=1.2)
     >>> sq_footing.width
     1.2
@@ -209,7 +218,7 @@ class RectangularFooting:
 
     Examples
     --------
-    >>> from geolysis.foundation import RectangularFooting
+    >>> from geolysis.core.foundation import RectangularFooting
     >>> rect_footing = RectangularFooting(width=1.2, length=1.4)
     >>> rect_footing.width
     1.2
@@ -264,7 +273,7 @@ class FootingSize:
 
     Examples
     --------
-    >>> from geolysis.foundation import FootingSize, SquareFooting
+    >>> from geolysis.core.foundation import FootingSize, SquareFooting
     >>> footing_shape = SquareFooting(width=1.2)
     >>> footing_size = FootingSize(thickness=0.45, footing_shape=footing_shape)
     >>> footing_size.thickness
@@ -348,7 +357,7 @@ class FoundationSize:
 
     Examples
     --------
-    >>> from geolysis.foundation import (FoundationSize, CircularFooting,
+    >>> from geolysis.core.foundation import (FoundationSize, CircularFooting,
     ...                                  Shape, create_footing)
     >>> footing_size = create_footing(thickness=0.45, width=1.2,
     ...                               footing_shape=Shape.SQUARE)
@@ -457,7 +466,7 @@ def create_footing(
 
     Examples
     --------
-    >>> from geolysis.foundation import create_footing, Shape
+    >>> from geolysis.core.foundation import create_footing, Shape
     >>> square_footing = create_footing(thickness=0.3, width=1.2,
     ...                                 footing_shape=Shape.SQUARE)
     >>> square_footing
@@ -478,16 +487,6 @@ def create_footing(
     FootingSize(thickness=0.5, footing_shape=RectangularFooting(width=1.3, length=1.4))
     >>> rect_footing.footing_shape
     RectangularFooting(width=1.3, length=1.4)
-
-    >>> create_footing(thickness=0.5, width=1.3, footing_shape=Shape.RECTANGLE)
-    Traceback (most recent call last):
-        ...
-    FootingCreationError: The length of the footing must be provided
-
-    >>> create_footing(thickness=0.5, width=1.3, footing_shape="hexagonal")
-    Traceback (most recent call last):
-        ...
-    FootingCreationError: Supported footing shapes are SQUARE, RECTANGLE, and CIRCLE
     """
     _footing_shape: _FootingShape
 
@@ -545,7 +544,7 @@ def create_foundation(
 
     Examples
     --------
-    >>> from geolysis.foundation import Shape, create_foundation
+    >>> from geolysis.core.foundation import Shape, create_foundation
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
     ...                                     width=1.2, footing_shape=Shape.SQUARE)
     >>> foundation_size.depth

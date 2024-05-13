@@ -1,7 +1,7 @@
 import pytest
 
-from geolysis.constants import ERROR_TOL
-from geolysis.utils import (
+from geolysis.core.constants import ERROR_TOL
+from geolysis.core.utils import (
     PI,
     cos,
     cot,

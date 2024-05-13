@@ -4,7 +4,7 @@ from math import exp, isclose, log, log10, pi, sqrt
 from statistics import fmean
 from typing import Callable
 
-from geolysis.constants import DECIMAL_PLACES
+from .constants import DECIMAL_PLACES
 
 __all__ = [
     "deg2rad",
@@ -18,7 +18,6 @@ __all__ = [
 ]
 
 PI = pi
-
 mean = fmean
 
 
@@ -98,6 +97,7 @@ def round_(ndigits: int | Callable) -> Callable:
         func: Callable[..., float],
         ndigits: int = DECIMAL_PLACES,
     ) -> Callable[..., float]:
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> float:
             return round(func(*args, **kwargs), ndigits=ndigits)
