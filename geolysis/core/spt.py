@@ -166,6 +166,7 @@ class EnergyCorrection:
     Energy correction is given by the formula:
 
     .. math::
+
         N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{ENERGY}
 
     ``ENERGY``: 0.6, 0.55, etc
@@ -184,11 +185,11 @@ class EnergyCorrection:
 
     _: KW_ONLY
 
-    energy_percentage = 0.6
-    hammer_efficiency = 0.6
-    borehole_diameter_correction = 1.0
-    sampler_correction = 1.0
-    rod_length_correction = 0.75
+    energy_percentage: float = 0.6
+    hammer_efficiency: float = 0.6
+    borehole_diameter_correction: float = 1.0
+    sampler_correction: float = 1.0
+    rod_length_correction: float = 0.75
 
     @property
     @round_
