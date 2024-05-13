@@ -59,7 +59,7 @@ class BowlesABC:
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity.abc_4_cohl_soils import BowlesABC
+    >>> from geolysis.core.abc_4_cohl_soils import BowlesABC
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
@@ -193,7 +193,7 @@ class MeyerhofABC:
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity.abc_4_cohl_soils import MeyerhofABC
+    >>> from geolysis.core.abc_4_cohl_soils import MeyerhofABC
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
@@ -340,7 +340,7 @@ class TerzaghiABC:
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity.abc_4_cohl_soils import TerzaghiABC
+    >>> from geolysis.core.abc_4_cohl_soils import TerzaghiABC
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
