@@ -88,7 +88,7 @@ AASHTO classification
 
 ```python
 
->>> from geolysis.soil_classifier import AASHTO
+>>> from geolysis.core.soil_classifier import AASHTO
 >>> aashto_cls = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
 >>> aashto_cls.soil_class()
 'A-2-4(0)'
@@ -101,7 +101,7 @@ USCS Classification
 
 ```python
 
->>> from geolysis.soil_classifier import USCS
+>>> from geolysis.core.soil_classifier import USCS
 >>> uscs_cls = USCS(liquid_limit=34.1, plastic_limit=21.1,
 ...                 fines=47.88, sand=37.84, gravel=14.8)
 >>> uscs_cls.soil_class()
