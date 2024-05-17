@@ -24,7 +24,7 @@
 analyzing geotechnical results obtained from laboratory and field
 tests. Some of the features implemented include soil classification,
 standard penetration test analysis (such as SPT $N_{design}$ and SPT
-N-value corrections),and calculating the allowable bearing capacity of
+N-value corrections), and calculating the allowable bearing capacity of
 soils from Standard Penetration Test N-values. There are more features
 underway, which include settlement analysis, ultimate bearing capacity
 analysis, etc.
