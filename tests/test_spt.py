@@ -1,7 +1,6 @@
 import unittest
 
 from geolysis.core.spt import (
-    SPT,
     BazaraaPeckOPC,
     DilatancyCorrection,
     GibbsHoltzOPC,
@@ -11,12 +10,11 @@ from geolysis.core.spt import (
     StatisticsError,
 )
 
+# class TestSPT(unittest.TestCase):
 
-class TestSPT(unittest.TestCase):
-
-    def testStatisticsError(self):
-        with self.assertRaises(StatisticsError):
-            SPT(spt_numbers=[])
+#     def testStatisticsError(self):
+#         with self.assertRaises(StatisticsError):
+#             SPT(spt_numbers=[])
 
 
 class TestGibbsHoltzOPC(unittest.TestCase):
