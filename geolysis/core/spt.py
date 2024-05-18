@@ -25,14 +25,15 @@ class OPCError(ValueError):
 
 
 class _SPTNDesign(Protocol):
-
-    def spt_n_design(self) -> float: ...
+    def spt_n_design(self) -> float:
+        ...
 
 
 class _SPTCorrection(Protocol):
     @property
     @abstractmethod
-    def corrected_spt_number(self) -> float: ...
+    def corrected_spt_number(self) -> float:
+        ...
 
 
 class _OPC(Protocol):
@@ -41,7 +42,8 @@ class _OPC(Protocol):
 
     @property
     @abstractmethod
-    def correction(self) -> float: ...
+    def correction(self) -> float:
+        ...
 
     @property
     @round_

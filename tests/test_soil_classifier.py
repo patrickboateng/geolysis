@@ -9,7 +9,6 @@ from geolysis.core.soil_classifier import PSDAggSumError
 
 
 class TestAL(unittest.TestCase):
-
     def setUp(self) -> None:
         self.atterberg_limits = AL(liquid_limit=25, plastic_limit=15)
 
@@ -27,7 +26,6 @@ class TestAL(unittest.TestCase):
 
 
 class TestPSD(unittest.TestCase):
-
     def setUp(self) -> None:
         self.psd = PSD(
             fines=0, sand=0, gravel=100, d_10=0.115, d_30=0.53, d_60=1.55

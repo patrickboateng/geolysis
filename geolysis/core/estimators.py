@@ -162,7 +162,6 @@ class SubmergedUnitWeight:
 
 
 class _CompressionIndexEst(Protocol):
-
     @property
     @abstractmethod
     def compression_index(self) -> float: ...
@@ -295,7 +294,6 @@ class HoughCompressionIndex:
 
 
 class _SoilFrictionAngleEst(Protocol):
-
     @property
     @abstractmethod
     def soil_friction_angle(self) -> float: ...

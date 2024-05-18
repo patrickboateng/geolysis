@@ -92,7 +92,6 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     """
 
     def dec(func, ndigits=DECIMAL_PLACES):
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> float:
             return round(func(*args, **kwargs), ndigits=ndigits)

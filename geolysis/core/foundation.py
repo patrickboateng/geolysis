@@ -27,7 +27,6 @@ class Shape(enum.IntEnum):
 
 
 class _FootingShape(Protocol):
-
     @property
     @abstractmethod
     def width(self) -> float: ...

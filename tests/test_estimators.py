@@ -8,7 +8,6 @@ from geolysis.core.estimators import (
 
 
 class TestKMSFA(unittest.TestCase):
-
     def testEstimatorError(self):
         with self.assertRaises(EstimatorError):
             KullhawyMayneSoilFrictionAngle(
@@ -17,7 +16,6 @@ class TestKMSFA(unittest.TestCase):
 
 
 class TestSUSS(unittest.TestCase):
-
     def testEstimatorError(self):
         with self.assertRaises(EstimatorError):
             StroudUndrainedShearStrength(std_spt_number=10.0, k=7.0)
