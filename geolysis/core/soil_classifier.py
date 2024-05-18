@@ -1,4 +1,4 @@
-from typing import ClassVar, NamedTuple
+from typing import NamedTuple
 
 from .constants import ERROR_TOL
 from .utils import isclose, round_
@@ -109,15 +109,14 @@ class AtterbergLimits:
         Water content beyond which soils flows under their own weight.
         It can also be defined as the minimum moisture content at which
         a soil flows upon application of a very small shear force.
+
     plastic_limit : float
         Water content at which plastic deformation can be initiated. It
         is also the minimum water content at which soil can be rolled into
-        a thread 3mm thick (molded without breaking)
+        a thread 3mm thick. (molded without breaking)
 
     Attributes
     ----------
-    liquid_limit : float
-    plastic_limit : float
     plasticity_index : float
     A_line : float
     type_of_fines : str
@@ -281,12 +280,6 @@ class PSD:
 
     Attributes
     ----------
-    fines : float
-    sand : float
-    gravel : float
-    d_10 : float
-    d_30 : float
-    d_60 : float
     coeff_of_curvature : float
     coeff_of_uniformity : float
     type_of_coarse : str
@@ -358,10 +351,6 @@ class PSD:
             err_msg = f"fines + sand + gravels = 100% not {total_agg}"
             raise PSDAggSumError(err_msg)
 
-    def has_particle_sizes(self) -> bool:
-        """Checks if soil sample has particle sizes."""
-        return all(self.size_dist)
-
     @property
     def d_10(self) -> float:
         """Diameter at which 10% of the soil by weight is finer."""
@@ -379,7 +368,9 @@ class PSD:
 
     @property
     def type_of_coarse(self) -> str:
-        """Determines whether the soil is either :data:`GRAVEL` or :data:`SAND`."""
+        """Determines whether the soil is either :data:`GRAVEL` or
+        :data:`SAND`.
+        """
         return GRAVEL if self.gravel > self.sand else SAND
 
     @property
@@ -404,12 +395,16 @@ class PSD:
         .. math:: C_u = \dfrac{D_{60}}{D_{10}}
 
         :math:`C_u` value greater than 4 to 6 classifies the soil as well
-        graded. When :math:`C_u` is less than 4, it is classified as poorly
-        graded or uniformly graded soil. Higher values of :math:`C_u`
-        indicates that the soil mass consists of soil particles with
-        different size ranges
+        graded for gravels and sands respectively. When :math:`C_u` is less
+        than 4, it is classified as poorly graded or uniformly graded soil.
+        Higher values of :math:`C_u` indicates that the soil mass consists
+        of soil particles with different size ranges.
         """
         return self.size_dist.coeff_of_uniformity
+
+    def has_particle_sizes(self) -> bool:
+        """Checks if soil sample has particle sizes."""
+        return all(self.size_dist)
 
     def grade(self) -> str:
         r"""Return the grade of the soil sample, either :data:`WELL_GRADED`
@@ -446,18 +441,11 @@ class AASHTO:
     plasticity_index : float
         Range of water content over which soil remains in plastic condition.
     fines : float
-        Percentage of fines in soil sample i.e. the percentage of soil sample passing
-        through No. 200 sieve (0.075mm).
+        Percentage of fines in soil sample i.e. the percentage of soil sample
+        passing through No. 200 sieve (0.075mm).
     add_group_idx : bool, default=True
         Used to indicate whether the group index should be added to the classification
         or not. Defaults to True.
-
-    Attributes
-    ----------
-    liquid_limit : float
-    plasticity_index : float
-    fines : float
-    add_group_idx : bool
 
     Notes
     -----
@@ -470,17 +458,19 @@ class AASHTO:
     --------
     >>> from geolysis.core.soil_classifier import AASHTO
 
-    >>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3,
-    ...                     fines=11.18)
+    >>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
     >>> aashto_clf.group_index()
     0.0
-    >>> aashto_clf.soil_class()
+    >>> aashto_clf.soil_class
     'A-2-4(0)'
-    >>> aashto_clf.soil_desc()
+    >>> aashto_clf.soil_desc
     'Silty or clayey gravel and sand'
 
+    If you would like to exclude the group index from the classification, you can do
+    the following:
+
     >>> aashto_clf.add_group_idx = False
-    >>> aashto_clf.soil_class()
+    >>> aashto_clf.soil_class
     'A-2-4'
     """
 
@@ -564,17 +554,19 @@ class AASHTO:
 
         return soil_class
 
+    @property
     def soil_class(self) -> str:
         """Return the AASHTO classification of the soil."""
         return self._classify()
 
+    @property
     def soil_desc(self) -> str:
         """Return the AASHTO description of the soil."""
         tmp_state = self.add_group_idx
         try:
             self.add_group_idx = False
-            soil_class = self.soil_class()
-            return AASHTO.SOIL_DESCRIPTIONS[soil_class]
+            soil_cls = self.soil_class
+            return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
         finally:
             self.add_group_idx = tmp_state
 
@@ -625,11 +617,11 @@ class USCS:
         Percentage of sand in soil sample (%)
     gravel : float
         Percentage of gravel in soil sample (%)
-    d_10 : float, unit=millimetre
+    d_10 : float, mm
         Diameter at which 10% of the soil by weight is finer.
-    d_30 : float, unit=millimetre
+    d_30 : float, mm
         Diameter at which 30% of the soil by weight is finer.
-    d_60 : float, unit=millimetre
+    d_60 : float, mm
         Diameter at which 60% of the soil by weight is finer.
     organic : bool, default=False
         Indicates whether soil is organic or not.
@@ -638,7 +630,8 @@ class USCS:
     ----------
     atterberg_limits : AtterbergLimits
     psd : PSD
-    organic : bool
+    soil_class : str
+    soil_desc : str
 
     Examples
     --------
@@ -646,23 +639,23 @@ class USCS:
 
     >>> uscs_clf = USCS(liquid_limit=34.1, plastic_limit=21.1,
     ...                 fines=47.88, sand=37.84, gravel=14.28)
-    >>> uscs_clf.soil_class()
+    >>> uscs_clf.soil_class
     'SC'
-    >>> uscs_clf.soil_desc()
+    >>> uscs_clf.soil_desc
     'Clayey sands'
 
     >>> uscs_clf = USCS(liquid_limit=27.7, plastic_limit=22.7,
     ...                 fines=18.95, sand=77.21, gravel=3.84)
-    >>> uscs_clf.soil_class()
+    >>> uscs_clf.soil_class
     'SM-SC'
-    >>> uscs_clf.soil_desc()
+    >>> uscs_clf.soil_desc
     'Sandy clayey silt'
 
     >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7, fines=10.29,
     ...                 sand=81.89, gravel=7.83, d_10=0.07, d_30=0.3, d_60=0.8)
-    >>> uscs_clf.soil_class()
+    >>> uscs_clf.soil_class
     'SW-SC'
-    >>> uscs_clf.soil_desc()
+    >>> uscs_clf.soil_desc
     'Well graded sand with clay'
 
     Soil gradation (d_10, d_30, d_60) is needed to obtain soil description for
@@ -670,10 +663,9 @@ class USCS:
 
     >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7,
     ...                 fines=10.29, sand=81.89, gravel=7.83)
-    >>> soil_class = uscs_clf.soil_class()
-    >>> soil_class
+    >>> uscs_clf.soil_class
     'SW-SC,SP-SC'
-    >>> uscs_clf.soil_desc()
+    >>> uscs_clf.soil_desc
     'Well graded sand with clay or Poorly graded sand with clay'
     """
 
@@ -728,8 +720,8 @@ class USCS:
         d_60=0,
         organic=False,
     ):
-        self.atterberg_limits = AtterbergLimits(liquid_limit, plastic_limit)
-        self.psd = PSD(fines, sand, gravel, d_10, d_30, d_60)
+        self._atterberg_limits = AtterbergLimits(liquid_limit, plastic_limit)
+        self._psd = PSD(fines, sand, gravel, d_10, d_30, d_60)
         self.organic = organic
 
     def _classify(self) -> str:
@@ -826,17 +818,30 @@ class USCS:
 
         return soil_class
 
+    @property
+    def atterberg_limits(self) -> AtterbergLimits:
+        """Return the atterberg limits of soil."""
+        return self._atterberg_limits
+
+    @property
+    def psd(self) -> PSD:
+        """Return the particle size distribution of soil."""
+        return self._psd
+
+    @property
     def soil_class(self) -> str:
         """Return the USCS classification of the soil."""
         return self._classify()
 
+    @property
     def soil_desc(self) -> str:
         """Return the USCS description of the soil."""
-        soil_class = self.soil_class()
-        if "," in soil_class:
-            _soil_desc = [
-                USCS.SOIL_DESCRIPTIONS[_class]
-                for _class in soil_class.split(",")
-            ]
-            return " or ".join(_soil_desc)
-        return USCS.SOIL_DESCRIPTIONS[soil_class]
+        soil_cls = self.soil_class
+        try:
+            soil_descr = USCS.SOIL_DESCRIPTIONS[soil_cls]
+        except KeyError:
+            soil_descr = " or ".join(
+                map(USCS.SOIL_DESCRIPTIONS.get, soil_cls.split(","))
+            )  # type: ignore
+
+        return soil_descr

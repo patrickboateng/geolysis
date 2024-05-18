@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from dataclasses import KW_ONLY, dataclass
 from statistics import StatisticsError
 from typing import Protocol, Sequence
@@ -7,7 +7,9 @@ from .constants import ERROR_TOL
 from .utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
-    "SPT",
+    "WeightedSPT",
+    "AverageSPT",
+    "MinSPT",
     "EnergyCorrection",
     "GibbsHoltzOPC",
     "BazaraaPeckOPC",
@@ -22,25 +24,51 @@ class OPCError(ValueError):
     pass
 
 
-class SPT:
-    r"""A class for calculating the design value (:math:`N_{design}`) from a list
-    of SPT N-values.
+class _SPTNDesign(Protocol):
+
+    def spt_n_design(self) -> float: ...
+
+
+class _SPTCorrection(Protocol):
+    @property
+    @abstractmethod
+    def corrected_spt_number(self) -> float: ...
+
+
+class _OPC(Protocol):
+    std_spt_number: float
+    eop: float
+
+    @property
+    @abstractmethod
+    def correction(self) -> float: ...
+
+    @property
+    @round_
+    def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
+        corrected_spt = self.correction * self.std_spt_number
+        return min(corrected_spt, 2 * self.std_spt_number)
+
+
+@dataclass
+class WeightedSPT:
+    r"""Calculates the weighted average of the corrected SPT N-values
+    within the foundation influence zone.
+
+    Due to uncertainty in field procedure in standard penetration test
+    and also to consider all the N-value in the influence zone of a
+    foundation, a method was suggested to calculate the design N-value
+    which should be used in calculating the allowable bearing capacity
+    of shallow foundation rather than using a particular N-value. All
+    the N-value from the influence zone is taken under consideration by
+    giving the highest weightage to the closest N-value from the base.
 
     Parameters
     ----------
     spt_numbers : Sequence[float]
-        SPT N-values within the foundation influence zone. i.e. :math:`D_f`
-        to :math:`D_f + 2B`. ``spt_numbers`` can either be **corrected** or
-        **uncorrected** SPT N-values.
-
-    Attributes
-    ----------
-    spt_numbers : Sequence[float]
-
-    Raises
-    ------
-    StatisticError
-        Raised If ``spt_numbers`` is empty.
+        SPT N-values within the foundation influence zone. ``spt_numbers``
+        can either be **corrected** or **uncorrected** SPT N-values.
 
     Notes
     -----
@@ -48,52 +76,31 @@ class SPT:
 
     .. math::
 
-        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n} \frac{1}{i^2}}
-
-    Average is given by the formula:
-
-    .. math::  N_{design} = \dfrac{\sum_{i=1}^{n}N_i}{n}
+        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n}
+                     \frac{1}{i^2}}
 
     Examples
     --------
-    >>> from geolysis.core.spt import SPT
-    >>> spt_numbers = [7.0, 15.0, 18.0]
-    >>> spt_avg = SPT(spt_numbers=spt_numbers)
-    >>> spt_avg.weighted_average()
+    >>> from geolysis.core.spt import WeightedSPT
+    >>> wgt = WeightedSPT([7.0, 15.0, 18.0])
+    >>> wgt.spt_n_design()
     9.3673
-    >>> spt_avg.average()
-    13.3333
-    >>> spt_avg.min()
-    7.0
     """
 
-    def __init__(self, spt_numbers: Sequence[float]) -> None:
-        self.spt_numbers = spt_numbers
-
-    @property
-    def spt_numbers(self) -> Sequence[float]:
-        return self._spt_numbers
-
-    @spt_numbers.setter
-    def spt_numbers(self, __val: Sequence[float]):
-        if not __val:
-            err_msg = "spt_numbers requires at least one SPT N-value"
-            raise StatisticsError(err_msg)
-        self._spt_numbers = __val
+    spt_numbers: Sequence[float]
 
     @round_
-    def weighted_average(self) -> float:
-        """Calculates the weighted average of the corrected SPT N-values in the
-        foundation influence zone.
+    def spt_n_design(self) -> float:
+        """SPT N-design.
 
-        Due to uncertainty in field procedure in standard penetration test and also
-        to consider all the N-value in the influence zone of a foundation, a method
-        was suggested to calculate the design N-value which should be used in
-        calculating the allowable bearing capacity of shallow foundation rather than
-        using a particular N-value. All the N-value from the influence zone is taken
-        under consideration by giving the highest weightage to the closest N-value
-        from the base.
+        Raises
+        ------
+        StatisticError
+            Raised if ``spt_numbers`` is empty.
         """
+        if not self.spt_numbers:
+            err_msg = "method requires at least one data point."
+            raise StatisticsError(err_msg)
 
         sum_total = 0.0
         total_wgts = 0.0
@@ -105,25 +112,79 @@ class SPT:
 
         return sum_total / total_wgts
 
-    @round_
-    def average(self) -> float:
-        """Calculates the average of the corrected SPT N-values in the foundation
-        influence zone.
-        """
-        return mean(self.spt_numbers)
+
+@dataclass
+class AverageSPT:
+    r"""Calculates the average of the corrected SPT N-values within the
+    foundation influence zone.
+
+    Parameters
+    ----------
+    spt_numbers : Sequence[float]
+        SPT N-values within the foundation influence zone. ``spt_numbers``
+        can either be **corrected** or **uncorrected** SPT N-values.
+
+    Examples
+    --------
+    >>> from geolysis.core.spt import AverageSPT
+    >>> wgt = AverageSPT([7.0, 15.0, 18.0])
+    >>> wgt.spt_n_design()
+    13.3333
+    """
+
+    spt_numbers: Sequence[float]
 
     @round_
-    def min(self) -> float:
-        """For ease in calculation, the lowest N-value from the influence zone can be
-        taken as the :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+    def spt_n_design(self) -> float:
+        """SPT N-design.
+
+        Raises
+        ------
+        StatisticError
+            Raised if ``spt_numbers`` is empty.
         """
-        return min(self.spt_numbers)
+        try:
+            return mean(self.spt_numbers)
+        except StatisticsError as e:
+            err_msg = "method requires at least one data point."
+            raise StatisticsError(err_msg) from None
 
 
-class _SPTCorrection(Protocol):
-    @property
-    @abstractmethod
-    def corrected_spt_number(self) -> float: ...
+@dataclass
+class MinSPT:
+    """The lowest N-value within the influence zone can be taken as the
+    :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+
+    Parameters
+    ----------
+    spt_numbers : Sequence[float]
+        SPT N-values within the foundation influence zone. i.e. ``spt_numbers``
+        can either be **corrected** or **uncorrected** SPT N-values.
+
+    Examples
+    --------
+    >>> from geolysis.core.spt import MinSPT
+    >>> wgt = MinSPT([7.0, 15.0, 18.0])
+    >>> wgt.spt_n_design()
+    7.0
+    """
+
+    spt_numbers: Sequence[float]
+
+    @round_
+    def spt_n_design(self) -> float:
+        """SPT N-design.
+
+        Raises
+        ------
+        StatisticError
+            Raised if ``spt_numbers`` is empty.
+        """
+        try:
+            return min(self.spt_numbers)
+        except ValueError as e:
+            err_msg = "method requires at least one data point."
+            raise StatisticsError(err_msg) from e
 
 
 @dataclass
@@ -154,12 +215,8 @@ class EnergyCorrection:
 
     Attributes
     ----------
-    recorded_spt_number : int
-    energy_percentage : float
-    hammer_efficiency : float
-    borehole_diameter_correction : float
-    sampler_correction : float
-    rod_length_correction : float
+    correction : float
+    corrected_spt_number : float
 
     Notes
     -----
@@ -194,6 +251,7 @@ class EnergyCorrection:
     @property
     @round_
     def correction(self) -> float:
+        """SPT Correction."""
         return (
             self.hammer_efficiency
             * self.borehole_diameter_correction
@@ -204,22 +262,8 @@ class EnergyCorrection:
     @property
     @round_
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         return self.correction * self.recorded_spt_number
-
-
-class _OPC(Protocol):
-    std_spt_number: float
-    eop: float
-
-    @property
-    @abstractmethod
-    def correction(self) -> float: ...
-
-    @property
-    @round_
-    def corrected_spt_number(self) -> float:
-        corrected_spt = self.correction * self.std_spt_number
-        return min(corrected_spt, 2 * self.std_spt_number)
 
 
 @dataclass
@@ -230,16 +274,13 @@ class GibbsHoltzOPC(_OPC):
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure.
 
     Attributes
     ----------
-    std_spt_number : float
-    eop : float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
-    STD_PRESSURE: float
 
     Notes
     -----
@@ -247,9 +288,10 @@ class GibbsHoltzOPC(_OPC):
 
     .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
 
-    :math:`\dfrac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if :math:`\dfrac{N_c}{N_{60}}`
-    is greater than 2.0, :math:`N_c` should be divided by 2.0 to obtain the design value
-    used in finding the bearing capacity of the soil.
+    :math:`\frac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if
+    :math:`\frac{N_c}{N_{60}}` is greater than 2.0, :math:`N_c` should be
+    divided by 2.0 to obtain the design value used in finding the bearing
+    capacity of the soil.
 
     Examples
     --------
@@ -261,7 +303,7 @@ class GibbsHoltzOPC(_OPC):
     23.1615
     """
 
-    #: Maximum effective overburden pressure.
+    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE = 280.0
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
@@ -273,7 +315,6 @@ class GibbsHoltzOPC(_OPC):
 
     @property
     def eop(self) -> float:
-        """Effective overburden pressure."""
         return self._eop
 
     @eop.setter
@@ -290,11 +331,13 @@ class GibbsHoltzOPC(_OPC):
     @property
     @round_
     def correction(self) -> float:
+        """SPT Correction."""
         return 350.0 / (self.eop + 70)
 
     @property
     @round_
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         corrected_spt = self.correction * self.std_spt_number
         spt_ratio = corrected_spt / self.std_spt_number
 
@@ -313,16 +356,13 @@ class BazaraaPeckOPC(_OPC):
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure.
 
     Attributes
     ----------
-    std_spt_number : float
-    eop : float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
-    STD_PRESSURE : float
 
     Notes
     -----
@@ -349,12 +389,13 @@ class BazaraaPeckOPC(_OPC):
     std_spt_number: float
     eop: float
 
-    #: Maximum effective overburden pressure.
+    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE = 71.8
 
     @property
     @round_
     def correction(self) -> float:
+        """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=ERROR_TOL):
             correction = 1.0
         elif self.eop < self.STD_PRESSURE:
@@ -366,6 +407,7 @@ class BazaraaPeckOPC(_OPC):
 
     @property
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         return super().corrected_spt_number
 
 
@@ -377,16 +419,13 @@ class PeckOPC(_OPC):
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure.
 
     Attributes
     ----------
-    std_spt_number : float
-    eop: float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
-    STD_PRESSURE : float
 
     Notes
     -----
@@ -404,7 +443,7 @@ class PeckOPC(_OPC):
     22.5
     """
 
-    #: Maximum effective overburden pressure.
+    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE = 24.0
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
@@ -428,10 +467,12 @@ class PeckOPC(_OPC):
     @property
     @round_
     def correction(self) -> float:
+        """SPT Correction."""
         return 0.77 * log10(2000 / self.eop)
 
     @property
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         return super().corrected_spt_number
 
 
@@ -443,13 +484,11 @@ class LiaoWhitmanOPC(_OPC):
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure.
 
     Attributes
     ----------
-    std_spt_number : float
-    eop: float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
 
@@ -490,10 +529,12 @@ class LiaoWhitmanOPC(_OPC):
     @property
     @round_
     def correction(self) -> float:
+        """SPT Correction."""
         return sqrt(100 / self.eop)
 
     @property
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         return super().corrected_spt_number
 
 
@@ -505,13 +546,11 @@ class SkemptonOPC(_OPC):
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure.
 
     Attributes
     ----------
-    std_spt_number : float
-    eop: float, unit = :math:`kN/m^2`
     correction : float
     corrected_spt_number : float
 
@@ -537,10 +576,12 @@ class SkemptonOPC(_OPC):
     @property
     @round_
     def correction(self) -> float:
+        """SPT Correction."""
         return 2 / (1 + 0.01044 * self.eop)
 
     @property
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         return super().corrected_spt_number
 
 
@@ -548,19 +589,18 @@ class SkemptonOPC(_OPC):
 class DilatancyCorrection:
     r"""Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
 
-    For coarse sand, this correction is not required. In applying this correction,
-    overburden pressure correction is applied first and then dilatancy correction
-    is applied.
+    For coarse sand, this correction is not required. In applying this
+    correction, overburden pressure correction is applied first and then
+    dilatancy correction is applied.
 
     Parameters
     ----------
     spt_number : float
-        SPT N-value standardized for field procedures or corrected for overburden
-        pressure.
+        SPT N-value standardized for field procedures or corrected for
+        overburden pressure.
 
     Attributes
     ----------
-    spt_number : float
     corrected_spt_number : float
 
     Notes
@@ -569,7 +609,8 @@ class DilatancyCorrection:
 
     .. math::
 
-        (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \, (N_1)_{60} \gt 15
+        (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \,
+                      (N_1)_{60} \gt 15
 
         (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
 
@@ -586,6 +627,7 @@ class DilatancyCorrection:
     @property
     @round_
     def corrected_spt_number(self) -> float:
+        """Corrected SPT N-value."""
         if self.spt_number <= 15:
             return self.spt_number
 

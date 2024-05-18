@@ -26,15 +26,6 @@ class Shape(enum.IntEnum):
     RECTANGLE = enum.auto()
 
 
-# class _SquareArea:
-
-#     def __get__(self, instance, owner_cls): ...
-
-#     def __set__(self, instance, value): ...
-
-#     def __set_name__(self, owner_cls, property_name): ...
-
-
 class _FootingShape(Protocol):
 
     @property
@@ -66,16 +57,15 @@ class CircularFooting:
 
     Parameters
     ----------
-    diameter : float, unit=metre
+    diameter : float, m
         Diameter of foundation footing.
 
     Attributes
     ----------
-    diameter : float, unit=metre
-    width : float, unit=metre
-    length : float, unit=metre
-    area : float, unit = :math:`m^2`
-    perimeter : float, unit=metre
+    width : float, m
+    length : float, m
+    area : float, :math:`m^2`
+    perimeter : float, m
 
     See Also
     --------
@@ -142,15 +132,14 @@ class SquareFooting:
 
     Parameters
     ----------
-    width : float, unit=metre
+    width : float, m
         Width of foundation footing.
 
     Attributes
     ----------
-    width : float, unit=metre
-    length : float, unit=metre
-    area : float, unit = :math:`m^2`
-    perimeter : float, unit=metre
+    length : float, m
+    area : float, :math:`m^2`
+    perimeter : float, m
 
     See Also
     --------
@@ -200,17 +189,15 @@ class RectangularFooting:
 
     Parameters
     ----------
-    width : float, unit=metre
+    width : float, m
         Width of foundation footing.
-    length : float, unit=metre
+    length : float, m
         Length of foundation footing.
 
     Attributes
     ----------
-    width : float, unit=metre
-    length : float, unit=metre
-    area : float, unit = :math:`m^2`
-    perimeter : float, unit=metre
+    area : float, :math:`m^2`
+    perimeter : float, m
 
     See Also
     --------
@@ -252,20 +239,18 @@ class FootingSize:
 
     Parameters
     ----------
-    thickness : float, unit=metre
+    thickness : float, m
         Thickness of foundation footing.
     footing_shape : _FootingShape
         Shape of foundation footing.
 
     Attributes
     ----------
-    thickness : float, unit=metre
-    width : float, unit=metre
-    length : float, unit=metre
-    footing_shape : _FootingShape
-    area : float, unit = :math:`m^2`
-    perimeter : float, unit=metre
-    volume : float, unit = :math:`m^3`
+    width : float, m
+    length : float, m
+    area : float, :math:`m^2`
+    perimeter : float, m
+    volume : float, :math:`m^3`
 
     See Also
     --------
@@ -334,22 +319,20 @@ class FoundationSize:
 
     Parameters
     ----------
-    depth : float, unit=metre
+    depth : float, m
         Depth of foundation.
     footing_size : FootingSize
         Represents the size of the foundation footing.
 
     Attributes
     ----------
-    depth : float, unit=metre
-    thickness : float, unit=metre
-    width : float, unit=metre
-    length : float, unit=metre
+    thickness : float, m
+    width : float, m
+    length : float, m
     footing_shape : _FootingShape
-    footing_size : FootingSize
-    area : float, unit = :math:`m^2`
-    perimeter : float, unit=metre
-    volume : float, unit = :math:`m^3`
+    area : float, :math:`m^2`
+    perimeter : float, metre
+    volume : float, :math:`m^3`
 
     See Also
     --------
@@ -358,7 +341,7 @@ class FoundationSize:
     Examples
     --------
     >>> from geolysis.core.foundation import (FoundationSize, CircularFooting,
-    ...                                  Shape, create_footing)
+    ...                                       Shape, create_footing)
     >>> footing_size = create_footing(thickness=0.45, width=1.2,
     ...                               footing_shape=Shape.SQUARE)
     >>> foundation_size = FoundationSize(depth=1.5, footing_size=footing_size)
@@ -445,11 +428,11 @@ def create_footing(
 
     Parameters
     ----------
-    thickness : float, unit=metre
+    thickness : float, m
         Thickness of foundation footing.
-    width : float, unit=metre
+    width : float, m
         Width of foundation footing.
-    length : float, optional, unit=metre
+    length : float, optional, m
         Length of foundation footing.
     footing_shape : Shape, default=Shape.SQUARE
         Shape of foundation footing.
@@ -521,13 +504,13 @@ def create_foundation(
 
     Parameters
     ----------
-    depth : float, unit=metre
+    depth : float, m
         Depth of foundation.
-    thickness : float, unit=metre
+    thickness : float, m
         Thickness of foundation footing.
-    width : float, unit=metre
+    width : float, m
         Width of foundation footing.
-    length : float, optional, unit=metre
+    length : float, optional, m
         Length of foundation footing.
     footing_shape : Shape, default=Shape.SQUARE
         Shape of foundation footing.

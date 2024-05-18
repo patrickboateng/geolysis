@@ -2,7 +2,7 @@ import functools
 import math
 from math import exp, isclose, log, log10, pi, sqrt
 from statistics import fmean
-from typing import Callable
+from typing import Callable, SupportsRound
 
 from .constants import DECIMAL_PLACES
 
@@ -56,7 +56,7 @@ def arctan(__x: float, /) -> float:
     return rad2deg(math.atan(__x))
 
 
-def round_(ndigits: int | Callable) -> Callable:
+def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     """A decorator that rounds the result of a callable to a specified number
     of decimal places.
 
@@ -72,7 +72,6 @@ def round_(ndigits: int | Callable) -> Callable:
     >>> @round_(ndigits=2)
     ... def area_of_circle(radius: float):
     ...   return PI * (radius ** 2)
-
     >>> area_of_circle(radius=2.0)
     12.57
 
@@ -81,7 +80,6 @@ def round_(ndigits: int | Callable) -> Callable:
     >>> @round_
     ... def area_of_circle(radius: float):
     ...   return PI * (radius ** 2)
-
     >>> area_of_circle(radius=2.0)
     12.5664
 
@@ -93,10 +91,7 @@ def round_(ndigits: int | Callable) -> Callable:
     TypeError: ndigits should be an int or a callable.
     """
 
-    def dec(
-        func: Callable[..., float],
-        ndigits: int = DECIMAL_PLACES,
-    ) -> Callable[..., float]:
+    def dec(func, ndigits=DECIMAL_PLACES):
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> float:

@@ -2,11 +2,13 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Protocol
 
-from .constants import ERROR_TOL
+from .constants import ERROR_TOL, UNIT
 from .utils import arctan, isclose, round_
 
 __all__ = [
-    "SoilUnitWeight",
+    "MoistUnitWeight",
+    "SaturatedUnitWeight",
+    "SubmergedUnitWeight",
     "TerzaghiCompressionIndex",
     "SkemptonCompressionIndex",
     "HoughCompressionIndex",
@@ -16,6 +18,10 @@ __all__ = [
     "SkemptonUndrainedShearStrength",
 ]
 
+deg = UNIT.deg
+kN_m3 = UNIT.kN_m3
+kPa = UNIT.kPa
+
 
 class EstimatorError(ValueError):
     pass
@@ -23,7 +29,39 @@ class EstimatorError(ValueError):
 
 @dataclass
 class MoistUnitWeight:
+    r"""Estimates the moist unit weight of soil from SPT N-value.
+
+    Parameters
+    ----------
+     std_spt_number : float
+        SPT N-value standardized for field procedures considering 60%
+        energy. This is also known as SPT :math:`N_{60}`.
+
+    Attributes
+    ----------
+    moist_wgt : float
+
+    Notes
+    -----
+    Moist unit weight is given by the formula:
+
+    .. math:: \gamma_{moist} = 16.0 + 0.1 \cdot N_{60}
+
+    Examples
+    --------
+    >>> from geolysis.core.estimators import MoistUnitWeight
+    >>> suw_est = MoistUnitWeight(std_spt_number=15.0)
+    >>> suw_est.moist_wgt
+    17.5
+    """
+
     std_spt_number: float
+
+    _unit = kN_m3
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -35,7 +73,39 @@ class MoistUnitWeight:
 
 @dataclass
 class SaturatedUnitWeight:
+    r"""Estimates the saturated unit weight of soil from SPT N-value.
+
+    Parameters
+    ----------
+    std_spt_number : float
+        SPT N-value standardized for field procedures considering 60%
+        energy. This is also known as SPT :math:`N_{60}`.
+
+    Attributes
+    ----------
+    saturated_wgt : float
+
+    Notes
+    -----
+    Saturated unit weight is given by the formula:
+
+    .. math:: \gamma_{sat} = 16.8 + 0.15 \cdot N_{60}
+
+    Examples
+    --------
+    >>> from geolysis.core.estimators import SaturatedUnitWeight
+    >>> suw_est = SaturatedUnitWeight(std_spt_number=15.0)
+    >>> suw_est.saturated_wgt
+    19.05
+    """
+
     std_spt_number: float
+
+    _unit = kN_m3
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -48,7 +118,39 @@ class SaturatedUnitWeight:
 
 @dataclass
 class SubmergedUnitWeight:
+    r"""Estimates the submerged unit weight of soil from SPT N-value.
+
+    Parameters
+    ----------
+    std_spt_number : float
+        SPT N-value standardized for field procedures considering 60%
+        energy. This is also known as SPT :math:`N_{60}`.
+
+    Attributes
+    ----------
+    submerged_wgt : float
+
+    Notes
+    -----
+    Submerged unit weight is given by the formula:
+
+    .. math:: \gamma_{sub} = 8.8 + 0.01 \cdot N_{60}
+
+    Examples
+    --------
+    >>> from geolysis.core.estimators import SubmergedUnitWeight
+    >>> suw_est = SubmergedUnitWeight(std_spt_number=15.0)
+    >>> suw_est.submerged_wgt
+    8.95
+    """
+
     std_spt_number: float
+
+    _unit = kN_m3
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -57,75 +159,6 @@ class SubmergedUnitWeight:
         |rarr| :math:`kN/m^3`
         """
         return 8.8 + 0.01 * self.std_spt_number
-
-
-# @dataclass
-# class SoilUnitWeight:
-#     r"""Estimates the ``moist``, ``saturated`` and ``submerged`` unit weight
-#     of soil sample from ``SPT N60``.
-
-#     Parameters
-#     ----------
-#     std_spt_number : float
-#         SPT N-value standardized for field procedures considering 60% energy.
-
-#     Attributes
-#     ----------
-#     std_spt_number : float
-#     moist_wgt : float
-#     saturated_wgt : float
-#     submerged_wgt : float
-
-#     Notes
-#     -----
-#     The following formulae below are used for estimating the ``moist``, ``saturated``,
-#     and ``submerged`` unit weight respectively.
-
-#     .. math::
-
-#         \gamma_{moist} &= 16.0 + 0.1 \cdot N_{60}
-
-#         \gamma_{sat} &= 16.8 + 0.15 \cdot N_{60}
-
-#         \gamma_{sub} &= 8.8 + 0.01 \cdot N_{60}
-
-#     Examples
-#     --------
-#     >>> from geolysis.estimators import SoilUnitWeight
-
-#     >>> suw_est = SoilUnitWeight(std_spt_number=15.0)
-#     >>> suw_est.moist_wgt
-#     17.5
-#     >>> suw_est.saturated_wgt
-#     19.05
-#     >>> suw_est.submerged_wgt
-#     8.95
-#     """
-
-#     std_spt_number: float
-
-#     @property
-#     @round_
-#     def moist_wgt(self) -> float:
-#         """Return the ``moist unit weight`` for cohesionless soils.
-#         |rarr| :math:`kN/m^3`"""
-#         return 16.0 + 0.1 * self.std_spt_number
-
-#     @property
-#     @round_
-#     def saturated_wgt(self) -> float:
-#         """Return the ``saturated unit weight`` for cohesive soils.
-#         |rarr| :math:`kN/m^3`
-#         """
-#         return 16.8 + 0.15 * self.std_spt_number
-
-#     @property
-#     @round_
-#     def submerged_wgt(self) -> float:
-#         """Return the ``submerged unit weight`` for cohesionless soils.
-#         |rarr| :math:`kN/m^3`
-#         """
-#         return 8.8 + 0.01 * self.std_spt_number
 
 
 class _CompressionIndexEst(Protocol):
@@ -146,7 +179,6 @@ class TerzaghiCompressionIndex:
 
     Attributes
     ----------
-    liquid_limit : float
     compression_index : float
 
     Notes
@@ -164,6 +196,12 @@ class TerzaghiCompressionIndex:
     """
 
     liquid_limit: float
+
+    _unit = ""
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -183,7 +221,6 @@ class SkemptonCompressionIndex:
 
     Attributes
     ----------
-    liquid_limit : float
     compression_index : float
 
     Notes
@@ -201,6 +238,12 @@ class SkemptonCompressionIndex:
     """
 
     liquid_limit: float
+
+    _unit = ""
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -220,7 +263,6 @@ class HoughCompressionIndex:
 
     Attributes
     ----------
-    void_ratio : float
     compression_index : float
 
     Notes
@@ -238,6 +280,12 @@ class HoughCompressionIndex:
     """
 
     void_ratio: float
+
+    _unit = ""
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -264,7 +312,6 @@ class WolffSoilFrictionAngle:
 
     Attributes
     ----------
-    std_spt_number : float
     soil_friction_angle : float
 
     Notes
@@ -283,6 +330,12 @@ class WolffSoilFrictionAngle:
     """
 
     std_spt_number: float
+
+    _unit = deg
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
@@ -303,18 +356,15 @@ class KullhawyMayneSoilFrictionAngle:
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure, ``eop`` should be in the same unit as
         ``atm_pressure``.
-    atm_pressure : float, unit = :math:`kN/m^2`
+    atm_pressure : float, :math:`kN/m^2`
         Atmospheric pressure, ``atm_pressure`` should be in the same unit as
         ``eop``.
 
     Attributes
     ----------
-    std_spt_number : float
-    eop : float
-    atm_pressure : float
     soil_friction_angle : float
 
     Raises
@@ -341,14 +391,19 @@ class KullhawyMayneSoilFrictionAngle:
     37.4103
     """
 
+    _unit = deg
+
     def __init__(self, std_spt_number: float, eop: float, atm_pressure: float):
         self.std_spt_number = std_spt_number
         self.eop = eop
         self.atm_pressure = atm_pressure
 
     @property
+    def unit(self) -> str:
+        return self._unit
+
+    @property
     def atm_pressure(self) -> float:
-        """Atmospheric pressure."""
         return self._atm_pressure
 
     @atm_pressure.setter
@@ -382,13 +437,11 @@ class StroudUndrainedShearStrength:
     ----------
     std_spt_number : float
         SPT N-value standardized for field procedures.
-    k : float, default=3.5, unit = :math:`kN/m^2`
+    k : float, default=3.5, :math:`kN/m^2`
         Stroud constant. :math:`3.5 \le k \le 6.5`
 
     Attributes
     ----------
-    spt_n_60 : float
-    k : float
     undrained_shear_strength : float
 
     Raises
@@ -411,13 +464,18 @@ class StroudUndrainedShearStrength:
     35.0
     """
 
+    _unit = kPa
+
     def __init__(self, std_spt_number: float, k=3.5) -> None:
         self.std_spt_number = std_spt_number
         self.k = k
 
     @property
+    def unit(self) -> str:
+        return self._unit
+
+    @property
     def k(self) -> float:
-        """Stroud constant."""
         return self._k
 
     @k.setter
@@ -440,15 +498,13 @@ class SkemptonUndrainedShearStrength:
 
     Parameters
     ----------
-    eop : float, unit = :math:`kN/m^2`
+    eop : float, :math:`kN/m^2`
         Effective overburden pressure.
     plasticity_index : float
         Range of water content over which soil remains in plastic condition.
 
     Attributes
     ----------
-    eop : float
-    plasticity_index : float
     undrained_shear_strength : float
 
     Notes
@@ -472,6 +528,12 @@ class SkemptonUndrainedShearStrength:
 
     eop: float
     plasticity_index: float
+
+    _unit = kPa
+
+    @property
+    def unit(self) -> str:
+        return self._unit
 
     @property
     @round_
