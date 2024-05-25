@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geolysis"
-description = "geolysis is an opensource software for geotechnical engineering analysis and modeling."
+description = "geolysis.core is an opensource software for geotechnical engineering analysis and modeling."
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "MIT License" }
 requires-python = ">=3.10"
@@ -50,7 +50,7 @@ exclude = ["tests*"]
 namespaces = false
 
 [project.optional-dependencies]
-dev = ["black", "pytest", "mypy", "pytest-cov"]
+dev = ["black", "pytest", "mypy", "pytest-cov", "coverage"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --verbose --strict-markers --doctest-modules"
