@@ -125,7 +125,12 @@ html_theme_options = {
     ],
     # "navbar_start": ["navbar-logo"],
     "navbar_align": "content",
-    "navbar_end": ["search-button", "version-switcher", "navbar-icon-links"],
+    "navbar_end": [
+        "search-button",
+        "version-switcher",
+        "theme-switcher",
+        "navbar-icon-links",
+    ],
     "navbar_persistent": [],
     "secondary_sidebar_items": ["page-toc", "edit-this-page", "sourcelink"],
     "show_prev_next": False,
