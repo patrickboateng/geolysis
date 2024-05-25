@@ -1,4 +1,4 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 from geolysis.core.constants import UNIT
 from geolysis.core.foundation import FoundationSize
