@@ -27,6 +27,33 @@ class EstimatorError(ValueError):
     pass
 
 
+# Protocols
+
+
+class _UnitWeight(Protocol):
+    @property
+    @abstractmethod
+    def unit_wgt(self): ...
+
+
+class _CompressionIndexEst(Protocol):
+    @property
+    @abstractmethod
+    def compression_index(self) -> float: ...
+
+
+class _SoilFrictionAngleEst(Protocol):
+    @property
+    @abstractmethod
+    def soil_friction_angle(self) -> float: ...
+
+
+class _UndrainedShearStrengthEst(Protocol):
+    @property
+    @abstractmethod
+    def undrained_shear_strength(self) -> float: ...
+
+
 @dataclass
 class MoistUnitWeight:
     r"""Estimates the moist unit weight of soil from SPT N-value.
@@ -39,7 +66,7 @@ class MoistUnitWeight:
 
     Attributes
     ----------
-    moist_wgt : float
+    unit_wgt : float
 
     Notes
     -----
@@ -51,7 +78,7 @@ class MoistUnitWeight:
     --------
     >>> from geolysis.core.estimators import MoistUnitWeight
     >>> suw_est = MoistUnitWeight(std_spt_number=15.0)
-    >>> suw_est.moist_wgt
+    >>> suw_est.unit_wgt
     17.5
     """
 
@@ -65,7 +92,7 @@ class MoistUnitWeight:
 
     @property
     @round_
-    def moist_wgt(self) -> float:
+    def unit_wgt(self) -> float:
         """Return the ``moist unit weight`` for cohesionless soils.
         |rarr| :math:`kN/m^3`"""
         return 16.0 + 0.1 * self.std_spt_number
@@ -83,7 +110,7 @@ class SaturatedUnitWeight:
 
     Attributes
     ----------
-    saturated_wgt : float
+    unit_wgt : float
 
     Notes
     -----
@@ -95,7 +122,7 @@ class SaturatedUnitWeight:
     --------
     >>> from geolysis.core.estimators import SaturatedUnitWeight
     >>> suw_est = SaturatedUnitWeight(std_spt_number=15.0)
-    >>> suw_est.saturated_wgt
+    >>> suw_est.unit_wgt
     19.05
     """
 
@@ -109,7 +136,7 @@ class SaturatedUnitWeight:
 
     @property
     @round_
-    def saturated_wgt(self) -> float:
+    def unit_wgt(self) -> float:
         """Return the ``saturated unit weight`` for cohesive soils.
         |rarr| :math:`kN/m^3`
         """
@@ -128,7 +155,7 @@ class SubmergedUnitWeight:
 
     Attributes
     ----------
-    submerged_wgt : float
+    unit_wgt : float
 
     Notes
     -----
@@ -140,7 +167,7 @@ class SubmergedUnitWeight:
     --------
     >>> from geolysis.core.estimators import SubmergedUnitWeight
     >>> suw_est = SubmergedUnitWeight(std_spt_number=15.0)
-    >>> suw_est.submerged_wgt
+    >>> suw_est.unit_wgt
     8.95
     """
 
@@ -154,17 +181,11 @@ class SubmergedUnitWeight:
 
     @property
     @round_
-    def submerged_wgt(self) -> float:
+    def unit_wgt(self) -> float:
         """Return the ``submerged unit weight`` for cohesionless soils.
         |rarr| :math:`kN/m^3`
         """
         return 8.8 + 0.01 * self.std_spt_number
-
-
-class _CompressionIndexEst(Protocol):
-    @property
-    @abstractmethod
-    def compression_index(self) -> float: ...
 
 
 @dataclass
@@ -293,12 +314,6 @@ class HoughCompressionIndex:
         return 0.29 * (self.void_ratio - 0.27)
 
 
-class _SoilFrictionAngleEst(Protocol):
-    @property
-    @abstractmethod
-    def soil_friction_angle(self) -> float: ...
-
-
 @dataclass
 class WolffSoilFrictionAngle:
     r"""Soil Friction Angle according to ``Wolff (1989)``.
@@ -419,12 +434,6 @@ class KullhawyMayneSoilFrictionAngle:
             12.2 + 20.3 * (self.eop / self.atm_pressure)
         )
         return arctan(angle**0.34)
-
-
-class _UndrainedShearStrengthEst(Protocol):
-    @property
-    @abstractmethod
-    def undrained_shear_strength(self) -> float: ...
 
 
 @dataclass
