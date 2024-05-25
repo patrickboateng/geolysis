@@ -70,9 +70,6 @@ to advanced geotechnical designs.
    `geolysis.ai` explores the use of Artificial Intelligence (**AI**) in
    enhancing productivity in Geotechnical Engineering.
 
-Check out the [release notes](https://geolysis.rtfd.io/release_notes/index.html)
-for features.
-
 ## Project Links
 
 - [Documentation](https://geolysis.readthedocs.org/en/latest)
@@ -157,7 +154,8 @@ USCS Classification
 
 ## Release History
 
-<!-- Check the [changelog][changelog_url] for release history. -->
+Check out the [release notes](https://geolysis.rtfd.io/en/latest/release_notes/index.html)
+for features.
 
 ## Code of Conduct
 
