@@ -1,4 +1,5 @@
-from typing import NamedTuple
+from abc import abstractmethod
+from typing import NamedTuple, Protocol
 
 from .constants import ERROR_TOL
 from .utils import isclose, round_
@@ -12,6 +13,17 @@ class PSDAggSumError(ValueError):
 
 class SoilGradationError(ZeroDivisionError):
     pass
+
+
+class _SoilClassifier(Protocol):
+
+    @property
+    @abstractmethod
+    def soil_class(self): ...
+
+    @property
+    @abstractmethod
+    def soil_desc(self): ...
 
 
 #: USCS symbol for gravel.
