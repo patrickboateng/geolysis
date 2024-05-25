@@ -1,114 +1,107 @@
-.. :html_theme.sidebar_secondary.remove:
+:html_theme.sidebar_secondary.remove:
 
-**********************
-geolysis documentation
-**********************
+***************************
+geolysis.core documentation
+***************************
 
 .. toctree::
    :hidden:
 
-   User Guide          <user_guide/index>
-   API Reference       <reference/geolysis/index>
+   Getting Started     <getting_started>
+   API Reference       <reference/geolysis/core/index>
    Contributor's Guide <dev/index>
    Release notes       <release_notes/index>
+   About Us            <about>
 
-.. GEPs <geps/index>
+``geolysis.core`` is an open-source software that provides features
+for analyzing geotechnical results obtained from laboratory and field
+tests. Some of the features implemented include soil classification,
+standard penetration test analysis (such as SPT :math:`N_{design}` and
+SPT N-value corrections),and calculating the allowable bearing capacity
+of soils from Standard Penetration Test N-values. There are more
+features underway, which include settlement analysis, ultimate bearing
+capacity analysis, etc.
 
-What is ``geolysis``?
-=====================
+``geolysis.core`` is the foundation application on which other parts
+of the application will depend. Developers can also use  the
+``geolysis.core`` package to power their applications.
 
-``geolysis`` is an open-source software for geotechnical analysis
-and modeling. It provides features such as ``soil classifications``
-(based on the ``USCS`` and ``AASHTO`` classification standards),
-estimating ``soil bearing capacity`` using the SPT N-value, and
-estimating soil engineering parameters such as ``soil unit weight``
-(``moist``, ``saturated``, and ``submerged``), ``compression index``,
-``soil internal angle of friction``, and ``undrained shear strength of soil``.
 
-**Features to include in upcoming versions:**
+As of the ``0.3.0`` release, ``geolysis`` only provides the ``core``
+package which includes tools for geotechnical engineers to perform
+analysis on results obtained from laboratory and field tests.
 
-- Settlement analysis
-- Discrete element method (DEM)
+Check out the `about page <about.html>`_ for a more comprehensive
+overview of the vision and mission of ``geolysis``.
 
-Quick links
-===========
+.. note::
+
+   We would like to inform you that our project is currently in the
+   early stages and we are actively developing the core features and
+   functionalities of the software, so kindly be patient if things
+   change or features iterate and change quickly.
+
+   Once ``geolysis.core`` hits ``1.0.0``, it will slow down considerably.
 
 .. grid:: 3
    :gutter: 2
 
-   .. grid-item-card::  
-      :link: user_guide/index
+   .. grid-item-card::
+      :link: getting_started
       :link-type: doc
 
       :fas:`person-running;1em;sd-text-info` Getting Started
       ^^^
 
-      New to geolysis? Check out the absolute beginners guide.
-
-   .. grid-item-card::  
-      :link: user_guide/index
-      :link-type: doc
-
-      :fas:`book-open-reader;1em;sd-text-info` User Guide 
-      ^^^
-
-      The user guide provides practical and in-depth information on key 
-      concepts of geolysis.
+      New to ``geolysis``? Check out the absolute beginner's guide.
 
    .. grid-item-card::
-      :link: reference/geolysis/index
+      :link: reference/geolysis/core/index
       :link-type: doc
 
       :fas:`code;1em;sd-text-info` API Reference
       ^^^
 
-      This is a description of all packages, modules, classes, and functions that
-      geolysis offers.
+      This is a description of all packages, modules, classes, and
+      functions that ``geolysis.core`` offers.
 
-   .. grid-item-card::  
+   .. grid-item-card::
       :link: dev/index
       :link-type: doc
 
-      :fas:`terminal;1em;sd-text-info` Contributor's Guide 
+      :fas:`terminal;1em;sd-text-info` Contributor's Guide
       ^^^
 
       Want to add to the codebase? Check out the contribution guidelines.
 
-   .. grid-item-card::  
+   .. grid-item-card::
       :link: release_notes/index
       :link-type: doc
 
       :fas:`history;1em;sd-text-info` Release notes
       ^^^
 
-      Want to add to the codebase? Check out the contribution guidelines.
+      Want to know how ``geolysis`` has evolved? Check out the release
+      notes.
 
+   .. grid-item-card::
+      :link: about
+      :link-type: doc
 
-.. .. grid-item-card::  
-..       :link: about
-..       :link-type: doc
+      :fas:`users;1em;sd-text-info` About Us
+      ^^^
 
-..       :fas:`users;1em;sd-text-info` About Us
-..       ^^^
+      Want to know more about the ``geolysis`` project? Checkout the about
+      page for a comprehensive look at ``geolysis``.
 
-..       Get to know about the project. Learn where we are going and how we
-..       work together.
+   .. grid-item-card::
+      :link: dev/style_guide
+      :link-type: doc
 
-.. .. grid-item-card::  
-..       :link: geps/index
-..       :link-type: doc
+      :fas:`pen-to-square;1em;sd-text-info` Style Guide
+      ^^^
 
-..       :fas:`lightbulb;1em;sd-text-info` GEPs 
-..       ^^^
-
-..       Geolysis Enhancement Proposals (GEPs), documents describing major changes 
-..       to be applied to the package. 
-
-.. .. note:: 
-
-..    We would like to inform you that our project is currently in the **pre-alpha stage** of 
-..    development. This is an early phase where we are actively working on developing the core 
-..    features and functionalities of our software.
+      Style guides for developing ``geolysis.core``.
 
 Indices and tables
 ==================
@@ -116,4 +109,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

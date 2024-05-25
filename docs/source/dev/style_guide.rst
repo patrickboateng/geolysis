@@ -3,16 +3,16 @@ Python Style Guide
 ******************
 
 We follow the `PEP8 <https://peps.python.org/pep-0008/>`_ style guide
-for formatting Python code. Docstrings follow 
+for formatting Python code. Docstrings follow
 `PEP257 <https://peps.python.org/pep-0257/>`_. Also Please
 see `PEP258 <https://peps.python.org/pep-0258/>`_, "Docutils Design
 Specification", for a detailed description of attributes and
-additional docstrings. 
+additional docstrings.
 
-`NumPy docstrings style guide <https://numpydoc.readthedocs.io/en/latest/format.html>`_ 
+`NumPy docstrings style guide <https://numpydoc.readthedocs.io/en/latest/format.html>`_
 is used as the documentation format for documenting objects (``packages``,
-``modules``, ``classes``, ``methods``, ``functions`` and ``GLOBAL variables``) 
-in this package. It is recommended to read the NumPy docstrings style 
+``modules``, ``classes``, ``methods``, ``functions`` and ``GLOBAL variables``)
+in this package. It is recommended to read the NumPy docstrings style
 guide before contributing code to ``geolysis``.
 
 The rest of the document describes additions and clarifications to
@@ -26,8 +26,8 @@ Use 4 spaces (no tabs) for indentation.
 Import convention
 =================
 
-All imports should be at the top of the file grouped into 3 sections 
-and separated by blanklines. The sections are, **system imports**, 
+All imports should be at the top of the file grouped into 3 sections
+and separated by blanklines. The sections should be, **system imports**,
 **third party imports**, and **geolysis imports**.
 
 It is recommended to import modules/submodules as follows::
@@ -45,7 +45,9 @@ You can import the main ``geolysis`` namespace as::
 
     import geolysis as gl
 
-.. note:: Never use relative imports.
+You can also import the ``core`` package as::
+
+    import geolysis.core as glc
 
 Code Documentation
 ==================
@@ -78,14 +80,14 @@ Docstring sections for classes:
 #. `References if any <https://numpydoc.readthedocs.io/en/latest/format.html#reference>`_
 #. `Examples <https://numpydoc.readthedocs.io/en/latest/format.html#examples>`_
 
-Summary of public methods is automatically added by `numpydoc <https://numpydoc.readthedocs.io/en/latest/install.html>`_ 
+Summary of public methods is automatically added by `numpydoc <https://numpydoc.readthedocs.io/en/latest/install.html>`_
 sphinx extension.
 
 Objects in a class should be arranged in the following order:
 
 #. Class Variables
 #. Dunder Methods (eg. ``__init__``, ``__str__``, etc)
-#. Private Methods/Properties
+#. Private Methods/Properties (eg. ``_foo(self)``)
 #. Public Properties
 #. Instance Methods
 #. Class Methods
@@ -117,8 +119,8 @@ Docstring sections for module constants:
 #. References (optional)
 #. Examples (optional)
 
-.. note:: 
+.. note::
 
-    Docstrings for constants will not be visible in text terminals 
-    because the ``__doc__`` attribute is read-only, but will appear 
-    in the documentation built with Sphinx.
+    Docstrings for constants (or primitive types) will not be visible
+    in text terminals because the ``__doc__`` attribute is read-only,
+    but will appear in the documentation built with Sphinx.

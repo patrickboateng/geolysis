@@ -4,16 +4,16 @@ February 2024 [0.2.0]
 
 :Editor: Patrick Boateng
 
-.. warning:: 
+.. warning::
 
     This version has been deprecated and is not recommended
     for use in any project.
 
-Welcome to the February 2024 and the first release of 
-``geolysis``. ``geolysis`` 0.2.0 is a **pre-release** 
-version. 
+Welcome to the February 2024 and the first release of
+``geolysis``. ``geolysis`` 0.2.0 is a **pre-release**
+version.
 
-Python Versions Supported 
+Python Versions Supported
 =========================
 
 The Python versions supported are:
@@ -42,5 +42,5 @@ Contributors
 Thank You
 =========
 
-Last but certainly not least, a big *Thank You* to all the 
+Last but certainly not least, a big *Thank You* to all the
 contributors of ``geolysis``.
