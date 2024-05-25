@@ -72,6 +72,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     >>> @round_(ndigits=2)
     ... def area_of_circle(radius: float):
     ...   return PI * (radius ** 2)
+
     >>> area_of_circle(radius=2.0)
     12.57
 
@@ -80,6 +81,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     >>> @round_
     ... def area_of_circle(radius: float):
     ...   return PI * (radius ** 2)
+
     >>> area_of_circle(radius=2.0)
     12.5664
 
