@@ -1,12 +1,12 @@
 [
   {
-    "name": "dev",
+    "name": "latest",
     "version": "dev",
-    "url": "https://geolysis.readthedocs.io/en/latest/"
+    "url": "https://geolysis.readthedocs.io/en/latest/",
+    "preferred": true
   },
   {
     "version": "v0.3.0",
-    "url": "https://geolysis.readthedocs.io/en/v0.3.0/",
-    "preferred": true
+    "url": "https://geolysis.readthedocs.io/en/v0.3.0/"
   }
 ]
