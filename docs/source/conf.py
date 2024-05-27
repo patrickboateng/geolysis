@@ -102,7 +102,7 @@ json_url = "https://geolysis.readthedocs.io/en/latest/_static/switcher.json"
 switcher_version = os.environ.get("READTHEDOCS_VERSION")
 
 # latest == main
-switcher_version = "dev" if switcher_version == "latest" else version
+switcher_version = "dev" if switcher_version == "latest" else f"v{version}"
 
 html_theme_options = {
     "header_links_before_dropdown": 4,
