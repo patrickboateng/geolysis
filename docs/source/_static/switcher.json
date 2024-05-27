@@ -6,8 +6,13 @@
     "preferred": true
   },
   {
-    "name": "0.3.0",
+    "name": "0.3.0 (stable)",
     "version": "v0.3.0",
-    "url": "https://geolysis.readthedocs.io/en/v0.3.0/"
+    "url": "https://geolysis.readthedocs.io/en/stable/"
+  },
+  {
+    "name": "0.2.0",
+    "version": "v0.2.0",
+    "url": "https://geolysis.readthedocs.io/en/v0.2.0/"
   }
 ]
