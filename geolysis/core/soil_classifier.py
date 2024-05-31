@@ -283,11 +283,11 @@ class PSD:
         Percentage of sand in soil sample.
     gravel : float
         Percentage of gravel in soil sample.
-    d_10 : float, unit=millimetre
+    d_10 : float, mm
         Diameter at which 10% of the soil by weight is finer.
-    d_30 : float, unit=millimetre
+    d_30 : float, mm
         Diameter at which 30% of the soil by weight is finer.
-    d_60 : float, unit=millimetre
+    d_60 : float, mm
         Diameter at which 60% of the soil by weight is finer.
 
     Attributes
@@ -295,7 +295,6 @@ class PSD:
     coeff_of_curvature : float
     coeff_of_uniformity : float
     type_of_coarse : str
-
 
     Raises
     ------
