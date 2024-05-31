@@ -30,9 +30,9 @@ to advanced geotechnical designs.
    Some of the features implemented so far include soil classification,
    standard penetration test analysis (such as SPT N-design and SPT
    N-value corrections), and calculating the allowable bearing capacity of
-   soils from Standard Penetration Test N-values. There are more features
-   underway, which include settlement analysis, ultimate bearing capacity
-   analysis, etc.
+   soils from Standard Penetration Test N-values. There are more features
+   underway, which include settlement analysis, ultimate bearing capacity
+   analysis, etc.
 
    ``geolysis.core`` is the foundation application on which other parts of the
    application will depend. Developers can also use ``geolysis.core`` to power
