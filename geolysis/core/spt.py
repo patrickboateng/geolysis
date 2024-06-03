@@ -92,6 +92,35 @@ class WeightedSPT:
     def spt_n_design(self) -> float:
         """SPT N-design.
 
+        .. deprecated:: 0.4.0
+            Use :attr:`spt_design_value` property instead.
+
+        Raises
+        ------
+        StatisticError
+            Raised if ``spt_numbers`` is empty.
+        """
+        if not self.spt_numbers:
+            err_msg = "method requires at least one data point."
+            raise StatisticsError(err_msg)
+
+        sum_total = 0.0
+        total_wgts = 0.0
+
+        for i, corrected_spt in enumerate(self.spt_numbers, start=1):
+            wgt = 1 / i**2
+            sum_total += wgt * corrected_spt
+            total_wgts += wgt
+
+        return sum_total / total_wgts
+
+    @property
+    @round_
+    def spt_design_value(self) -> float:
+        """SPT N-design.
+
+        .. versionadded:: 0.4.0
+
         Raises
         ------
         StatisticError
@@ -137,6 +166,27 @@ class AverageSPT:
     def spt_n_design(self) -> float:
         """SPT N-design.
 
+        .. deprecated:: 0.4.0
+            Use :attr:`spt_design_value` property instead.
+
+        Raises
+        ------
+        StatisticError
+            Raised if ``spt_numbers`` is empty.
+        """
+        try:
+            return mean(self.spt_numbers)
+        except StatisticsError as e:
+            err_msg = "method requires at least one data point."
+            raise StatisticsError(err_msg) from None
+
+    @property
+    @round_
+    def spt_design_value(self) -> float:
+        """SPT N-design.
+
+        .. versionadded:: 0.4.0
+
         Raises
         ------
         StatisticError
@@ -173,6 +223,27 @@ class MinSPT:
     @round_
     def spt_n_design(self) -> float:
         """SPT N-design.
+
+        .. deprecated:: 0.4.0
+            Use :attr:`spt_design_value` property instead.
+
+        Raises
+        ------
+        StatisticError
+            Raised if ``spt_numbers`` is empty.
+        """
+        try:
+            return min(self.spt_numbers)
+        except ValueError as e:
+            err_msg = "method requires at least one data point."
+            raise StatisticsError(err_msg) from e
+
+    @property
+    @round_
+    def spt_design_value(self) -> float:
+        """SPT N-design.
+
+        .. versionadded:: 0.4.0
 
         Raises
         ------
