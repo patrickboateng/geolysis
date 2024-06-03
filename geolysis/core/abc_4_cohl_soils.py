@@ -132,6 +132,14 @@ class BowlesABC4PadFoundation(_AbstractABC):
     341.1083
     """
 
+    def __init__(
+        self,
+        corrected_spt_number: float,
+        tol_settlement: float,
+        foundation_size: FoundationSize,
+    ):
+        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
+
     @round_
     def bearing_capacity(self) -> float:
         """Return allowable bearing capacity for isolated foundation on
@@ -193,6 +201,14 @@ class BowlesABC4MatFoundation(_AbstractABC):
     213.2817
     """
 
+    def __init__(
+        self,
+        corrected_spt_number: float,
+        tol_settlement: float,
+        foundation_size: FoundationSize,
+    ):
+        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
+
     @round_
     def bearing_capacity(self) -> float:
         """Return allowable bearing capacity for raft foundation on
@@ -249,6 +265,14 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
     >>> meyerhof_abc.bearing_capacity()
     213.6378
     """
+
+    def __init__(
+        self,
+        corrected_spt_number: float,
+        tol_settlement: float,
+        foundation_size: FoundationSize,
+    ):
+        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
 
     @round_
     def bearing_capacity(self) -> float:
@@ -311,6 +335,14 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
     >>> meyerhof_abc.bearing_capacity()
     142.4252
     """
+
+    def __init__(
+        self,
+        corrected_spt_number: float,
+        tol_settlement: float,
+        foundation_size: FoundationSize,
+    ):
+        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
 
     @round_
     def bearing_capacity(self) -> float:
@@ -484,6 +516,17 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     >>> terzaghi_abc.bearing_capacity()
     62.3049
     """
+
+    def __init__(
+        self,
+        corrected_spt_number: float,
+        tol_settlement: float,
+        water_depth: float,
+        foundation_size: FoundationSize,
+    ):
+        super().__init__(
+            corrected_spt_number, tol_settlement, water_depth, foundation_size
+        )
 
     @round_
     def bearing_capacity(self) -> float:
