@@ -9,33 +9,6 @@ from .utils import PI, cos, cot, deg2rad, exp, isclose, round_, tan
 kPa = UNIT.kPa
 
 
-class GeotechEng(enum.Enum):
-    pass
-
-
-class _AbstractTerzaghiUBC(ABC):
-
-    _unit = kPa
-
-    def __init__(
-        self,
-        cohesion: float,
-        unit_wgt: float,
-        foundation_size: FoundationSize,
-    ) -> None:
-        self.cohesion = cohesion
-        self.unit_wgt = unit_wgt
-        self.f_depth = foundation_size.depth
-        self.f_width = foundation_size.width
-
-    @abstractmethod
-    def bearing_capacity(self) -> float: ...
-
-    @property
-    def unit(self) -> str:
-        return self._unit
-
-
 class _BCF(Protocol):
     @property
     @abstractmethod
@@ -50,55 +23,66 @@ class _BCF(Protocol):
     def n_gamma(self) -> float: ...
 
 
+class GeotechEng(enum.Enum):
+    pass
+
+
 class TerzaghiBCF:
+
     def __init__(self, soil_friction_angle: float) -> None:
-        self.friction_angle = soil_friction_angle
+        self._f_angle = soil_friction_angle
 
     @property
     @round_(ndigits=2)
     def n_c(self) -> float:
         return (
             5.7
-            if isclose(self.friction_angle, 0.0)
-            else cot(self.friction_angle) * (self.n_q - 1)
+            if isclose(self._f_angle, 0.0)
+            else cot(self._f_angle) * (self.n_q - 1)
         )
 
     @property
     @round_(ndigits=2)
     def n_q(self) -> float:
         num_expr = exp(
-            (3 * PI / 2 - deg2rad(self.friction_angle))
-            * tan(self.friction_angle)
+            (3 * PI / 2 - deg2rad(self._f_angle)) * tan(self._f_angle)
         )
-        den_expr = 2 * (cos(45 + self.friction_angle / 2)) ** 2
+        den_expr = 2 * (cos(45 + self._f_angle / 2)) ** 2
         return num_expr / den_expr
 
     @property
     @round_(ndigits=2)
     def n_gamma(self) -> float:
-        return (self.n_q - 1) * tan(1.4 * self.friction_angle)
+        return (self.n_q - 1) * tan(1.4 * self._f_angle)
 
 
-class TerzaghiUBC4StripFooting(_AbstractTerzaghiUBC):
+class _AbstractTerzaghiUBC(ABC):
+
+    _unit = kPa
 
     def __init__(
         self,
-        internal_angle_of_friction: float,
+        soil_friction_angle: float,
         cohesion: float,
         unit_wgt: float,
         foundation_size: FoundationSize,
     ) -> None:
-        #: bearing capacity factors
-        self._bcf = TerzaghiBCF(internal_angle_of_friction)
+        self._f_angle = soil_friction_angle
+        self.cohesion = cohesion
+        self.unit_wgt = unit_wgt
+        self.f_depth = foundation_size.depth
+        self.f_width = foundation_size.width
+        self.f_length = foundation_size.length
 
-        super().__init__(cohesion, unit_wgt, foundation_size)
+        self._bcf = TerzaghiBCF(self.soil_friction_angle)
 
-    @round_
-    def bearing_capacity(self) -> float:
-        expr_1 = self.cohesion * self.n_c
-        expr_2 = self.unit_wgt * self.f_depth * self.n_q
-        expr_3 = self.unit_wgt * self.f_width * self.n_gamma
-        return expr_1 + expr_2 + 0.5 * expr_3
+    @property
+    def unit(self) -> str:
+        return self._unit
+
+    @property
+    def soil_friction_angle(self) -> float:
+        return self._f_angle
 
     @property
     def n_c(self) -> float:
@@ -112,7 +96,49 @@ class TerzaghiUBC4StripFooting(_AbstractTerzaghiUBC):
     def n_gamma(self) -> float:
         return self._bcf.n_gamma
 
+    @abstractmethod
+    def bearing_capacity(self) -> float: ...
 
-class TerzaghiUBC4SquareFooting:
-    def __init__(self) -> None:
-        pass
+
+class TerzaghiUBC4StripFooting(_AbstractTerzaghiUBC):
+
+    @round_
+    def bearing_capacity(self) -> float:
+        expr_1 = self.cohesion * self.n_c
+        expr_2 = self.unit_wgt * self.f_depth * self.n_q
+        expr_3 = self.unit_wgt * self.f_width * self.n_gamma
+        return expr_1 + expr_2 + 0.5 * expr_3
+
+
+class TerzaghiUBC4SquareFooting(_AbstractTerzaghiUBC):
+
+    @round_
+    def bearing_capacity(self) -> float:
+        expr_1 = self.cohesion * self.n_c
+        expr_2 = self.unit_wgt * self.f_depth * self.n_q
+        expr_3 = self.unit_wgt * self.f_width * self.n_gamma
+        return 1.3 * expr_1 + expr_2 + 0.4 * expr_3
+
+
+class TerzaghiUBC4CircFooting(_AbstractTerzaghiUBC):
+
+    @round_
+    def bearing_capacity(self) -> float:
+        expr_1 = self.cohesion * self.n_c
+        expr_2 = self.unit_wgt * self.f_depth * self.n_q
+        expr_3 = self.unit_wgt * self.f_width * self.n_gamma
+        return 1.3 * expr_1 + expr_2 + 0.3 * expr_3
+
+
+class TerzaghiUBC4RectFooting(_AbstractTerzaghiUBC):
+
+    @round_
+    def bearing_capacity(self) -> float:
+        expr_1 = self.cohesion * self.n_c
+        expr_2 = self.unit_wgt * self.f_depth * self.n_q
+        expr_3 = self.unit_wgt * self.f_width * self.n_gamma
+        return (
+            (1 + 0.3 * self.f_width / self.f_length) * expr_1
+            + expr_2
+            + (1 - 0.2 * self.f_width / self.f_length) * expr_3
+        )
