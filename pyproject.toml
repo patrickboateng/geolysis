@@ -85,6 +85,7 @@ exclude_also = [
     "def __repr__",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+    "def unit",
 ]
 show_missing = true
 skip_covered = true
