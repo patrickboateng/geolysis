@@ -1,11 +1,13 @@
-import enum
 from abc import ABC, abstractmethod
 from typing import Protocol
 
 from .constants import UNIT
 from .foundation import FoundationSize
-from .utils import PI, cos, cot, deg2rad, exp, isclose, round_, tan
+from .utils import PI, arctan, cos, cot, deg2rad, exp, isclose, round_, tan
 
+__all__ = ["TerzaghiUBC4StripFooting"]
+
+#: Unit for bearing capacity
 kPa = UNIT.kPa
 
 
@@ -21,10 +23,6 @@ class _BCF(Protocol):
     @property
     @abstractmethod
     def n_gamma(self) -> float: ...
-
-
-class GeotechEng(enum.Enum):
-    pass
 
 
 class TerzaghiBCF:
@@ -56,6 +54,10 @@ class TerzaghiBCF:
         return (self.n_q - 1) * tan(1.4 * self._f_angle)
 
 
+_local_f_angle = lambda f_angle: round(arctan((2 / 3) * tan(f_angle)), 2)
+_local_cohesion = lambda cohesion: round((2 / 3) * cohesion, 2)
+
+
 class _AbstractTerzaghiUBC(ABC):
 
     _unit = kPa
@@ -66,23 +68,27 @@ class _AbstractTerzaghiUBC(ABC):
         cohesion: float,
         unit_wgt: float,
         foundation_size: FoundationSize,
+        local_shear_failure: bool = False,
     ) -> None:
-        self._f_angle = soil_friction_angle
-        self.cohesion = cohesion
+
+        self._f_angle = (
+            _local_f_angle(soil_friction_angle)
+            if local_shear_failure
+            else soil_friction_angle
+        )
+        self.cohesion = (
+            _local_cohesion(cohesion) if local_shear_failure else cohesion
+        )
         self.unit_wgt = unit_wgt
         self.f_depth = foundation_size.depth
         self.f_width = foundation_size.width
         self.f_length = foundation_size.length
 
-        self._bcf = TerzaghiBCF(self.soil_friction_angle)
+        self._bcf = TerzaghiBCF(self._f_angle)
 
     @property
     def unit(self) -> str:
         return self._unit
-
-    @property
-    def soil_friction_angle(self) -> float:
-        return self._f_angle
 
     @property
     def n_c(self) -> float:
@@ -138,7 +144,7 @@ class TerzaghiUBC4RectFooting(_AbstractTerzaghiUBC):
         expr_2 = self.unit_wgt * self.f_depth * self.n_q
         expr_3 = self.unit_wgt * self.f_width * self.n_gamma
         return (
-            (1 + 0.3 * self.f_width / self.f_length) * expr_1
+            (1 + 0.3 * (self.f_width / self.f_length)) * expr_1
             + expr_2
-            + (1 - 0.2 * self.f_width / self.f_length) * expr_3
+            + (1 - 0.2 * (self.f_width / self.f_length)) / 2 * expr_3
         )
