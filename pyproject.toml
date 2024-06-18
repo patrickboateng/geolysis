@@ -58,15 +58,6 @@ minversion = "6.0"
 testpaths = ["tests", "geolysis"]
 doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NUMBER"]
 
-[tool.black]
-line-length = 79
-
-[tool.isort]
-profile = "black"
-
-[tool.mypy]
-ignore_missing_imports = true
-
 [tool.docformatter]
 style = "sphinx"
 black = true
