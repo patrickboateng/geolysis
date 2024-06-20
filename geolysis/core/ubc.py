@@ -95,7 +95,11 @@ class _AbstractTerzaghiUBC(ABC):
     @property
     @round_(ndigits=2)
     def sfa(self) -> float:
-        return arctan((2 / 3) * tan(self._f_angle)) if self._lsf else self._f_angle
+        return (
+            arctan((2 / 3) * tan(self._f_angle))
+            if self._lsf
+            else self._f_angle
+        )
 
     @sfa.setter
     def sfa(self, __val: float):
@@ -145,7 +149,12 @@ class _AbstractTerzaghiUBC(ABC):
             b = max(self.water_level - self.f_depth, 0)
             water_correction = min(0.5 + 0.5 * b / self.f_width, 1)
 
-        return self.moist_unit_wgt * self.f_width * self.n_gamma * water_correction
+        return (
+            self.moist_unit_wgt
+            * self.f_width
+            * self.n_gamma
+            * water_correction
+        )
 
     @abstractmethod
     def bearing_capacity(self) -> float: ...
@@ -154,14 +163,20 @@ class _AbstractTerzaghiUBC(ABC):
 class TerzaghiUBC4StripFooting(_AbstractTerzaghiUBC):
     @round_
     def bearing_capacity(self) -> float:
-        return self._cohesion_t() + self._surcharge_t() + 0.5 * self._embedment_t()
+        return (
+            self._cohesion_t()
+            + self._surcharge_t()
+            + 0.5 * self._embedment_t()
+        )
 
 
 class TerzaghiUBC4SquareFooting(_AbstractTerzaghiUBC):
     @round_
     def bearing_capacity(self) -> float:
         return (
-            1.3 * self._cohesion_t() + self._surcharge_t() + 0.4 * self._embedment_t()
+            1.3 * self._cohesion_t()
+            + self._surcharge_t()
+            + 0.4 * self._embedment_t()
         )
 
 
@@ -169,7 +184,9 @@ class TerzaghiUBC4CircFooting(_AbstractTerzaghiUBC):
     @round_
     def bearing_capacity(self) -> float:
         return (
-            1.3 * self._cohesion_t() + self._surcharge_t() + 0.3 * self._embedment_t()
+            1.3 * self._cohesion_t()
+            + self._surcharge_t()
+            + 0.3 * self._embedment_t()
         )
 
 
@@ -179,5 +196,7 @@ class TerzaghiUBC4RectFooting(_AbstractTerzaghiUBC):
         return (
             (1 + 0.3 * (self.f_width / self.f_length)) * self._cohesion_t()
             + self._surcharge_t()
-            + (1 - 0.2 * (self.f_width / self.f_length)) * 0.5 * self._embedment_t()
+            + (1 - 0.2 * (self.f_width / self.f_length))
+            * 0.5
+            * self._embedment_t()
         )
