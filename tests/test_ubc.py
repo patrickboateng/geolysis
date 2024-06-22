@@ -16,26 +16,25 @@ class TestTerzaghiBCF:
         ("f_angle, r_value"), ((0, 5.70), (10, 9.61), (20, 17.69), (35, 57.8))
     )
     def test_n_c(self, f_angle, r_value):
-        t_bcf = TerzaghiBCF(f_angle)
-        assert t_bcf.n_c == pytest.approx(r_value, ERROR_TOL)
+        t_bcf = TerzaghiBCF()
+        assert t_bcf.n_c(f_angle) == pytest.approx(r_value, ERROR_TOL)
 
     @pytest.mark.parametrize(
         ("f_angle, r_value"), ((0, 1.00), (10, 2.69), (20, 7.44), (35, 41.44))
     )
     def test_n_q(self, f_angle, r_value):
-        t_bcf = TerzaghiBCF(f_angle)
-        assert t_bcf.n_q == pytest.approx(r_value, ERROR_TOL)
+        t_bcf = TerzaghiBCF()
+        assert t_bcf.n_q(f_angle) == pytest.approx(r_value, ERROR_TOL)
 
     @pytest.mark.parametrize(
         ("f_angle, r_value"), ((0, 0.00), (10, 0.42), (20, 3.42), (35, 46.52))
     )
     def test_n_gamma(self, f_angle, r_value):
-        t_bcf = TerzaghiBCF(f_angle)
-        assert t_bcf.n_gamma == pytest.approx(r_value, ERROR_TOL)
+        t_bcf = TerzaghiBCF()
+        assert t_bcf.n_gamma(f_angle) == pytest.approx(r_value, ERROR_TOL)
 
 
 class TestTerzaghiUBC4StripFooting:
-
     def test_bearing_capacity(self):
         fs = create_foundation(
             depth=1,
@@ -46,7 +45,7 @@ class TestTerzaghiUBC4StripFooting:
         t = TerzaghiUBC4StripFooting(
             soil_friction_angle=35,
             cohesion=15,
-            unit_wgt=18,
+            moist_unit_wgt=18,
             foundation_size=fs,
         )
         assert t.bearing_capacity() == pytest.approx(2114.586, ERROR_TOL)
@@ -63,11 +62,22 @@ class TestTerzaghiUBC4SquareFooting:
         t = TerzaghiUBC4SquareFooting(
             soil_friction_angle=25,
             cohesion=15,
-            unit_wgt=18,
+            moist_unit_wgt=18,
             foundation_size=fs,
             local_shear_failure=True,
         )
         assert t.bearing_capacity() == pytest.approx(323.008, ERROR_TOL)
+
+        # fs.depth = 1.5
+        # t = TerzaghiUBC4SquareFooting(
+        #     soil_friction_angle=35,
+        #     cohesion=15,
+        #     moist_unit_wgt=18,
+        #     foundation_size=fs,
+        #     water_level=0.4,
+        # )
+
+        # assert t.bearing_capacity() == pytest.approx(1991.387, ERROR_TOL)
 
 
 class TestTerzaghiUBC4CircFooting:
@@ -81,7 +91,7 @@ class TestTerzaghiUBC4CircFooting:
         t = TerzaghiUBC4CircFooting(
             soil_friction_angle=25,
             cohesion=15,
-            unit_wgt=18,
+            moist_unit_wgt=18,
             foundation_size=fs,
             local_shear_failure=True,
         )
@@ -100,7 +110,7 @@ class TestTerzaghiUBC4RectFooting:
         t = TerzaghiUBC4RectFooting(
             soil_friction_angle=25,
             cohesion=15,
-            unit_wgt=18,
+            moist_unit_wgt=18,
             foundation_size=fs,
             local_shear_failure=True,
         )
