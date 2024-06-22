@@ -178,7 +178,7 @@ class AverageSPT:
             return mean(self.spt_numbers)
         except StatisticsError as e:
             err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg) from None
+            raise StatisticsError(err_msg) from e
 
     @property
     @round_
@@ -196,7 +196,7 @@ class AverageSPT:
             return mean(self.spt_numbers)
         except StatisticsError as e:
             err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg) from None
+            raise StatisticsError(err_msg) from e
 
 
 @dataclass
