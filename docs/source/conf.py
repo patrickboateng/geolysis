@@ -29,7 +29,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autodoc.typehints",
     "sphinx.ext.autosummary",
-    "numpydoc",
     "sphinx.ext.mathjax",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
@@ -37,6 +36,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
+    "numpydoc",
     "autoapi.extension",
     "notfound.extension",
     # "enum_tools.autoenum",
@@ -52,7 +52,6 @@ autodoc_member_order = "bysource"
 # adds this string to the start of every .rst file
 rst_prolog = """.. include:: <isonum.txt>"""
 
-
 # Sphinx AutoAPI
 autoapi_dirs = ["../../geolysis/core"]
 autoapi_root = "reference"
@@ -67,7 +66,8 @@ autoapi_options = [
     # "special-members",
     # "imported-members",
 ]
-# autoapi_generate_api_docs = False
+# autoapi_keep_files = True
+# # autoapi_generate_api_docs = False
 
 # Sphinx Copybutton
 copybutton_prompt_text = (
