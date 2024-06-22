@@ -4,13 +4,13 @@ from typing import Protocol
 from .constants import UNIT
 from .foundation import FoundationSize
 from .utils import (
+    INF,
     PI,
     arctan,
     cos,
     cot,
     deg2rad,
     exp,
-    inf,
     isclose,
     round_,
     tan,
@@ -64,7 +64,7 @@ class _AbstractTerzaghiUBC(ABC):
         cohesion: float,
         moist_unit_wgt: float,
         foundation_size: FoundationSize,
-        water_level: float = inf,
+        water_level: float = INF,
         local_shear_failure: bool = False,
     ) -> None:
         self._f_angle = soil_friction_angle
@@ -130,7 +130,7 @@ class _AbstractTerzaghiUBC(ABC):
         return self.cohesion * self.n_c
 
     def _surcharge_t(self) -> float:
-        if self.water_level == inf:
+        if self.water_level == INF:
             #: a -> water level above the base of the foundation
             a = 0
             water_correction = 1
@@ -141,7 +141,7 @@ class _AbstractTerzaghiUBC(ABC):
         return self.moist_unit_wgt * self.f_depth * self.n_q * water_correction
 
     def _embedment_t(self) -> float:
-        if self.water_level == inf:
+        if self.water_level == INF:
             #: b -> water level below the base of the foundation
             b = 0
             water_correction = 1
