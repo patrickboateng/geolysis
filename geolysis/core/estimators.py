@@ -398,8 +398,9 @@ class KullhawyMayneSoilFrictionAngle:
     --------
     >>> from geolysis.core.estimators import KullhawyMayneSoilFrictionAngle
 
-    >>> sfa_est = KullhawyMayneSoilFrictionAngle(std_spt_number=15.0, eop=103.8,
-    ...                                          atm_pressure=101.3)
+    >>> sfa_est = KullhawyMayneSoilFrictionAngle(
+    ...     std_spt_number=15.0, eop=103.8, atm_pressure=101.3
+    ... )
     >>> sfa_est.soil_friction_angle
     37.4103
     """
