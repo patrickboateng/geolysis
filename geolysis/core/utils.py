@@ -1,12 +1,15 @@
 import functools
 import math
-from math import exp, isclose, log, log10, pi, sqrt
-from statistics import fmean
-from typing import Callable, SupportsRound
+import statistics
+from typing import Callable, Iterable, SupportsRound
 
 from .constants import DECIMAL_PLACES
 
 __all__ = [
+    "exp",
+    "log10",
+    "sqrt",
+    "mean",
     "deg2rad",
     "rad2deg",
     "tan",
@@ -17,43 +20,66 @@ __all__ = [
     "round_",
 ]
 
-PI = pi
-mean = fmean
+PI = math.pi
+INF = math.inf
 
 
-def deg2rad(__x: float, /) -> float:
+isclose = math.isclose
+
+
+def exp(x: float, /) -> float:
+    """Return e to the power of x"""
+    return math.exp(x)
+
+
+def log10(x: float, /) -> float:
+    """Return the base 10 logarithm of x."""
+    return math.log10(x)
+
+
+def sqrt(x: float, /) -> float:
+    """Return the square root of x."""
+    return math.sqrt(x)
+
+
+def mean(data: Iterable[float]) -> float:
+    """Compute the arithmetic mean of data."""
+    return statistics.fmean(data=data)
+
+
+def deg2rad(x: float, /) -> float:
     """Convert angle x from degrees to radians."""
-    return math.radians(__x)
+    return math.radians(x)
 
 
-def rad2deg(__x: float, /) -> float:
+def rad2deg(x: float, /) -> float:
     """Convert angle x from radians to degrees."""
-    return math.degrees(__x)
+    return math.degrees(x)
 
 
-def tan(__x: float, /) -> float:
+def tan(x: float, /) -> float:
     """Return the tangent of x (measured in degrees)."""
-    return math.tan(deg2rad(__x))
+    return math.tan(deg2rad(x))
 
 
-def cot(__x: float, /) -> float:
+def cot(x: float, /) -> float:
     """Return the cotangent of x (measured in degrees)."""
-    return 1 / tan(__x)
+    return 1 / tan(x)
 
 
-def sin(__x: float, /) -> float:
+def sin(x: float, /) -> float:
     """Return the sine of x (measured in degrees)."""
-    return math.sin(deg2rad(__x))
+    return math.sin(deg2rad(x))
 
 
-def cos(__x: float, /) -> float:
+def cos(x: float, /) -> float:
     """Return the cosine of x (measured in degrees)."""
-    return math.cos(deg2rad(__x))
+    return math.cos(deg2rad(x))
 
 
-def arctan(__x: float, /) -> float:
+def arctan(x: float, /) -> float:
     """Return the arc tangent (measured in degrees) of x."""
-    return rad2deg(math.atan(__x))
+    return rad2deg(math.atan(x))
 
 
 def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
@@ -71,7 +97,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     --------
     >>> @round_(ndigits=2)
     ... def area_of_circle(radius: float):
-    ...   return PI * (radius ** 2)
+    ...     return PI * (radius**2)
 
     >>> area_of_circle(radius=2.0)
     12.57
@@ -80,14 +106,14 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
 
     >>> @round_
     ... def area_of_circle(radius: float):
-    ...   return PI * (radius ** 2)
+    ...     return PI * (radius**2)
 
     >>> area_of_circle(radius=2.0)
     12.5664
 
     >>> @round_(ndigits=2.0)
     ... def area_of_square(width: float):
-    ...   return width ** 2
+    ...     return width**2
     Traceback (most recent call last):
         ...
     TypeError: ndigits should be an int or a callable.
