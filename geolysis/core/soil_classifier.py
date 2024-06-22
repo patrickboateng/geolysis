@@ -16,7 +16,6 @@ class SoilGradationError(ZeroDivisionError):
 
 
 class _SoilClassifier(Protocol):
-
     @property
     @abstractmethod
     def soil_class(self): ...
@@ -195,7 +194,7 @@ class AtterbergLimits:
 
         .. math:: A = 0.73(LL - 20)
         """
-        return 0.73 * (self.liquid_limit - 20)
+        return 0.73 * (self.liquid_limit - 20.0)
 
     @property
     def type_of_fines(self) -> str:
@@ -326,8 +325,7 @@ class PSD:
         ...
     SoilGradationError: d_10, d_30, and d_60 cannot be 0
 
-    >>> psd = PSD(fines=10.29, sand=81.89, gravel=7.83,
-    ...           d_10=0.07, d_30=0.30, d_60=0.8)
+    >>> psd = PSD(fines=10.29, sand=81.89, gravel=7.83, d_10=0.07, d_30=0.30, d_60=0.8)
     >>> psd.d_10, psd.d_30, psd.d_60
     (0.07, 0.3, 0.8)
     >>> psd.coeff_of_curvature
@@ -520,48 +518,48 @@ class AASHTO:
         else:
             soil_class = self._coarse_soil_classifier()
 
-        return (
-            f"{soil_class}({self.group_index():.0f})"
-            if self.add_group_idx
-            else soil_class
-        )
+        if self.add_group_idx:
+            soil_class = f"{soil_class}({self.group_index():.0f})"
+
+        return soil_class
 
     def _coarse_soil_classifier(self) -> str:
         # A-3, Fine sand
-        if self.fines <= 10 and isclose(
-            self.plasticity_index, 0, rel_tol=ERROR_TOL
-        ):
+        LL = self.liquid_limit
+        PI = self.plasticity_index
+
+        if self.fines <= 10 and isclose(PI, 0, rel_tol=ERROR_TOL):
             soil_class = "A-3"
 
         # A-1-a -> A-1-b, Stone fragments, gravel, and sand
-        elif self.fines <= 15 and self.plasticity_index <= 6:
+        elif self.fines <= 15 and PI <= 6:
             soil_class = "A-1-a"
 
-        elif self.fines <= 25 and self.plasticity_index <= 6:
+        elif self.fines <= 25 and PI <= 6:
             soil_class = "A-1-b"
 
         # A-2-4 -> A-2-7, Silty or clayey gravel and sand
-        elif self.liquid_limit <= 40:
-            soil_class = "A-2-4" if self.plasticity_index <= 10 else "A-2-6"
+        elif LL <= 40:
+            soil_class = "A-2-4" if PI <= 10 else "A-2-6"
 
         else:
-            soil_class = "A-2-5" if self.plasticity_index <= 10 else "A-2-7"
+            soil_class = "A-2-5" if PI <= 10 else "A-2-7"
 
         return soil_class
 
     def _fine_soil_classifier(self) -> str:
         # A-4 -> A-5, Silty Soils
         # A-6 -> A-7, Clayey Soils
-        if self.liquid_limit <= 40:
-            soil_class = "A-4" if self.plasticity_index <= 10 else "A-6"
+        LL = self.liquid_limit
+        PI = self.plasticity_index
+
+        if LL <= 40:
+            soil_class = "A-4" if PI <= 10 else "A-6"
         else:
-            if self.plasticity_index <= 10:
+            if PI <= 10:
                 soil_class = "A-5"
             else:
-                _x = self.liquid_limit - 30
-                soil_class = (
-                    "A-7-5" if self.plasticity_index <= _x else "A-7-6"
-                )
+                soil_class = "A-7-5" if PI <= (LL - 30) else "A-7-6"
 
         return soil_class
 
@@ -583,10 +581,14 @@ class AASHTO:
 
     def group_index(self) -> float:
         """Return the Group Index (GI) of the soil sample."""
+
+        LL = self.liquid_limit
+        PI = self.plasticity_index
+
         a = 1 if (x_0 := self.fines - 35) < 0 else min(x_0, 40)
-        b = 1 if (x_0 := self.liquid_limit - 40) < 0 else min(x_0, 20)
+        b = 1 if (x_0 := LL - 40) < 0 else min(x_0, 20)
         c = 1 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
-        d = 1 if (x_0 := self.plasticity_index - 10) < 0 else min(x_0, 20)
+        d = 1 if (x_0 := PI - 10) < 0 else min(x_0, 20)
 
         return round(a * (0.2 + 0.005 * b) + 0.01 * c * d, 0)
 
@@ -648,22 +650,36 @@ class USCS:
     --------
     >>> from geolysis.core.soil_classifier import USCS
 
-    >>> uscs_clf = USCS(liquid_limit=34.1, plastic_limit=21.1,
-    ...                 fines=47.88, sand=37.84, gravel=14.28)
+    >>> uscs_clf = USCS(
+    ...     liquid_limit=34.1,
+    ...     plastic_limit=21.1,
+    ...     fines=47.88,
+    ...     sand=37.84,
+    ...     gravel=14.28,
+    ... )
     >>> uscs_clf.soil_class
     'SC'
     >>> uscs_clf.soil_desc
     'Clayey sands'
 
-    >>> uscs_clf = USCS(liquid_limit=27.7, plastic_limit=22.7,
-    ...                 fines=18.95, sand=77.21, gravel=3.84)
+    >>> uscs_clf = USCS(
+    ...     liquid_limit=27.7, plastic_limit=22.7, fines=18.95, sand=77.21, gravel=3.84
+    ... )
     >>> uscs_clf.soil_class
     'SM-SC'
     >>> uscs_clf.soil_desc
     'Sandy clayey silt'
 
-    >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7, fines=10.29,
-    ...                 sand=81.89, gravel=7.83, d_10=0.07, d_30=0.3, d_60=0.8)
+    >>> uscs_clf = USCS(
+    ...     liquid_limit=30.8,
+    ...     plastic_limit=20.7,
+    ...     fines=10.29,
+    ...     sand=81.89,
+    ...     gravel=7.83,
+    ...     d_10=0.07,
+    ...     d_30=0.3,
+    ...     d_60=0.8,
+    ... )
     >>> uscs_clf.soil_class
     'SW-SC'
     >>> uscs_clf.soil_desc
@@ -672,8 +688,9 @@ class USCS:
     Soil gradation (d_10, d_30, d_60) is needed to obtain soil description for
     certain type of soils.
 
-    >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7,
-    ...                 fines=10.29, sand=81.89, gravel=7.83)
+    >>> uscs_clf = USCS(
+    ...     liquid_limit=30.8, plastic_limit=20.7, fines=10.29, sand=81.89, gravel=7.83
+    ... )
     >>> uscs_clf.soil_class
     'SW-SC,SP-SC'
     >>> uscs_clf.soil_desc
@@ -793,12 +810,13 @@ class USCS:
         return soil_class
 
     def _fine_soil_classifier(self) -> str:
-        if self.atterberg_limits.liquid_limit < 50:
+        LL = self.atterberg_limits.liquid_limit
+        PI = self.atterberg_limits.plasticity_index
+
+        if LL < 50:
             # Low LL
             # Above A-line and PI > 7
-            if (self.atterberg_limits.above_A_LINE()) and (
-                self.atterberg_limits.plasticity_index > 7
-            ):
+            if (self.atterberg_limits.above_A_LINE()) and (PI > 7):
                 soil_class = f"{CLAY}{LOW_PLASTICITY}"
 
             # Limit plot in hatched area on plasticity chart
@@ -807,11 +825,10 @@ class USCS:
 
             # Below A-line or PI < 4
             else:
-                soil_class = (
-                    f"{ORGANIC}{LOW_PLASTICITY}"
-                    if self.organic
-                    else f"{SILT}{LOW_PLASTICITY}"
-                )
+                if self.organic:
+                    soil_class = f"{ORGANIC}{LOW_PLASTICITY}"
+                else:
+                    soil_class = f"{SILT}{LOW_PLASTICITY}"
 
         # High LL
         else:
@@ -821,11 +838,10 @@ class USCS:
 
             # Below A-Line
             else:
-                soil_class = (
-                    f"{ORGANIC}{HIGH_PLASTICITY}"
-                    if self.organic
-                    else f"{SILT}{HIGH_PLASTICITY}"
-                )
+                if self.organic:
+                    soil_class = f"{ORGANIC}{HIGH_PLASTICITY}"
+                else:
+                    soil_class = f"{SILT}{HIGH_PLASTICITY}"
 
         return soil_class
 
@@ -851,8 +867,8 @@ class USCS:
         try:
             soil_descr = USCS.SOIL_DESCRIPTIONS[soil_cls]
         except KeyError:
-            soil_descr = " or ".join(
-                map(USCS.SOIL_DESCRIPTIONS.get, soil_cls.split(","))
-            )  # type: ignore
+            soil_classes = soil_cls.split(",")
+            soil_descr = [USCS.SOIL_DESCRIPTIONS[cls] for cls in soil_classes]
+            soil_descr = " or ".join(soil_descr)
 
         return soil_descr
