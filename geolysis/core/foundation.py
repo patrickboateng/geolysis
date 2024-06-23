@@ -6,6 +6,7 @@ from typing import Optional, Protocol
 __all__ = [
     "create_footing",
     "create_foundation",
+    "Shape",
     "CircularFooting",
     "SquareFooting",
     "RectangularFooting",
@@ -18,11 +19,19 @@ class FootingCreationError(TypeError):
     pass
 
 
-class Shape(enum.IntEnum):
-    STRIP = enum.auto()
-    CIRCLE = enum.auto()
-    SQUARE = enum.auto()
-    RECTANGLE = enum.auto()
+class Shape(enum.Enum):
+    STRIP = "strip"
+    CIRCLE = "circle"
+    SQUARE = "square"
+    RECTANGLE = "rectangle"
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Shape):
+            return super().__eq__(other)
+        elif isinstance(other, str):
+            return self.value == other
+        else:
+            return NotImplemented
 
 
 class _FootingShape(Protocol):
@@ -323,7 +332,7 @@ def create_footing(
     thickness: float,
     width: float,
     length: Optional[float] = None,
-    footing_shape: Shape = Shape.SQUARE,
+    footing_shape: Shape | str = Shape.SQUARE,
 ) -> FootingSize:
     """A factory function that encapsulate the creation of a foundation
     footing.
@@ -336,7 +345,7 @@ def create_footing(
         Width of foundation footing.
     length : float, optional, m
         Length of foundation footing.
-    footing_shape : Shape, default=Shape.SQUARE
+    footing_shape : Shape | str, default=Shape.SQUARE
         Shape of foundation footing.
 
     Returns
@@ -362,9 +371,7 @@ def create_footing(
     >>> square_footing.footing_shape
     SquareFooting(width=1.2)
 
-    >>> circ_footing = create_footing(
-    ...     thickness=0.4, width=1.4, footing_shape=Shape.CIRCLE
-    ... )
+    >>> circ_footing = create_footing(thickness=0.4, width=1.4, footing_shape="CIRCLE")
     >>> circ_footing
     FootingSize(thickness=0.4, footing_shape=CircularFooting(diameter=1.4))
     >>> circ_footing.footing_shape
@@ -378,7 +385,8 @@ def create_footing(
     >>> rect_footing.footing_shape
     RectangularFooting(width=1.3, length=1.4)
     """
-    _footing_shape: _FootingShape
+    if isinstance(footing_shape, str):
+        footing_shape = footing_shape.casefold()
 
     match footing_shape:
         case Shape.STRIP:
@@ -407,7 +415,7 @@ def create_foundation(
     thickness: float,
     width: float,
     length: Optional[float] = None,
-    footing_shape: Shape = Shape.SQUARE,
+    footing_shape: Shape | str = Shape.SQUARE,
 ) -> FoundationSize:
     """A factory function that encapsulate the creation of a foundation.
 
@@ -421,7 +429,7 @@ def create_foundation(
         Width of foundation footing.
     length : float, optional, m
         Length of foundation footing.
-    footing_shape : Shape, default=Shape.SQUARE
+    footing_shape : Shape | str, default=Shape.SQUARE
         Shape of foundation footing.
 
     Returns
