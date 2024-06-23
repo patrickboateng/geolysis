@@ -50,6 +50,23 @@ class TestTerzaghiUBC4StripFooting:
         )
         assert t.bearing_capacity() == pytest.approx(2114.586, ERROR_TOL)
 
+    def test_emb_bearing_capacity(self):
+        fs = create_foundation(
+            depth=1.5,
+            thickness=0.3,
+            width=2.0,
+            footing_shape=Shape.STRIP,
+        )
+        t = TerzaghiUBC4StripFooting(
+            soil_friction_angle=35,
+            cohesion=15,
+            moist_unit_wgt=18,
+            foundation_size=fs,
+            water_level=0.4,
+        )
+
+        assert t.bearing_capacity() == pytest.approx(1993.59, ERROR_TOL)
+
 
 class TestTerzaghiUBC4SquareFooting:
     def test_bearing_capacity(self):
@@ -67,17 +84,6 @@ class TestTerzaghiUBC4SquareFooting:
             local_shear_failure=True,
         )
         assert t.bearing_capacity() == pytest.approx(323.008, ERROR_TOL)
-
-        # fs.depth = 1.5
-        # t = TerzaghiUBC4SquareFooting(
-        #     soil_friction_angle=35,
-        #     cohesion=15,
-        #     moist_unit_wgt=18,
-        #     foundation_size=fs,
-        #     water_level=0.4,
-        # )
-
-        # assert t.bearing_capacity() == pytest.approx(1991.387, ERROR_TOL)
 
 
 class TestTerzaghiUBC4CircFooting:
