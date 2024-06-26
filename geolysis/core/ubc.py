@@ -2,7 +2,14 @@ from abc import ABC, abstractmethod
 from typing import Protocol
 
 from .constants import UNIT
-from .foundation import FoundationSize
+from .foundation import (
+    CircularFooting,
+    FoundationSize,
+    RectangularFooting,
+    SquareFooting,
+    StripFooting,
+    _FootingShape,
+)
 from .utils import (
     INF,
     PI,
@@ -13,6 +20,7 @@ from .utils import (
     exp,
     isclose,
     round_,
+    sin,
     tan,
 )
 
@@ -31,11 +39,9 @@ class _BearingCapacityFactors(Protocol):
     @classmethod
     @abstractmethod
     def n_c(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def n_q(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def n_gamma(cls, *args, **kwargs) -> float: ...
@@ -45,25 +51,30 @@ class _ShapeFactors(Protocol):
     @classmethod
     @abstractmethod
     def s_c(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def s_q(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def s_gamma(cls, *args, **kwargs) -> float: ...
 
 
 class _DepthFactors(Protocol):
+    @staticmethod
+    def _k(d: float, w: float) -> float:
+        ratio = d / w
+
+        if ratio > 1:
+            ratio = arctan(ratio)
+
+        return ratio
+
     @classmethod
     @abstractmethod
     def d_c(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def d_q(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def d_gamma(cls, *args, **kwargs) -> float: ...
@@ -73,11 +84,9 @@ class _InclinationFactors(Protocol):
     @classmethod
     @abstractmethod
     def i_c(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def i_q(cls, *args, **kwargs) -> float: ...
-
     @classmethod
     @abstractmethod
     def i_gamma(cls, *args, **kwargs) -> float: ...
@@ -98,11 +107,11 @@ class TerzaghiBCF(_BearingCapacityFactors):
 
     @classmethod
     @round_(ndigits=2)
-    def n_gamma(cls, sfa) -> float:
+    def n_gamma(cls, sfa: float) -> float:
         return (cls.n_q(sfa) - 1) * tan(1.4 * sfa)
 
 
-class TerzaghiSF(_ShapeFactors):
+class TerzaghiShapeFactors(_ShapeFactors):
     @classmethod
     def s_c(cls) -> float:
         return 1.0
@@ -116,7 +125,7 @@ class TerzaghiSF(_ShapeFactors):
         return 1.0
 
 
-class TerzaghiDF(_DepthFactors):
+class TerzaghiDepthFactors(_DepthFactors):
     @classmethod
     def d_c(cls) -> float:
         return 1.0
@@ -130,7 +139,7 @@ class TerzaghiDF(_DepthFactors):
         return 1.0
 
 
-class TerzaghiIF(_InclinationFactors):
+class TerzaghiInclFactors(_InclinationFactors):
     @classmethod
     def i_c(cls) -> float:
         return 1.0
@@ -251,11 +260,10 @@ class AbstractUBC(ABC):
     @round_(ndigits=2)
     def _surcharge_expr(self) -> float:
         if self.water_level == INF:
-            #: a -> water level above the base of the foundation
-            a = 0
-            water_cor = 1  #: water correction
+            water_cor = 1.0  #: water correction
         else:
-            a = max(self.f_depth - self.water_level, 0)
+            #: a -> water level above the base of the foundation
+            a = max(self.f_depth - self.water_level, 0.0)
             water_cor = min(1 - 0.5 * a / self.f_depth, 1)
 
         # effective overburden pressure (surcharge)
@@ -266,10 +274,10 @@ class AbstractUBC(ABC):
     @round_(ndigits=2)
     def _emb_expr(self) -> float:
         if self.water_level == INF:
-            #: b -> water level below the base of the foundation
-            b = 0
-            water_cor = 1
+            # water correction
+            water_cor = 1.0
         else:
+            #: b -> water level below the base of the foundation
             b = max(self.water_level - self.f_depth, 0)
             water_cor = min(0.5 + 0.5 * b / self.f_width, 1)
 
@@ -335,6 +343,224 @@ class AbstractUBC(ABC):
     def i_gamma(self) -> float: ...
 
 
+class HansenBCF(_BearingCapacityFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def n_c(cls, sfa: float) -> float:
+        return 5.14 if isclose(sfa, 0.0) else cot(sfa) * (cls.n_q(sfa) - 1)
+
+    @classmethod
+    @round_(ndigits=2)
+    def n_q(cls, sfa: float) -> float:
+        return (tan(45 + sfa / 2)) ** 2 * (exp(PI * tan(sfa)))
+
+    @classmethod
+    @round_(ndigits=2)
+    def n_gamma(cls, sfa) -> float:
+        return 1.8 * (cls.n_q(sfa) - 1) * tan(sfa)
+
+
+class HansenShapeFactors(_ShapeFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def s_c(cls, footing_shape: _FootingShape) -> float:
+        if isinstance(footing_shape, StripFooting):
+            f = 1.0
+        elif isinstance(footing_shape, RectangularFooting):
+            f = 1 + 0.2 * footing_shape.width / footing_shape.length
+        elif isinstance(footing_shape, (SquareFooting, CircularFooting)):
+            f = 1.3
+        else:
+            raise ValueError
+
+        return f
+
+    @classmethod
+    @round_(ndigits=2)
+    def s_q(cls, footing_shape: _FootingShape) -> float:
+        if isinstance(footing_shape, StripFooting):
+            f = 1.0
+        elif isinstance(footing_shape, RectangularFooting):
+            f = 1 + 0.2 * footing_shape.width / footing_shape.length
+        elif isinstance(footing_shape, (SquareFooting, CircularFooting)):
+            f = 1.2
+        else:
+            raise ValueError
+
+        return f
+
+    @classmethod
+    @round_(ndigits=2)
+    def s_gamma(cls, footing_shape: _FootingShape) -> float:
+        if isinstance(footing_shape, StripFooting):
+            f = 1.0
+        elif isinstance(footing_shape, RectangularFooting):
+            f = 1 - 0.4 * footing_shape.width / footing_shape.length
+        elif isinstance(footing_shape, SquareFooting):
+            f = 0.8
+        elif isinstance(footing_shape, CircularFooting):
+            f = 0.6
+        else:
+            raise ValueError
+
+        return f
+
+
+class HansenDepthFactors(_DepthFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def d_c(cls, foundation_size: FoundationSize) -> float:
+        Df = foundation_size.depth
+        B = foundation_size.width
+        k = cls._k(Df, B)
+        return 1 + 0.4 * k
+
+    @classmethod
+    @round_(ndigits=2)
+    def d_q(cls, sfa: float, foundation_size: FoundationSize) -> float:
+        if sfa > 25.0:
+            return cls.d_c(foundation_size)
+        else:
+            Df = foundation_size.depth
+            B = foundation_size.width
+            k = cls._k(Df, B)
+            return 1 + 2 * tan(sfa) * (1 - sin(sfa)) ** 2 * k
+
+    @staticmethod
+    @round_(ndigits=2)
+    def d_gamma() -> float:
+        return 1.0
+
+
+class HansenInclFactors(_InclinationFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def i_c(
+        cls,
+        cohesion: float,
+        load_angle: float,
+        footing_shape: _FootingShape,
+    ) -> float:
+        H = cos(load_angle)
+        B = footing_shape.width
+        L = footing_shape.length
+        return 1 - H / (2 * cohesion * B * L)
+
+    @classmethod
+    def i_q(cls, load_angle: float) -> float:
+        H = cos(load_angle)
+        V = sin(load_angle)
+        return 1 - (1.5 * H) / V
+
+    @classmethod
+    def i_gamma(cls, load_angle: float) -> float:
+        return cls.i_q(load_angle) ** 2
+
+
+class VesicBCF(_BearingCapacityFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def n_c(cls, sfa: float) -> float:
+        return HansenBCF.n_c(sfa)
+
+    @classmethod
+    @round_(ndigits=2)
+    def n_q(cls, sfa: float) -> float:
+        return HansenBCF.n_q(sfa)
+
+    @classmethod
+    @round_(ndigits=2)
+    def n_gamma(cls, sfa: float) -> float:
+        return 2 * (cls.n_q(sfa) + 1) * tan(sfa)
+
+
+class VesicShapeFactors(_ShapeFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def s_c(cls, sfa: float, footing_shape: _FootingShape) -> float:
+        n_q = VesicBCF.n_q(sfa=sfa)
+        n_c = VesicBCF.n_c(sfa=sfa)
+        B = footing_shape.width
+        L = footing_shape.length
+
+        if isinstance(footing_shape, StripFooting):
+            f = 1.0
+        elif isinstance(footing_shape, RectangularFooting):
+            f = 1 + (B / L) * (n_q / n_c)
+        elif isinstance(footing_shape, (SquareFooting, CircularFooting)):
+            f = 1 + (n_q / n_c)
+        else:
+            raise ValueError
+
+        return f
+
+    @classmethod
+    @round_(ndigits=2)
+    def s_q(cls, sfa: float, footing_shape: _FootingShape) -> float:
+        if isinstance(footing_shape, StripFooting):
+            f = 1.0
+        elif isinstance(footing_shape, RectangularFooting):
+            B = footing_shape.width
+            L = footing_shape.length
+            f = 1 + (B / L) * tan(sfa)
+        elif isinstance(footing_shape, (SquareFooting, CircularFooting)):
+            f = 1 + tan(sfa)
+        else:
+            raise ValueError
+
+        return f
+
+    @classmethod
+    @round_(ndigits=2)
+    def s_gamma(cls, footing_shape: _FootingShape) -> float:
+        if isinstance(footing_shape, StripFooting):
+            f = 1.0
+        elif isinstance(footing_shape, RectangularFooting):
+            B = footing_shape.width
+            L = footing_shape.length
+            f = 1 - 0.4 * (B / L)
+        elif isinstance(footing_shape, (SquareFooting, CircularFooting)):
+            f = 0.6
+        else:
+            raise ValueError
+
+        return f
+
+
+class VesicDepthFactors(_DepthFactors):
+    @classmethod
+    @round_(ndigits=2)
+    def d_c(cls, foundation_size: FoundationSize) -> float:
+        return HansenDepthFactors.d_c(foundation_size)
+
+    @classmethod
+    @round_(ndigits=2)
+    def d_q(cls, sfa: float, foundation_size: FoundationSize) -> float:
+        Df = foundation_size.depth
+        B = foundation_size.width
+        k = cls._k(Df, B)
+        return 1 + 2 * tan(sfa) * (1 - sin(sfa)) ** 2 * k
+
+    @staticmethod
+    @round_(ndigits=2)
+    def d_gamma() -> float:
+        return 1.0
+
+
+class VesicInclFactors(_InclinationFactors):
+    @classmethod
+    def i_c(cls, load_angle: float) -> float:
+        return (1 - load_angle / 90) ** 2
+
+    @classmethod
+    def i_q(cls, load_angle: float) -> float:
+        return cls.i_c(load_angle=load_angle)
+
+    @classmethod
+    def i_gamma(cls, sfa: float, load_angle: float) -> float:
+        return 1.0 if isclose(sfa, 0.0) else (1 - load_angle / sfa) ** 2
+
+
 class _TerzaghiUBC(AbstractUBC):
     def __init__(
         self,
@@ -358,13 +584,13 @@ class _TerzaghiUBC(AbstractUBC):
         self.bcf = TerzaghiBCF()
 
         # shape factors
-        self.s_f = TerzaghiSF()
+        self.shape_factor = TerzaghiShapeFactors()
 
         # depth factors
-        self.d_f = TerzaghiDF()
+        self.depth_factor = TerzaghiDepthFactors()
 
         # inclination factors
-        self.i_f = TerzaghiIF()
+        self.incl_factor = TerzaghiInclFactors()
 
     @property
     def n_c(self) -> float:
@@ -396,47 +622,47 @@ class _TerzaghiUBC(AbstractUBC):
     @property
     def s_c(self) -> float:
         """Shape factor :math:`s_c`."""
-        return self.s_f.s_c()
+        return self.shape_factor.s_c()
 
     @property
     def s_q(self) -> float:
         """Shape factor :math:`s_q`."""
-        return self.s_f.s_q()
+        return self.shape_factor.s_q()
 
     @property
     def s_gamma(self) -> float:
         r"""Shape factor :math:`s_{\gamma}`."""
-        return self.s_f.s_gamma()
+        return self.shape_factor.s_gamma()
 
     @property
     def d_c(self) -> float:
         """Depth factor :math:`d_c`."""
-        return self.d_f.d_c()
+        return self.depth_factor.d_c()
 
     @property
     def d_q(self) -> float:
         """Depth factor :math:`d_q`."""
-        return self.d_f.d_q()
+        return self.depth_factor.d_q()
 
     @property
     def d_gamma(self) -> float:
         r"""Depth factor :math:`d_{\gamma}`."""
-        return self.d_f.d_gamma()
+        return self.depth_factor.d_gamma()
 
     @property
     def i_c(self) -> float:
         """Inclination factor :math:`i_c`."""
-        return self.i_f.i_c()
+        return self.incl_factor.i_c()
 
     @property
     def i_q(self) -> float:
         """Inclination factor :math:`i_q`."""
-        return self.i_f.i_q()
+        return self.incl_factor.i_q()
 
     @property
     def i_gamma(self) -> float:
         r"""Inclination factor :math:`i_{\gamma}`."""
-        return self.i_f.i_gamma()
+        return self.incl_factor.i_gamma()
 
     @abstractmethod
     def bearing_capacity(self) -> float: ...
@@ -688,18 +914,186 @@ class TerzaghiUBC4RectFooting(_TerzaghiUBC):
         return _coh_t + self._surcharge_expr() + _emb_t
 
 
-class HansenBCF(_BearingCapacityFactors):
-    @classmethod
-    @round_(ndigits=2)
-    def n_c(cls, sfa: float) -> float:
-        return 5.14 if isclose(sfa, 0.0) else cot(sfa) * (cls.n_q(sfa) - 1)
+class HansenUBC(AbstractUBC):
+    def __init__(
+        self,
+        soil_friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        foundation_size: FoundationSize,
+        water_level: float = INF,
+        local_shear_failure: bool = False,
+        load_angle_incl: float = 90,
+    ) -> None:
+        super().__init__(
+            soil_friction_angle,
+            cohesion,
+            moist_unit_wgt,
+            foundation_size,
+            water_level,
+            local_shear_failure,
+        )
 
-    @classmethod
-    @round_(ndigits=2)
-    def n_q(cls, sfa: float) -> float:
-        return (tan(45 + sfa) ** 2) * (exp(PI * tan(sfa)))
+        self.load_angle = load_angle_incl
 
-    @classmethod
-    @round_(ndigits=2)
-    def n_gamma(cls, sfa) -> float:
-        return 1.8 * (cls.n_q(sfa) - 1) * tan(sfa)
+        # bearing capacity factors
+        self.bcf = HansenBCF()
+
+        # shape factors
+        self.shape_factor = HansenShapeFactors()
+
+        # depth factors
+        self.depth_factor = HansenDepthFactors()
+
+        # inclination factors
+        self.incl_factor = HansenInclFactors()
+
+    @property
+    def n_c(self) -> float:
+        return self.bcf.n_c(self.sfa)
+
+    @property
+    def n_q(self) -> float:
+        return self.bcf.n_q(self.sfa)
+
+    @property
+    def n_gamma(self) -> float:
+        return self.bcf.n_gamma(self.sfa)
+
+    @property
+    def s_c(self) -> float:
+        return self.shape_factor.s_c(self.foundation_size.footing_shape)
+
+    @property
+    def s_q(self) -> float:
+        return self.shape_factor.s_q(self.foundation_size.footing_shape)
+
+    @property
+    def s_gamma(self) -> float:
+        return self.shape_factor.s_gamma(self.foundation_size.footing_shape)
+
+    @property
+    def d_c(self) -> float:
+        return self.depth_factor.d_c(self.foundation_size)
+
+    @property
+    def d_q(self) -> float:
+        return self.depth_factor.d_q(self.sfa, self.foundation_size)
+
+    @property
+    def d_gamma(self) -> float:
+        return self.depth_factor.d_gamma()
+
+    @property
+    def i_c(self) -> float:
+        return self.incl_factor.i_c(
+            self.cohesion,
+            self.load_angle,
+            self.foundation_size.footing_shape,
+        )
+
+    @property
+    def i_q(self) -> float:
+        return self.incl_factor.i_q(self.load_angle)
+
+    @property
+    def i_gamma(self) -> float:
+        return self.incl_factor.i_gamma(self.load_angle)
+
+    @round_
+    def bearing_capacity(self) -> float:
+        """Ultimate bearing capacity of soil."""
+        _emb_t = 0.5 * self._emb_expr()
+        return self._coh_expr() + self._surcharge_expr() + _emb_t
+
+
+class VesicUBC(AbstractUBC):
+    def __init__(
+        self,
+        soil_friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        foundation_size: FoundationSize,
+        water_level: float = INF,
+        local_shear_failure: bool = False,
+        load_angle_incl: float = 0.0,
+    ) -> None:
+        super().__init__(
+            soil_friction_angle,
+            cohesion,
+            moist_unit_wgt,
+            foundation_size,
+            water_level,
+            local_shear_failure,
+        )
+
+        self.load_angle = load_angle_incl
+
+        # bearing capacity factors
+        self.bcf = VesicBCF()
+
+        # shape factors
+        self.shape_factor = VesicShapeFactors()
+
+        # depth factors
+        self.depth_factor = VesicDepthFactors()
+
+        # inclination factors
+        self.incl_factor = VesicInclFactors()
+
+    @property
+    def n_c(self) -> float:
+        return self.bcf.n_c(self.sfa)
+
+    @property
+    def n_q(self) -> float:
+        return self.bcf.n_q(self.sfa)
+
+    @property
+    def n_gamma(self) -> float:
+        return self.bcf.n_gamma(self.sfa)
+
+    @property
+    def s_c(self) -> float:
+        footing_shape = self.foundation_size.footing_shape
+        return self.shape_factor.s_c(self.sfa, footing_shape)
+
+    @property
+    def s_q(self) -> float:
+        footing_shape = self.foundation_size.footing_shape
+        return self.shape_factor.s_q(self.sfa, footing_shape)
+
+    @property
+    def s_gamma(self) -> float:
+        footing_shape = self.foundation_size.footing_shape
+        return self.shape_factor.s_gamma(footing_shape)
+
+    @property
+    def d_c(self) -> float:
+        return self.depth_factor.d_c(self.foundation_size)
+
+    @property
+    def d_q(self) -> float:
+        return self.depth_factor.d_q(self.sfa, self.foundation_size)
+
+    @property
+    def d_gamma(self) -> float:
+        return self.depth_factor.d_gamma()
+
+    @property
+    def i_c(self) -> float:
+        return self.incl_factor.i_c(self.load_angle)
+
+    @property
+    def i_q(self) -> float:
+        return self.incl_factor.i_q(self.load_angle)
+
+    @property
+    def i_gamma(self) -> float:
+        return self.incl_factor.i_gamma(self.sfa, self.load_angle)
+
+    @round_
+    def bearing_capacity(self) -> float:
+        """Ultimate bearing capacity of soil."""
+        _emb_t = 0.5 * self._emb_expr()
+        return self._coh_expr() + self._surcharge_expr() + _emb_t
