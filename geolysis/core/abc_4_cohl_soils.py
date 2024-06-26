@@ -122,7 +122,7 @@ class BowlesABC4PadFoundation(_AbstractABC):
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
-    ...     depth=1.5, thickness=0.3, width=1.2, footing_shape=Shape.SQUARE
+    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
     ... )
     >>> bowles_abc = BowlesABC4PadFoundation(
     ...     corrected_spt_number=17.0,
@@ -194,7 +194,7 @@ class BowlesABC4MatFoundation(_AbstractABC):
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
-    ...     depth=1.5, thickness=0.3, width=1.2, footing_shape=Shape.SQUARE
+    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
     ... )
     >>> bowles_abc = BowlesABC4MatFoundation(
     ...     corrected_spt_number=17.0,
@@ -262,7 +262,7 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
-    ...     depth=1.5, thickness=0.3, width=1.2, footing_shape=Shape.SQUARE
+    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
     ... )
     >>> meyerhof_abc = MeyerhofABC4PadFoundation(
     ...     corrected_spt_number=17.0,
@@ -335,7 +335,7 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
-    ...     depth=1.5, thickness=0.3, width=1.2, footing_shape=Shape.SQUARE
+    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
     ... )
     >>> meyerhof_abc = MeyerhofABC4MatFoundation(
     ...     corrected_spt_number=17.0,
@@ -413,7 +413,7 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
-    ...     depth=1.5, thickness=0.3, width=1.2, footing_shape=Shape.SQUARE
+    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
     ... )
     >>> terzaghi_abc = TerzaghiABC4PadFoundation(
     ...     corrected_spt_number=17,
@@ -523,7 +523,7 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     >>> from geolysis.core.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
-    ...     depth=1.5, thickness=0.3, width=1.2, footing_shape=Shape.SQUARE
+    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
     ... )
     >>> terzaghi_abc = TerzaghiABC4MatFoundation(
     ...     corrected_spt_number=17,
