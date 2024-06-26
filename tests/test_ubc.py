@@ -3,11 +3,14 @@ import pytest
 from geolysis.core.constants import ERROR_TOL
 from geolysis.core.foundation import Shape, create_foundation
 from geolysis.core.ubc import (
+    HansenBCF,
+    HansenUBC,
     TerzaghiBCF,
     TerzaghiUBC4CircFooting,
     TerzaghiUBC4RectFooting,
     TerzaghiUBC4SquareFooting,
     TerzaghiUBC4StripFooting,
+    VesicUBC,
 )
 
 
@@ -38,7 +41,6 @@ class TestTerzaghiUBC4StripFooting:
     def test_bearing_capacity(self):
         fs = create_foundation(
             depth=1,
-            thickness=0.3,
             width=1.2,
             footing_shape=Shape.STRIP,
         )
@@ -50,10 +52,10 @@ class TestTerzaghiUBC4StripFooting:
         )
         assert t.bearing_capacity() == pytest.approx(2114.586, ERROR_TOL)
 
+    #: footing embedded in water
     def test_emb_bearing_capacity(self):
         fs = create_foundation(
             depth=1.5,
-            thickness=0.3,
             width=2.0,
             footing_shape=Shape.STRIP,
         )
@@ -72,7 +74,6 @@ class TestTerzaghiUBC4SquareFooting:
     def test_bearing_capacity(self):
         fs = create_foundation(
             depth=1.0,
-            thickness=0.3,
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
@@ -90,7 +91,6 @@ class TestTerzaghiUBC4CircFooting:
     def test_bearing_capacity(self):
         fs = create_foundation(
             depth=1.0,
-            thickness=0.3,
             width=2.3,
             footing_shape=Shape.CIRCLE,
         )
@@ -108,7 +108,6 @@ class TestTerzaghiUBC4RectFooting:
     def test_bearing_capacity(self):
         fs = create_foundation(
             depth=1.0,
-            thickness=0.3,
             width=1.5,
             length=2.5,
             footing_shape=Shape.RECTANGLE,
@@ -121,3 +120,58 @@ class TestTerzaghiUBC4RectFooting:
             local_shear_failure=True,
         )
         assert t.bearing_capacity() == pytest.approx(300.0316, ERROR_TOL)
+
+
+class TestHansenBCF:
+    @pytest.mark.parametrize(
+        ("f_angle, r_value"), ((0, 5.14), (10, 8.34), (20, 14.83), (35, 46.13))
+    )
+    def test_n_c(self, f_angle, r_value):
+        t_bcf = HansenBCF()
+        assert t_bcf.n_c(f_angle) == pytest.approx(r_value, ERROR_TOL)
+
+    @pytest.mark.parametrize(
+        ("f_angle, r_value"), ((0, 1.00), (10, 2.47), (20, 6.4), (35, 33.29))
+    )
+    def test_n_q(self, f_angle, r_value):
+        t_bcf = HansenBCF()
+        assert t_bcf.n_q(f_angle) == pytest.approx(r_value, ERROR_TOL)
+
+    @pytest.mark.parametrize(
+        ("f_angle, r_value"), ((0, 0.00), (10, 0.47), (20, 3.54), (35, 40.69))
+    )
+    def test_n_gamma(self, f_angle, r_value):
+        t_bcf = HansenBCF()
+        assert t_bcf.n_gamma(f_angle) == pytest.approx(r_value, ERROR_TOL)
+
+
+class TestHansenUBC:
+    def test_bearing_capacity(self):
+        fs = create_foundation(
+            depth=1.5,
+            width=2.0,
+            footing_shape=Shape.SQUARE,
+        )
+        t = HansenUBC(
+            soil_friction_angle=20.0,
+            cohesion=20.0,
+            moist_unit_wgt=18,
+            foundation_size=fs,
+        )
+        assert t.bearing_capacity() == pytest.approx(809.36, ERROR_TOL)
+
+
+class TestVesicUBC:
+    def test_bearing_capacity(self):
+        fs = create_foundation(
+            depth=1.0,
+            width=1.5,
+            footing_shape=Shape.SQUARE,
+        )
+        t = VesicUBC(
+            soil_friction_angle=0.0,
+            cohesion=100.0,
+            moist_unit_wgt=21.0,
+            foundation_size=fs,
+        )
+        assert t.bearing_capacity() == pytest.approx(797.81, ERROR_TOL)
