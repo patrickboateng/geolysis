@@ -1,4 +1,6 @@
+from collections import UserDict
 from dataclasses import dataclass
+from numbers import Number
 
 __all__ = ["DECIMAL_PLACES", "ERROR_TOL", "UNIT"]
 
@@ -9,6 +11,11 @@ DECIMAL_PLACES: int = 4
 #: Allowable error tolerance for mathematical values
 #: returned from functions (or methods).
 ERROR_TOL: float = 0.01
+
+
+class SoilProperties(UserDict):
+    def __getattr__(self, attr) -> Number:
+        return self.data[attr]
 
 
 @dataclass(init=False)
