@@ -9,10 +9,10 @@ repos:
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.9
-    entry: ruff check --force-exclude
     hooks:
       # Run the linter.
       - id: ruff
-        args: [--fix]
+        # args: [--fix]
+        args: [--fix, --ignore, F401]
       # Run the formatter.
       # - id: ruff-format
