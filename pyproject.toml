@@ -76,7 +76,6 @@ exclude_also = [
     "def __repr__",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
-    "def unit",
 ]
 show_missing = true
 skip_covered = true
@@ -93,3 +92,6 @@ quote-style = "double"
 indent-style = "space"
 docstring-code-format = true
 docstring-code-line-length = 79
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
