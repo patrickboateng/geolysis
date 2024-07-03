@@ -1,5 +1,4 @@
 from geolysis.core import (
-    abc_4_cohl_soils,
     constants,
     estimators,
     foundation,
@@ -7,3 +6,4 @@ from geolysis.core import (
     spt,
     utils,
 )
+from geolysis.core.bearing_capacity import abc_4_cohl_soils
