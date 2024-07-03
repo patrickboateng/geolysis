@@ -33,6 +33,8 @@ class Shape(enum.Enum):
 
 
 class _FootingShape(Protocol):
+    type_: Shape
+
     @property
     @abstractmethod
     def width(self) -> float: ...
@@ -51,6 +53,7 @@ class _FootingShape(Protocol):
 @dataclass
 class StripFooting:
     width: float
+    type_ = Shape.STRIP
 
     @property
     def length(self) -> float:
@@ -99,6 +102,7 @@ class CircularFooting:
     """
 
     diameter: float
+    type_ = Shape.CIRCLE
 
     @property
     def width(self) -> float:
@@ -147,6 +151,7 @@ class SquareFooting:
     """
 
     width: float
+    type_ = Shape.SQUARE
 
     @property
     def length(self) -> float:
@@ -185,6 +190,7 @@ class RectangularFooting:
 
     width: float
     length: float
+    type_ = Shape.RECTANGLE
 
 
 @dataclass
@@ -248,6 +254,10 @@ class FoundationSize:
     @length.setter
     def length(self, __val: float):
         self.footing_shape.length = __val
+
+    @property
+    def footing_type(self) -> Shape:
+        return self.footing_shape.type_
 
 
 def create_foundation(
