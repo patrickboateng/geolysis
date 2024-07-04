@@ -1,4 +1,4 @@
-from geolysis.core import (
+from . import (
     constants,
     estimators,
     foundation,
@@ -6,4 +6,5 @@ from geolysis.core import (
     spt,
     utils,
 )
-from geolysis.core.bearing_capacity import abc_4_cohl_soils
+from .bearing_capacity import abc_4_cohl_soils
+from .constants import set_option
