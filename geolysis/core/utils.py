@@ -1,9 +1,8 @@
-import functools
 import math
 import statistics
-from typing import Callable, Iterable, SupportsRound
+from typing import Iterable
 
-from .constants import DECIMAL_PLACES
+from .constants import get_option
 
 __all__ = [
     "exp",
@@ -82,58 +81,65 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
-    """A decorator that rounds the result of a callable to a specified number
-    of decimal places.
+def round_(func):
+    def wrapper(*args, **kwargs):
+        return round(func(*args, **kwargs), ndigits=get_option("dp"))
 
-    The returned value of the callable shoud support the ``__round__`` dunder
-    method and should be a numeric value. ``ndigits`` can either be an int
-    which will indicates the number of decimal places to round to or a callable,
-    which by default rounds the returned value to 4 decimal places.
+    return wrapper
 
-    TypeError is raised when ``ndigits`` is neither an int or a callable.
 
-    Examples
-    --------
-    >>> @round_(ndigits=2)
-    ... def area_of_circle(radius: float):
-    ...     return PI * (radius**2)
+# def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
+#     """A decorator that rounds the result of a callable to a specified number
+#     of decimal places.
 
-    >>> area_of_circle(radius=2.0)
-    12.57
+#     The returned value of the callable shoud support the ``__round__`` dunder
+#     method and should be a numeric value. ``ndigits`` can either be an int
+#     which will indicates the number of decimal places to round to or a callable,
+#     which by default rounds the returned value to 4 decimal places.
 
-    By default the function is rounded to 4 decimal places.
+#     TypeError is raised when ``ndigits`` is neither an int or a callable.
 
-    >>> @round_
-    ... def area_of_circle(radius: float):
-    ...     return PI * (radius**2)
+#     Examples
+#     --------
+#     >>> @round_(ndigits=2)
+#     ... def area_of_circle(radius: float):
+#     ...     return PI * (radius**2)
 
-    >>> area_of_circle(radius=2.0)
-    12.5664
+#     >>> area_of_circle(radius=2.0)
+#     12.57
 
-    >>> @round_(ndigits=2.0)
-    ... def area_of_square(width: float):
-    ...     return width**2
-    Traceback (most recent call last):
-        ...
-    TypeError: ndigits should be an int or a callable.
-    """
+#     By default the function is rounded to 4 decimal places.
 
-    def dec(func, ndigits=DECIMAL_PLACES):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> float:
-            return round(func(*args, **kwargs), ndigits=ndigits)
+#     >>> @round_
+#     ... def area_of_circle(radius: float):
+#     ...     return PI * (radius**2)
 
-        return wrapper
+#     >>> area_of_circle(radius=2.0)
+#     12.5664
 
-    # See if we're being called as @round_ or @round_().
-    if isinstance(ndigits, int):
-        # We're called with parens.
-        return functools.partial(dec, ndigits=ndigits)
-    if callable(ndigits):
-        # We're called as @round_ without parens.
-        f = ndigits
-        return dec(f)
-    else:
-        err_msg = "ndigits should be an int or a callable."
-        raise TypeError(err_msg)
+#     >>> @round_(ndigits=2.0)
+#     ... def area_of_square(width: float):
+#     ...     return width**2
+#     Traceback (most recent call last):
+#         ...
+#     TypeError: ndigits should be an int or a callable.
+#     """
+
+#     def dec(func, ndigits=DECIMAL_PLACES):
+#         @functools.wraps(func)
+#         def wrapper(*args, **kwargs) -> float:
+#             return round(func(*args, **kwargs), ndigits=ndigits)
+
+#         return wrapper
+
+#     # See if we're being called as @round_ or @round_().
+#     if isinstance(ndigits, int):
+#         # We're called with parens.
+#         return functools.partial(dec, ndigits=ndigits)
+#     if callable(ndigits):
+#         # We're called as @round_ without parens.
+#         f = ndigits
+#         return dec(f)
+#     else:
+#         err_msg = "ndigits should be an int or a callable."
+#         raise TypeError(err_msg)
