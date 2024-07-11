@@ -1,6 +1,5 @@
 import pytest
 
-from geolysis.core.constants import ERROR_TOL
 from geolysis.core.utils import (
     PI,
     cos,
@@ -12,6 +11,8 @@ from geolysis.core.utils import (
     sqrt,
     tan,
 )
+
+ERROR_TOL = 0.01
 
 
 def test_deg2rad():

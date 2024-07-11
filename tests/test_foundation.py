@@ -3,9 +3,7 @@ import unittest
 from geolysis.core.foundation import (
     CircularFooting,
     FoundationSize,
-    Shape,
     SquareFooting,
-    create_foundation,
 )
 
 
@@ -30,10 +28,7 @@ class TestSquareFooting(unittest.TestCase):
 
 class TestFoundationSize(unittest.TestCase):
     def testAttributes(self):
-        fs = create_foundation(
-            depth=1.5, width=1.2, footing_shape=Shape.SQUARE
-        )
-        fs = FoundationSize(depth=1.5, footing_shape=fs)
+        fs = FoundationSize(depth=1.5, footing_shape=SquareFooting(width=1.2))
 
         fs.width = 1.4
         self.assertAlmostEqual(fs.width, 1.4)
