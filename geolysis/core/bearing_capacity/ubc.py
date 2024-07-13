@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..constants import UNIT, SoilProperties
+from ..constants import UNIT, SoilData
 from ..foundation import (
     FoundationSize,
     Shape,
@@ -33,7 +33,7 @@ __all__ = [
 kPa = UNIT.kPa
 
 
-def _get_footing_info(obj) -> tuple:
+def _get_footing_info(obj):
     B = obj.f_width
     L = obj.f_length
     f_type = obj.foundation_size.footing_type
@@ -56,19 +56,19 @@ def d2w_r(d: float, w: float) -> float:
 
 class TerzaghiBCF:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_c(cls, sfa: float) -> float:
         return 5.7 if isclose(sfa, 0.0) else cot(sfa) * (cls.n_q(sfa) - 1)
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_q(cls, sfa: float) -> float:
         return exp((3 * PI / 2 - deg2rad(sfa)) * tan(sfa)) / (
             2 * (cos(45 + sfa / 2)) ** 2
         )
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_gamma(cls, sfa: float) -> float:
         return (cls.n_q(sfa) - 1) * tan(1.4 * sfa)
 
@@ -117,24 +117,24 @@ class TerzaghiInclFactors:
 
 class HansenBCF:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_c(cls, sfa: float) -> float:
         return 5.14 if isclose(sfa, 0.0) else cot(sfa) * (cls.n_q(sfa) - 1)
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_q(cls, sfa: float) -> float:
         return (tan(45 + sfa / 2)) ** 2 * (exp(PI * tan(sfa)))
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_gamma(cls, sfa) -> float:
         return 1.8 * (cls.n_q(sfa) - 1) * tan(sfa)
 
 
 class HansenShapeFactors:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def s_c(cls, f_w, f_l, footing_type: Shape) -> float:
         match footing_type:
             case Shape.STRIP:
@@ -149,7 +149,7 @@ class HansenShapeFactors:
         return f
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def s_q(cls, f_w, f_l, footing_type: Shape) -> float:
         match footing_type:
             case Shape.STRIP:
@@ -164,7 +164,7 @@ class HansenShapeFactors:
         return f
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def s_gamma(cls, f_w, f_l, footing_type: Shape) -> float:
         match footing_type:
             case Shape.STRIP:
@@ -183,7 +183,7 @@ class HansenShapeFactors:
 
 class HansenDepthFactors:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def d_c(cls, foundation_size: FoundationSize) -> float:
         Df = foundation_size.depth
         B = foundation_size.width
@@ -191,7 +191,7 @@ class HansenDepthFactors:
         return 1 + 0.4 * k
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def d_q(cls, sfa: float, foundation_size: FoundationSize) -> float:
         if sfa > 25.0:
             return cls.d_c(foundation_size)
@@ -202,14 +202,14 @@ class HansenDepthFactors:
             return 1 + 2 * tan(sfa) * (1 - sin(sfa)) ** 2 * k
 
     @staticmethod
-    @round_(ndigits=2)
+    @round_
     def d_gamma() -> float:
         return 1.0
 
 
 class HansenInclFactors:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def i_c(
         cls,
         cohesion: float,
@@ -234,24 +234,24 @@ class HansenInclFactors:
 
 class VesicBCF:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_c(cls, sfa: float) -> float:
         return HansenBCF.n_c(sfa)
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_q(cls, sfa: float) -> float:
         return HansenBCF.n_q(sfa)
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def n_gamma(cls, sfa: float) -> float:
         return 2 * (cls.n_q(sfa) + 1) * tan(sfa)
 
 
 class VesicShapeFactors:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def s_c(cls, sfa: float, f_w, f_l, footing_type: Shape) -> float:
         n_q = VesicBCF.n_q(sfa=sfa)
         n_c = VesicBCF.n_c(sfa=sfa)
@@ -269,7 +269,7 @@ class VesicShapeFactors:
         return f
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def s_q(cls, sfa: float, f_w, f_l, footing_type: Shape) -> float:
         match footing_type:
             case Shape.STRIP:
@@ -284,7 +284,7 @@ class VesicShapeFactors:
         return f
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def s_gamma(cls, f_w, f_l, footing_type: Shape) -> float:
         match footing_type:
             case Shape.STRIP:
@@ -301,12 +301,12 @@ class VesicShapeFactors:
 
 class VesicDepthFactors:
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def d_c(cls, foundation_size: FoundationSize) -> float:
         return HansenDepthFactors.d_c(foundation_size)
 
     @classmethod
-    @round_(ndigits=2)
+    @round_
     def d_q(cls, sfa: float, foundation_size: FoundationSize) -> float:
         Df = foundation_size.depth
         B = foundation_size.width
@@ -314,7 +314,7 @@ class VesicDepthFactors:
         return 1 + 2 * tan(sfa) * (1 - sin(sfa)) ** 2 * k
 
     @staticmethod
-    @round_(ndigits=2)
+    @round_
     def d_gamma() -> float:
         return 1.0
 
@@ -340,7 +340,7 @@ class AbstractUBC(ABC):
 
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: SoilData,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
@@ -390,7 +390,7 @@ class AbstractUBC(ABC):
     def f_length(self, __val: float):
         self.foundation_size.length = __val
 
-    @round_(ndigits=2)
+    @round_
     def _coh_expr(self) -> float:
         return self.cohesion * self.n_c * self.s_c * self.d_c * self.i_c
 
@@ -411,7 +411,7 @@ class AbstractUBC(ABC):
         self._f_angle = __val
 
     @property
-    @round_(ndigits=2)
+    @round_
     def sfa(self) -> float:
         """Soil friction angle for either general or local shear failure.
 
@@ -427,7 +427,7 @@ class AbstractUBC(ABC):
         return _sfa
 
     @property
-    @round_(ndigits=2)
+    @round_
     def cohesion(self) -> float:
         """Cohesion of soil material.
 
@@ -441,7 +441,7 @@ class AbstractUBC(ABC):
         """Unit for bearing capacity of soil."""
         return self._unit
 
-    @round_(ndigits=2)
+    @round_
     def _surcharge_expr(self) -> float:
         if self.water_level == INF:
             water_cor = 1.0  #: water correction
@@ -455,7 +455,7 @@ class AbstractUBC(ABC):
 
         return eop * self.n_q * self.s_q * self.d_q * self.i_q * water_cor
 
-    @round_(ndigits=2)
+    @round_
     def _emb_expr(self) -> float:
         if self.water_level == INF:
             # water correction
@@ -530,7 +530,7 @@ class AbstractUBC(ABC):
 class _TerzaghiUBC(AbstractUBC):
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: SoilData,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
@@ -654,24 +654,9 @@ class TerzaghiUBC4StripFooting(_TerzaghiUBC):
 
     Attributes
     ----------
-    f_depth
-    f_width
-    f_length
-    cohesion
-    sfa
-    unit
     n_c
     n_q
     n_gamma
-    s_c
-    s_q
-    s_gamma
-    d_c
-    d_q
-    d_gamma
-    i_c
-    i_q
-    i_gamma
 
     Notes
     -----
@@ -714,24 +699,9 @@ class TerzaghiUBC4SquareFooting(_TerzaghiUBC):
 
     Attributes
     ----------
-    f_depth
-    f_width
-    f_length
-    cohesion
-    sfa
-    unit
     n_c
     n_q
     n_gamma
-    s_c
-    s_q
-    s_gamma
-    d_c
-    d_q
-    d_gamma
-    i_c
-    i_q
-    i_gamma
 
     Notes
     -----
@@ -774,24 +744,9 @@ class TerzaghiUBC4CircFooting(_TerzaghiUBC):
 
     Attributes
     ----------
-    f_depth
-    f_width
-    f_length
-    cohesion
-    sfa
-    unit
     n_c
     n_q
     n_gamma
-    s_c
-    s_q
-    s_gamma
-    d_c
-    d_q
-    d_gamma
-    i_c
-    i_q
-    i_gamma
 
     Notes
     -----
@@ -834,24 +789,9 @@ class TerzaghiUBC4RectFooting(_TerzaghiUBC):
 
     Attributes
     ----------
-    f_depth
-    f_width
-    f_length
-    cohesion
-    sfa
-    unit
     n_c
     n_q
     n_gamma
-    s_c
-    s_q
-    s_gamma
-    d_c
-    d_q
-    d_gamma
-    i_c
-    i_q
-    i_gamma
 
     Notes
     -----
@@ -880,7 +820,7 @@ class TerzaghiUBC4RectFooting(_TerzaghiUBC):
 class HansenUBC(AbstractUBC):
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: SoilData,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
@@ -974,7 +914,7 @@ class HansenUBC(AbstractUBC):
 class VesicUBC(AbstractUBC):
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: SoilData,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
