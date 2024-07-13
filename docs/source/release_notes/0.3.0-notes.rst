@@ -27,8 +27,8 @@ Summary - Release Highlights
   in the 0.3.0 release, but the API for accessing them has
   changed.
 
-- A unit property has been added to classes that return float
-  which has unit.
+- A unit property has been added to classes that return the
+  unit of the value been returned from the class method.
 
 New Features
 ============
