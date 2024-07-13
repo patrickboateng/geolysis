@@ -10,8 +10,10 @@ from geolysis.core.bearing_capacity.ubc import (
     TerzaghiUBC4StripFooting,
     VesicUBC,
 )
-from geolysis.core.constants import ERROR_TOL, SoilProperties
+from geolysis.core.constants import SoilData
 from geolysis.core.foundation import Shape, create_foundation
+
+ERROR_TOL = 0.01
 
 
 class TestTerzaghiBCF:
@@ -40,7 +42,7 @@ class TestTerzaghiBCF:
 class TestTerzaghiUBC4StripFooting:
     @classmethod
     def setup_class(cls):
-        cls.soil_prop = SoilProperties(
+        cls.soil_prop = SoilData(
             {
                 "soil_friction_angle": 35.0,
                 "cohesion": 15.0,
@@ -83,7 +85,7 @@ class TestTerzaghiUBC4SquareFooting:
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = SoilProperties(
+        soil_prop = SoilData(
             {
                 "soil_friction_angle": 25.0,
                 "cohesion": 15.0,
@@ -106,7 +108,7 @@ class TestTerzaghiUBC4CircFooting:
             width=2.3,
             footing_shape=Shape.CIRCLE,
         )
-        soil_prop = SoilProperties(
+        soil_prop = SoilData(
             {
                 "soil_friction_angle": 25.0,
                 "cohesion": 15.0,
@@ -129,7 +131,7 @@ class TestTerzaghiUBC4RectFooting:
             length=2.5,
             footing_shape=Shape.RECTANGLE,
         )
-        soil_prop = SoilProperties(
+        soil_prop = SoilData(
             {
                 "soil_friction_angle": 25.0,
                 "cohesion": 15.0,
@@ -172,7 +174,7 @@ class TestHansenUBC:
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = SoilProperties(
+        soil_prop = SoilData(
             {
                 "soil_friction_angle": 20.0,
                 "cohesion": 20.0,
@@ -190,7 +192,7 @@ class TestVesicUBC:
             width=1.5,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = SoilProperties(
+        soil_prop = SoilData(
             {
                 "soil_friction_angle": 0.0,
                 "cohesion": 100.0,
