@@ -49,7 +49,6 @@ class _AbstractABC(ABC):
 
     @property
     def f_depth(self) -> float:
-        """Depth of foundation."""
         return self.foundation_size.depth
 
     @f_depth.setter
@@ -58,7 +57,6 @@ class _AbstractABC(ABC):
 
     @property
     def f_width(self) -> float:
-        """Width of foundation footing."""
         return self.foundation_size.width
 
     @f_width.setter
@@ -66,13 +64,11 @@ class _AbstractABC(ABC):
         self.foundation_size.width = __val
 
     @property
-    def FD(self) -> float:
-        """Depth factor."""
+    def fd(self) -> float:
         return min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
 
     @property
-    def SR(self) -> float:
-        """Settlement ratio."""
+    def sr(self) -> float:
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
     @abstractmethod
@@ -151,14 +147,14 @@ class BowlesABC4PadFoundation(_AbstractABC):
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
         if self.f_width <= 1.2:
-            return 19.16 * self.corrected_spt_number * self.FD * self.SR
+            return 19.16 * self.corrected_spt_number * self.fd * self.sr
 
         return (
             11.98
             * self.corrected_spt_number
             * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-            * self.FD
-            * self.SR
+            * self.fd
+            * self.sr
         )
 
 
@@ -226,7 +222,7 @@ class BowlesABC4MatFoundation(_AbstractABC):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        return 11.98 * self.corrected_spt_number * self.FD * self.SR
+        return 11.98 * self.corrected_spt_number * self.fd * self.sr
 
 
 class MeyerhofABC4PadFoundation(_AbstractABC):
@@ -300,14 +296,14 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
         """
 
         if self.f_width <= 1.2:
-            return 12 * self.corrected_spt_number * self.FD * self.SR
+            return 12 * self.corrected_spt_number * self.fd * self.sr
 
         return (
             8
             * self.corrected_spt_number
             * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-            * self.FD
-            * self.SR
+            * self.fd
+            * self.sr
         )
 
 
@@ -375,7 +371,7 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        return 8 * self.corrected_spt_number * self.FD * self.SR
+        return 8 * self.corrected_spt_number * self.fd * self.sr
 
 
 class TerzaghiABC4PadFoundation(_AbstractABC):
@@ -458,7 +454,7 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
 
     @property
     @round_
-    def FD(self):
+    def fd(self):
         """Depth factor.
 
         :meta private:
@@ -468,7 +464,7 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
 
     @property
     @round_
-    def CW(self):
+    def cw(self):
         """Water correction factor.
 
         :meta private:
@@ -484,17 +480,17 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        correction = 1 / (self.CW * self.FD)
+        correction = 1 / (self.cw * self.fd)
 
         if self.f_width <= 1.2:
-            return 12 * self.corrected_spt_number * correction * self.SR
+            return 12 * self.corrected_spt_number * correction * self.sr
 
         return (
             8
             * self.corrected_spt_number
             * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
             * correction
-            * self.SR
+            * self.sr
         )
 
 
@@ -575,5 +571,5 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
         return (
-            8 * self.corrected_spt_number * (1 / (self.CW * self.FD)) * self.SR
+            8 * self.corrected_spt_number * (1 / (self.cw * self.fd)) * self.sr
         )
