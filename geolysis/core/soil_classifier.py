@@ -1,10 +1,12 @@
 from abc import abstractmethod
 from typing import NamedTuple, Protocol
 
-from .constants import ERROR_TOL
+# from .constants import ERROR_TOL
 from .utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
+
+ERROR_TOL = 0.01
 
 
 class PSDAggSumError(ValueError):
@@ -584,10 +586,11 @@ class AASHTO:
 
         LL = self.liquid_limit
         PI = self.plasticity_index
+        F_200 = self.fines
 
-        a = 1 if (x_0 := self.fines - 35) < 0 else min(x_0, 40)
+        a = 1 if (x_0 := F_200 - 35) < 0 else min(x_0, 40)
         b = 1 if (x_0 := LL - 40) < 0 else min(x_0, 20)
-        c = 1 if (x_0 := self.fines - 15) < 0 else min(x_0, 40)
+        c = 1 if (x_0 := F_200 - 15) < 0 else min(x_0, 40)
         d = 1 if (x_0 := PI - 10) < 0 else min(x_0, 20)
 
         return round(a * (0.2 + 0.005 * b) + 0.01 * c * d, 0)

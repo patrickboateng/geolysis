@@ -3,7 +3,8 @@ from dataclasses import KW_ONLY, dataclass
 from statistics import StatisticsError
 from typing import Protocol, Sequence
 
-from .constants import ERROR_TOL
+# from .constants import get_option
+# from .constants import ERROR_TOL
 from .utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
@@ -18,6 +19,8 @@ __all__ = [
     "SkemptonOPC",
     "DilatancyCorrection",
 ]
+
+ERROR_TOL = 0.01
 
 
 class OPCError(ValueError):
@@ -467,13 +470,13 @@ class BazaraaPeckOPC(_OPC):
     def correction(self) -> float:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=ERROR_TOL):
-            correction = 1.0
+            corr = 1.0
         elif self.eop < self.STD_PRESSURE:
-            correction = 4 / (1 + 0.0418 * self.eop)
+            corr = 4 / (1 + 0.0418 * self.eop)
         else:
-            correction = 4 / (3.25 + 0.0104 * self.eop)
+            corr = 4 / (3.25 + 0.0104 * self.eop)
 
-        return correction
+        return corr
 
     @property
     def corrected_spt_number(self) -> float:
