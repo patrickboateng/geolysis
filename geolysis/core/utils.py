@@ -1,8 +1,8 @@
 import math
 import statistics
-from typing import Iterable
+from typing import Callable, Iterable
 
-from .constants import get_option
+from .constants import Config
 
 __all__ = [
     "exp",
@@ -81,9 +81,39 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(func):
+# WrappedFunc: TypeAlias = Callable[..., Number]
+
+
+def round_(fn) -> Callable:
+    """A decorator that rounds the results of a callable to a
+    specified number of decimal places.
+
+    The returned value of the callable should support the
+    ``__round__`` dunder method and should be a numeric value.
+
+    Examples
+    --------
+    >>> import geolysis.core as glc
+    >>> @round_
+    ... def area_of_circle(r: float):
+    ...     return PI * r**2
+
+    >>> area_of_circle(r=2.0)
+    12.5664
+
+    By default the function is rounded to 4 decimal places.
+
+    >>> glc.Config.set_option("dp", 2)
+
+    >>> area_of_circle(r=2.0)
+    12.57
+
+    >>> glc.Config.reset_option("dp")
+    """
+
     def wrapper(*args, **kwargs):
-        return round(func(*args, **kwargs), ndigits=get_option("dp"))
+        dp = Config.get_option("dp")
+        return round(fn(*args, **kwargs), ndigits=dp)
 
     return wrapper
 
