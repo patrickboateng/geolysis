@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from numbers import Number
 from typing import Any, Callable, NamedTuple
 
-__all__ = ["UNIT"]
+__all__ = ["ERROR_TOL", "UNIT"]
 
 
 class RegisteredOption(NamedTuple):
@@ -99,18 +99,14 @@ class Config:
 
 
 Config.register_option("dp", 4, validator=validators.instance_of(int))
-# Config.register_option(
-#     "error_tol", 0.01, validator=validators.instance_of(Number)
-# )
-
 
 # The number of decimal places to round mathematical
 # values returned from functions (or methods) to.
 # DECIMAL_PLACES: int = 4
 
-# Allowable error tolerance for mathematical values
-# returned from functions (or methods).
-# ERROR_TOL: float = 0.01
+#: Allowable error tolerance for mathematical values
+#: returned from functions (or methods).
+ERROR_TOL: float = 0.01
 
 
 class SoilData(UserDict):
