@@ -1,12 +1,10 @@
 from abc import abstractmethod
 from typing import NamedTuple, Protocol
 
-# from .constants import ERROR_TOL
+from .constants import ERROR_TOL
 from .utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
-
-ERROR_TOL = 0.01
 
 
 class PSDAggSumError(ValueError):

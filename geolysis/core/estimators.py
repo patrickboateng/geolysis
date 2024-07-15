@@ -2,7 +2,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Protocol
 
-from .constants import UNIT
+from .constants import UNIT, ERROR_TOL
 from .utils import arctan, isclose, round_
 
 __all__ = [
@@ -21,8 +21,6 @@ __all__ = [
 deg = UNIT.deg
 kN_m3 = UNIT.kN_m3
 kPa = UNIT.kPa
-
-ERROR_TOL = 0.01
 
 
 class EstimatorError(ValueError):

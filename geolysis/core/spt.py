@@ -4,7 +4,7 @@ from statistics import StatisticsError
 from typing import Protocol, Sequence
 
 # from .constants import get_option
-# from .constants import ERROR_TOL
+from .constants import ERROR_TOL
 from .utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
@@ -19,8 +19,6 @@ __all__ = [
     "SkemptonOPC",
     "DilatancyCorrection",
 ]
-
-ERROR_TOL = 0.01
 
 
 class OPCError(ValueError):
