@@ -195,11 +195,12 @@ class HansenDepthFactors:
     def d_q(cls, sfa: float, foundation_size: FoundationSize) -> float:
         if sfa > 25.0:
             return cls.d_c(foundation_size)
-        else:
-            Df = foundation_size.depth
-            B = foundation_size.width
-            k = d2w_r(Df, B)
-            return 1 + 2 * tan(sfa) * (1 - sin(sfa)) ** 2 * k
+
+        Df = foundation_size.depth
+        B = foundation_size.width
+        k = d2w_r(Df, B)
+
+        return 1 + 2 * tan(sfa) * (1 - sin(sfa)) ** 2 * k
 
     @staticmethod
     @round_
@@ -223,9 +224,7 @@ class HansenInclFactors:
 
     @classmethod
     def i_q(cls, load_angle: float) -> float:
-        H = cos(load_angle)
-        V = sin(load_angle)
-        return 1 - (1.5 * H) / V
+        return 1 - (1.5 * cos(load_angle)) / sin(load_angle)
 
     @classmethod
     def i_gamma(cls, load_angle: float) -> float:
@@ -541,6 +540,7 @@ class _TerzaghiUBC(AbstractUBC):
             foundation_size,
             water_level,
             local_shear_failure,
+            e,
         )
 
         # bearing capacity factors
@@ -651,6 +651,9 @@ class TerzaghiUBC4StripFooting(_TerzaghiUBC):
         Indicates if local shear failure is likely to occur therefore
         modifies the soil_friction_angle and cohesion of the soil
         material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
 
     Attributes
     ----------
@@ -696,6 +699,9 @@ class TerzaghiUBC4SquareFooting(_TerzaghiUBC):
         Indicates if local shear failure is likely to occur therefore
         modifies the soil_friction_angle and cohesion of the soil
         material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
 
     Attributes
     ----------
@@ -741,6 +747,9 @@ class TerzaghiUBC4CircFooting(_TerzaghiUBC):
         Indicates if local shear failure is likely to occur therefore
         modifies the soil_friction_angle and cohesion of the soil
         material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
 
     Attributes
     ----------
@@ -786,6 +795,9 @@ class TerzaghiUBC4RectFooting(_TerzaghiUBC):
         Indicates if local shear failure is likely to occur therefore
         modifies the soil_friction_angle and cohesion of the soil
         material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
 
     Attributes
     ----------
@@ -818,6 +830,49 @@ class TerzaghiUBC4RectFooting(_TerzaghiUBC):
 
 
 class HansenUBC(AbstractUBC):
+    r"""Ultimate bearing capacity for footings on cohesionless soils
+    according to ``Hansen 1961``.
+
+    Parameters
+    ----------
+    soil_friction_angle : float
+        Internal angle of friction of soil material.
+    cohesion : float
+        Cohesion of soil material.
+    moist_unit_wgt : float
+        Moist (Bulk) unit weight of soil material.
+    foundation_size : FoundationSize
+        Size of foundation.
+    water_level : float
+        Depth of water below the ground surface.
+    local_shear_failure : float
+        Indicates if local shear failure is likely to occur therefore
+        modifies the soil_friction_angle and cohesion of the soil
+        material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
+
+    Attributes
+    ----------
+    n_c
+    n_q
+    n_gamma
+
+    Notes
+    -----
+    Ultimate bearing capacity for circular footing is given by the formula:
+
+    .. math::
+
+        q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
+              + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma}
+
+    Examples
+    --------
+
+    """
+
     def __init__(
         self,
         soil_properties: SoilData,
@@ -912,6 +967,49 @@ class HansenUBC(AbstractUBC):
 
 
 class VesicUBC(AbstractUBC):
+    r"""Ultimate bearing capacity for footings on cohesionless soils
+    according to ``Vesic 1973``.
+
+    Parameters
+    ----------
+    soil_friction_angle : float
+        Internal angle of friction of soil material.
+    cohesion : float
+        Cohesion of soil material.
+    moist_unit_wgt : float
+        Moist (Bulk) unit weight of soil material.
+    foundation_size : FoundationSize
+        Size of foundation.
+    water_level : float
+        Depth of water below the ground surface.
+    local_shear_failure : float
+        Indicates if local shear failure is likely to occur therefore
+        modifies the soil_friction_angle and cohesion of the soil
+        material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
+
+    Attributes
+    ----------
+    n_c
+    n_q
+    n_gamma
+
+    Notes
+    -----
+    Ultimate bearing capacity for circular footing is given by the formula:
+
+    .. math::
+
+        q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
+              + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma}
+
+    Examples
+    --------
+
+    """
+
     def __init__(
         self,
         soil_properties: SoilData,
