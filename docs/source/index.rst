@@ -27,7 +27,7 @@ of the application will depend. Developers can also use  the
 ``geolysis.core`` package to power their applications.
 
 
-As of the ``0.3.0`` release, ``geolysis`` only provides the ``core``
+As of the |release| release, ``geolysis`` only provides the ``core``
 package which includes tools for geotechnical engineers to perform
 analysis on results obtained from laboratory and field tests.
 

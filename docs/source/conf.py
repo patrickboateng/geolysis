@@ -79,7 +79,7 @@ copybutton_prompt_is_regexp = True
 myst_heading_anchors = 6
 
 # NumPyDoc
-numpydoc_attributes_as_param_list = False
+numpydoc_attributes_as_param_list = True
 # numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
 # -- Options for HTML output -------------------------------------------------
