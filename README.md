@@ -21,8 +21,8 @@
 
 > [!NOTE]
 > Active development of `geolysis` occurs on the `dev` branch. For more
-> information for the lastest features of `geolysis`, switch to the dev
-> branch.
+> information for the lastest features of `geolysis`, switch to the
+> `dev` branch.
 
 `geolysis` is your one-stop shop for all your geotechnical engineering
 solutions, ranging from site investigation and laboratory test analysis
