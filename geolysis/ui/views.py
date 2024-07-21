@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QMainWindow,
     QMenu,
+    QTableView,
     QTableWidget,
     QTabWidget,
     QToolBar,
@@ -55,17 +56,43 @@ class BottomCenterWidget(QWidget):
         self.setLayout(self.m_layout)
 
 
-class RightWidget(QWidget):
+class TopRightWidget(QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.m_layout = QVBoxLayout()
 
         self.plot_widget = pg.PlotWidget()
-        self.plot_widget.showGrid(True, True)
-        self.plot_widget.setBackground("w")
 
         self.m_layout.addWidget(self.plot_widget)
+
+        self.show_grid(True)
+
+        self.setLayout(self.m_layout)
+
+    def show_x_grid(self, arg: bool):
+        self._x_grid = arg
+        self.plot_widget.showGrid(self._x_grid, self._y_grid)
+
+    def show_y_grid(self, arg: bool):
+        self._y_grid = arg
+        self.plot_widget.showGrid(self._x_grid, self._y_grid)
+
+    def show_grid(self, arg: bool):
+        self._x_grid = arg
+        self._y_grid = arg
+        self.plot_widget.showGrid(self._x_grid, self._y_grid)
+
+
+class BottomRightWidget(QWidget):
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+
+        self.m_layout = QVBoxLayout()
+
+        self.table_view = QTableView()
+
+        self.m_layout.addWidget(self.table_view)
 
         self.setLayout(self.m_layout)
 
@@ -80,7 +107,8 @@ class MainWindow(QMainWindow):
         self.left_widget = LeftWiget()
         self.top_center_widget = TopCenterWidget()
         self.bottom_center_widget = BottomCenterWidget()
-        self.right_widget = RightWidget()
+        self.top_right_widget = TopRightWidget()
+        self.bottom_right_widget = BottomRightWidget()
 
         self.m_layout = QGridLayout()
 
@@ -100,7 +128,8 @@ class MainWindow(QMainWindow):
 
         self.m_layout.addWidget(self.left_widget, 0, 0, 2, 2)
         self.m_layout.addWidget(self.top_center_widget, 0, 2, 1, 5)
-        self.m_layout.addWidget(self.right_widget, 0, 7, 2, 5)
+        self.m_layout.addWidget(self.top_right_widget, 0, 7, 1, 5)
+        self.m_layout.addWidget(self.bottom_right_widget, 1, 7, 1, 5)
         self.m_layout.addWidget(self.bottom_center_widget, 1, 2, 1, 5)
 
         self.m_widget.setLayout(self.m_layout)
