@@ -5,3 +5,7 @@ build:
 
 upload:
 	twine upload --repository geolysis ./dist/*
+
+RESOURCE_PATH := ./geolysis/ui/assets
+rc:
+	pyside6-rcc $(RESOURCE_PATH)/resources.qrc -o $(RESOURCE_PATH)/resources_rc.py
