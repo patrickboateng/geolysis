@@ -1,36 +1,89 @@
 import pyqtgraph as pg
-from PySide6.QtCore import QSize
+from assets import resources_rc  # noqa: F401
+from PySide6.QtCore import QSize, QStringListModel
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
+    QComboBox,
     QFormLayout,
     QGridLayout,
+    QLabel,
+    QLineEdit,
+    QListView,
     QMainWindow,
     QMenu,
     QTableView,
     QTableWidget,
     QTabWidget,
+    QTextEdit,
     QToolBar,
-    QTreeView,
     QVBoxLayout,
     QWidget,
 )
 
 
-class LeftWiget(QWidget):
+class SideBarWidget(QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.m_layout = QVBoxLayout()
 
-        self.tree_view = QTreeView()
-        self.form_layout = QFormLayout()
+        self.tab_widget = QTabWidget()
 
-        self.m_layout.addWidget(self.tree_view)
+        model = QStringListModel()
+        model.setStringList(["Particle Size Distribution", "Atterberg Limits"])
+        # Add data to the model
+
+        self.tree_view = QListView()
+        self.tree_view.setModel(model)
+
+        wgt = QWidget()
+        lay = QVBoxLayout()
+        lay.addWidget(self.tree_view)
+        wgt.setLayout(lay)
+
+        self.tab_widget.addTab(wgt, QIcon(":/icons/beaker.png"), "Tests")
+
+        self.m_layout.addWidget(self.tab_widget)
+
+        self.setLayout(self.m_layout)
+
+
+class SampleInfoWidget(QWidget):
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+
+        self.m_layout = QVBoxLayout()
+
+        #: Sample Information
+        self.sample_id = QLineEdit()
+        self.sample_desc = QTextEdit()
+        self.sample_depth = QLineEdit()
+        self.ref_standard = QComboBox()
+        self.ref_standard.addItems(["ASTM", "BS"])
+        self.location = QLineEdit()
+
+        #: Other Information
+        self.tested_by = QLineEdit()
+
+        # section_separator = QFrame()
+        # section_separator.setFrameShape(QFrame.HLine)
+        # section_separator.setFrameShadow(QFrame.Sunken)
+
+        self.form_layout = QFormLayout()
+        self.form_layout.addRow(QLabel("Sample ID"), self.sample_id)
+        self.form_layout.addRow(QLabel("Sample Desc."), self.sample_desc)
+        self.form_layout.addRow(QLabel("Sample Depth"), self.sample_depth)
+        self.form_layout.addRow(QLabel("Ref. Standard"), self.ref_standard)
+        self.form_layout.addRow(QLabel("Location"), self.location)
+
+        self.form_layout.addRow(QLabel("Tested By"), self.tested_by)
+
         self.m_layout.addLayout(self.form_layout)
 
         self.setLayout(self.m_layout)
 
 
-class TopCenterWidget(QWidget):
+class DataEntryWidget(QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
@@ -43,7 +96,7 @@ class TopCenterWidget(QWidget):
         self.setLayout(self.m_layout)
 
 
-class BottomCenterWidget(QWidget):
+class PlotInfoWidget(QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
@@ -56,35 +109,21 @@ class BottomCenterWidget(QWidget):
         self.setLayout(self.m_layout)
 
 
-class TopRightWidget(QWidget):
+class GraphWidget(QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.m_layout = QVBoxLayout()
 
         self.plot_widget = pg.PlotWidget()
+        self.plot_widget.showGrid(x=True, y=True, alpha=1)
 
         self.m_layout.addWidget(self.plot_widget)
 
-        self.show_grid(True)
-
         self.setLayout(self.m_layout)
 
-    def show_x_grid(self, arg: bool):
-        self._x_grid = arg
-        self.plot_widget.showGrid(self._x_grid, self._y_grid)
 
-    def show_y_grid(self, arg: bool):
-        self._y_grid = arg
-        self.plot_widget.showGrid(self._x_grid, self._y_grid)
-
-    def show_grid(self, arg: bool):
-        self._x_grid = arg
-        self._y_grid = arg
-        self.plot_widget.showGrid(self._x_grid, self._y_grid)
-
-
-class BottomRightWidget(QWidget):
+class GraphInfoWidget(QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
@@ -104,11 +143,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("GeoLysis")
 
         self.m_widget = QWidget(self)
-        self.left_widget = LeftWiget()
-        self.top_center_widget = TopCenterWidget()
-        self.bottom_center_widget = BottomCenterWidget()
-        self.top_right_widget = TopRightWidget()
-        self.bottom_right_widget = BottomRightWidget()
+
+        self.sidebar = SideBarWidget()
+        self.sample_info = SampleInfoWidget()
+        self.data_entry = DataEntryWidget()
+        self.plot_info = PlotInfoWidget()
+        self.graph = GraphWidget()
+        self.graph_info = GraphInfoWidget()
 
         self.m_layout = QGridLayout()
 
@@ -119,18 +160,27 @@ class MainWindow(QMainWindow):
 
         self.menu_bar.addMenu(self.file_menu)
 
-        self.tool_bar = QToolBar(self)
+        self.tool_bar = QToolBar("Main toolbar")
         self.tool_bar.setIconSize(QSize(16, 16))
+        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
+
+        new = QAction(QIcon(":/icons/notebook.png"), "File", self)
+        # new.setStatusTip("Create a new file")
+        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.tool_bar.addAction(new)
         self.addToolBar(self.tool_bar)
+
+        self.file_menu.addAction(new)
 
         self.status_bar = self.statusBar()
         self.setStatusBar(self.status_bar)
 
-        self.m_layout.addWidget(self.left_widget, 0, 0, 2, 2)
-        self.m_layout.addWidget(self.top_center_widget, 0, 2, 1, 5)
-        self.m_layout.addWidget(self.top_right_widget, 0, 7, 1, 5)
-        self.m_layout.addWidget(self.bottom_right_widget, 1, 7, 1, 5)
-        self.m_layout.addWidget(self.bottom_center_widget, 1, 2, 1, 5)
+        self.m_layout.addWidget(self.sidebar, 0, 0, 1, 2)
+        self.m_layout.addWidget(self.sample_info, 1, 0, 1, 2)
+        self.m_layout.addWidget(self.data_entry, 0, 2, 1, 5)
+        self.m_layout.addWidget(self.plot_info, 1, 2, 1, 5)
+        self.m_layout.addWidget(self.graph, 0, 7, 1, 5)
+        self.m_layout.addWidget(self.graph_info, 1, 7, 1, 5)
 
         self.m_widget.setLayout(self.m_layout)
         self.setCentralWidget(self.m_widget)
