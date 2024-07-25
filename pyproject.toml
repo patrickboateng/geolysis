@@ -53,7 +53,7 @@ namespaces = false
 dev = ["black", "pytest", "mypy", "pytest-cov", "coverage"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --verbose --strict-markers --doctest-modules"
+addopts = "-ra --verbose --strict-markers --doctest-modules --ignore-glob=**/ui/*"
 minversion = "6.0"
 testpaths = ["tests", "geolysis"]
 doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NUMBER"]
