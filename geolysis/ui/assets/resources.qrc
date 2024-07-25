@@ -1,6 +1,8 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="icons">
-        <file alias="notebook.png">notebook.png</file>
+        <file alias="notebook.png">icons/notebook.png</file>
+        <file alias="beaker.png">icons/beaker.png</file>
+        <file alias="jar-label.png">icons/jar-label.png</file>
     </qresource>
 </RCC>
