@@ -49,7 +49,20 @@ class PlotInfoWidget(QWidget):
 
         self.m_layout = QVBoxLayout()
 
-        self.tab_widget = QTabWidget()
+        self.tab_widget = QTableWidget()
+
+        self.m_layout.addWidget(self.tab_widget)
+
+        self.setLayout(self.m_layout)
+
+
+class CustomPlotWidget(QWidget):
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+
+        self.m_layout = QVBoxLayout()
+
+        self.tab_widget = QTableWidget()
 
         self.m_layout.addWidget(self.tab_widget)
 
@@ -114,6 +127,7 @@ class MainWindow(QMainWindow):
 
         self.data_entry = DataEntryWidget()
         self.plot_info = PlotInfoWidget()
+        self.custom_plot = CustomPlotWidget()
         self.graph = GraphWidget()
         self.graph_info = GraphInfoWidget()
         self.graph_settings = GraphSettingsWidget()
@@ -121,7 +135,8 @@ class MainWindow(QMainWindow):
         self.m_layout = QGridLayout()
 
         self.m_layout.addWidget(self.data_entry, 0, 0, 1, 6)
-        self.m_layout.addWidget(self.plot_info, 1, 0, 1, 6)
+        self.m_layout.addWidget(self.plot_info, 1, 0, 1, 3)
+        self.m_layout.addWidget(self.custom_plot, 1, 3, 1, 3)
         self.m_layout.addWidget(self.graph, 0, 6, 1, 6)
         self.m_layout.addWidget(self.graph_info, 1, 6, 1, 3)
         self.m_layout.addWidget(self.graph_settings, 1, 9, 1, 3)
