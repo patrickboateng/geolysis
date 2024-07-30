@@ -27,6 +27,7 @@ class Shape(enum.Enum):
         if isinstance(other, Shape):
             return super().__eq__(other)
         elif isinstance(other, str):
+            other = other.casefold()
             return self.value == other
         else:
             return NotImplemented
