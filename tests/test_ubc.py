@@ -10,7 +10,8 @@ from geolysis.core.bearing_capacity.ubc import (
     TerzaghiUBC4StripFooting,
     VesicUBC,
 )
-from geolysis.core.constants import SoilData
+
+# from geolysis.core.constants import SoilData
 from geolysis.core.foundation import Shape, create_foundation
 
 ERROR_TOL = 0.01
@@ -42,13 +43,11 @@ class TestTerzaghiBCF:
 class TestTerzaghiUBC4StripFooting:
     @classmethod
     def setup_class(cls):
-        cls.soil_prop = SoilData(
-            {
-                "soil_friction_angle": 35.0,
-                "cohesion": 15.0,
-                "moist_unit_wgt": 18.0,
-            }
-        )
+        cls.soil_prop = {
+            "soil_friction_angle": 35.0,
+            "cohesion": 15.0,
+            "moist_unit_wgt": 18.0,
+        }
 
     def test_bearing_capacity(self):
         fs = create_foundation(
@@ -85,13 +84,11 @@ class TestTerzaghiUBC4SquareFooting:
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = SoilData(
-            {
-                "soil_friction_angle": 25.0,
-                "cohesion": 15.0,
-                "moist_unit_wgt": 18.0,
-            }
-        )
+        soil_prop = {
+            "soil_friction_angle": 25.0,
+            "cohesion": 15.0,
+            "moist_unit_wgt": 18.0,
+        }
 
         t = TerzaghiUBC4SquareFooting(
             soil_properties=soil_prop,
@@ -108,13 +105,11 @@ class TestTerzaghiUBC4CircFooting:
             width=2.3,
             footing_shape=Shape.CIRCLE,
         )
-        soil_prop = SoilData(
-            {
-                "soil_friction_angle": 25.0,
-                "cohesion": 15.0,
-                "moist_unit_wgt": 18.0,
-            }
-        )
+        soil_prop = {
+            "soil_friction_angle": 25.0,
+            "cohesion": 15.0,
+            "moist_unit_wgt": 18.0,
+        }
         t = TerzaghiUBC4CircFooting(
             soil_properties=soil_prop,
             foundation_size=fs,
@@ -131,13 +126,11 @@ class TestTerzaghiUBC4RectFooting:
             length=2.5,
             footing_shape=Shape.RECTANGLE,
         )
-        soil_prop = SoilData(
-            {
-                "soil_friction_angle": 25.0,
-                "cohesion": 15.0,
-                "moist_unit_wgt": 18.0,
-            }
-        )
+        soil_prop = {
+            "soil_friction_angle": 25.0,
+            "cohesion": 15.0,
+            "moist_unit_wgt": 18.0,
+        }
         t = TerzaghiUBC4RectFooting(
             soil_properties=soil_prop,
             foundation_size=fs,
@@ -174,13 +167,11 @@ class TestHansenUBC:
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = SoilData(
-            {
-                "soil_friction_angle": 20.0,
-                "cohesion": 20.0,
-                "moist_unit_wgt": 18.0,
-            }
-        )
+        soil_prop = {
+            "soil_friction_angle": 20.0,
+            "cohesion": 20.0,
+            "moist_unit_wgt": 18.0,
+        }
         t = HansenUBC(soil_properties=soil_prop, foundation_size=fs)
         assert t.bearing_capacity() == pytest.approx(809.36, ERROR_TOL)
 
@@ -192,12 +183,10 @@ class TestVesicUBC:
             width=1.5,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = SoilData(
-            {
-                "soil_friction_angle": 0.0,
-                "cohesion": 100.0,
-                "moist_unit_wgt": 21.0,
-            }
-        )
+        soil_prop = {
+            "soil_friction_angle": 0.0,
+            "cohesion": 100.0,
+            "moist_unit_wgt": 21.0,
+        }
         t = VesicUBC(soil_properties=soil_prop, foundation_size=fs, e=0.2)
         assert t.bearing_capacity() == pytest.approx(765.2, ERROR_TOL)
