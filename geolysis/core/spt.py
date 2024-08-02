@@ -3,7 +3,6 @@ from dataclasses import KW_ONLY, dataclass
 from statistics import StatisticsError
 from typing import Protocol, Sequence
 
-# from .constants import get_option
 from .constants import ERROR_TOL
 from .utils import isclose, log10, mean, round_, sqrt
 
@@ -83,7 +82,7 @@ class WeightedSPT:
     --------
     >>> from geolysis.core.spt import WeightedSPT
     >>> wgt = WeightedSPT([7.0, 15.0, 18.0])
-    >>> wgt.spt_n_design()
+    >>> wgt.spt_design_value
     9.3673
     """
 
@@ -101,6 +100,14 @@ class WeightedSPT:
         StatisticError
             Raised if ``spt_numbers`` is empty.
         """
+        import warnings
+
+        warnings.warn(
+            "spt_n_design is deprecated, use spt_design_value instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         if not self.spt_numbers:
             err_msg = "method requires at least one data point."
             raise StatisticsError(err_msg)
@@ -157,7 +164,7 @@ class AverageSPT:
     --------
     >>> from geolysis.core.spt import AverageSPT
     >>> wgt = AverageSPT([7.0, 15.0, 18.0])
-    >>> wgt.spt_n_design()
+    >>> wgt.spt_design_value
     13.3333
     """
 
@@ -175,6 +182,14 @@ class AverageSPT:
         StatisticError
             Raised if ``spt_numbers`` is empty.
         """
+        import warnings
+
+        warnings.warn(
+            "spt_n_design is deprecated, use spt_design_value instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         try:
             return mean(self.spt_numbers)
         except StatisticsError as e:
@@ -215,7 +230,7 @@ class MinSPT:
     --------
     >>> from geolysis.core.spt import MinSPT
     >>> wgt = MinSPT([7.0, 15.0, 18.0])
-    >>> wgt.spt_n_design()
+    >>> wgt.spt_design_value
     7.0
     """
 
@@ -233,6 +248,14 @@ class MinSPT:
         StatisticError
             Raised if ``spt_numbers`` is empty.
         """
+        import warnings
+
+        warnings.warn(
+            "spt_n_design is deprecated, use spt_design_value instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         try:
             return min(self.spt_numbers)
         except ValueError as e:
