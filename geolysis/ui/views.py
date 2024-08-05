@@ -1,6 +1,6 @@
 import pyqtgraph as pg
 from assets import resources_rc  # noqa: F401
-from PySide6.QtCore import QSize, QStringListModel, Qt
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (
     QComboBox,
@@ -24,10 +24,15 @@ from PySide6.QtWidgets import (
 ICON_SIZE = QSize(16, 16)
 
 TEST_TYPES = [
-    "Particle Size Distribution (PSD)",
     "Atterberg Limits (AL)",
     "Compaction (CP)",
+    "Particle Size Distribution (PSD)",
 ]
+
+
+# section_separator = QFrame()
+# section_separator.setFrameShape(QFrame.HLine)
+# section_separator.setFrameShadow(QFrame.Sunken)
 
 
 class DataEntryWidget(QWidget):
@@ -149,8 +154,7 @@ class MainWindow(QMainWindow):
 
     def create_actions(self):
         self.new = QAction(QIcon(":/icons/notebook.png"), "File", self)
-        # new.setStatusTip("Create a new file")
-        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.new.setStatusTip("Create a new file")
 
     def create_menus(self):
         self.menubar = self.menuBar()
@@ -164,9 +168,10 @@ class MainWindow(QMainWindow):
     def create_toolbars(self):
         self.toolbar = QToolBar("Main toolbar")
         self.toolbar.setIconSize(ICON_SIZE)
-        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.toolbar.addAction(self.new)
         self.addToolBar(self.toolbar)
+        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
     def create_statusbar(self):
         self.statusbar = self.statusBar()
@@ -175,7 +180,7 @@ class MainWindow(QMainWindow):
     def create_sidebar(self):
         # SideBar
 
-        sidebar = QDockWidget(self)
+        sidebar = QDockWidget("Project Explorer", self)
         sidebar.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         # sidebar.setFeatures(QDockWidget.NoDockWidgetFeatures)
 
@@ -185,9 +190,6 @@ class MainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
         self.tab_widget.setIconSize(ICON_SIZE)
         self.tab_widget.setDocumentMode(True)
-
-        tests_model = QStringListModel()
-        tests_model.setStringList(TEST_TYPES)
 
         self.test_types = QListWidget()  # QListView()
         self.test_types.addItems(TEST_TYPES)
@@ -243,10 +245,6 @@ class MainWindow(QMainWindow):
         )
         self.other_info_layout.addRow(QLabel("Tested By"), self.tested_by)
         other_info_group_box.setLayout(self.other_info_layout)
-
-        # section_separator = QFrame()
-        # section_separator.setFrameShape(QFrame.HLine)
-        # section_separator.setFrameShadow(QFrame.Sunken)
 
         self.sidebar_layout.addWidget(self.tab_widget)
         self.sidebar_layout.addWidget(sample_info_group_box)
