@@ -1,9 +1,77 @@
-from collections import UserDict
-from dataclasses import dataclass
-from numbers import Number
+from enum import Enum
+from functools import wraps
 from typing import Any, Callable, NamedTuple
 
-__all__ = ["ERROR_TOL", "UNIT"]
+from pint import UnitRegistry
+
+__all__ = ["ERROR_TOL"]
+
+#: Allowable error tolerance for mathematical values
+#: returned from functions (or methods).
+ERROR_TOL: float = 0.01
+
+ureg = UnitRegistry()
+Q_ = ureg.Quantity
+
+print(dir(ureg.sys.imperial))
+
+
+class UnitSystem(Enum):
+    """Physical unit systems."""
+
+    CGS = "cgs"
+    MKS = "mks"
+    IMPERIAL = "imperial"
+    SI = "SI"
+
+    @property
+    def Pressure(self):
+        if self is self.CGS:
+            return "barye"
+
+        if self is self.MKS or self is self.SI:
+            return "kN/m**2"
+
+        if self is self.IMPERIAL:
+            return "psi"
+
+
+class assign_unit:
+    def __init__(
+        self,
+        default_unit: Q_ | str,
+        *,
+        cgs_unit: Q_ | str | None = None,
+        mks_unit: Q_ | str | None = None,
+        imperial_unit: Q_ | str | None = None,
+        si_unit: Q_ | str | None = None,
+    ):
+        self.default_unit = default_unit
+        self.cgs_unit = cgs_unit
+        self.mks_unit = mks_unit
+        self.imperial_unit = imperial_unit
+        self.si_unit = si_unit
+
+    def __call__(self, fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            ret = fn(*args, **kwargs)
+            to = None
+            ureg.default_system = Config.get_option("unit_system").value
+            match ureg.default_system:
+                case UnitSystem.CGS.value:
+                    to = self.cgs_unit
+                case UnitSystem.MKS.value:
+                    to = self.mks_unit
+                case UnitSystem.IMPERIAL.value:
+                    to = self.imperial_unit
+                case UnitSystem.SI.value:
+                    to = self.si_unit
+                case _:
+                    raise ValueError
+            return Q_(ret, self.default_unit).to_base_units().to_compact(to)  # type: ignore
+
+        return wrapper
 
 
 class RegisteredOption(NamedTuple):
@@ -99,52 +167,4 @@ class Config:
 
 
 Config.register_option("dp", 4, validator=validators.instance_of(int))
-
-# The number of decimal places to round mathematical
-# values returned from functions (or methods) to.
-# DECIMAL_PLACES: int = 4
-
-#: Allowable error tolerance for mathematical values
-#: returned from functions (or methods).
-ERROR_TOL: float = 0.01
-
-
-class SoilData(UserDict):
-    def __getattr__(self, attr) -> Number:
-        return self.data[attr]
-
-
-@dataclass(init=False)
-class UNIT:
-    """Physical units manager for values returned by various functions
-    (or methods) that returns a float.
-
-    Notes
-    -----
-    These units are compatible with the `pint <https://pint.readthedocs.io/en/stable/index.html>`_
-    library unit system.
-    """
-
-    #: meter
-    m = "meter"
-
-    #: millimeter
-    mm = "millimeter"
-
-    #: kilogram
-    kg = "kilogram"
-
-    #: degree
-    deg = "degrees"
-
-    #: square meter
-    m2 = "m**2"
-
-    #: cubic meter
-    m3 = "m**3"
-
-    #: kilo Pascal
-    kPa = "kPa"
-
-    #: kilo Newton per cubic meter
-    kN_m3 = "kN/m**3"
+Config.register_option("unit_system", UnitSystem.CGS)
