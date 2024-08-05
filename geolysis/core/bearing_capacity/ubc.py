@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ..constants import UNIT, SoilData
 from ..foundation import (
     FoundationSize,
     Shape,
@@ -28,9 +27,6 @@ __all__ = [
     "HansenUBC",
     "VesicUBC",
 ]
-
-#: Unit for bearing capacity
-kPa = UNIT.kPa
 
 
 def _get_footing_info(obj):
@@ -335,20 +331,18 @@ class VesicInclFactors:
 class AbstractUBC(ABC):
     # abstract ultimate bearing capacity class
 
-    _unit = kPa
-
     def __init__(
         self,
-        soil_properties: SoilData,
+        soil_properties: dict,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
         e: float = 0.0,
     ) -> None:
-        self._f_angle = getattr(soil_properties, "soil_friction_angle")
-        self._cohesion = getattr(soil_properties, "cohesion")
+        self._f_angle = soil_properties["soil_friction_angle"]
+        self._cohesion = soil_properties["cohesion"]
 
-        self.moist_unit_wgt = getattr(soil_properties, "moist_unit_wgt")
+        self.moist_unit_wgt = soil_properties["moist_unit_wgt"]
 
         self.foundation_size = foundation_size
 
@@ -366,28 +360,16 @@ class AbstractUBC(ABC):
         """Depth of foundation footing."""
         return self.foundation_size.depth
 
-    @f_depth.setter
-    def f_depth(self, __val: float):
-        self.foundation_size.depth = __val
-
     @property
     def f_width(self) -> float:
         """Width of foundation footing."""
         effective_width = self.foundation_size.width - 2 * self.e
         return effective_width
 
-    @f_width.setter
-    def f_width(self, __val: float):
-        self.foundation_size.width = __val
-
     @property
     def f_length(self) -> float:
         """Length of foundation footing."""
         return self.foundation_size.length
-
-    @f_length.setter
-    def f_length(self, __val: float):
-        self.foundation_size.length = __val
 
     @round_
     def _coh_expr(self) -> float:
@@ -434,11 +416,6 @@ class AbstractUBC(ABC):
         shear failure otherwise ``cohesion`` is for local shear failure.
         """
         return (2 / 3) * self._cohesion if self._lsf else self._cohesion
-
-    @property
-    def unit(self) -> str:
-        """Unit for bearing capacity of soil."""
-        return self._unit
 
     @round_
     def _surcharge_expr(self) -> float:
@@ -529,7 +506,7 @@ class AbstractUBC(ABC):
 class _TerzaghiUBC(AbstractUBC):
     def __init__(
         self,
-        soil_properties: SoilData,
+        soil_properties: dict,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
@@ -875,7 +852,7 @@ class HansenUBC(AbstractUBC):
 
     def __init__(
         self,
-        soil_properties: SoilData,
+        soil_properties: dict,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,
@@ -1012,7 +989,7 @@ class VesicUBC(AbstractUBC):
 
     def __init__(
         self,
-        soil_properties: SoilData,
+        soil_properties: dict,
         foundation_size: FoundationSize,
         water_level: float = INF,
         local_shear_failure: bool = False,

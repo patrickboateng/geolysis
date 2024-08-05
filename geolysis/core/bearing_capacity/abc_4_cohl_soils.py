@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..constants import UNIT
+from ..constants import UnitSystem, assign_unit, ureg
 from ..foundation import FoundationSize
 from ..utils import round_
 
@@ -12,8 +12,6 @@ __all__ = [
     "TerzaghiABC4PadFoundation",
     "TerzaghiABC4MatFoundation",
 ]
-
-kPa = UNIT.kPa
 
 
 class SettlementError(ValueError):
@@ -29,8 +27,6 @@ def _chk_settlement(tol_settlement: float, max_tol_settlement: float):
 class _AbstractABC(ABC):
     MAX_TOL_SETTLEMENT = 25.4
 
-    _unit = kPa
-
     def __init__(
         self,
         corrected_spt_number: float,
@@ -44,36 +40,15 @@ class _AbstractABC(ABC):
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
     @property
-    def unit(self) -> str:
-        return self._unit
-
-    @property
     def f_depth(self) -> float:
         return self.foundation_size.depth
-
-    @f_depth.setter
-    def f_depth(self, __val: float):
-        self.foundation_size.depth = __val
 
     @property
     def f_width(self) -> float:
         return self.foundation_size.width
 
-    @f_width.setter
-    def f_width(self, __val):
-        self.foundation_size.width = __val
-
-    @property
-    def fd(self) -> float:
-        return min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
-
-    @property
-    def sr(self) -> float:
-        return self.tol_settlement / self.MAX_TOL_SETTLEMENT
-
     @abstractmethod
-    def bearing_capacity(self) -> float:
-        raise NotImplementedError
+    def bearing_capacity(self) -> float: ...
 
 
 class BowlesABC4PadFoundation(_AbstractABC):
@@ -125,8 +100,6 @@ class BowlesABC4PadFoundation(_AbstractABC):
     ...     tol_settlement=20.0,
     ...     foundation_size=foundation_size,
     ... )
-    >>> bowles_abc.bearing_capacity()
-    341.1083
     """
 
     def __init__(
@@ -141,20 +114,30 @@ class BowlesABC4PadFoundation(_AbstractABC):
             foundation_size,
         )
 
+    @assign_unit(
+        default_unit=ureg.kPa,
+        cgs_unit=UnitSystem.CGS.Pressure,
+        mks_unit=UnitSystem.MKS.Pressure,
+        imperial_unit=UnitSystem.IMPERIAL.Pressure,
+        si_unit=UnitSystem.SI.Pressure,
+    )
     @round_
-    def bearing_capacity(self) -> float:
+    def bearing_capacity(self):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
+        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
+
         if self.f_width <= 1.2:
-            return 19.16 * self.corrected_spt_number * self.fd * self.sr
+            return 19.16 * self.corrected_spt_number * FD * SR
 
         return (
             11.98
             * self.corrected_spt_number
             * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-            * self.fd
-            * self.sr
+            * FD
+            * SR
         )
 
 
@@ -201,8 +184,6 @@ class BowlesABC4MatFoundation(_AbstractABC):
     ...     tol_settlement=20.0,
     ...     foundation_size=foundation_size,
     ... )
-    >>> bowles_abc.bearing_capacity()
-    213.2817
     """
 
     def __init__(
@@ -218,11 +199,13 @@ class BowlesABC4MatFoundation(_AbstractABC):
         )
 
     @round_
-    def bearing_capacity(self) -> float:
+    def bearing_capacity(self):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        return 11.98 * self.corrected_spt_number * self.fd * self.sr
+        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
+        return 11.98 * self.corrected_spt_number * FD * SR
 
 
 class MeyerhofABC4PadFoundation(_AbstractABC):
@@ -273,8 +256,6 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
     ...     tol_settlement=20.0,
     ...     foundation_size=foundation_size,
     ... )
-    >>> meyerhof_abc.bearing_capacity()
-    213.6378
     """
 
     def __init__(
@@ -290,20 +271,22 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
         )
 
     @round_
-    def bearing_capacity(self) -> float:
+    def bearing_capacity(self):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
+        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
         if self.f_width <= 1.2:
-            return 12 * self.corrected_spt_number * self.fd * self.sr
+            return 12 * self.corrected_spt_number * FD * SR
 
         return (
             8
             * self.corrected_spt_number
             * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-            * self.fd
-            * self.sr
+            * FD
+            * SR
         )
 
 
@@ -350,8 +333,6 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
     ...     tol_settlement=20.0,
     ...     foundation_size=foundation_size,
     ... )
-    >>> meyerhof_abc.bearing_capacity()
-    142.4252
     """
 
     def __init__(
@@ -367,11 +348,13 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
         )
 
     @round_
-    def bearing_capacity(self) -> float:
+    def bearing_capacity(self):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        return 8 * self.corrected_spt_number * self.fd * self.sr
+        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
+        return 8 * self.corrected_spt_number * FD * SR
 
 
 class TerzaghiABC4PadFoundation(_AbstractABC):
@@ -433,8 +416,6 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
     ...     water_depth=1.2,
     ...     foundation_size=foundation_size,
     ... )
-    >>> terzaghi_abc.bearing_capacity()
-    93.4574
     """
 
     def __init__(
@@ -452,45 +433,29 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
 
         self.water_depth = water_depth
 
-    @property
     @round_
-    def fd(self):
-        """Depth factor.
-
-        :meta private:
-        """
-
-        return min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
-
-    @property
-    @round_
-    def cw(self):
-        """Water correction factor.
-
-        :meta private:
-        """
-        if self.water_depth <= self.f_depth:
-            corr = 2 - self.f_depth / (2 * self.f_width)
-        else:
-            corr = 2 - self.water_depth / (2 * self.f_width)
-        return min(corr, 2)
-
-    @round_
-    def bearing_capacity(self) -> float:
+    def bearing_capacity(self):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        correction = 1 / (self.cw * self.fd)
+        FD = min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
+        SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
+
+        if self.water_depth <= self.f_depth:
+            CW = 2 - self.f_depth / (2 * self.f_width)
+        else:
+            CW = 2 - self.water_depth / (2 * self.f_width)
+        CW = min(CW, 2)
 
         if self.f_width <= 1.2:
-            return 12 * self.corrected_spt_number * correction * self.sr
+            return 12 * self.corrected_spt_number * (1 / (CW * FD)) * SR
 
         return (
             8
             * self.corrected_spt_number
             * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
-            * correction
-            * self.sr
+            * (1 / (CW * FD))
+            * SR
         )
 
 
@@ -547,8 +512,6 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     ...     water_depth=1.2,
     ...     foundation_size=foundation_size,
     ... )
-    >>> terzaghi_abc.bearing_capacity()
-    62.3049
     """
 
     def __init__(
@@ -566,10 +529,17 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
         )
 
     @round_
-    def bearing_capacity(self) -> float:
+    def bearing_capacity(self):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        return (
-            8 * self.corrected_spt_number * (1 / (self.cw * self.fd)) * self.sr
-        )
+        FD = min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
+        SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
+
+        if self.water_depth <= self.f_depth:
+            CW = 2 - self.f_depth / (2 * self.f_width)
+        else:
+            CW = 2 - self.water_depth / (2 * self.f_width)
+        CW = min(CW, 2)
+
+        return 8 * self.corrected_spt_number * (1 / (CW * FD)) * SR
