@@ -470,16 +470,16 @@ class AASHTO:
     >>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
     >>> aashto_clf.group_index()
     0.0
-    >>> aashto_clf.soil_class
+    >>> aashto_clf.classify()
     'A-2-4(0)'
-    >>> aashto_clf.soil_desc
+    >>> aashto_clf.description()
     'Silty or clayey gravel and sand'
 
     If you would like to exclude the group index from the classification, you can do
     the following:
 
     >>> aashto_clf.add_group_idx = False
-    >>> aashto_clf.soil_class
+    >>> aashto_clf.classify()
     'A-2-4'
     """
 
@@ -568,9 +568,21 @@ class AASHTO:
         """Return the AASHTO classification of the soil."""
         return self._classify()
 
+    def classify(self) -> str:
+        return self._classify()
+
     @property
     def soil_desc(self) -> str:
         """Return the AASHTO description of the soil."""
+        tmp_state = self.add_group_idx
+        try:
+            self.add_group_idx = False
+            soil_cls = self.soil_class
+            return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
+        finally:
+            self.add_group_idx = tmp_state
+
+    def description(self) -> str:
         tmp_state = self.add_group_idx
         try:
             self.add_group_idx = False
@@ -670,18 +682,18 @@ class USCS:
     ...     d_30=0.3,
     ...     d_60=0.8,
     ... )
-    >>> uscs_clf.soil_class
+    >>> uscs_clf.classify()
     'SW-SC'
-    >>> uscs_clf.soil_desc
+    >>> uscs_clf.description()
     'Well graded sand with clay'
 
     Soil gradation (d_10, d_30, d_60) is needed to obtain soil description for
     certain type of soils.
 
     >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7, fines=10.29, sand=81.89)
-    >>> uscs_clf.soil_class
+    >>> uscs_clf.classify()
     'SW-SC,SP-SC'
-    >>> uscs_clf.soil_desc
+    >>> uscs_clf.description()
     'Well graded sand with clay or Poorly graded sand with clay'
     """
 
@@ -849,9 +861,23 @@ class USCS:
         """Return the USCS classification of the soil."""
         return self._classify()
 
+    def classify(self) -> str:
+        return self._classify()
+
     @property
     def soil_desc(self) -> str:
         """Return the USCS description of the soil."""
+        soil_cls = self.soil_class
+        try:
+            soil_descr = USCS.SOIL_DESCRIPTIONS[soil_cls]
+        except KeyError:
+            soil_classes = soil_cls.split(",")
+            soil_descr = [USCS.SOIL_DESCRIPTIONS[cls] for cls in soil_classes]
+            soil_descr = " or ".join(soil_descr)
+
+        return soil_descr
+
+    def description(self) -> str:
         soil_cls = self.soil_class
         try:
             soil_descr = USCS.SOIL_DESCRIPTIONS[soil_cls]

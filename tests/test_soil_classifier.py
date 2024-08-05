@@ -61,7 +61,7 @@ class TestAASHTO:
     )
     def test_aashto_with_grp_idx(self, soil_params: Sequence, clf: str):
         asshto_classifier = AASHTO(*soil_params)
-        assert asshto_classifier.soil_class == clf
+        assert asshto_classifier.classify() == clf
 
     @pytest.mark.parametrize(
         "soil_params,clf",
@@ -75,7 +75,7 @@ class TestAASHTO:
     def test_aashto_without_grp_idx(self, soil_params: Sequence, clf: str):
         asshto_classifier = AASHTO(*soil_params)
         asshto_classifier.add_group_idx = False
-        assert asshto_classifier.soil_class == clf
+        assert asshto_classifier.classify() == clf
 
 
 class TestUSCS:
@@ -102,7 +102,7 @@ class TestUSCS:
         uscs = USCS(
             *al, *psd, d_10=size_dist[0], d_30=size_dist[1], d_60=size_dist[2]
         )
-        assert uscs.soil_class == clf
+        assert uscs.classify() == clf
 
     @pytest.mark.parametrize(
         "al,psd,clf",
@@ -123,7 +123,7 @@ class TestUSCS:
         clf: str,
     ):
         uscs = USCS(*al, *psd)
-        assert uscs.soil_class == clf
+        assert uscs.classify() == clf
 
     @pytest.mark.parametrize(
         "al,psd,clf",
@@ -151,7 +151,7 @@ class TestUSCS:
         clf: str,
     ):
         uscs = USCS(*al, *psd)
-        assert uscs.soil_class == clf
+        assert uscs.classify() == clf
 
     def test_organic_soils_low_plasticity(self):
         uscs = USCS(
@@ -161,7 +161,7 @@ class TestUSCS:
             sand=28.88,
             organic=True,
         )
-        assert uscs.soil_class == "OL"
+        assert uscs.classify() == "OL"
 
     def test_organic_soils_high_plasticity(self):
         uscs = USCS(
@@ -172,4 +172,4 @@ class TestUSCS:
             organic=True,
         )
 
-        assert uscs.soil_class == "OH"
+        assert uscs.classify() == "OH"
