@@ -1,5 +1,6 @@
 import math
 import statistics
+from functools import wraps
 from typing import Callable, Iterable
 
 from .constants import Config
@@ -81,9 +82,6 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-# WrappedFunc: TypeAlias = Callable[..., Number]
-
-
 def round_(fn) -> Callable:
     """A decorator that rounds the results of a callable to a
     specified number of decimal places.
@@ -111,6 +109,7 @@ def round_(fn) -> Callable:
     >>> glc.Config.reset_option("dp")
     """
 
+    @wraps(fn)
     def wrapper(*args, **kwargs):
         dp = Config.get_option("dp")
         return round(fn(*args, **kwargs), ndigits=dp)
