@@ -13,8 +13,6 @@ ERROR_TOL: float = 0.01
 ureg = UnitRegistry()
 Q_ = ureg.Quantity
 
-print(dir(ureg.sys.imperial))
-
 
 class UnitSystem(Enum):
     """Physical unit systems."""
