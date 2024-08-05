@@ -40,11 +40,11 @@ class _AbstractABC(ABC):
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
     @property
-    def f_depth(self) -> float:
+    def _f_depth(self) -> float:
         return self.foundation_size.depth
 
     @property
-    def f_width(self) -> float:
+    def _f_width(self) -> float:
         return self.foundation_size.width
 
     @abstractmethod
@@ -65,11 +65,6 @@ class BowlesABC4PadFoundation(_AbstractABC):
         Tolerable settlement.
     foundation_size : FoundationSize
         Size of foundation.
-
-    Attributes
-    ----------
-    f_depth : float
-    f_width : float
 
     Notes
     -----
@@ -126,16 +121,16 @@ class BowlesABC4PadFoundation(_AbstractABC):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        FD = min(1 + 0.33 * self._f_depth / self._f_width, 1.33)
         SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
-        if self.f_width <= 1.2:
+        if self._f_width <= 1.2:
             return 19.16 * self.corrected_spt_number * FD * SR
 
         return (
             11.98
             * self.corrected_spt_number
-            * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+            * ((3.28 * self._f_width + 1) / (3.28 * self._f_width)) ** 2
             * FD
             * SR
         )
@@ -155,11 +150,6 @@ class BowlesABC4MatFoundation(_AbstractABC):
         Tolerable settlement.
     foundation_size : FoundationSize
         Size of foundation.
-
-    Attributes
-    ----------
-    f_depth : float
-    f_width : float
 
     Notes
     -----
@@ -203,7 +193,7 @@ class BowlesABC4MatFoundation(_AbstractABC):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        FD = min(1 + 0.33 * self._f_depth / self._f_width, 1.33)
         SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
         return 11.98 * self.corrected_spt_number * FD * SR
 
@@ -222,11 +212,6 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
         Tolerable settlement
     foundation_size : FoundationSize
         Size of foundation.
-
-    Attributes
-    ----------
-    f_depth : float
-    f_width : float
 
     Notes
     -----
@@ -275,16 +260,16 @@ class MeyerhofABC4PadFoundation(_AbstractABC):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        FD = min(1 + 0.33 * self._f_depth / self._f_width, 1.33)
         SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
-        if self.f_width <= 1.2:
+        if self._f_width <= 1.2:
             return 12 * self.corrected_spt_number * FD * SR
 
         return (
             8
             * self.corrected_spt_number
-            * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+            * ((3.28 * self._f_width + 1) / (3.28 * self._f_width)) ** 2
             * FD
             * SR
         )
@@ -304,11 +289,6 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
         Tolerable settlement
     foundation_size : FoundationSize
         Size of foundation.
-
-    Attributes
-    ----------
-    f_depth : float
-    f_width : float
 
     Notes
     -----
@@ -352,7 +332,7 @@ class MeyerhofABC4MatFoundation(_AbstractABC):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        FD = min(1 + 0.33 * self.f_depth / self.f_width, 1.33)
+        FD = min(1 + 0.33 * self._f_depth / self._f_width, 1.33)
         SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
         return 8 * self.corrected_spt_number * FD * SR
 
@@ -372,11 +352,6 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
         Depth of water below ground surface.
     foundation_size : float
         Size of foundation.
-
-    Attributes
-    ----------
-    f_depth : float
-    f_width : float
 
     Notes
     -----
@@ -438,28 +413,29 @@ class TerzaghiABC4PadFoundation(_AbstractABC):
         """Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        FD = min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
+        FD = min(1 + 0.25 * self._f_depth / self._f_width, 1.25)
         SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
-        if self.water_depth <= self.f_depth:
-            CW = 2 - self.f_depth / (2 * self.f_width)
+        if self.water_depth <= self._f_depth:
+            CW = 2 - self._f_depth / (2 * self._f_width)
         else:
-            CW = 2 - self.water_depth / (2 * self.f_width)
+            CW = 2 - self.water_depth / (2 * self._f_width)
+
         CW = min(CW, 2)
 
-        if self.f_width <= 1.2:
+        if self._f_width <= 1.2:
             return 12 * self.corrected_spt_number * (1 / (CW * FD)) * SR
 
         return (
             8
             * self.corrected_spt_number
-            * ((3.28 * self.f_width + 1) / (3.28 * self.f_width)) ** 2
+            * ((3.28 * self._f_width + 1) / (3.28 * self._f_width)) ** 2
             * (1 / (CW * FD))
             * SR
         )
 
 
-class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
+class TerzaghiABC4MatFoundation(_AbstractABC):
     r"""Allowable bearing capacity for mat foundation on cohesionless soils
     according to ``Terzaghi & Peck (1948)``.
 
@@ -474,11 +450,6 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
         Depth of water below ground surface.
     foundation_size : float
         Size of foundation.
-
-    Attributes
-    ----------
-    f_depth : float
-    f_width : float
 
     Notes
     -----
@@ -524,22 +495,24 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
         super().__init__(
             corrected_spt_number,
             tol_settlement,
-            water_depth,
             foundation_size,
         )
+
+        self.water_depth = water_depth
 
     @round_
     def bearing_capacity(self):
         """Return allowable bearing capacity for raft foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        FD = min(1 + 0.25 * self.f_depth / self.f_width, 1.25)
+        FD = min(1 + 0.25 * self._f_depth / self._f_width, 1.25)
         SR = self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
-        if self.water_depth <= self.f_depth:
-            CW = 2 - self.f_depth / (2 * self.f_width)
+        if self.water_depth <= self._f_depth:
+            CW = 2 - self._f_depth / (2 * self._f_width)
         else:
-            CW = 2 - self.water_depth / (2 * self.f_width)
+            CW = 2 - self.water_depth / (2 * self._f_width)
+
         CW = min(CW, 2)
 
         return 8 * self.corrected_spt_number * (1 / (CW * FD)) * SR
