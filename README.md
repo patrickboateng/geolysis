@@ -128,9 +128,9 @@ AASHTO classification
 
 >>> from geolysis.core.soil_classifier import AASHTO
 >>> aashto_cls = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
->>> aashto_cls.soil_class
+>>> aashto_cls.classify()
 'A-2-4(0)'
->>> aashto_cls.soil_desc
+>>> aashto_cls.description()
 'Silty or clayey gravel and sand'
 
 ```
@@ -154,9 +154,9 @@ USCS Classification
 ...     d_30=0.3,
 ...     d_60=0.8,
 ... )
->>> uscs_cls.soil_class
+>>> uscs_cls.classify()
 'SW-SC'
->>> uscs_cls.soil_desc
+>>> uscs_cls.description()
 'Well graded sand with clay'
 
 ```
