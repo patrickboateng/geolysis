@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QLabel,
     QLineEdit,
-    QListWidget,
+    QListView,
     QMainWindow,
     QMenu,
     QTableView,
@@ -21,13 +21,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-ICON_SIZE = QSize(16, 16)
+from models import LabTestsModel
 
-TEST_TYPES = [
-    "Atterberg Limits (AL)",
-    "Compaction (CP)",
-    "Particle Size Distribution (PSD)",
-]
+ICON_SIZE = QSize(16, 16)
 
 
 # section_separator = QFrame()
@@ -181,14 +177,18 @@ class MainWindow(QMainWindow):
         # sidebar.setFeatures(QDockWidget.NoDockWidgetFeatures)
 
         self.sidebar_layout = QVBoxLayout()
-        self.sidebar_widget = QWidget()
+        self.sidebar_widget = QWidget(sidebar)
 
-        self.tab_widget = QTabWidget()
+        self.tab_widget = QTabWidget(sidebar)
         self.tab_widget.setIconSize(ICON_SIZE)
         self.tab_widget.setDocumentMode(True)
 
-        self.test_types = QListWidget()  # QListView()
-        self.test_types.addItems(TEST_TYPES)
+        t_model = LabTestsModel()
+
+        self.test_types = QListView()
+        self.test_types.setModel(t_model)
+        self.test_types.setEditTriggers(QListView.NoEditTriggers)
+
         self.test_types.setSpacing(2)
 
         self.tab_widget.addTab(
