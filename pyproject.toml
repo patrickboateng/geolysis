@@ -25,7 +25,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -38,9 +37,8 @@ version = { attr = "geolysis.__version__" }
 
 [project.urls]
 Homepage = "https://github.com/patrickboateng/geolysis"
-# Documentation = "https://readthedocs.org"
+Documentation = "https://geolysis.readthedocs.org"
 Repository = "https://github.com/patrickboateng/geolysis"
-Changelog = "https://github.com/patrickboateng/geolysis/blob/main/CHANGELOG.md"
 "Issue Tracker" = "https://github.com/patrickboateng/geolysis/issues"
 Discussions = "https://github.com/patrickboateng/geolysis/discussions"
 
