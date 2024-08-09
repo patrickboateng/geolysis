@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from functools import wraps
 from typing import Any, Callable, NamedTuple
 
@@ -14,7 +14,7 @@ ureg = UnitRegistry()
 Q_ = ureg.Quantity
 
 
-class UnitSystem(Enum):
+class UnitSystem(StrEnum):
     """Physical unit systems."""
 
     CGS = "cgs"
@@ -25,13 +25,15 @@ class UnitSystem(Enum):
     @property
     def Pressure(self):
         if self is self.CGS:
-            return "barye"
+            unit = "barye"
 
-        if self is self.MKS or self is self.SI:
-            return "kN/m**2"
+        elif self is self.MKS or self is self.SI:
+            unit = "kN/m**2"
 
-        if self is self.IMPERIAL:
-            return "psi"
+        elif self is self.IMPERIAL:
+            unit = "psi"
+
+        return unit
 
 
 class assign_unit:
@@ -55,15 +57,15 @@ class assign_unit:
         def wrapper(*args, **kwargs):
             ret = fn(*args, **kwargs)
             to = None
-            ureg.default_system = Config.get_option("unit_system").value
+            ureg.default_system = Config.get_option("unit_system")
             match ureg.default_system:
-                case UnitSystem.CGS.value:
+                case UnitSystem.CGS:
                     to = self.cgs_unit
-                case UnitSystem.MKS.value:
+                case UnitSystem.MKS:
                     to = self.mks_unit
-                case UnitSystem.IMPERIAL.value:
+                case UnitSystem.IMPERIAL:
                     to = self.imperial_unit
-                case UnitSystem.SI.value:
+                case UnitSystem.SI:
                     to = self.si_unit
                 case _:
                     raise ValueError
@@ -165,4 +167,4 @@ class Config:
 
 
 Config.register_option("dp", 4, validator=validators.instance_of(int))
-Config.register_option("unit_system", UnitSystem.CGS)
+Config.register_option("unit_system", UnitSystem.SI)
