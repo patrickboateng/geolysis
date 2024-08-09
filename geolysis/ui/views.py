@@ -170,16 +170,12 @@ class MainWindow(QMainWindow):
         self.toolbar.setIconSize(ICON_SIZE)
         self.toolbar.addAction(self.new)
         self.addToolBar(self.toolbar)
-        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        # self.tool_bar.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
     def create_statusbar(self):
         self.statusbar = self.statusBar()
         self.setStatusBar(self.statusbar)
 
     def create_sidebar(self):
-        # SideBar
-
         sidebar = QDockWidget("Project Explorer", self)
         sidebar.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         # sidebar.setFeatures(QDockWidget.NoDockWidgetFeatures)
@@ -193,7 +189,7 @@ class MainWindow(QMainWindow):
 
         self.test_types = QListWidget()  # QListView()
         self.test_types.addItems(TEST_TYPES)
-        self.test_types.setSpacing(1)
+        self.test_types.setSpacing(2)
 
         self.tab_widget.addTab(
             self.test_types, QIcon(":/icons/jar-label.png"), "Test Type"
