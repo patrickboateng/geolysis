@@ -24,15 +24,15 @@ class UnitSystem(StrEnum):
 
     @property
     def Pressure(self):
-        if self is self.CGS:
-            unit = "barye"
-
-        elif self is self.MKS or self is self.SI:
-            unit = "kN/m**2"
-
-        elif self is self.IMPERIAL:
-            unit = "psi"
-
+        match self:
+            case self.CGS:
+                unit = "barye"
+            case self.MKS | self.SI:
+                unit = "kN/m**2"
+            case self.IMPERIAL:
+                unit = "psi"
+            case _:
+                unit = ""
         return unit
 
 
