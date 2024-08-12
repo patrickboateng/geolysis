@@ -3,9 +3,10 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
+from .utils import INF
+
 __all__ = [
     "create_foundation",
-    "Shape",
     "CircularFooting",
     "SquareFooting",
     "RectangularFooting",
@@ -54,16 +55,17 @@ class _FootingShape(Protocol):
 @dataclass
 class StripFooting:
     width: float
+    length: float = INF
     type_ = Shape.STRIP
 
-    @property
-    def length(self) -> float:
-        """Width of foundation footing."""
-        return self.width
+    # @property
+    # def length(self) -> float:
+    #     """Width of foundation footing."""
+    #     return self.width
 
-    @length.setter
-    def length(self, __val: float):
-        self.width = __val
+    # @length.setter
+    # def length(self, __val: float):
+    #     self.width = __val
 
 
 @dataclass
