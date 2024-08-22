@@ -36,6 +36,43 @@ class UnitSystem(StrEnum):
         return unit
 
 
+class RegisteredOption(NamedTuple):
+    key: str
+    defval: Any
+    doc: str
+    validator: Callable | None
+
+
+class _InstanceOfValidator:
+    def __init__(self, type) -> None:
+        self.type = type
+
+    def __call__(self, val):
+        if not isinstance(val, self.type):
+            err_msg = (
+                f"Must be {self.type!r}, got {val!r} that is {type(val)!r}"
+            )
+            raise TypeError(err_msg)
+
+
+class validators:
+    @staticmethod
+    def instance_of(type):
+        """A validator that raises a `TypeError` if the initializer
+        is called with a wrong type for this particular option.
+
+        Parameters
+        ----------
+        type : Any | tuple[Any]
+            The type to check for.
+
+        Raises
+        ------
+        TypeError
+        """
+        return _InstanceOfValidator(type)
+
+
 class assign_unit:
     def __init__(
         self,
@@ -72,43 +109,6 @@ class assign_unit:
             return Q_(ret, self.default_unit).to_base_units().to_compact(to)  # type: ignore
 
         return wrapper
-
-
-class RegisteredOption(NamedTuple):
-    key: str
-    defval: Any
-    doc: str
-    validator: Callable | None
-
-
-class _InstanceOfValidator:
-    def __init__(self, type) -> None:
-        self.type = type
-
-    def __call__(self, val):
-        if not isinstance(val, self.type):
-            err_msg = (
-                f"Must be {self.type!r}, got {val!r} that is {type(val)!r}"
-            )
-            raise TypeError(err_msg)
-
-
-class validators:
-    @staticmethod
-    def instance_of(type):
-        """A validator that raises a `TypeError` if the initializer
-        is called with a wrong type for this particular option.
-
-        Parameters
-        ----------
-        type : Any | tuple[Any]
-            The type to check for.
-
-        Raises
-        ------
-        TypeError
-        """
-        return _InstanceOfValidator(type)
 
 
 class Config:
