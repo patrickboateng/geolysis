@@ -64,11 +64,12 @@ venv-*/
 *.xlsm
 *.xlam
 
+# Sphinx generated files
+*jupyter_execute
+
 # Project Files
 .vscode
 .idea
 .prettierignore
 .markdownlint.json
-
-# Sphinx generated files
-*jupyter_execute
+*resources_rc.py
