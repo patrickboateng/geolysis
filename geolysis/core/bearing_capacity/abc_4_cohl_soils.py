@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from ..foundation import FoundationSize
-from ..utils import round_
+from geolysis.core.foundation import FoundationSize
+from geolysis.core.utils import round_
 
 __all__ = [
     "BowlesABC4PadFoundation",
@@ -89,7 +89,7 @@ class BowlesABC4PadFoundation(AbstractABC):
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
-    # @assign_unit(
+    # @Config.assign_unit(
     #     default_unit=ureg.kPa,
     #     cgs_unit=UnitSystem.CGS.Pressure,
     #     mks_unit=UnitSystem.MKS.Pressure,
