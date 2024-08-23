@@ -4,9 +4,9 @@ from PySide6.QtWidgets import QApplication
 from views import MainWindow
 
 
-def main(args):
-    app = QApplication(args)
-    app.setStyle("Fusion")
+def main():
+    app = QApplication(sys.argv)
+    # app.setStyle("Fusion")
 
     screen_size = app.primaryScreen().size()
 
@@ -18,4 +18,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

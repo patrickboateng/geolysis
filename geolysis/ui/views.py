@@ -1,18 +1,25 @@
-import pyqtgraph as pg
+import matplotlib
 from assets import resources_rc  # noqa: F401
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qtagg import (
+    NavigationToolbar2QT as NavigationToolbar,  # type: ignore
+)
+from matplotlib.figure import Figure
+from models import CodeBook, LabTest, LabTestModel
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (
     QComboBox,
     QDockWidget,
     QFormLayout,
-    QGridLayout,
     QGroupBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QListView,
     QMainWindow,
     QMenu,
+    QSplitter,
     QTableView,
     QTableWidget,
     QTabWidget,
@@ -21,9 +28,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from models import LabTestsModel
+matplotlib.use("QtAgg")
 
-ICON_SIZE = QSize(16, 16)
+ICON_SIZE = QSize(20, 20)
+# Maximum and minimum width of sidebar is
+# 20% and 17% respectively.
+SIDEBAR_MAX_SIZE = 0.2
+SIDEBAR_MIN_SIZE = 0.15
 
 
 # section_separator = QFrame()
@@ -31,88 +42,112 @@ ICON_SIZE = QSize(16, 16)
 # section_separator.setFrameShadow(QFrame.Sunken)
 
 
-class DataEntryWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+class DataEntryWidget(QTableWidget):
+    def __init__(self, parent, labtest: LabTest | None = None):
+        super().__init__(parent)
 
-        self.m_layout = QVBoxLayout()
-
-        self.table_widget = QTableWidget()
-
-        self.m_layout.addWidget(self.table_widget)
-
-        self.setLayout(self.m_layout)
+        self.labtest = labtest
 
 
-class PlotInfoWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-
-        self.m_layout = QVBoxLayout()
-
-        self.tab_widget = QTableWidget()
-
-        self.m_layout.addWidget(self.tab_widget)
-
-        self.setLayout(self.m_layout)
+class PlotInfoWidget(QTableView):
+    def __init__(self, parent):
+        super().__init__(parent)
 
 
-class CustomPlotWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-
-        self.m_layout = QVBoxLayout()
-
-        self.tab_widget = QTableWidget()
-
-        self.m_layout.addWidget(self.tab_widget)
-
-        self.setLayout(self.m_layout)
+class CustomPlotWidget(QTableWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
 
 
-class GraphWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-
-        self.m_layout = QVBoxLayout()
-
-        self.plot = pg.PlotWidget()
-        self.plot.showGrid(x=True, y=True, alpha=1)
-
-        self.m_layout.addWidget(self.plot)
-
-        self.setLayout(self.m_layout)
+# TODO: New design
 
 
-class GraphInfoWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-
-        self.m_layout = QVBoxLayout()
-
-        self.table_view = QTableView()
-
-        self.m_layout.addWidget(self.table_view)
-
-        self.setLayout(self.m_layout)
+class GraphWidget(FigureCanvasQTAgg):
+    def __init__(self, figure=None) -> None:
+        super().__init__(figure)
 
 
-class GraphSettingsWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+class CustomLineEdit(QLineEdit):
+    def __init__(self, parent, rx: str | None = None):
+        super().__init__(parent)
 
-        self.m_layout = QVBoxLayout()
+        if rx:
+            self.setValidator(QRegularExpressionValidator(rx))
 
-        self.table_view = QTableView()
 
-        self.m_layout.addWidget(self.table_view)
+class LabTestView(QListView):
+    def __init__(self, parent):
+        super().__init__(parent)
+        labtest_model = LabTestModel()
+        self.setModel(labtest_model)
+        self.setEditTriggers(QListView.EditTrigger.NoEditTriggers)
+        self.setSpacing(2)
 
-        self.setLayout(self.m_layout)
+
+class SideBarTabWidget(QTabWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setIconSize(ICON_SIZE)
+        self.setDocumentMode(True)
+
+        self.labtest = LabTestView(self)
+        self.addTab(self.labtest, "Lab Tests")
+
+
+class SideBarDockWidget(QDockWidget):
+    def __init__(self, parent):
+        super().__init__("Project Explorer", parent)
+        self.setAllowedAreas(
+            Qt.DockWidgetArea.LeftDockWidgetArea
+            | Qt.DockWidgetArea.RightDockWidgetArea
+        )
+        # self.setFeatures(QDockWidget.NoDockWidgetFeatures)
+
+        # Tab
+        self.sidebar_tab = SideBarTabWidget(self)
+
+        # Form
+        rx = r"[+-]?\d+(\.\d+)?"
+        self.id = CustomLineEdit(self)
+        self.sample_desc = CustomLineEdit(self)
+        self.sample_depth = CustomLineEdit(self)
+        self.location_name = CustomLineEdit(self)
+        self.latitude = CustomLineEdit(self, rx=rx)
+        self.longitude = CustomLineEdit(self, rx=rx)
+        self.ref_standard = QComboBox(self)
+        self.ref_standard.addItems(tuple(CodeBook))
+        self.tested_by = CustomLineEdit(self)
+
+        form = QFormLayout()
+        form.addRow(QLabel("Sample ID"), self.id)
+        form.addRow(QLabel("Sample Desc."), self.sample_desc)
+        form.addRow(QLabel("Sample Depth"), self.sample_depth)
+        form.addRow(QLabel("Location Name"), self.location_name)
+        form.addRow(QLabel("Latitude"), self.latitude)
+        form.addRow(QLabel("Longitude"), self.longitude)
+        form.addRow(QLabel("Tested By"), self.tested_by)
+        form.addRow(QLabel("Ref. Standard"), self.ref_standard)
+
+        form_group = QGroupBox()
+        form_group.setLayout(form)
+
+        v_mspl = QSplitter(Qt.Orientation.Vertical)
+        v_mspl.addWidget(self.sidebar_tab)
+        v_mspl.addWidget(form_group)
+        v_mspl.setStretchFactor(0, 1)
+
+        m_wgt = QWidget(self)
+        v_box_mly = QVBoxLayout(m_wgt)
+        v_box_mly.addWidget(v_mspl, stretch=1)
+        m_wgt.setLayout(v_box_mly)
+
+        self.setWidget(m_wgt)
+        self.setFloating(False)
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent: QWidget | None = None, *args, **kwargs) -> None:
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
 
         self.setWindowTitle("GeoLysis")
 
@@ -123,34 +158,47 @@ class MainWindow(QMainWindow):
         self.create_statusbar()
         self.create_sidebar()
 
+    def resizeEvent(self, event):
+        self.sidebar.setMaximumWidth(int(self.width() * SIDEBAR_MAX_SIZE))
+        self.sidebar.setMinimumWidth(int(self.width() * SIDEBAR_MIN_SIZE))
+        super().resizeEvent(event)
+
     def init_ui(self):
-        self.m_widget = QWidget(self)
+        m_wgt = QWidget(self)
 
-        self.data_entry = DataEntryWidget()
-        self.plot_info = PlotInfoWidget()
-        self.custom_plot = CustomPlotWidget()
-        self.graph = GraphWidget()
-        self.graph_info = GraphInfoWidget()
-        self.graph_settings = GraphSettingsWidget()
+        self.data_entry = DataEntryWidget(m_wgt)
+        self.plot_info = PlotInfoWidget(m_wgt)
+        self.custom_plot = CustomPlotWidget(m_wgt)
 
-        self.m_layout = QGridLayout()
+        fig = Figure(figsize=(5, 3))
+        self.graph = GraphWidget(fig)
+        self.graph_toolbar = NavigationToolbar(self.graph, self)
 
-        self.m_layout.addWidget(self.data_entry, 0, 0, 1, 6)
-        self.m_layout.addWidget(self.plot_info, 1, 0, 1, 3)
-        self.m_layout.addWidget(self.custom_plot, 1, 3, 1, 3)
-        self.m_layout.addWidget(self.graph, 0, 6, 1, 6)
-        self.m_layout.addWidget(self.graph_info, 1, 6, 1, 3)
-        self.m_layout.addWidget(self.graph_settings, 1, 9, 1, 3)
+        h_box_wgt = QWidget(m_wgt)
+        h_box_ly = QHBoxLayout(h_box_wgt)
+        h_box_ly.addWidget(self.plot_info)
+        h_box_ly.addWidget(self.custom_plot)
+        h_box_ly.setContentsMargins(0, 0, 0, 0)
+        h_box_wgt.setLayout(h_box_ly)
 
-        self.m_layout.setContentsMargins(0, 0, 0, 0)
-        self.m_layout.setSpacing(0)
+        v_spl = QSplitter(Qt.Orientation.Vertical)
+        v_spl.addWidget(self.data_entry)
+        v_spl.addWidget(h_box_wgt)
+        v_spl.setStretchFactor(0, 1)
 
-        self.m_widget.setLayout(self.m_layout)
-        self.setCentralWidget(self.m_widget)
+        h_mspl = QSplitter(Qt.Orientation.Horizontal)
+        h_mspl.addWidget(v_spl)
+        h_mspl.addWidget(self.graph)
+
+        v_box_mly = QVBoxLayout(m_wgt)
+        v_box_mly.addWidget(h_mspl)
+
+        m_wgt.setLayout(v_box_mly)
+        self.setCentralWidget(m_wgt)
 
     def create_actions(self):
-        self.new = QAction(QIcon(":/icons/notebook.png"), "File", self)
-        self.new.setStatusTip("Create a new file")
+        self.new_action = QAction(QIcon(":/icons/notebook.png"), "File", self)
+        self.new_action.setStatusTip("Create a new file")
 
     def create_menus(self):
         self.menubar = self.menuBar()
@@ -159,97 +207,21 @@ class MainWindow(QMainWindow):
         self.filemenu.setTitle("&File")
 
         self.menubar.addMenu(self.filemenu)
-        self.filemenu.addAction(self.new)
+        self.filemenu.addAction(self.new_action)
 
     def create_toolbars(self):
         self.toolbar = QToolBar("Main toolbar")
         self.toolbar.setIconSize(ICON_SIZE)
-        self.toolbar.addAction(self.new)
-        self.addToolBar(self.toolbar)
+        self.toolbar.addAction(self.new_action)
+        self.toolbar.addSeparator()
+        self.toolbar.addWidget(self.graph_toolbar)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
 
     def create_statusbar(self):
         self.statusbar = self.statusBar()
         self.setStatusBar(self.statusbar)
 
     def create_sidebar(self):
-        sidebar = QDockWidget("Project Explorer", self)
-        sidebar.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        # sidebar.setFeatures(QDockWidget.NoDockWidgetFeatures)
-
-        self.sidebar_layout = QVBoxLayout()
-        self.sidebar_widget = QWidget(sidebar)
-
-        self.tab_widget = QTabWidget(sidebar)
-        self.tab_widget.setIconSize(ICON_SIZE)
-        self.tab_widget.setDocumentMode(True)
-
-        t_model = LabTestsModel()
-
-        self.test_types = QListView()
-        self.test_types.setModel(t_model)
-        self.test_types.setEditTriggers(QListView.NoEditTriggers)
-
-        self.test_types.setSpacing(2)
-
-        self.tab_widget.addTab(
-            self.test_types, QIcon(":/icons/jar-label.png"), "Test Type"
-        )
-
-        #: Sample Information
-        sample_info_group_box = QGroupBox("Sample Information")
-        self.sample_id = QLineEdit()
-        self.sample_desc = QLineEdit()
-        self.sample_depth = QLineEdit()
-
-        self.sample_info_layout = QFormLayout()
-        self.sample_info_layout.addRow(QLabel("Sample ID"), self.sample_id)
-        self.sample_info_layout.addRow(
-            QLabel("Sample Desc."), self.sample_desc
-        )
-        self.sample_info_layout.addRow(
-            QLabel("Sample Depth"), self.sample_depth
-        )
-        sample_info_group_box.setLayout(self.sample_info_layout)
-
-        # Sample Location
-        sample_loc_group_box = QGroupBox("Sample Location")
-        self.sample_loc_layout = QFormLayout()
-        self.sample_loc_area_name = QLineEdit()
-
-        rx = r"[+-]?\d+(\.\d+)?"
-        validator = QRegularExpressionValidator(rx)
-
-        self.latitude = QLineEdit()
-        self.latitude.setValidator(validator)
-        self.longitude = QLineEdit()
-        self.longitude.setValidator(validator)
-        self.sample_loc_layout.addRow(
-            QLabel("Location Name"), self.sample_loc_area_name
-        )
-        self.sample_loc_layout.addRow(QLabel("Latitude"), self.latitude)
-        self.sample_loc_layout.addRow(QLabel("Longitude"), self.longitude)
-        sample_loc_group_box.setLayout(self.sample_loc_layout)
-
-        #: Other Information
-        other_info_group_box = QGroupBox("Other Information")
-        self.ref_standard = QComboBox()
-        self.ref_standard.addItems(["ASTM", "British Standard"])
-        self.tested_by = QLineEdit()
-        self.other_info_layout = QFormLayout()
-        self.other_info_layout.addRow(
-            QLabel("Ref. Standard"), self.ref_standard
-        )
-        self.other_info_layout.addRow(QLabel("Tested By"), self.tested_by)
-        other_info_group_box.setLayout(self.other_info_layout)
-
-        self.sidebar_layout.addWidget(self.tab_widget)
-        self.sidebar_layout.addWidget(sample_info_group_box)
-        self.sidebar_layout.addWidget(sample_loc_group_box)
-        self.sidebar_layout.addWidget(other_info_group_box)
-
-        self.sidebar_widget.setLayout(self.sidebar_layout)
-
-        sidebar.setWidget(self.sidebar_widget)
-        sidebar.setFloating(False)
-
-        self.addDockWidget(Qt.LeftDockWidgetArea, sidebar)
+        self.sidebar = SideBarDockWidget(self)
+        self.sidebar.setMaximumWidth(200)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.sidebar)

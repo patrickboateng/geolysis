@@ -1,41 +1,34 @@
-from enum import StrEnum
-from typing import Sequence
+from enum import StrEnum, unique
 
 from PySide6.QtCore import QAbstractListModel, Qt
-from PySide6.QtGui import QColor
 
 
+@unique
+class CodeBook(StrEnum):
+    ASTM = "ASTM"
+    BRITISH_STANDARD = "BS"
+
+
+@unique
 class LabTest(StrEnum):
-    ATTERBERG_LIMITS = "AL"
-    COMPACTION = "CP"
-    PARTICLE_SIZE_DISTRIBUTION = "PSD"
+    ATTERBERG_LIMITS = "Atterberg Limits"
+    STANDARD_COMPACTION = "Standard Compaction"
+    MODIFIED_COMPACTION = "Modified Compaction"
+    PARTICLE_SIZE_DISTRIBUTION = "Particle Size Distribution"
 
 
-TEST_TYPES = (
-    LabTest.ATTERBERG_LIMITS,
-    LabTest.COMPACTION,
-    LabTest.PARTICLE_SIZE_DISTRIBUTION,
-)
-
-
-class LabTestsModel(QAbstractListModel):
-    def __init__(self, labtests: Sequence[LabTest] = TEST_TYPES):
+class LabTestModel(QAbstractListModel):
+    def __init__(self):
         super().__init__()
 
-        self.labtests = labtests
+        self._labtests = tuple(LabTest)
 
     def data(self, index, role):
         row = index.row()
-        test_type = self.labtests[row]
+        test_type = self._labtests[row]
 
-        if role == Qt.DisplayRole:
-            return test_type.name.replace("_", " ")
-
-        if role == Qt.DecorationRole:
-            return QColor("blue")
-
-        if role == Qt.StatusTipRole:
-            return "Tip"
+        if role == Qt.ItemDataRole.DisplayRole:
+            return test_type
 
     def rowCount(self, index):
-        return len(self.labtests)
+        return len(self._labtests)
