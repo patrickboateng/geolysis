@@ -6,4 +6,4 @@ from . import (
     utils,
 )
 from .bearing_capacity import abc_4_cohl_soils
-from .constants import Config
+from .conf import get_option, reset_option, set_option
