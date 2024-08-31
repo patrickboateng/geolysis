@@ -145,11 +145,11 @@ foundations using ``Bowles`` correlations:
 
 Other correlations for calculating bearing capacities are:
 
-- :class:`~geolysis.core.abc_4_cohl_soils.BowlesABC4MatFoundation`
-- :class:`~geolysis.core.abc_4_cohl_soils.MeyerhofABC4PadFoundation`
-- :class:`~geolysis.core.abc_4_cohl_soils.MeyerhofABC4MatFoundation`
-- :class:`~geolysis.core.abc_4_cohl_soils.TerzaghiABC4PadFoundation`
-- :class:`~geolysis.core.abc_4_cohl_soils.TerzaghiABC4MatFoundation`
+- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.BowlesABC4MatFoundation`
+- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.MeyerhofABC4PadFoundation`
+- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.MeyerhofABC4MatFoundation`
+- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.TerzaghiABC4PadFoundation`
+- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.TerzaghiABC4MatFoundation`
 
 Standard Penetration Tests Analysis
 -----------------------------------
