@@ -14,6 +14,7 @@ class TestVesicUBC:
         fs = create_foundation(
             depth=1.0,
             width=1.5,
+            eccentricity=0.2,
             footing_shape=Shape.SQUARE,
         )
         soil_prop: SoilProperties = {
@@ -24,6 +25,5 @@ class TestVesicUBC:
         v_ubc = VesicUltimateBearingCapacity(
             soil_properties=soil_prop,
             foundation_size=fs,
-            eccentricity=0.2,
         )
         assert v_ubc.bearing_capacity() == pytest.approx(765.2, ERROR_TOL)
