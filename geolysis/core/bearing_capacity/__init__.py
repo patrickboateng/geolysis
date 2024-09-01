@@ -1,4 +1,4 @@
-from .abc_4_cohl_soils import (
+from .abc_4_soils.abc_4_cohl_soils import (
     BowlesABC4MatFoundation,
     BowlesABC4PadFoundation,
     MeyerhofABC4MatFoundation,
@@ -6,11 +6,11 @@ from .abc_4_cohl_soils import (
     TerzaghiABC4MatFoundation,
     TerzaghiABC4PadFoundation,
 )
-from .ubc import (
-    HansenUBC,
+from .ubc_4_soils.hansen_ubc import HansenUltimateBearingCapacity
+from .ubc_4_soils.terzaghi_ubc import (
     TerzaghiUBC4CircFooting,
     TerzaghiUBC4RectFooting,
     TerzaghiUBC4SquareFooting,
     TerzaghiUBC4StripFooting,
-    VesicUBC,
 )
+from .ubc_4_soils.vesic_ubc import VesicUltimateBearingCapacity
