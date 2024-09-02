@@ -1,9 +1,10 @@
+import functools
 import math
 import statistics
-from functools import wraps
-from typing import Callable, Iterable
+from typing import Callable, Iterable, SupportsRound
 
-from .constants import Config
+from geolysis.core.conf import get_option
+from geolysis.core.constants import Q_, UnitSystem
 
 __all__ = [
     "exp",
@@ -18,6 +19,7 @@ __all__ = [
     "cos",
     "arctan",
     "round_",
+    "quantity",
 ]
 
 PI = math.pi
@@ -82,93 +84,82 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(fn) -> Callable:
-    """A decorator that rounds the results of a callable to a
-    specified number of decimal places.
+def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
+    """A decorator that rounds the result of a callable to a specified
+    number of decimal places.
 
-    The returned value of the callable should support the
-    ``__round__`` dunder method and should be a numeric value.
+    The returned value of the callable shoud support the ``__round__``
+    dunder method and should be a numeric value. ``ndigits`` can either
+    be an int which will indicates the number of decimal places to round
+    to or a callable. If ``ndigits`` is callable the default decimal
+    places is 4.
+
+    TypeError is raised when ``ndigits`` is neither an int or a callable.
 
     Examples
     --------
-    >>> import geolysis.core as glc
-    >>> @round_
-    ... def area_of_circle(r: float):
-    ...     return PI * r**2
+    >>> @round_(ndigits=2)
+    ... def area_of_circle(radius: float):
+    ...     return PI * (radius**2)
 
-    >>> area_of_circle(r=2.0)
-    12.5664
+    >>> area_of_circle(radius=2.0)
+    12.57
 
     By default the function is rounded to 4 decimal places.
 
-    >>> glc.Config.set_option("dp", 2)
+    >>> @round_
+    ... def area_of_circle(radius: float):
+    ...     return PI * (radius**2)
 
-    >>> area_of_circle(r=2.0)
-    12.57
+    >>> area_of_circle(radius=2.0)
+    12.5664
 
-    >>> glc.Config.reset_option("dp")
+    >>> @round_(ndigits=2.0)
+    ... def area_of_square(width: float):
+    ...     return width**2
+    Traceback (most recent call last):
+        ...
+    TypeError: ndigits should be an int or a callable.
     """
 
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        dp = Config.get_option("dp")
-        return round(fn(*args, **kwargs), ndigits=dp)
+    def dec(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs) -> float:
+            if not callable(ndigits):
+                dp = ndigits
+            else:
+                dp = get_option("dp")
 
-    return wrapper
+            return round(fn(*args, **kwargs), ndigits=dp)
+
+        return wrapper
+
+    # See if we're being called as @round_ or @round_().
+    if isinstance(ndigits, int):
+        # We're called with parens.
+        return dec
+    if callable(ndigits):
+        # We're called as @round_ without parens.
+        f = ndigits
+        return dec(f)
+
+    err_msg = "ndigits should be an int or a callable."
+    raise TypeError(err_msg)
 
 
-# def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
-#     """A decorator that rounds the result of a callable to a specified number
-#     of decimal places.
+def quantity(quant: str):
+    def decorator(fn: Callable):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            default_unit = getattr(UnitSystem.SI, quant)
+            unit_system = get_option("unit_system")
+            preffered_unit = getattr(unit_system, quant)
+            return (
+                Q_(fn(*args, **kwargs), default_unit)
+                .to_base_units()
+                .to_compact(preffered_unit)
+            )
 
-#     The returned value of the callable shoud support the ``__round__`` dunder
-#     method and should be a numeric value. ``ndigits`` can either be an int
-#     which will indicates the number of decimal places to round to or a callable,
-#     which by default rounds the returned value to 4 decimal places.
+        return wrapper
 
-#     TypeError is raised when ``ndigits`` is neither an int or a callable.
-
-#     Examples
-#     --------
-#     >>> @round_(ndigits=2)
-#     ... def area_of_circle(radius: float):
-#     ...     return PI * (radius**2)
-
-#     >>> area_of_circle(radius=2.0)
-#     12.57
-
-#     By default the function is rounded to 4 decimal places.
-
-#     >>> @round_
-#     ... def area_of_circle(radius: float):
-#     ...     return PI * (radius**2)
-
-#     >>> area_of_circle(radius=2.0)
-#     12.5664
-
-#     >>> @round_(ndigits=2.0)
-#     ... def area_of_square(width: float):
-#     ...     return width**2
-#     Traceback (most recent call last):
-#         ...
-#     TypeError: ndigits should be an int or a callable.
-#     """
-
-#     def dec(func, ndigits=DECIMAL_PLACES):
-#         @functools.wraps(func)
-#         def wrapper(*args, **kwargs) -> float:
-#             return round(func(*args, **kwargs), ndigits=ndigits)
-
-#         return wrapper
-
-#     # See if we're being called as @round_ or @round_().
-#     if isinstance(ndigits, int):
-#         # We're called with parens.
-#         return functools.partial(dec, ndigits=ndigits)
-#     if callable(ndigits):
-#         # We're called as @round_ without parens.
-#         f = ndigits
-#         return dec(f)
-#     else:
-#         err_msg = "ndigits should be an int or a callable."
-#         raise TypeError(err_msg)
+    return decorator
