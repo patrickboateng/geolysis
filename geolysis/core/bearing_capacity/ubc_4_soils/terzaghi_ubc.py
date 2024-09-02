@@ -1,6 +1,7 @@
-from abc import abstractmethod
-
-from geolysis.core.bearing_capacity.ubc_4_soils import UltimateBearingCapacity
+from geolysis.core.bearing_capacity.ubc_4_soils import (
+    SoilProperties,
+    UltimateBearingCapacity,
+)
 from geolysis.core.foundation import FoundationSize
 from geolysis.core.utils import (
     INF,
@@ -14,24 +15,31 @@ from geolysis.core.utils import (
     tan,
 )
 
+#: Number of decimal places
+DP = 2
+
 
 class TerzaghiBearingCapacityFactor:
     @classmethod
-    @round_
-    def n_c(cls, sfa: float) -> float:
-        return 5.7 if isclose(sfa, 0.0) else cot(sfa) * (cls.n_q(sfa) - 1)
-
-    @classmethod
-    @round_
-    def n_q(cls, sfa: float) -> float:
-        return exp((3 * PI / 2 - deg2rad(sfa)) * tan(sfa)) / (
-            2 * (cos(45 + sfa / 2)) ** 2
+    @round_(DP)
+    def n_c(cls, f_angle: float) -> float:
+        return (
+            5.7
+            if isclose(f_angle, 0.0)
+            else cot(f_angle) * (cls.n_q(f_angle) - 1)
         )
 
     @classmethod
-    @round_
-    def n_gamma(cls, sfa: float) -> float:
-        return (cls.n_q(sfa) - 1) * tan(1.4 * sfa)
+    @round_(DP)
+    def n_q(cls, f_angle: float) -> float:
+        return exp((3 * PI / 2 - deg2rad(f_angle)) * tan(f_angle)) / (
+            2 * (cos(45 + f_angle / 2)) ** 2
+        )
+
+    @classmethod
+    @round_(DP)
+    def n_gamma(cls, f_angle: float) -> float:
+        return (cls.n_q(f_angle) - 1) * tan(1.4 * f_angle)
 
 
 class TerzaghiShapeFactor:
@@ -79,30 +87,21 @@ class TerzaghiInclinationFactor:
 class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
     def __init__(
         self,
-        soil_properties: dict,
+        soil_properties: SoilProperties,
         foundation_size: FoundationSize,
         water_level: float = INF,
-        local_shear_failure: bool = False,
-        e: float = 0,
+        apply_local_shear: bool = False,
     ) -> None:
         super().__init__(
             soil_properties,
             foundation_size,
             water_level,
-            local_shear_failure,
-            e,
+            apply_local_shear,
         )
 
-        # bearing capacity factors
-        self.bcf = TerzaghiBearingCapacityFactor()
-
-        # shape factors
+        self.bearing_cpty_factor = TerzaghiBearingCapacityFactor()
         self.shape_factor = TerzaghiShapeFactor()
-
-        # depth factors
         self.depth_factor = TerzaghiDepthFactor()
-
-        # inclination factors
         self.incl_factor = TerzaghiInclinationFactor()
 
     @property
@@ -111,7 +110,7 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
 
         .. math:: N_c = \cot \phi (N_q - 1)
         """
-        return self.bcf.n_c(self.sfa)
+        return self.bearing_cpty_factor.n_c(self.friction_angle)
 
     @property
     def n_q(self) -> float:
@@ -122,7 +121,7 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
             N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
                   {2\cos^2(45 + \frac{\phi}{2})}
         """
-        return self.bcf.n_q(self.sfa)
+        return self.bearing_cpty_factor.n_q(self.friction_angle)
 
     @property
     def n_gamma(self) -> float:
@@ -130,7 +129,7 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
 
         .. math:: N_{\gamma} =  (N_q - 1) \tan(1.4\phi)
         """
-        return self.bcf.n_gamma(self.sfa)
+        return self.bearing_cpty_factor.n_gamma(self.friction_angle)
 
     @property
     def s_c(self) -> float:
@@ -177,9 +176,6 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
         r"""Inclination factor :math:`i_{\gamma}`."""
         return self.incl_factor.i_gamma()
 
-    @abstractmethod
-    def bearing_capacity(self) -> float: ...
-
 
 class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     r"""Ultimate bearing capacity for strip footing on cohesionless
@@ -225,56 +221,11 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
-        _emb_t = 0.5 * self._emb_expr()
-        return self._coh_expr() + self._surcharge_expr() + _emb_t
-
-
-class TerzaghiUBC4SquareFooting(TerzaghiUltimateBearingCapacity):
-    r"""Ultimate bearing capacity for square footing on cohesionless
-    soils according to ``Terzaghi 1943``.
-
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
-        material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
-
-    Notes
-    -----
-    Ultimate bearing capacity for square footing is given by the formula:
-
-    .. math:: q_u = 1.3cN_c + qN_q + 0.4 \gamma BN_{\gamma}
-
-    Examples
-    --------
-
-    """
-
-    @round_
-    def bearing_capacity(self) -> float:
-        _coh_t = 1.3 * self._coh_expr()
-        _emb_t = 0.4 * self._emb_expr()
-        return _coh_t + self._surcharge_expr() + _emb_t
+        return (
+            self._cohesion_term(1)
+            + self._surcharge_term()
+            + self._embedment_term(0.5)
+        )
 
 
 class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
@@ -320,9 +271,11 @@ class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        _coh_t = 1.3 * self._coh_expr()
-        _emb_t = 0.3 * self._emb_expr()
-        return _coh_t + self._surcharge_expr() + _emb_t
+        return (
+            self._cohesion_term(1.3)
+            + self._surcharge_term()
+            + self._embedment_term(0.3)
+        )
 
 
 class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
@@ -372,8 +325,58 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        _coh_t = (1 + 0.3 * (self.f_width / self.f_length)) * self._coh_expr()
-        _emb_t = (
-            (1 - 0.2 * (self.f_width / self.f_length)) * 0.5 * self._emb_expr()
+        f_w = self.foundation_size.width
+        f_l = self.foundation_size.length
+        _coh_coef = 1 + 0.3 * (f_w / f_l)
+        _emb_coef = (1 - 0.2 * (f_w / f_l)) / 2
+        return (
+            self._cohesion_term(_coh_coef)
+            + self._surcharge_term()
+            + self._embedment_term(_emb_coef)
         )
-        return _coh_t + self._surcharge_expr() + _emb_t
+
+
+class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectFooting):
+    r"""Ultimate bearing capacity for square footing on cohesionless
+    soils according to ``Terzaghi 1943``.
+
+    Parameters
+    ----------
+    soil_friction_angle : float
+        Internal angle of friction of soil material.
+    cohesion : float
+        Cohesion of soil material.
+    moist_unit_wgt : float
+        Moist (Bulk) unit weight of soil material.
+    foundation_size : FoundationSize
+        Size of foundation.
+    water_level : float
+        Depth of water below the ground surface.
+    local_shear_failure : float
+        Indicates if local shear failure is likely to occur therefore
+        modifies the soil_friction_angle and cohesion of the soil
+        material.
+    e : float
+        Deviation of the applied load from the center of the footing
+        also know as eccentricity.
+
+    Attributes
+    ----------
+    n_c
+    n_q
+    n_gamma
+
+    Notes
+    -----
+    Ultimate bearing capacity for square footing is given by the formula:
+
+    .. math:: q_u = 1.3cN_c + qN_q + 0.4 \gamma BN_{\gamma}
+
+    Examples
+    --------
+
+    """
+
+    @round_
+    def bearing_capacity(self) -> float:
+        return super().bearing_capacity()
