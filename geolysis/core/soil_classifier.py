@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import NamedTuple, Protocol
 
-from .constants import ERROR_TOL
-from .utils import isclose, round_
+# from geolysis.core.constants import ERROR_TOL
+from geolysis.core.utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
@@ -356,7 +356,7 @@ class PSD:
 
         total_agg = self.fines + self.sand + self.gravel
 
-        if not isclose(total_agg, 100.0, rel_tol=ERROR_TOL):
+        if not isclose(total_agg, 100.0, rel_tol=0.01):
             err_msg = f"fines + sand + gravels = 100% not {total_agg}"
             raise PSDAggSumError(err_msg)
 
@@ -528,7 +528,7 @@ class AASHTO:
         LL = self.liquid_limit
         PI = self.plasticity_index
 
-        if self.fines <= 10 and isclose(PI, 0, rel_tol=ERROR_TOL):
+        if self.fines <= 10 and isclose(PI, 0, rel_tol=0.01):
             soil_class = "A-3"
 
         # A-1-a -> A-1-b, Stone fragments, gravel, and sand
