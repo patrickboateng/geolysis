@@ -3,7 +3,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
-from .utils import INF
+from geolysis.core.utils import INF, isclose
 
 __all__ = [
     "create_foundation",
@@ -18,20 +18,11 @@ class FootingCreationError(TypeError):
     pass
 
 
-class Shape(enum.Enum):
-    STRIP = "strip"
-    CIRCLE = "circle"
-    SQUARE = "square"
-    RECTANGLE = "rectangle"
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, Shape):
-            return super().__eq__(other)
-        elif isinstance(other, str):
-            other = other.casefold()
-            return self.value == other
-        else:
-            return NotImplemented
+class Shape(enum.StrEnum):
+    STRIP = enum.auto()
+    CIRCLE = enum.auto()
+    SQUARE = enum.auto()
+    RECTANGLE = enum.auto()
 
 
 class _FootingShape(Protocol):
@@ -57,15 +48,6 @@ class StripFooting:
     width: float
     length: float = INF
     type_ = Shape.STRIP
-
-    # @property
-    # def length(self) -> float:
-    #     """Width of foundation footing."""
-    #     return self.width
-
-    # @length.setter
-    # def length(self, __val: float):
-    #     self.width = __val
 
 
 @dataclass
@@ -239,6 +221,7 @@ class FoundationSize:
 
     depth: float
     footing_shape: _FootingShape
+    eccentricity: float = 0.0
 
     @property
     def width(self) -> float:
@@ -248,6 +231,10 @@ class FoundationSize:
     @width.setter
     def width(self, __val: float):
         self.footing_shape.width = __val
+
+    @property
+    def effective_width(self) -> float:
+        return self.width - 2 * self.eccentricity
 
     @property
     def length(self) -> float:
@@ -262,11 +249,29 @@ class FoundationSize:
     def footing_type(self) -> Shape:
         return self.footing_shape.type_
 
+    def get_info(self):
+        """
+        - **f_d** : Depth of foundation footing
+        - **f_w** : Width of foundation footing
+        - **f_l** : Length of foundation footing
+        - **f_type** : Type of foundation footing
+        """
+        f_d = self.depth
+        f_w = self.effective_width
+        f_l = self.length
+        f_type = self.footing_type
+
+        if not isclose(f_w, f_l) and f_type != Shape.STRIP:
+            f_type = Shape.RECTANGLE
+
+        return (f_d, f_w, f_l, f_type)
+
 
 def create_foundation(
     depth: float,
     width: float,
     length: Optional[float] = None,
+    eccentricity: float = 0.0,
     footing_shape: Shape | str = Shape.SQUARE,
 ) -> FoundationSize:
     """A factory function that encapsulate the creation of a foundation
@@ -319,4 +324,8 @@ def create_foundation(
             )
             raise FootingCreationError(err_msg)
 
-    return FoundationSize(depth=depth, footing_shape=_footing_shape)
+    return FoundationSize(
+        depth=depth,
+        eccentricity=eccentricity,
+        footing_shape=_footing_shape,
+    )
