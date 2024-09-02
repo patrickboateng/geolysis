@@ -3,8 +3,7 @@ from dataclasses import KW_ONLY, dataclass
 from statistics import StatisticsError
 from typing import Protocol, Sequence
 
-from .constants import ERROR_TOL
-from .utils import isclose, log10, mean, round_, sqrt
+from geolysis.core.utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "WeightedSPT",
@@ -490,7 +489,7 @@ class BazaraaPeckOPC(_OPC):
     @round_
     def correction(self) -> float:
         """SPT Correction."""
-        if isclose(self.eop, self.STD_PRESSURE, rel_tol=ERROR_TOL):
+        if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
         elif self.eop < self.STD_PRESSURE:
             corr = 4 / (1 + 0.0418 * self.eop)
