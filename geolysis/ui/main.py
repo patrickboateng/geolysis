@@ -1,7 +1,8 @@
 import sys
 
 from PySide6.QtWidgets import QApplication
-from views import MainWindow
+
+from geolysis.ui.views import MainWindow
 
 
 def main():
