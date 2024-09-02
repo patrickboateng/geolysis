@@ -25,21 +25,6 @@ def _chk_settlement(tol_settlement: float, max_tol_settlement: float):
         raise SettlementError(err_msg)
 
 
-#: TODO: change B, D
-def _get_attributes(obj):
-    """
-    - **B** : width of foundation footing
-    - **D** : depth of foundation footing
-    - **SR** : settlement ratio S_tol / S_max
-    - **N_CORR** : corrected spt number
-    """
-    f_w = obj.foundation_size.width
-    f_d = obj.foundation_size.depth
-    SR = obj.tol_settlement / obj.MAX_TOL_SETTLEMENT
-    N_CORR = obj.corrected_spt_number
-    return f_w, f_d, SR, N_CORR
-
-
 class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement.
     MAX_TOL_SETTLEMENT = 25.4
