@@ -1,11 +1,9 @@
 import matplotlib
-from assets import resources_rc  # noqa: F401
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qtagg import (
     NavigationToolbar2QT as NavigationToolbar,  # type: ignore
 )
 from matplotlib.figure import Figure
-from models import CodeBook, LabTest, LabTestModel
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon, QRegularExpressionValidator
 from PySide6.QtWidgets import (
@@ -28,6 +26,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from geolysis.ui.assets import resources_rc  # noqa: F401
+from geolysis.ui.models import CodeBook, LabTest, LabTestModel
+
 matplotlib.use("QtAgg")
 
 ICON_SIZE = QSize(20, 20)
@@ -47,6 +48,10 @@ class DataEntryWidget(QTableWidget):
         super().__init__(parent)
 
         self.labtest = labtest
+
+        if self.labtest is None:
+            self.setRowCount(20)
+            self.setColumnCount(20)
 
 
 class PlotInfoWidget(QTableView):
