@@ -30,7 +30,7 @@ to advanced geotechnical designs.
 
 `geolysis` is divided into four (4) main parts:
 
-1. `geolyis.core (Python Package)`
+1. `geolyis.core (Python)`
 
    `geolysis.core` is an open-source Python package that provides features
    for analyzing geotechnical results obtained from field and laboratory
