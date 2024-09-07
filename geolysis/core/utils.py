@@ -3,8 +3,7 @@ import math
 import statistics
 from typing import Callable, Iterable, SupportsRound
 
-from geolysis.core.conf import get_option
-from geolysis.core.constants import Q_, UnitSystem
+from geolysis.core._conf import Q_, UnitSystem, get_option
 
 __all__ = [
     "exp",
@@ -154,11 +153,8 @@ def quantity(quant: str):
             default_unit = getattr(UnitSystem.SI, quant)
             unit_system = get_option("unit_system")
             preffered_unit = getattr(unit_system, quant)
-            return (
-                Q_(fn(*args, **kwargs), default_unit)
-                .to_base_units()
-                .to_compact(preffered_unit)
-            )
+            ret_val = fn(*args, **kwargs)
+            return Q_(ret_val, default_unit).to_compact(preffered_unit)
 
         return wrapper
 
