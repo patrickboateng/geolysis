@@ -3,42 +3,34 @@ from typing import Sequence
 
 import pytest
 
-from geolysis.core.soil_classifier import AASHTO, PSD, USCS, PSDAggSumError
+from geolysis.core.soil_classifier import AASHTO, PSD, USCS, SizeDistribution
 from geolysis.core.soil_classifier import AtterbergLimits as AL
 
 
 class TestAL(unittest.TestCase):
     def setUp(self) -> None:
-        self.atterberg_limits = AL(liquid_limit=25, plastic_limit=15)
+        self.al = AL(liquid_limit=25, plastic_limit=15)
 
     def testPlasticityIndex(self):
-        plasticity_index = self.atterberg_limits.plasticity_index
-        self.assertAlmostEqual(plasticity_index, 10)
+        self.assertAlmostEqual(self.al.plasticity_index, 10)
 
     def testLiquidityIndex(self):
-        liquidity_index = self.atterberg_limits.liquidity_index(nmc=20)
-        self.assertAlmostEqual(liquidity_index, 50)
+        self.assertAlmostEqual(self.al.liquidity_index(nmc=20), 50)
 
     def testConsistencyIndex(self):
-        consistency_index = self.atterberg_limits.consistency_index(nmc=20)
-        self.assertAlmostEqual(consistency_index, 50)
+        self.assertAlmostEqual(self.al.consistency_index(nmc=20), 50)
 
 
 class TestPSD(unittest.TestCase):
     def setUp(self) -> None:
-        self.psd = PSD(
-            fines=0, sand=0, gravel=100, d_10=0.115, d_30=0.53, d_60=1.55
-        )
+        size_dist = SizeDistribution(0.115, 0.53, 1.55)
+        self.psd = PSD(fines=0.0, sand=0.0, size_dist=size_dist)
 
     def testCoeffOfUniformity(self):
-        self.assertAlmostEqual(self.psd.coeff_of_uniformity, 13.4783)
+        self.assertAlmostEqual(self.psd.coeff_of_uniformity, 13.48)
 
     def testCoeffOfCurvature(self):
-        self.assertAlmostEqual(self.psd.coeff_of_curvature, 1.5759)
-
-    def testPSDError(self):
-        with self.assertRaises(PSDAggSumError):
-            PSD(fines=30, sand=30, gravel=30)
+        self.assertAlmostEqual(self.psd.coeff_of_curvature, 1.58)
 
 
 class TestAASHTO:
@@ -80,7 +72,7 @@ class TestAASHTO:
 
 class TestUSCS:
     @pytest.mark.parametrize(
-        "al,psd,size_dist,clf",
+        "al,_psd,dist,clf",
         [
             ((30.8, 20.7), (10.29, 81.89), (0.07, 0.3, 0.8), "SW-SC"),
             ((24.4, 14.7), (9.77, 44.82), (0.06, 0.6, 7), "GP-GC"),
@@ -94,18 +86,20 @@ class TestUSCS:
     )
     def test_dual_classification(
         self,
-        al: Sequence,
-        psd: Sequence,
-        size_dist: Sequence,
+        al: Sequence[float],
+        _psd: Sequence[float],
+        dist: Sequence[float],
         clf: str,
     ):
-        uscs = USCS(
-            *al, *psd, d_10=size_dist[0], d_30=size_dist[1], d_60=size_dist[2]
-        )
+        atterberg_limits = AL(*al)
+        size_dist = SizeDistribution(*dist)
+        psd = PSD(*_psd, size_dist=size_dist)
+        uscs = USCS(atterberg_limits, psd)
+
         assert uscs.classify() == clf
 
     @pytest.mark.parametrize(
-        "al,psd,clf",
+        "al,_psd,clf",
         [
             ((30.8, 20.7), (10.29, 81.89), "SW-SC,SP-SC"),
             ((24.4, 14.7), (9.77, 44.82), "GW-GC,GP-GC"),
@@ -119,14 +113,17 @@ class TestUSCS:
     def test_dual_classification_no_psd_coeff(
         self,
         al: Sequence,
-        psd: Sequence,
+        _psd: Sequence,
         clf: str,
     ):
-        uscs = USCS(*al, *psd)
+        atterberg_limits = AL(*al)
+        psd = PSD(*_psd)
+        uscs = USCS(atterberg_limits, psd)
+
         assert uscs.classify() == clf
 
     @pytest.mark.parametrize(
-        "al,psd,clf",
+        "al,_psd,clf",
         [
             ((34.1, 21.1), (47.88, 37.84), "SC"),
             ((27.5, 13.8), (54.23, 45.69), "CL"),
@@ -147,29 +144,24 @@ class TestUSCS:
     def test_single_classification(
         self,
         al: Sequence,
-        psd: Sequence,
+        _psd: Sequence,
         clf: str,
     ):
-        uscs = USCS(*al, *psd)
+        atterberg_limits = AL(*al)
+        psd = PSD(*_psd)
+        uscs = USCS(atterberg_limits, psd)
+
         assert uscs.classify() == clf
 
     def test_organic_soils_low_plasticity(self):
-        uscs = USCS(
-            liquid_limit=35.83,
-            plastic_limit=25.16,
-            fines=68.94,
-            sand=28.88,
-            organic=True,
-        )
+        al = AL(liquid_limit=35.83, plastic_limit=25.16)
+        psd = PSD(fines=68.94, sand=28.88)
+        uscs = USCS(atterberg_limits=al, psd=psd, organic=True)
         assert uscs.classify() == "OL"
 
     def test_organic_soils_high_plasticity(self):
-        uscs = USCS(
-            liquid_limit=55.0,
-            plastic_limit=40.0,
-            fines=85,
-            sand=15,
-            organic=True,
-        )
+        al = AL(liquid_limit=55.0, plastic_limit=40.0)
+        psd = PSD(fines=85.0, sand=15.0)
+        uscs = USCS(atterberg_limits=al, psd=psd, organic=True)
 
         assert uscs.classify() == "OH"
