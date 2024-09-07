@@ -1,21 +1,15 @@
 from geolysis.core.bearing_capacity.ubc_4_soils import (
+    DP,
     SoilProperties,
     UltimateBearingCapacity,
     k,
-    DP,
 )
 from geolysis.core.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor,
     HansenDepthFactor,
 )
 from geolysis.core.foundation import FoundationSize, Shape
-from geolysis.core.utils import (
-    INF,
-    isclose,
-    round_,
-    sin,
-    tan,
-)
+from geolysis.core.utils import INF, isclose, quantity, round_, sin, tan
 
 
 class VesicBearingCapacityFactor:
@@ -243,6 +237,7 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
     def i_gamma(self) -> float:
         return self.incl_factor.i_gamma(self.friction_angle, self.load_angle)
 
+    @quantity("Pressure")
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""

@@ -12,6 +12,7 @@ from geolysis.core.utils import (
     cot,
     exp,
     isclose,
+    quantity,
     round_,
     sin,
     tan,
@@ -261,6 +262,7 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     def i_gamma(self) -> float:
         return self.incl_factor.i_gamma(self.load_angle)
 
+    @quantity("Pressure")
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""

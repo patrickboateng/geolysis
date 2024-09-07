@@ -11,6 +11,7 @@ from geolysis.core.utils import (
     deg2rad,
     exp,
     isclose,
+    quantity,
     round_,
     tan,
 )
@@ -218,6 +219,7 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
 
     """
 
+    @quantity("Pressure")
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
@@ -269,6 +271,7 @@ class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
 
     """
 
+    @quantity("Pressure")
     @round_
     def bearing_capacity(self) -> float:
         return (
@@ -323,16 +326,17 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
 
     """
 
+    @quantity("Pressure")
     @round_
     def bearing_capacity(self) -> float:
         f_w = self.foundation_size.width
         f_l = self.foundation_size.length
-        _coh_coef = 1 + 0.3 * (f_w / f_l)
-        _emb_coef = (1 - 0.2 * (f_w / f_l)) / 2
+        coh_coef = 1 + 0.3 * (f_w / f_l)
+        emb_coef = (1 - 0.2 * (f_w / f_l)) / 2
         return (
-            self._cohesion_term(_coh_coef)
+            self._cohesion_term(coh_coef)
             + self._surcharge_term()
-            + self._embedment_term(_emb_coef)
+            + self._embedment_term(emb_coef)
         )
 
 
@@ -377,6 +381,6 @@ class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectFooting):
 
     """
 
-    @round_
-    def bearing_capacity(self) -> float:
+    @quantity("Pressure")
+    def bearing_capacity(self):
         return super().bearing_capacity()
