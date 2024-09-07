@@ -2,6 +2,8 @@ import unittest
 
 import pytest
 
+from geolysis.core import Q_
+from geolysis.core.bearing_capacity import DEFAULT_UNIT
 from geolysis.core.bearing_capacity.ubc_4_soils import SoilProperties
 from geolysis.core.bearing_capacity.ubc_4_soils.terzaghi_ubc import (
     TerzaghiBearingCapacityFactor,
@@ -10,9 +12,8 @@ from geolysis.core.bearing_capacity.ubc_4_soils.terzaghi_ubc import (
     TerzaghiUBC4SquareFooting,
     TerzaghiUBC4StripFooting,
 )
-
-# from geolysis.core.constants import SoilData
 from geolysis.core.foundation import Shape, create_foundation
+from geolysis.core.utils import INF
 
 ERROR_TOL = 0.01
 
@@ -41,44 +42,34 @@ class TestTerzaghiBCF:
         assert self.t_bcf.n_gamma(f_angle) == pytest.approx(r_value, ERROR_TOL)
 
 
-# TODO: Convert test to a paramterize test
-class TestTerzaghiUBC4StripFooting(unittest.TestCase):
-    def setUp(self) -> None:
-        self.soil_prop: SoilProperties = {
-            "friction_angle": 35.0,
-            "cohesion": 15.0,
-            "moist_unit_wgt": 18.0,
-        }
-        return super().setUp()
-
-    #: footing not embedded in water
-    def testBearingCapacity(self):
-        fs = create_foundation(
-            depth=1,
-            width=1.2,
-            footing_shape=Shape.STRIP,
-        )
-
-        t = TerzaghiUBC4StripFooting(
-            soil_properties=self.soil_prop, foundation_size=fs
-        )
-        # self.assertAlmostEqual(t.bearing_capacity(), 2114.586, 1)
-        # TODO: Check the calculations
-        assert t.bearing_capacity() == pytest.approx(2114.586, ERROR_TOL)
-
-    #: footing embedded in water
-    def testEmbBearingCapacity(self):
-        fs = create_foundation(
-            depth=1.5,
-            width=2.0,
-            footing_shape=Shape.STRIP,
-        )
-        t = TerzaghiUBC4StripFooting(
-            soil_properties=self.soil_prop,
+class TestTerzaghiUBC4StripFooting:
+    @pytest.mark.parametrize(
+        ("soil_prop", "fs", "water_level", "res"),
+        [
+            (
+                dict(friction_angle=35.0, cohesion=15.0, moist_unit_wgt=18.0),
+                dict(depth=1, width=1.2, footing_shape=Shape.STRIP),
+                INF,
+                2114.586,
+            ),
+            (
+                dict(friction_angle=35.0, cohesion=15.0, moist_unit_wgt=18.0),
+                dict(depth=1.5, width=2.0, footing_shape=Shape.STRIP),
+                0.4,
+                1993.59,
+            ),
+        ],
+    )
+    def test_bearing_capacity(self, soil_prop, fs, water_level, res):
+        fs = create_foundation(**fs)
+        t_ubc = TerzaghiUBC4StripFooting(
+            soil_properties=soil_prop,
             foundation_size=fs,
-            water_level=0.4,
+            water_level=water_level,
         )
-        assert t.bearing_capacity() == pytest.approx(1993.59, ERROR_TOL)
+        actual = t_ubc.bearing_capacity().magnitude
+        expected = Q_(res, DEFAULT_UNIT).to_compact()
+        assert actual == pytest.approx(expected, ERROR_TOL)
 
 
 class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
@@ -96,12 +87,14 @@ class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
         return super().setUp()
 
     def testBearingCapacity(self):
-        t = TerzaghiUBC4SquareFooting(
+        t_ubc = TerzaghiUBC4SquareFooting(
             soil_properties=self.soil_prop,
             foundation_size=self.fs,
             apply_local_shear=True,
         )
-        assert t.bearing_capacity() == pytest.approx(323.008, ERROR_TOL)
+        actual = t_ubc.bearing_capacity().magnitude
+        expected = Q_(323.008, DEFAULT_UNIT).to_compact()
+        assert actual == pytest.approx(expected, ERROR_TOL)
 
 
 class TestTerzaghiUBC4CircFooting(unittest.TestCase):
@@ -119,12 +112,14 @@ class TestTerzaghiUBC4CircFooting(unittest.TestCase):
         return super().setUp()
 
     def test_bearing_capacity(self):
-        t = TerzaghiUBC4CircFooting(
+        t_ubc = TerzaghiUBC4CircFooting(
             soil_properties=self.soil_prop,
             foundation_size=self.fs,
             apply_local_shear=True,
         )
-        assert t.bearing_capacity() == pytest.approx(318.9094, ERROR_TOL)
+        actual = t_ubc.bearing_capacity().magnitude
+        expected = Q_(318.9094, DEFAULT_UNIT).to_compact()
+        assert actual == pytest.approx(expected, ERROR_TOL)
 
 
 class TestTerzaghiUBC4RectFooting(unittest.TestCase):
@@ -143,9 +138,11 @@ class TestTerzaghiUBC4RectFooting(unittest.TestCase):
         return super().setUp()
 
     def test_bearing_capacity(self):
-        t = TerzaghiUBC4RectFooting(
+        t_ubc = TerzaghiUBC4RectFooting(
             soil_properties=self.soil_prop,
             foundation_size=self.fs,
             apply_local_shear=True,
         )
-        assert t.bearing_capacity() == pytest.approx(300.0316, ERROR_TOL)
+        actual = t_ubc.bearing_capacity().magnitude
+        expected = Q_(300.0316, DEFAULT_UNIT).to_compact()
+        assert actual == pytest.approx(expected, ERROR_TOL)

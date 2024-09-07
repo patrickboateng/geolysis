@@ -1,5 +1,7 @@
 import pytest
 
+from geolysis.core import Q_
+from geolysis.core.bearing_capacity import DEFAULT_UNIT
 from geolysis.core.bearing_capacity.ubc_4_soils import SoilProperties
 from geolysis.core.bearing_capacity.ubc_4_soils.vesic_ubc import (
     VesicUltimateBearingCapacity,
@@ -26,4 +28,6 @@ class TestVesicUBC:
             soil_properties=soil_prop,
             foundation_size=fs,
         )
-        assert v_ubc.bearing_capacity() == pytest.approx(765.2, ERROR_TOL)
+        actual = v_ubc.bearing_capacity().magnitude
+        expected = Q_(765.2, DEFAULT_UNIT).to_compact()
+        assert actual == pytest.approx(expected, ERROR_TOL)
