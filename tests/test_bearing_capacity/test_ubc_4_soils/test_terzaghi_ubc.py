@@ -68,7 +68,7 @@ class TestTerzaghiUBC4StripFooting:
             water_level=water_level,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(res, DEFAULT_UNIT).to_compact()
+        expected = Q_(res, DEFAULT_UNIT).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
 
 
@@ -93,7 +93,7 @@ class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
             apply_local_shear=True,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(323.008, DEFAULT_UNIT).to_compact()
+        expected = Q_(323.008, DEFAULT_UNIT).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
 
 
@@ -118,7 +118,7 @@ class TestTerzaghiUBC4CircFooting(unittest.TestCase):
             apply_local_shear=True,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(318.9094, DEFAULT_UNIT).to_compact()
+        expected = Q_(318.9094, DEFAULT_UNIT).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
 
 
@@ -144,5 +144,5 @@ class TestTerzaghiUBC4RectFooting(unittest.TestCase):
             apply_local_shear=True,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(300.0316, DEFAULT_UNIT).to_compact()
+        expected = Q_(300.0316, DEFAULT_UNIT).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)

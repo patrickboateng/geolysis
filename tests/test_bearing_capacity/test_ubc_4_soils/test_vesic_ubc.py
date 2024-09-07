@@ -29,5 +29,5 @@ class TestVesicUBC:
             foundation_size=fs,
         )
         actual = v_ubc.bearing_capacity().magnitude
-        expected = Q_(765.2, DEFAULT_UNIT).to_compact()
+        expected = Q_(765.2, DEFAULT_UNIT).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)

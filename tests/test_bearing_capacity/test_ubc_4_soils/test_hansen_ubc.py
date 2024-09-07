@@ -53,5 +53,5 @@ class TestHansenUBC:
             foundation_size=fs,
         )
         actual = h_ubc.bearing_capacity().magnitude
-        expected = Q_(809.36, DEFAULT_UNIT).to_compact()
+        expected = Q_(809.36, DEFAULT_UNIT).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
