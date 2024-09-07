@@ -1,6 +1,32 @@
+import enum
 from typing import Any, Callable, NamedTuple
 
-from geolysis.core.constants import UnitSystem
+from pint import UnitRegistry
+
+UNIT_REGISTRY = UnitRegistry()
+Q_ = UNIT_REGISTRY.Quantity
+
+
+class UnitSystem(enum.StrEnum):
+    """Physical unit systems."""
+
+    CGS = enum.auto()
+    MKS = enum.auto()
+    IMPERIAL = enum.auto()
+    SI = "SI"
+
+    @property
+    def Pressure(self):
+        if self is self.CGS:
+            unit = UNIT_REGISTRY.barye
+        elif self is self.MKS or self is self.SI:
+            unit = UNIT_REGISTRY.kPa
+        elif self is self.IMPERIAL:
+            unit = UNIT_REGISTRY.psi
+        else:
+            # TODO: Add error msg
+            raise Exception
+        return unit
 
 
 class RegisteredOption(NamedTuple):
