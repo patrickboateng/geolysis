@@ -14,3 +14,5 @@ from .ubc_4_soils.terzaghi_ubc import (
     TerzaghiUBC4StripFooting,
 )
 from .ubc_4_soils.vesic_ubc import VesicUltimateBearingCapacity
+
+DEFAULT_UNIT: str = "kN/m**2"
