@@ -1,5 +1,5 @@
-from abc import abstractmethod
-from typing import NamedTuple, Protocol
+from dataclasses import dataclass
+from typing import Optional
 
 # from geolysis.core.constants import ERROR_TOL
 from geolysis.core.utils import isclose, round_
@@ -7,22 +7,8 @@ from geolysis.core.utils import isclose, round_
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
 
-class PSDAggSumError(ValueError):
+class SizeDistError(Exception):
     pass
-
-
-class SoilGradationError(ZeroDivisionError):
-    pass
-
-
-class _SoilClassifier(Protocol):
-    @property
-    @abstractmethod
-    def soil_class(self): ...
-
-    @property
-    @abstractmethod
-    def soil_desc(self): ...
 
 
 #: USCS symbol for gravel.
@@ -53,58 +39,7 @@ LOW_PLASTICITY: str = "L"
 HIGH_PLASTICITY: str = "H"
 
 
-class _SoilGradation(NamedTuple):
-    """Features obtained from the Particle Size Distribution graph."""
-
-    d_10: float
-    d_30: float
-    d_60: float
-
-    ERR_MSG: str = "d_10, d_30, and d_60 cannot be 0"
-
-    @property
-    @round_
-    def coeff_of_curvature(self) -> float:
-        try:
-            return (self.d_30**2) / (self.d_60 * self.d_10)
-        except ZeroDivisionError as e:
-            raise SoilGradationError(self.ERR_MSG) from e
-
-    @property
-    @round_
-    def coeff_of_uniformity(self) -> float:
-        try:
-            return self.d_60 / self.d_10
-        except ZeroDivisionError as e:
-            raise SoilGradationError(self.ERR_MSG) from e
-
-    def grade(self, coarse_soil: str) -> str:
-        """Grade of soil sample. Soil grade can either be ``WELL_GRADED`` or
-        ``POORLY_GRADED``.
-
-        Parameters
-        ----------
-        coarse_soil : str
-            Coarse fraction of the soil sample. Valid arguments are :data:`GRAVEL`
-            or :data:`SAND`.
-        """
-
-        if coarse_soil == GRAVEL and (
-            1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4
-        ):
-            grade = WELL_GRADED
-
-        elif coarse_soil == SAND and (
-            1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 6
-        ):
-            grade = WELL_GRADED
-
-        else:
-            grade = POORLY_GRADED
-
-        return grade
-
-
+@dataclass
 class AtterbergLimits:
     """Water contents at which soil changes from one state to the other.
 
@@ -170,9 +105,12 @@ class AtterbergLimits:
     181.56
     """
 
-    def __init__(self, liquid_limit: float, plastic_limit: float):
-        self.liquid_limit = liquid_limit
-        self.plastic_limit = plastic_limit
+    liquid_limit: float
+    plastic_limit: float
+
+    # def __init__(self, liquid_limit: float, plastic_limit: float):
+    #     self.liquid_limit = liquid_limit
+    #     self.plastic_limit = plastic_limit
 
     @property
     @round_
@@ -264,6 +202,62 @@ class AtterbergLimits:
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
 
+@dataclass(frozen=True)
+class SizeDistribution:
+    """Features obtained from the Particle Size Distribution graph.
+
+    Parameters
+    ----------
+    d_10 : float, mm
+        Diameter at which 10% of the soil by weight is finer.
+    d_30 : float, mm
+        Diameter at which 30% of the soil by weight is finer.
+    d_60 : float, mm
+        Diameter at which 60% of the soil by weight is finer.
+    """
+
+    d_10: float
+    d_30: float
+    d_60: float
+
+    @property
+    @round_(2)
+    def coeff_of_curvature(self) -> float:
+        return (self.d_30**2) / (self.d_60 * self.d_10)
+
+    @property
+    @round_(2)
+    def coeff_of_uniformity(self) -> float:
+        return self.d_60 / self.d_10
+
+    def grade(self, coarse_soil: str) -> str:
+        """Grade of soil sample. Soil grade can either be ``WELL_GRADED`` or
+        ``POORLY_GRADED``.
+
+        Parameters
+        ----------
+        coarse_soil : str
+            Coarse fraction of the soil sample. Valid arguments are :data:`GRAVEL`
+            or :data:`SAND`.
+        """
+
+        if coarse_soil == GRAVEL and (
+            1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4
+        ):
+            grade = WELL_GRADED
+
+        elif coarse_soil == SAND and (
+            1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 6
+        ):
+            grade = WELL_GRADED
+
+        else:
+            grade = POORLY_GRADED
+
+        return grade
+
+
+@dataclass
 class PSD:
     r"""Quantitative proportions by mass of various sizes of particles present
     in a soil.
@@ -280,14 +274,6 @@ class PSD:
         passing through No. 200 sieve (0.075mm)
     sand : float
         Percentage of sand in soil sample.
-    gravel : float
-        Percentage of gravel in soil sample.
-    d_10 : float, mm
-        Diameter at which 10% of the soil by weight is finer.
-    d_30 : float, mm
-        Diameter at which 30% of the soil by weight is finer.
-    d_60 : float, mm
-        Diameter at which 60% of the soil by weight is finer.
 
     Attributes
     ----------
@@ -297,37 +283,33 @@ class PSD:
 
     Raises
     ------
-    PSDAggSumError
-        Raised when soil aggregates does not approximately sum up to 100%.
-    SoilGradationError
-        Raised when d_10, d_30, and d_60 are not provided.
+    SoilDistError
 
     Examples
     --------
-    >>> from geolysis.core.soil_classifier import PSD
+    >>> from geolysis.core.soil_classifier import PSD, SizeDistribution
 
-    >>> psd = PSD(fines=30.25, sand=53.55, gravel=16.20)
+    >>> psd = PSD(fines=30.25, sand=53.55)
     >>> soil_type = psd.type_of_coarse
     >>> soil_type
     'S'
     >>> USCS.SOIL_DESCRIPTIONS[soil_type]
     'Sand'
 
-    Raises error because parameters d_10, d_30, and d_60 are not provided.
+    The following code raises error because ``size_dist`` is not provided.
 
     >>> psd.coeff_of_curvature
     Traceback (most recent call last):
         ...
-    SoilGradationError: d_10, d_30, and d_60 cannot be 0
+    SizeDistError: size_dist cannot be None
 
     >>> psd.coeff_of_uniformity
     Traceback (most recent call last):
         ...
-    SoilGradationError: d_10, d_30, and d_60 cannot be 0
+    SizeDistError: size_dist cannot be None
 
-    >>> psd = PSD(fines=10.29, sand=81.89, gravel=7.83, d_10=0.07, d_30=0.30, d_60=0.8)
-    >>> psd.d_10, psd.d_30, psd.d_60
-    (0.07, 0.3, 0.8)
+    >>> size_dist = SizeDistribution(d_10=0.07, d_30=0.30, d_60=0.8)
+    >>> psd = PSD(fines=10.29, sand=81.89, size_dist=size_dist)
     >>> psd.coeff_of_curvature
     1.61
     >>> psd.coeff_of_uniformity
@@ -340,40 +322,12 @@ class PSD:
     'Well graded'
     """
 
-    def __init__(
-        self,
-        fines: float,
-        sand: float,
-        gravel: float,
-        d_10: float = 0,
-        d_30: float = 0,
-        d_60: float = 0,
-    ):
-        self.fines = fines
-        self.sand = sand
-        self.gravel = gravel
-        self.size_dist = _SoilGradation(d_10, d_30, d_60)
+    fines: float
+    sand: float
+    size_dist: Optional[SizeDistribution] = None
 
-        total_agg = self.fines + self.sand + self.gravel
-
-        if not isclose(total_agg, 100.0, rel_tol=0.01):
-            err_msg = f"fines + sand + gravels = 100% not {total_agg}"
-            raise PSDAggSumError(err_msg)
-
-    @property
-    def d_10(self) -> float:
-        """Diameter at which 10% of the soil by weight is finer."""
-        return self.size_dist.d_10
-
-    @property
-    def d_30(self) -> float:
-        """Diameter at which 30% of the soil by weight is finer."""
-        return self.size_dist.d_30
-
-    @property
-    def d_60(self) -> float:
-        """Diameter at which 60% of the soil by weight is finer."""
-        return self.size_dist.d_60
+    def __post_init__(self) -> None:
+        self.gravel = 100 - (self.fines + self.sand)
 
     @property
     def type_of_coarse(self) -> str:
@@ -381,6 +335,10 @@ class PSD:
         :data:`SAND`.
         """
         return GRAVEL if self.gravel > self.sand else SAND
+
+    def check_size_dist(self) -> None:
+        if not self.size_dist:
+            raise SizeDistError("size_dist cannot be None")
 
     @property
     def coeff_of_curvature(self) -> float:
@@ -393,7 +351,8 @@ class PSD:
         For the soil to be well graded, the value of :math:`C_c` must be
         between 1 and 3.
         """
-        return self.size_dist.coeff_of_curvature
+        self.check_size_dist()
+        return self.size_dist.coeff_of_curvature  # type: ignore
 
     @property
     def coeff_of_uniformity(self) -> float:
@@ -409,11 +368,12 @@ class PSD:
         Higher values of :math:`C_u` indicates that the soil mass consists
         of soil particles with different size ranges.
         """
-        return self.size_dist.coeff_of_uniformity
+        self.check_size_dist()
+        return self.size_dist.coeff_of_uniformity  # type: ignore
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
-        return all(self.size_dist)
+        return self.size_dist is not None
 
     def grade(self) -> str:
         r"""Return the grade of the soil sample, either :data:`WELL_GRADED`
@@ -424,7 +384,8 @@ class PSD:
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 4` (for gravels)
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
         """
-        return self.size_dist.grade(coarse_soil=self.type_of_coarse)
+        self.check_size_dist()
+        return self.size_dist.grade(coarse_soil=self.type_of_coarse)  # type: ignore
 
 
 class AASHTO:
@@ -641,12 +602,6 @@ class USCS:
         through No. 200 sieve (0.075mm)
     sand : float
         Percentage of sand in soil sample (%)
-    d_10 : float, mm
-        Diameter at which 10% of the soil by weight is finer.
-    d_30 : float, mm
-        Diameter at which 30% of the soil by weight is finer.
-    d_60 : float, mm
-        Diameter at which 60% of the soil by weight is finer.
     organic : bool, default=False
         Indicates whether soil is organic or not.
 
@@ -659,42 +614,29 @@ class USCS:
 
     Examples
     --------
-    >>> from geolysis.core.soil_classifier import USCS
+    >>> from geolysis.core.soil_classifier import (
+    ...     AtterbergLimits,
+    ...     PSD,
+    ...     USCS,
+    ...     SizeDistribution,
+    ... )
 
-    >>> uscs_clf = USCS(liquid_limit=34.1, plastic_limit=21.1, fines=47.88, sand=37.84)
-    >>> uscs_clf.soil_class
+    >>> al = AtterbergLimits(liquid_limit=34.1, plastic_limit=21.1)
+    >>> psd = PSD(fines=47.88, sand=37.84)
+    >>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
+    >>> uscs_clf.classify()
     'SC'
-    >>> uscs_clf.soil_desc
+    >>> uscs_clf.description()
     'Clayey sands'
 
-    >>> uscs_clf = USCS(liquid_limit=27.7, plastic_limit=22.7, fines=18.95, sand=77.21)
-    >>> uscs_clf.soil_class
-    'SM-SC'
-    >>> uscs_clf.soil_desc
-    'Sandy clayey silt'
-
-    >>> uscs_clf = USCS(
-    ...     liquid_limit=30.8,
-    ...     plastic_limit=20.7,
-    ...     fines=10.29,
-    ...     sand=81.89,
-    ...     d_10=0.07,
-    ...     d_30=0.3,
-    ...     d_60=0.8,
-    ... )
+    >>> al = AtterbergLimits(liquid_limit=30.8, plastic_limit=20.7)
+    >>> size_dist = SizeDistribution(d_10=0.07, d_30=0.3, d_60=0.8)
+    >>> psd = PSD(fines=10.29, sand=81.89, size_dist=size_dist)
+    >>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
     >>> uscs_clf.classify()
     'SW-SC'
     >>> uscs_clf.description()
     'Well graded sand with clay'
-
-    Soil gradation (d_10, d_30, d_60) is needed to obtain soil description for
-    certain type of soils.
-
-    >>> uscs_clf = USCS(liquid_limit=30.8, plastic_limit=20.7, fines=10.29, sand=81.89)
-    >>> uscs_clf.classify()
-    'SW-SC,SP-SC'
-    >>> uscs_clf.description()
-    'Well graded sand with clay or Poorly graded sand with clay'
     """
 
     SOIL_DESCRIPTIONS = {
@@ -737,20 +679,12 @@ class USCS:
 
     def __init__(
         self,
-        liquid_limit: float,
-        plastic_limit: float,
-        fines: float,
-        sand: float,
-        # gravel: float,
-        *,
-        d_10=0,
-        d_30=0,
-        d_60=0,
+        atterberg_limits: AtterbergLimits,
+        psd: PSD,
         organic=False,
     ):
-        gravel = 100 - (fines + sand)
-        self._atterberg_limits = AtterbergLimits(liquid_limit, plastic_limit)
-        self._psd = PSD(fines, sand, gravel, d_10, d_30, d_60)
+        self.atterberg_limits = atterberg_limits
+        self.psd = psd
         self.organic = organic
 
     def _classify(self) -> str:
@@ -845,16 +779,6 @@ class USCS:
                     soil_class = f"{SILT}{HIGH_PLASTICITY}"
 
         return soil_class
-
-    @property
-    def atterberg_limits(self) -> AtterbergLimits:
-        """Return the atterberg limits of soil."""
-        return self._atterberg_limits
-
-    @property
-    def psd(self) -> PSD:
-        """Return the particle size distribution of soil."""
-        return self._psd
 
     @property
     def soil_class(self) -> str:
