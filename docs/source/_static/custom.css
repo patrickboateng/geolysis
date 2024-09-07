@@ -1,11 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Reddit+Mono:wght@200..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap");
 
 html {
   --pst-font-family-base: "Lato", "Source Sans 3", Verdana,
     var(--pst-font-family-base-system);
-  --pst-font-family-heading: var(--pst-font-family-base-system);
+  --pst-font-family-heading: "Bree Serif", var(--pst-font-family-base-system);
   --pst-font-family-monospace: "Inconsolata", "Reddit Mono", "Fira Code",
     "Consolas", Courier, var(--pst-font-family-monospace-system);
   --pst-font-weight-heading: 400;
