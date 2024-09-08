@@ -75,6 +75,8 @@ to advanced geotechnical designs.
    `geolysis.ai` explores the use of Artificial Intelligence (**AI**) in
    enhancing productivity in Geotechnical Engineering.
 
+Lastly `geolysis.docs` is the documentation project for `geolysis`.
+
 ## Project Links
 
 - [Documentation](https://geolysis.readthedocs.org/en/latest)
