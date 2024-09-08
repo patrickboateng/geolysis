@@ -1,14 +1,13 @@
 from abc import abstractmethod
 from dataclasses import KW_ONLY, dataclass
-from statistics import StatisticsError
 from typing import Protocol, Sequence
 
 from geolysis.core.utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
-    "WeightedSPT",
-    "AverageSPT",
-    "MinSPT",
+    "weighted_spt_n_design",
+    "average_spt_n_design",
+    "minimum_spt_n_design",
     "EnergyCorrection",
     "GibbsHoltzOPC",
     "BazaraaPeckOPC",
@@ -23,17 +22,19 @@ class OPCError(ValueError):
     pass
 
 
-class _SPTNDesign(Protocol):
-    def spt_n_design(self) -> float: ...
+class SPTNDesign(Protocol):
+    @property
+    @abstractmethod
+    def spt_design_value(self) -> float: ...
 
 
-class _SPTCorrection(Protocol):
+class SPTCorrection(Protocol):
     @property
     @abstractmethod
     def corrected_spt_number(self) -> float: ...
 
 
-class _OPC(Protocol):
+class OPC(Protocol):
     std_spt_number: float
     eop: float
 
@@ -49,8 +50,8 @@ class _OPC(Protocol):
         return min(corrected_spt, 2 * self.std_spt_number)
 
 
-@dataclass
-class WeightedSPT:
+@round_(0)
+def weighted_spt_n_design(spt_numbers: Sequence[float]):
     r"""Calculates the weighted average of the corrected SPT N-values
     within the foundation influence zone.
 
@@ -74,82 +75,29 @@ class WeightedSPT:
 
     .. math::
 
-        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}{\sum_{i=1}^{n}
-                     \frac{1}{i^2}}
+        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
+                     {\sum_{i=1}^{n}\frac{1}{i^2}}
 
     Examples
     --------
-    >>> from geolysis.core.spt import WeightedSPT
-    >>> wgt = WeightedSPT([7.0, 15.0, 18.0])
-    >>> wgt.spt_design_value
-    9.3673
+    >>> from geolysis.core.spt import weighted_spt_n_design
+    >>> weighted_spt_n_design([7.0, 15.0, 18.0])
+    9.0
     """
 
-    spt_numbers: Sequence[float]
+    sum_total = 0.0
+    total_wgts = 0.0
 
-    @round_
-    def spt_n_design(self) -> float:
-        """SPT N-design.
+    for i, corrected_spt in enumerate(spt_numbers, start=1):
+        wgt = 1 / i**2
+        sum_total += wgt * corrected_spt
+        total_wgts += wgt
 
-        .. deprecated:: 0.4.0
-            Use :attr:`spt_design_value` property instead.
-
-        Raises
-        ------
-        StatisticError
-            Raised if ``spt_numbers`` is empty.
-        """
-        import warnings
-
-        warnings.warn(
-            "spt_n_design is deprecated, use spt_design_value instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        if not self.spt_numbers:
-            err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg)
-
-        sum_total = 0.0
-        total_wgts = 0.0
-
-        for i, corrected_spt in enumerate(self.spt_numbers, start=1):
-            wgt = 1 / i**2
-            sum_total += wgt * corrected_spt
-            total_wgts += wgt
-
-        return sum_total / total_wgts
-
-    @property
-    @round_
-    def spt_design_value(self) -> float:
-        """SPT N-design.
-
-        .. versionadded:: 0.4.0
-
-        Raises
-        ------
-        StatisticError
-            Raised if ``spt_numbers`` is empty.
-        """
-        if not self.spt_numbers:
-            err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg)
-
-        sum_total = 0.0
-        total_wgts = 0.0
-
-        for i, corrected_spt in enumerate(self.spt_numbers, start=1):
-            wgt = 1 / i**2
-            sum_total += wgt * corrected_spt
-            total_wgts += wgt
-
-        return sum_total / total_wgts
+    return sum_total / total_wgts
 
 
-@dataclass
-class AverageSPT:
+@round_(0)
+def average_spt_n_design(spt_numbers: Sequence[float]):
     r"""Calculates the average of the corrected SPT N-values within the
     foundation influence zone.
 
@@ -161,61 +109,15 @@ class AverageSPT:
 
     Examples
     --------
-    >>> from geolysis.core.spt import AverageSPT
-    >>> wgt = AverageSPT([7.0, 15.0, 18.0])
-    >>> wgt.spt_design_value
-    13.3333
+    >>> from geolysis.core.spt import average_spt_n_design
+    >>> average_spt_n_design([7.0, 15.0, 18.0])
+    13.0
     """
-
-    spt_numbers: Sequence[float]
-
-    @round_
-    def spt_n_design(self) -> float:
-        """SPT N-design.
-
-        .. deprecated:: 0.4.0
-            Use :attr:`spt_design_value` property instead.
-
-        Raises
-        ------
-        StatisticError
-            Raised if ``spt_numbers`` is empty.
-        """
-        import warnings
-
-        warnings.warn(
-            "spt_n_design is deprecated, use spt_design_value instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        try:
-            return mean(self.spt_numbers)
-        except StatisticsError as e:
-            err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg) from e
-
-    @property
-    @round_
-    def spt_design_value(self) -> float:
-        """SPT N-design.
-
-        .. versionadded:: 0.4.0
-
-        Raises
-        ------
-        StatisticError
-            Raised if ``spt_numbers`` is empty.
-        """
-        try:
-            return mean(self.spt_numbers)
-        except StatisticsError as e:
-            err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg) from e
+    return mean(spt_numbers)
 
 
-@dataclass
-class MinSPT:
+@round_(0)
+def minimum_spt_n_design(spt_numbers: Sequence[float]):
     """The lowest N-value within the influence zone can be taken as the
     :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
 
@@ -227,57 +129,11 @@ class MinSPT:
 
     Examples
     --------
-    >>> from geolysis.core.spt import MinSPT
-    >>> wgt = MinSPT([7.0, 15.0, 18.0])
-    >>> wgt.spt_design_value
+    >>> from geolysis.core.spt import minimum_spt_n_design
+    >>> minimum_spt_n_design([7.0, 15.0, 18.0])
     7.0
     """
-
-    spt_numbers: Sequence[float]
-
-    @round_
-    def spt_n_design(self) -> float:
-        """SPT N-design.
-
-        .. deprecated:: 0.4.0
-            Use :attr:`spt_design_value` property instead.
-
-        Raises
-        ------
-        StatisticError
-            Raised if ``spt_numbers`` is empty.
-        """
-        import warnings
-
-        warnings.warn(
-            "spt_n_design is deprecated, use spt_design_value instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        try:
-            return min(self.spt_numbers)
-        except ValueError as e:
-            err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg) from e
-
-    @property
-    @round_
-    def spt_design_value(self) -> float:
-        """SPT N-design.
-
-        .. versionadded:: 0.4.0
-
-        Raises
-        ------
-        StatisticError
-            Raised if ``spt_numbers`` is empty.
-        """
-        try:
-            return min(self.spt_numbers)
-        except ValueError as e:
-            err_msg = "method requires at least one data point."
-            raise StatisticsError(err_msg) from e
+    return min(spt_numbers)
 
 
 @dataclass
@@ -360,7 +216,7 @@ class EnergyCorrection:
 
 
 @dataclass
-class GibbsHoltzOPC(_OPC):
+class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
     Parameters
@@ -441,7 +297,7 @@ class GibbsHoltzOPC(_OPC):
 
 
 @dataclass
-class BazaraaPeckOPC(_OPC):
+class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
 
@@ -505,7 +361,7 @@ class BazaraaPeckOPC(_OPC):
 
 
 @dataclass
-class PeckOPC(_OPC):
+class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
     Parameters
@@ -570,7 +426,7 @@ class PeckOPC(_OPC):
 
 
 @dataclass
-class LiaoWhitmanOPC(_OPC):
+class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
     Parameters
@@ -632,7 +488,7 @@ class LiaoWhitmanOPC(_OPC):
 
 
 @dataclass
-class SkemptonOPC(_OPC):
+class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
     Parameters
