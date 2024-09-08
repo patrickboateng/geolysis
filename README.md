@@ -139,21 +139,19 @@ USCS Classification
 
 ```python
 
->>> from geolysis.core.soil_classifier import USCS
->>> uscs_cls = USCS(liquid_limit=34.1, plastic_limit=21.1, fines=47.88, sand=37.84)
->>> uscs_cls.soil_class
+>>> from geolysis.core.soil_classifier import USCS, AtterbergLimits, PSD, SizeDistribution
+>>> al = AtterbergLimits(liquid_limit=34.1, plastic_limit=21.1)
+>>> psd = PSD(fines=47.88, sand=37.84)
+>>> uscs_cls = USCS(atterberg_limits=al, psd=psd)
+>>> uscs_cls.classify()
 'SC'
->>> uscs_cls.soil_desc
+>>> uscs_cls.description()
 'Clayey sands'
->>> uscs_cls = USCS(
-...     liquid_limit=30.8,
-...     plastic_limit=20.7,
-...     fines=10.29,
-...     sand=81.89,
-...     d_10=0.07,
-...     d_30=0.3,
-...     d_60=0.8,
-... )
+
+>>> al = AtterbergLimits(liquid_limit=30.8, plastic_limit=20.7)
+>>> size_dist = SizeDistribution(d_10=0.07, d_30=0.3, d_60=0.8)
+>>> psd = PSD(fines=10.29, sand=81.89, size_dist=size_dist)
+>>> uscs_cls = USCS(atterberg_limits=al, psd=psd)
 >>> uscs_cls.classify()
 'SW-SC'
 >>> uscs_cls.description()
