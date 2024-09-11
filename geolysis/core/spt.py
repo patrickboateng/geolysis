@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from dataclasses import KW_ONLY, dataclass
-from typing import Protocol, Sequence
+from typing import Final, Protocol, Sequence
 
 from geolysis.core.utils import isclose, log10, mean, round_, sqrt
 
@@ -20,12 +20,6 @@ __all__ = [
 
 class OPCError(ValueError):
     pass
-
-
-class SPTNDesign(Protocol):
-    @property
-    @abstractmethod
-    def spt_design_value(self) -> float: ...
 
 
 class SPTCorrection(Protocol):
@@ -253,7 +247,7 @@ class GibbsHoltzOPC(OPC):
     """
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE = 280.0
+    STD_PRESSURE: Final = 280.0
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
         self.std_spt_number = std_spt_number
@@ -268,13 +262,10 @@ class GibbsHoltzOPC(OPC):
 
     @eop.setter
     def eop(self, __val: float):
-        if __val <= 0:
-            err_msg = f"eop = {__val} cannot be less than or equal to 0"
+        if __val <= 0 or __val > self.STD_PRESSURE:
+            err_msg = f"eop = {__val} cannot be <= 0 or > 280 MPa"
             raise OPCError(err_msg)
 
-        if __val > self.STD_PRESSURE:
-            err_msg = f"eop = {__val} should be less than {self.STD_PRESSURE}"
-            raise OPCError(err_msg)
         self._eop = __val
 
     @property
@@ -339,7 +330,7 @@ class BazaraaPeckOPC(OPC):
     eop: float
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE = 71.8
+    STD_PRESSURE: Final = 71.8
 
     @property
     @round_
@@ -353,11 +344,6 @@ class BazaraaPeckOPC(OPC):
             corr = 4 / (3.25 + 0.0104 * self.eop)
 
         return corr
-
-    @property
-    def corrected_spt_number(self) -> float:
-        """Corrected SPT N-value."""
-        return super().corrected_spt_number
 
 
 @dataclass
@@ -393,7 +379,7 @@ class PeckOPC(OPC):
     """
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE = 24.0
+    STD_PRESSURE: Final = 24.0
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
         self.std_spt_number = std_spt_number
@@ -418,11 +404,6 @@ class PeckOPC(OPC):
     def correction(self) -> float:
         """SPT Correction."""
         return 0.77 * log10(2000 / self.eop)
-
-    @property
-    def corrected_spt_number(self) -> float:
-        """Corrected SPT N-value."""
-        return super().corrected_spt_number
 
 
 @dataclass
@@ -481,11 +462,6 @@ class LiaoWhitmanOPC(OPC):
         """SPT Correction."""
         return sqrt(100 / self.eop)
 
-    @property
-    def corrected_spt_number(self) -> float:
-        """Corrected SPT N-value."""
-        return super().corrected_spt_number
-
 
 @dataclass
 class SkemptonOPC(OPC):
@@ -527,11 +503,6 @@ class SkemptonOPC(OPC):
     def correction(self) -> float:
         """SPT Correction."""
         return 2 / (1 + 0.01044 * self.eop)
-
-    @property
-    def corrected_spt_number(self) -> float:
-        """Corrected SPT N-value."""
-        return super().corrected_spt_number
 
 
 @dataclass
