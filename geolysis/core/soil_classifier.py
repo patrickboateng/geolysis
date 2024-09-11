@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Final, Optional
 
 # from geolysis.core.constants import ERROR_TOL
 from geolysis.core.utils import isclose, round_
@@ -12,31 +12,31 @@ class SizeDistError(Exception):
 
 
 #: USCS symbol for gravel.
-GRAVEL: str = "G"
+GRAVEL: Final = "G"
 
 #: USCS symbol for sand.
-SAND: str = "S"
+SAND: Final = "S"
 
 #: USCS symbol for silt.
-SILT: str = "M"
+SILT: Final = "M"
 
 #: USCS symbol for clay.
-CLAY: str = "C"
+CLAY: Final = "C"
 
 #: USCS symbol for organic material.
-ORGANIC: str = "O"
+ORGANIC: Final = "O"
 
 #: USCS symbol for well-graded material.
-WELL_GRADED: str = "W"
+WELL_GRADED: Final = "W"
 
 #: USCS symbol for poorly-graded material.
-POORLY_GRADED: str = "P"
+POORLY_GRADED: Final = "P"
 
 #: USCS symbol for low soil plasticity.
-LOW_PLASTICITY: str = "L"
+LOW_PLASTICITY: Final = "L"
 
 #: USCS symbol for high soil plasticity.
-HIGH_PLASTICITY: str = "H"
+HIGH_PLASTICITY: Final = "H"
 
 
 @dataclass
@@ -107,10 +107,6 @@ class AtterbergLimits:
 
     liquid_limit: float
     plastic_limit: float
-
-    # def __init__(self, liquid_limit: float, plastic_limit: float):
-    #     self.liquid_limit = liquid_limit
-    #     self.plastic_limit = plastic_limit
 
     @property
     @round_
@@ -444,7 +440,7 @@ class AASHTO:
     'A-2-4'
     """
 
-    SOIL_DESCRIPTIONS = {
+    SOIL_DESCRIPTIONS: Final = {
         "A-1-a": "Stone fragments, gravel, and sand",
         "A-1-b": "Stone fragments, gravel, and sand",
         "A-3": "Fine sand",
@@ -526,31 +522,19 @@ class AASHTO:
 
     @property
     def soil_class(self) -> str:
-        """Return the AASHTO classification of the soil."""
         return self._classify()
 
     def classify(self) -> str:
+        """Return the AASHTO classification of the soil."""
         return self._classify()
 
-    @property
-    def soil_desc(self) -> str:
+    def description(self) -> str:
         """Return the AASHTO description of the soil."""
         tmp_state = self.add_group_idx
-        try:
-            self.add_group_idx = False
-            soil_cls = self.soil_class
-            return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
-        finally:
-            self.add_group_idx = tmp_state
-
-    def description(self) -> str:
-        tmp_state = self.add_group_idx
-        try:
-            self.add_group_idx = False
-            soil_cls = self.soil_class
-            return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
-        finally:
-            self.add_group_idx = tmp_state
+        self.add_group_idx = False
+        soil_cls = self.classify()
+        self.add_group_idx = tmp_state
+        return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
 
     def group_index(self) -> float:
         """Return the Group Index (GI) of the soil sample."""
@@ -639,7 +623,7 @@ class USCS:
     'Well graded sand with clay'
     """
 
-    SOIL_DESCRIPTIONS = {
+    SOIL_DESCRIPTIONS: Final = {
         "G": "Gravel",
         "S": "Sand",
         "M": "Silt",
@@ -780,34 +764,12 @@ class USCS:
 
         return soil_class
 
-    @property
-    def soil_class(self) -> str:
+    def classify(self) -> str:
         """Return the USCS classification of the soil."""
         return self._classify()
 
-    def classify(self) -> str:
-        return self._classify()
-
-    @property
-    def soil_desc(self) -> str:
-        """Return the USCS description of the soil."""
-        soil_cls = self.soil_class
-        try:
-            soil_descr = USCS.SOIL_DESCRIPTIONS[soil_cls]
-        except KeyError:
-            soil_classes = soil_cls.split(",")
-            soil_descr = [USCS.SOIL_DESCRIPTIONS[cls] for cls in soil_classes]
-            soil_descr = " or ".join(soil_descr)
-
-        return soil_descr
-
     def description(self) -> str:
-        soil_cls = self.soil_class
-        try:
-            soil_descr = USCS.SOIL_DESCRIPTIONS[soil_cls]
-        except KeyError:
-            soil_classes = soil_cls.split(",")
-            soil_descr = [USCS.SOIL_DESCRIPTIONS[cls] for cls in soil_classes]
-            soil_descr = " or ".join(soil_descr)
-
-        return soil_descr
+        """Return the USCS description of the soil."""
+        clf = self.classify()
+        soil_desc = [USCS.SOIL_DESCRIPTIONS[cls] for cls in clf.split(",")]
+        return " or ".join(soil_desc)
