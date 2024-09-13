@@ -48,7 +48,7 @@ class HansenShapeFactor:
 
         match f_type:
             case Shape.STRIP:
-                sf = 10
+                sf = 10.0
             case Shape.RECTANGLE:
                 sf = 1 + 0.2 * f_w / f_l
             case Shape.SQUARE | Shape.CIRCLE:
