@@ -129,7 +129,8 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
             else:
                 dp = get_option("dp")
 
-            return round(fn(*args, **kwargs), ndigits=dp)
+            res = fn(*args, **kwargs)
+            return round(res, ndigits=dp)
 
         return wrapper
 

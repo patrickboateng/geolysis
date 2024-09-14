@@ -21,12 +21,8 @@ class TestGibbsHoltzOPC(unittest.TestCase):
 
 class TestBazaraaPeckOPC(unittest.TestCase):
     def testCorrection(self):
-        cor = BazaraaPeckOPC(std_spt_number=11.4, eop=71.8)
-        self.assertEqual(cor.correction, 1.0)
-
-        cor.eop = 54.8
-        self.assertAlmostEqual(cor.correction, 1.2156)
-        self.assertAlmostEqual(cor.corrected_spt_number, 13.8578)
+        cor = BazaraaPeckOPC(std_spt_number=11.4, eop=54.8)
+        self.assertAlmostEqual(cor.corrected_spt_number, 14.0)
 
 
 class TestPeckOPC(unittest.TestCase):

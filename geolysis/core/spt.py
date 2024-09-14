@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from dataclasses import KW_ONLY, dataclass
-from typing import Final, Protocol, Sequence
+from numbers import Number
+from typing import Final, Optional, Protocol, Sequence
 
 from geolysis.core.utils import isclose, log10, mean, round_, sqrt
 
@@ -37,7 +38,7 @@ class OPC(Protocol):
     def correction(self) -> float: ...
 
     @property
-    @round_
+    @round_(0)
     def corrected_spt_number(self) -> float:
         """Corrected SPT N-value."""
         corrected_spt = self.correction * self.std_spt_number
@@ -175,24 +176,33 @@ class EnergyCorrection:
     --------
     >>> from geolysis.core.spt import EnergyCorrection
     >>> energy_cor = EnergyCorrection(recorded_spt_number=30)
-    >>> energy_cor.correction
-    0.75
     >>> energy_cor.corrected_spt_number
-    22.5
+    22.0
     """
 
     recorded_spt_number: float
 
     _: KW_ONLY
 
+    rod_length: Optional[float] = None
     energy_percentage: float = 0.6
     hammer_efficiency: float = 0.6
     borehole_diameter_correction: float = 1.0
     sampler_correction: float = 1.0
     rod_length_correction: float = 0.75
 
+    def __post_init__(self):
+        if isinstance(self.rod_length, Number):
+            if 3.0 < self.rod_length <= 4.0:
+                self.rod_length_correction = 0.75
+            elif 4.0 < self.rod_length <= 6.0:
+                self.rod_length_correction = 0.85
+            elif 6.0 < self.rod_length <= 10.0:
+                self.rod_length_correction = 0.95
+            else:
+                self.rod_length_correction = 1.00
+
     @property
-    @round_
     def correction(self) -> float:
         """SPT Correction."""
         return (
@@ -203,7 +213,7 @@ class EnergyCorrection:
         ) / self.energy_percentage
 
     @property
-    @round_
+    @round_(0)
     def corrected_spt_number(self) -> float:
         """Corrected SPT N-value."""
         return self.correction * self.recorded_spt_number
@@ -240,10 +250,8 @@ class GibbsHoltzOPC(OPC):
     --------
     >>> from geolysis.core.spt import GibbsHoltzOPC
     >>> opc_cor = GibbsHoltzOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.correction
-    2.0588
     >>> opc_cor.corrected_spt_number
-    23.1615
+    23.0
     """
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
@@ -269,22 +277,12 @@ class GibbsHoltzOPC(OPC):
         self._eop = __val
 
     @property
-    @round_
     def correction(self) -> float:
         """SPT Correction."""
-        return 350.0 / (self.eop + 70)
-
-    @property
-    @round_
-    def corrected_spt_number(self) -> float:
-        """Corrected SPT N-value."""
-        corrected_spt = self.correction * self.std_spt_number
-        spt_ratio = corrected_spt / self.std_spt_number
-
-        if spt_ratio > 2.0:
-            corrected_spt /= 2
-
-        return min(corrected_spt, 2 * self.std_spt_number)
+        corr = 350.0 / (self.eop + 70)
+        if corr > 2.0:
+            corr /= 2
+        return corr
 
 
 @dataclass
@@ -320,10 +318,8 @@ class BazaraaPeckOPC(OPC):
     --------
     >>> from geolysis.core.spt import BazaraaPeckOPC
     >>> opc_cor = BazaraaPeckOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.correction
-    0.9324
     >>> opc_cor.corrected_spt_number
-    20.979
+    21.0
     """
 
     std_spt_number: float
@@ -333,7 +329,6 @@ class BazaraaPeckOPC(OPC):
     STD_PRESSURE: Final = 71.8
 
     @property
-    @round_
     def correction(self) -> float:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
@@ -371,11 +366,9 @@ class PeckOPC(OPC):
     Examples
     --------
     >>> from geolysis.core.spt import PeckOPC
-    >>> opc_cor = PeckOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.correction
-    1.0
+    >>> opc_cor = PeckOPC(std_spt_number=23.0, eop=100.0)
     >>> opc_cor.corrected_spt_number
-    22.5
+    23.0
     """
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
@@ -400,7 +393,6 @@ class PeckOPC(OPC):
         self._eop = __val
 
     @property
-    @round_
     def correction(self) -> float:
         """SPT Correction."""
         return 0.77 * log10(2000 / self.eop)
@@ -431,11 +423,9 @@ class LiaoWhitmanOPC(OPC):
     Examples
     --------
     >>> from geolysis.core.spt import LiaoWhitmanOPC
-    >>> opc_cor = LiaoWhitmanOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.correction
-    1.0
+    >>> opc_cor = LiaoWhitmanOPC(std_spt_number=23.0, eop=100.0)
     >>> opc_cor.corrected_spt_number
-    22.5
+    23.0
     """
 
     def __init__(self, std_spt_number: float, eop: float) -> None:
@@ -457,7 +447,6 @@ class LiaoWhitmanOPC(OPC):
         self._eop = __val
 
     @property
-    @round_
     def correction(self) -> float:
         """SPT Correction."""
         return sqrt(100 / self.eop)
@@ -489,17 +478,14 @@ class SkemptonOPC(OPC):
     --------
     >>> from geolysis.core.spt import SkemptonOPC
     >>> opc_cor = SkemptonOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.correction
-    0.9785
     >>> opc_cor.corrected_spt_number
-    22.0163
+    22.0
     """
 
     std_spt_number: float
     eop: float
 
     @property
-    @round_
     def correction(self) -> float:
         """SPT Correction."""
         return 2 / (1 + 0.01044 * self.eop)
@@ -516,7 +502,7 @@ class DilatancyCorrection:
     Parameters
     ----------
     spt_number : float
-        SPT N-value standardized for field procedures or corrected for
+        SPT N-value standardized for field procedures and/or corrected for
         overburden pressure.
 
     Attributes
@@ -537,9 +523,9 @@ class DilatancyCorrection:
     Examples
     --------
     >>> from geolysis.core.spt import DilatancyCorrection
-    >>> dil_cor = DilatancyCorrection(spt_number=22.5)
+    >>> dil_cor = DilatancyCorrection(spt_number=23)
     >>> dil_cor.corrected_spt_number
-    18.75
+    19.0
     """
 
     spt_number: float
