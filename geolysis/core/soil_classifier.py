@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Final, Optional
 
-# from geolysis.core.constants import ERROR_TOL
 from geolysis.core.utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
@@ -94,7 +93,8 @@ class AtterbergLimits:
     >>> atterberg_limits.limit_plot_in_hatched_zone()
     False
 
-    Negative values of liquidity index indicates that the soil is in a hard state.
+    Negative values of liquidity index indicates that the soil is in a hard
+    state.
 
     >>> atterberg_limits.liquidity_index(nmc=15.26)
     -81.56
@@ -132,7 +132,9 @@ class AtterbergLimits:
 
     @property
     def type_of_fines(self) -> str:
-        """Determines whether the soil is either :data:`CLAY` or :data:`SILT`."""
+        """
+        Determines whether the soil is either :data:`CLAY` or :data:`SILT`.
+        """
         return CLAY if self.above_A_LINE() else SILT
 
     def above_A_LINE(self) -> bool:
@@ -158,8 +160,7 @@ class AtterbergLimits:
         Parameters
         ----------
         nmc : float
-            Moisture contents of the soil in natural condition. (Natural Moisture
-            Content)
+            Moisture contents of the soil in natural condition. (NMC)
 
         Notes
         -----
@@ -180,14 +181,14 @@ class AtterbergLimits:
         soft and has negligible shear strength. A soil at a water content equal
         to the plastic limit has consistency index of 100% indicating that the
         soil is relatively firm. A consistency index of greater than 100% shows
-        the soil is relatively strong (semi-solid state). A negative value indicate
-        the soil is in the liquid state. It is also known as Relative Consistency.
+        the soil is relatively strong (semi-solid state). A negative value
+        indicate the soil is in the liquid state. It is also known as Relative
+        Consistency.
 
         Parameters
         ----------
         nmc : float
-            Moisture contents of the soil in natural condition. (Natural Moisture
-            Content)
+            Moisture contents of the soil in natural condition. (NMC)
 
         Notes
         -----
@@ -227,14 +228,14 @@ class SizeDistribution:
         return self.d_60 / self.d_10
 
     def grade(self, coarse_soil: str) -> str:
-        """Grade of soil sample. Soil grade can either be ``WELL_GRADED`` or
-        ``POORLY_GRADED``.
+        """Grade of soil sample. Soil grade can either be well graded or poorly
+        graded.
 
         Parameters
         ----------
         coarse_soil : str
-            Coarse fraction of the soil sample. Valid arguments are :data:`GRAVEL`
-            or :data:`SAND`.
+            Coarse fraction of the soil sample. Valid arguments are "G" for
+            gravel and "S" for SAND.
         """
 
         if coarse_soil == GRAVEL and (
@@ -327,14 +328,8 @@ class PSD:
 
     @property
     def type_of_coarse(self) -> str:
-        """Determines whether the soil is either :data:`GRAVEL` or
-        :data:`SAND`.
-        """
+        """Determines whether the soil is either gravel or sand."""
         return GRAVEL if self.gravel > self.sand else SAND
-
-    def check_size_dist(self) -> None:
-        if not self.size_dist:
-            raise SizeDistError("size_dist cannot be None")
 
     @property
     def coeff_of_curvature(self) -> float:
@@ -358,22 +353,27 @@ class PSD:
 
         .. math:: C_u = \dfrac{D_{60}}{D_{10}}
 
-        :math:`C_u` value greater than 4 to 6 classifies the soil as well
-        graded for gravels and sands respectively. When :math:`C_u` is less
-        than 4, it is classified as poorly graded or uniformly graded soil.
-        Higher values of :math:`C_u` indicates that the soil mass consists
-        of soil particles with different size ranges.
+        :math:`C_u` value greater than 4 to 6 classifies the soil as well graded
+        for gravels and sands respectively. When :math:`C_u` is less than 4, it
+        is classified as poorly graded or uniformly graded soil.
+
+        Higher values of :math:`C_u` indicates that the soil mass consists of
+        soil particles with different size ranges.
         """
         self.check_size_dist()
         return self.size_dist.coeff_of_uniformity  # type: ignore
+
+    def check_size_dist(self) -> None:
+        if not self.size_dist:
+            raise SizeDistError("size_dist cannot be None")
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
         return self.size_dist is not None
 
     def grade(self) -> str:
-        r"""Return the grade of the soil sample, either :data:`WELL_GRADED`
-        or :data:`POORLY_GRADED`.
+        r"""Return the grade of the soil sample, either well graded or poorly
+        graded.
 
         Conditions for a well-graded soil:
 
@@ -388,11 +388,11 @@ class AASHTO:
     r"""American Association of State Highway and Transportation Officials
     (AASHTO) classification system.
 
-    The AASHTO classification system is useful for classifying soils for highways.
-    It categorizes soils for highways based on particle size analysis and
-    plasticity characteristics. It classifies both coarse-grained and fine-grained
-    soils into eight main groups (A1-A7) with subgroups, along with a separate
-    category (A8) for organic soils.
+    The AASHTO classification system is useful for classifying soils for
+    highways. It categorizes soils for highways based on particle size analysis
+    and plasticity characteristics. It classifies both coarse-grained and
+    fine-grained soils into eight main groups (A1-A7) with subgroups, along with
+    a separate category (A8) for organic soils.
 
     - ``A1 ~ A3`` (Granular Materials) :math:`\le` 35% pass No. 200 sieve
     - ``A4 ~ A7`` (Silt-clay Materials) :math:`\ge` 36% pass No. 200 sieve
@@ -410,15 +410,17 @@ class AASHTO:
         Percentage of fines in soil sample i.e. the percentage of soil sample
         passing through No. 200 sieve (0.075mm).
     add_group_idx : bool, default=True
-        Used to indicate whether the group index should be added to the classification
-        or not. Defaults to True.
+        Used to indicate whether the group index should be added to the
+        classification or not. Defaults to True.
 
     Notes
     -----
-    The ``GI`` must be mentioned even when it is zero, to indicate that the soil has
-    been classified as per AASHTO system.
+    The ``GI`` must be mentioned even when it is zero, to indicate that the soil
+    has been classified as per AASHTO system.
 
-    .. math:: GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
+    .. math::
+
+        GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
 
     Examples
     --------
@@ -432,8 +434,8 @@ class AASHTO:
     >>> aashto_clf.description()
     'Silty or clayey gravel and sand'
 
-    If you would like to exclude the group index from the classification, you can do
-    the following:
+    If you would like to exclude the group index from the classification, you
+    can do the following:
 
     >>> aashto_clf.add_group_idx = False
     >>> aashto_clf.classify()
@@ -520,10 +522,6 @@ class AASHTO:
 
         return soil_class
 
-    @property
-    def soil_class(self) -> str:
-        return self._classify()
-
     def classify(self) -> str:
         """Return the AASHTO classification of the soil."""
         return self._classify()
@@ -556,34 +554,34 @@ class USCS:
 
     The Unified Soil Classification System, initially developed by Casagrande in
     1948 and later modified in 1952, is widely utilized in engineering projects
-    involving soils. It is the most popular system for soil classification and is
-    similar to Casagrande's Classification System. The system relies on particle
-    size analysis and atterberg limits for classification.
+    involving soils. It is the most popular system for soil classification and
+    is similar to Casagrande's Classification System. The system relies on
+    particle size analysis and atterberg limits for classification.
 
     In this system, soils are first classified into two categories:
 
     - Coarse grained soils: If more than 50% of the soils is retained on No. 200
       (0.075 mm) sieve, it is designated as coarse-grained soil.
 
-    - Fine grained soils: If more than 50% of the soil passes through No. 200 sieve,
-      it is designated as fine grained soil.
+    - Fine grained soils: If more than 50% of the soil passes through No. 200
+      sieve, it is designated as fine grained soil.
 
-    Highly Organic soils are identified by visual inspection. These soils are termed
-    as Peat. (:math:`P_t`)
+    Highly Organic soils are identified by visual inspection. These soils are
+    termed as Peat. (:math:`P_t`)
 
     Parameters
     ----------
     liquid_limit : float
-        Water content beyond which soils flows under their own weight. It can also
-        be defined as the minimum moisture content at which a soil flows upon
-        application of a very small shear force.
+        Water content beyond which soils flows under their own weight. It can
+        also be defined as the minimum moisture content at which a soil flows
+        upon application of a very small shear force.
     plastic_limit : float
-        Water content at which plastic deformation can be initiated. It is also the
-        minimum water content at which soil can be rolled into a thread 3mm thick
-        (molded without breaking)
+        Water content at which plastic deformation can be initiated. It is also
+        the minimum water content at which soil can be rolled into a thread 3mm
+        thick (molded without breaking)
     fines : float
-        Percentage of fines in soil sample i.e. The percentage of soil sample passing
-        through No. 200 sieve (0.075mm)
+        Percentage of fines in soil sample i.e. The percentage of soil sample
+        passing through No. 200 sieve (0.075mm)
     sand : float
         Percentage of sand in soil sample (%)
     organic : bool, default=False
