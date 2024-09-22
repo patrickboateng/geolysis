@@ -154,8 +154,8 @@ def quantity(quant: str):
             default_unit = getattr(UnitSystem.SI, quant)
             unit_system = get_option("unit_system")
             preffered_unit = getattr(unit_system, quant)
-            ret_val = fn(*args, **kwargs)
-            return Q_(ret_val, default_unit).to_compact(preffered_unit)
+            ret = fn(*args, **kwargs)
+            return Q_(ret, default_unit).to_compact(preffered_unit)
 
         return wrapper
 
