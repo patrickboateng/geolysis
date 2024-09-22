@@ -133,7 +133,7 @@ class AtterbergLimits:
     @property
     def type_of_fines(self) -> str:
         """
-        Determines whether the soil is either :data:`CLAY` or :data:`SILT`.
+        Determines whether the soil is either clay or :silt.
         """
         return CLAY if self.above_A_LINE() else SILT
 
