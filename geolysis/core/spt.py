@@ -47,22 +47,22 @@ class OPC(Protocol):
 
 @round_(0)
 def weighted_spt_n_design(spt_numbers: Sequence[float]):
-    r"""Calculates the weighted average of the corrected SPT N-values
-    within the foundation influence zone.
+    r"""Calculates the weighted average of the corrected SPT N-values within the
+    foundation influence zone.
 
-    Due to uncertainty in field procedure in standard penetration test
-    and also to consider all the N-value in the influence zone of a
-    foundation, a method was suggested to calculate the design N-value
-    which should be used in calculating the allowable bearing capacity
-    of shallow foundation rather than using a particular N-value. All
-    the N-value from the influence zone is taken under consideration by
-    giving the highest weightage to the closest N-value from the base.
+    Due to uncertainty in field procedure in standard penetration test and also
+    to consider all the N-value in the influence zone of a foundation, a method
+    was suggested to calculate the design N-value which should be used in
+    calculating the allowable bearing capacity of shallow foundation rather than
+    using a particular N-value. All the N-value from the influence zone is taken
+    under consideration by giving the highest weightage to the closest N-value
+    from the base.
 
     Parameters
     ----------
     spt_numbers : Sequence[float]
-        SPT N-values within the foundation influence zone. ``spt_numbers``
-        can either be **corrected** or **uncorrected** SPT N-values.
+        SPT N-values within the foundation influence zone. ``spt_numbers`` can
+        either be **corrected** or **uncorrected** SPT N-values.
 
     Notes
     -----
@@ -71,7 +71,7 @@ def weighted_spt_n_design(spt_numbers: Sequence[float]):
     .. math::
 
         N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
-                     {\sum_{i=1}^{n}\frac{1}{i^2}}
+                      {\sum_{i=1}^{n}\frac{1}{i^2}}
 
     Examples
     --------
@@ -99,8 +99,8 @@ def average_spt_n_design(spt_numbers: Sequence[float]):
     Parameters
     ----------
     spt_numbers : Sequence[float]
-        SPT N-values within the foundation influence zone. ``spt_numbers``
-        can either be **corrected** or **uncorrected** SPT N-values.
+        SPT N-values within the foundation influence zone. ``spt_numbers`` can
+        either be **corrected** or **uncorrected** SPT N-values.
 
     Examples
     --------
@@ -135,8 +135,8 @@ def minimum_spt_n_design(spt_numbers: Sequence[float]):
 class EnergyCorrection:
     r"""SPT N-value standardized for field procedures.
 
-    On the basis of field observations, it appears reasonable to standardize
-    the field SPT N-value as a function of the input driving energy and its
+    On the basis of field observations, it appears reasonable to standardize the
+    field SPT N-value as a function of the input driving energy and its
     dissipation around the sampler around the surrounding soil. The variations
     in testing procedures may be at least partially compensated by converting
     the measured N-value to :math:`N_{60}` assuming 60% hammer energy being
@@ -271,7 +271,7 @@ class GibbsHoltzOPC(OPC):
     @eop.setter
     def eop(self, __val: float):
         if __val <= 0 or __val > self.STD_PRESSURE:
-            err_msg = f"eop = {__val} cannot be <= 0 or > 280 MPa"
+            err_msg = f"eop = {__val} cannot be <= 0 or > 280 kPa"
             raise OPCError(err_msg)
 
         self._eop = __val
@@ -322,11 +322,11 @@ class BazaraaPeckOPC(OPC):
     21.0
     """
 
-    std_spt_number: float
-    eop: float
-
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 71.8
+
+    std_spt_number: float
+    eop: float
 
     @property
     def correction(self) -> float:
