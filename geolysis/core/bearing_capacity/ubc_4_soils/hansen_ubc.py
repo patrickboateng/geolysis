@@ -44,7 +44,12 @@ class HansenShapeFactor:
     @classmethod
     @round_(DP)
     def s_c(cls, foundation_size: FoundationSize) -> float:
-        _, f_w, f_l, f_type = foundation_size.get_info()
+        f_w = foundation_size.effective_width
+        f_l = foundation_size.length
+        f_type = foundation_size.footing_type
+
+        if not isclose(f_w, f_l) and f_type != Shape.STRIP:
+            f_type = Shape.RECTANGLE
 
         match f_type:
             case Shape.STRIP:
@@ -61,7 +66,12 @@ class HansenShapeFactor:
     @classmethod
     @round_(DP)
     def s_q(cls, foundation_size: FoundationSize) -> float:
-        _, f_w, f_l, f_type = foundation_size.get_info()
+        f_w = foundation_size.effective_width
+        f_l = foundation_size.length
+        f_type = foundation_size.footing_type
+
+        if not isclose(f_w, f_l) and f_type != Shape.STRIP:
+            f_type = Shape.RECTANGLE
 
         match f_type:
             case Shape.STRIP:
@@ -78,7 +88,12 @@ class HansenShapeFactor:
     @classmethod
     @round_(DP)
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
-        _, f_w, f_l, f_type = foundation_size.get_info()
+        f_w = foundation_size.effective_width
+        f_l = foundation_size.length
+        f_type = foundation_size.footing_type
+
+        if not isclose(f_w, f_l) and f_type != Shape.STRIP:
+            f_type = Shape.RECTANGLE
 
         match f_type:
             case Shape.STRIP:
@@ -130,7 +145,8 @@ class HansenInclinationFactor:
         load_angle: float,
         foundation_size: FoundationSize,
     ) -> float:
-        _, f_w, f_l, _ = foundation_size.get_info()
+        f_w = foundation_size.width
+        f_l = foundation_size.length
         return 1 - cos(load_angle) / (2 * cohesion * f_w * f_l)
 
     @classmethod

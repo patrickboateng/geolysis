@@ -3,7 +3,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
-from geolysis.core.utils import INF, isclose
+from geolysis.core.utils import INF
 
 __all__ = [
     "create_foundation",
@@ -248,23 +248,6 @@ class FoundationSize:
     @property
     def footing_type(self) -> Shape:
         return self.footing_shape.type_
-
-    def get_info(self):
-        """
-        - **f_d** : Depth of foundation footing
-        - **f_w** : Width of foundation footing
-        - **f_l** : Length of foundation footing
-        - **f_type** : Type of foundation footing
-        """
-        f_d = self.depth
-        f_w = self.effective_width
-        f_l = self.length
-        f_type = self.footing_type
-
-        if not isclose(f_w, f_l) and f_type != Shape.STRIP:
-            f_type = Shape.RECTANGLE
-
-        return (f_d, f_w, f_l, f_type)
 
 
 def create_foundation(
