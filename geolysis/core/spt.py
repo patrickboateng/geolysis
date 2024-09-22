@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from dataclasses import KW_ONLY, dataclass
+from dataclasses import KW_ONLY, dataclass, field
 from numbers import Number
 from typing import Final, Optional, Protocol, Sequence
 
@@ -323,7 +323,7 @@ class BazaraaPeckOPC(OPC):
     """
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE: Final = 71.8
+    STD_PRESSURE: Final = field(default=71.8, init=False)
 
     std_spt_number: float
     eop: float
