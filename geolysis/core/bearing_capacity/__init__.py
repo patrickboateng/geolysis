@@ -15,4 +15,5 @@ from .ubc_4_soils.terzaghi_ubc import (
 )
 from .ubc_4_soils.vesic_ubc import VesicUltimateBearingCapacity
 
+#: Default unit for bearing capacity of soil.
 DEFAULT_UNIT: str = "kN/m**2"

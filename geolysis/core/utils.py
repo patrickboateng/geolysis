@@ -84,14 +84,13 @@ def arctan(x: float, /) -> float:
 
 
 def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
-    """A decorator that rounds the result of a callable to a specified
-    number of decimal places.
+    """A decorator that rounds the result of a callable to a specified number of
+    decimal places.
 
-    The returned value of the callable shoud support the ``__round__``
-    dunder method and should be a numeric value. ``ndigits`` can either
-    be an int which will indicates the number of decimal places to round
-    to or a callable. If ``ndigits`` is callable the default decimal
-    places is 4.
+    The returned value of the callable shoud support the ``__round__`` dunder
+    method and should be a numeric value. ``ndigits`` can either be an int which
+    will indicates the number of decimal places to round to or a callable. If
+    ``ndigits`` is callable the default decimal places is 4.
 
     TypeError is raised when ``ndigits`` is neither an int or a callable.
 

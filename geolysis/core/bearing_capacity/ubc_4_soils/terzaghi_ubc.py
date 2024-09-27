@@ -16,6 +16,13 @@ from geolysis.core.utils import (
     tan,
 )
 
+__all__ = [
+    "TerzaghiUBC4StripFooting",
+    "TerzaghiUBC4CircFooting",
+    "TerzaghiUBC4SquareFooting",
+    "TerzaghiUBC4RectFooting",
+]
+
 #: Number of decimal places
 DP = 2
 
@@ -182,31 +189,17 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     r"""Ultimate bearing capacity for strip footing on cohesionless
     soils according to ``Terzaghi 1943``.
 
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
+    :param float soil_friction_angle: Internal angle of friction of soil
         material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
+    :param float cohesion: Cohesion of soil material.
+    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
+    :param FoundationSize foundation_size: Size of foundation.
+    :param float water_level: Depth of water below the ground surface.
+    :param float local_shear_failure: Indicates if local shear failure is likely
+        to occur therefore modifies the soil_friction_angle and cohesion of the
+        soil material.
+    :param float e: Deviation of the applied load from the center of the
+        footing, also know as eccentricity.
 
     Notes
     -----
@@ -234,31 +227,17 @@ class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
     r"""Ultimate bearing capacity for circular footing on cohesionless
     soils according to ``Terzaghi 1943``.
 
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
+    :param float soil_friction_angle: Internal angle of friction of soil
         material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
+    :param float cohesion: Cohesion of soil material.
+    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
+    :param FoundationSize foundation_size: Size of foundation.
+    :param float water_level: Depth of water below the ground surface.
+    :param float local_shear_failure: Indicates if local shear failure is likely
+        to occur therefore modifies the soil_friction_angle and cohesion of the
+        soil material.
+    :param float e: Deviation of the applied load from the center of the
+        footing, also know as eccentricity.
 
     Notes
     -----
@@ -285,31 +264,17 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
     r"""Ultimate bearing capacity for rectangular footing on cohesionless
     soils according to ``Terzaghi 1943``.
 
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
+    :param float soil_friction_angle: Internal angle of friction of soil
         material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
+    :param float cohesion: Cohesion of soil material.
+    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
+    :param FoundationSize foundation_size: Size of foundation.
+    :param float water_level: Depth of water below the ground surface.
+    :param float local_shear_failure: Indicates if local shear failure is likely
+        to occur therefore modifies the soil_friction_angle and cohesion of the
+        soil material.
+    :param float e: Deviation of the applied load from the center of the
+        footing, also know as eccentricity.
 
     Notes
     -----
@@ -317,8 +282,7 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
 
     .. math::
 
-        q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c
-              + qN_q
+        q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c + qN_q
               + \left(1 - 0.2 \dfrac{B}{L} \right) 0.5 B \gamma N_{\gamma}
 
     Examples
@@ -344,31 +308,15 @@ class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectFooting):
     r"""Ultimate bearing capacity for square footing on cohesionless
     soils according to ``Terzaghi 1943``.
 
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
+    :param float soil_friction_angle: Internal angle of friction of soil
         material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
+    :param float cohesion: Cohesion of soil material.
+    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
+    :param FoundationSize foundation_size: Size of foundation.
+    :param float water_level: Depth of water below the ground surface.
+    :param float local_shear_failure: Indicates if local shear failure is likely
+        to occur therefore modifies the soil_friction_angle and cohesion of the
+        soil material.
 
     Notes
     -----

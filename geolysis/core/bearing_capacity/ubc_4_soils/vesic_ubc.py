@@ -11,6 +11,8 @@ from geolysis.core.bearing_capacity.ubc_4_soils.hansen_ubc import (
 from geolysis.core.foundation import FoundationSize, Shape
 from geolysis.core.utils import INF, isclose, quantity, round_, sin, tan
 
+__all__ = ["VesicUltimateBearingCapacity"]
+
 
 class VesicBearingCapacityFactor:
     @classmethod
@@ -139,34 +141,18 @@ class VesicInclinationFactor:
 
 
 class VesicUltimateBearingCapacity(UltimateBearingCapacity):
-    r"""Ultimate bearing capacity for footings on cohesionless soils
-    according to ``Vesic 1973``.
+    r"""Ultimate bearing capacity for footings on cohesionless soils according
+    to ``Vesic 1973``.
 
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
+    :param float soil_friction_angle: Internal angle of friction of soil
         material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
+    :param float cohesion: Cohesion of soil material.
+    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
+    :param FoundationSize foundation_size: Size of foundation.
+    :param float water_level: Depth of water below the ground surface.
+    :param float local_shear_failure: Indicates if local shear failure is likely
+        to occur therefore modifies the soil_friction_angle and cohesion of the
+        soil material.
 
     Notes
     -----

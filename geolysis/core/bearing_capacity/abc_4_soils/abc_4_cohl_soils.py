@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from geolysis.core.foundation import FoundationSize
 from geolysis.core.utils import quantity, round_
 
-# import geolysis.core.constants as constants
-
 __all__ = [
     "BowlesABC4PadFoundation",
     "BowlesABC4MatFoundation",
@@ -41,10 +39,10 @@ class AllowableBearingCapacity(ABC):
 
         _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
 
-    def SR(self) -> float:
+    def _SR(self) -> float:
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
-    def FD(self) -> float:
+    def _FD(self) -> float:
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.width
         return min(1 + 0.33 * f_d / f_w, 1.33)
@@ -57,16 +55,11 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     r"""Allowable bearing capacity for mat foundation on cohesionless
     soils according to ``Bowles (1997)``.
 
-    Parameters
-    ----------
-    corrected_spt_number : float
-        Statistical average of corrected SPT N-value (55% energy with
-        overburden pressure correction) within the foundation influence
-        zone i.e ``0.5B`` to ``2B``.
-    tol_settlement : float, mm
-        Tolerable settlement.
-    foundation_size : FoundationSize
-        Size of foundation.
+    :param float corrected_spt_number: Statistical average of corrected SPT
+        N-value (55% energy with overburden pressure correction) within the
+        foundation influence zone i.e ``0.5B`` to ``2B``.
+    :param float tol_settlement: Tolerable settlement of foundation.
+    :param FoundationSize foundation_size: Size of foundation.
 
     Notes
     -----
@@ -102,21 +95,22 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     @quantity("Pressure")
     @round_
     def bearing_capacity(self):
-        """Return allowable bearing capacity for isolated foundation on
+        """
+        Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
         f_w = self.foundation_size.width
         N_CORR = self.corrected_spt_number
 
         if f_w <= 1.2:
-            return 19.16 * N_CORR * self.FD() * self.SR()
+            return 19.16 * N_CORR * self._FD() * self._SR()
 
         return (
             11.98
             * N_CORR
             * ((3.28 * f_w + 1) / (3.28 * f_w)) ** 2
-            * self.FD()
-            * self.SR()
+            * self._FD()
+            * self._SR()
         )
 
 
@@ -124,16 +118,11 @@ class BowlesABC4MatFoundation(AllowableBearingCapacity):
     r"""Allowable bearing capacity for mat foundation on cohesionless
     soils according to ``Bowles (1997)``.
 
-    Parameters
-    ----------
-    corrected_spt_number : float
-        Statistical average of corrected SPT N-value (55% energy with
-        overburden pressure correction) within the foundation influence
-        zone i.e ``0.5B`` to ``2B``.
-    tol_settlement : float, mm
-        Tolerable settlement.
-    foundation_size : FoundationSize
-        Size of foundation.
+    :param float corrected_spt_number: Statistical average of corrected SPT
+        N-value (55% energy with overburden pressure correction) within the
+        foundation influence zone i.e ``0.5B`` to ``2B``.
+    :param float tol_settlement: Tolerable settlement of foundation.
+    :param FoundationSize foundation_size: Size of foundation.
 
     Notes
     -----
@@ -163,27 +152,23 @@ class BowlesABC4MatFoundation(AllowableBearingCapacity):
     @quantity("Pressure")
     @round_
     def bearing_capacity(self):
-        """Return allowable bearing capacity for raft foundation on
-        cohesionless soils. |rarr| :math:`kN/m^2`
+        """
+        Return allowable bearing capacity for raft foundation on cohesionless
+        soils. |rarr| :math:`kN/m^2`
         """
         N_CORR = self.corrected_spt_number
-        return 11.98 * N_CORR * self.FD() * self.SR()
+        return 11.98 * N_CORR * self._FD() * self._SR()
 
 
 class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     r"""Allowable bearing capacity for pad foundation on cohesionless
     soils according to ``Meyerhof (1956)``.
 
-    Parameters
-    ----------
-    corrected_spt_number : float
-        Average uncorrected SPT N-value (60% energy with dilatancy
-        (water) correction if applicable) within the foundation influence
-        zone i.e :math:`D_f` to :math:`D_f + 2B`
-    tol_settlement : float, mm
-        Tolerable settlement
-    foundation_size : FoundationSize
-        Size of foundation.
+    :param float corrected_spt_number: Average uncorrected SPT N-value (60%
+        energy with dilatancy (water) correction if applicable) within the
+        foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B`.
+    :param float tol_settlement: Tolerable settlement of foundation.
+    :param FoundationSize foundation_size: Size of foundation.
 
     Notes
     -----
@@ -218,21 +203,22 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     @quantity("Pressure")
     @round_
     def bearing_capacity(self):
-        """Return allowable bearing capacity for isolated foundation on
+        """
+        Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
         f_w = self.foundation_size.width
         N_CORR = self.corrected_spt_number
 
         if f_w <= 1.2:
-            return 12 * N_CORR * self.FD() * self.SR()
+            return 12 * N_CORR * self._FD() * self._SR()
 
         return (
             8
             * N_CORR
             * ((3.28 * f_w + 1) / (3.28 * f_w)) ** 2
-            * self.FD()
-            * self.SR()
+            * self._FD()
+            * self._SR()
         )
 
 
@@ -240,16 +226,11 @@ class MeyerhofABC4MatFoundation(AllowableBearingCapacity):
     r"""Allowable bearing capacity for mat foundation on cohesionless
     soils according to ``Meyerhof (1956)``.
 
-    Parameters
-    ----------
-    corrected_spt_number : float
-        Average uncorrected SPT N-value (60% energy with dilatancy
-        (water) correction if applicable) within the foundation influence
-        zone i.e :math:`D_f` to :math:`D_f + 2B`
-    tol_settlement : float, mm
-        Tolerable settlement
-    foundation_size : FoundationSize
-        Size of foundation.
+    :param float corrected_spt_number: Average uncorrected SPT N-value (60%
+        energy with dilatancy (water) correction if applicable) within the
+        foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B`.
+    :param float tol_settlement: Tolerable settlement of foundation.
+    :param FoundationSize foundation_size: Size of foundation.
 
     Notes
     -----
@@ -279,28 +260,24 @@ class MeyerhofABC4MatFoundation(AllowableBearingCapacity):
     @quantity("Pressure")
     @round_
     def bearing_capacity(self):
-        """Return allowable bearing capacity for raft foundation on
-        cohesionless soils. |rarr| :math:`kN/m^2`
+        """
+        Return allowable bearing capacity for raft foundation on cohesionless
+        soils. |rarr| :math:`kN/m^2`
         """
         N_CORR = self.corrected_spt_number
-        return 8 * N_CORR * self.FD() * self.SR()
+        return 8 * N_CORR * self._FD() * self._SR()
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     r"""Allowable bearing capacity for pad foundation on cohesionless
     soils according to ``Terzaghi & Peck (1948)``.
 
-    Parameters
-    ----------
-    corrected_spt_number : float
-        Lowest (or average) uncorrected SPT N-value (60% energy) within
-        the foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B`
-    tol_settlement : float, mm
-        Tolerable settlement.
-    water_depth : float, m
-        Depth of water below ground surface.
-    foundation_size : float
-        Size of foundation.
+    :param float corrected_spt_number: Lowest (or average) uncorrected SPT
+        N-value (60% energy) within the foundation influence zone i.e
+        :math:`D_f` to :math:`D_f + 2B`
+    :param float tol_settlement: Tolerable settlement of foundation.
+    :param float water_depth: Depth of water below ground surface.
+    :param FoundationSize foundation_size: Size of foundation.
 
     Notes
     -----
@@ -353,7 +330,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
         self.water_depth = water_depth
 
-    def CW(self):
+    def _CW(self):
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.width
 
@@ -367,21 +344,22 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     @quantity("Pressure")
     @round_
     def bearing_capacity(self):
-        """Return allowable bearing capacity for isolated foundation on
+        """
+        Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
         f_w = self.foundation_size.width
         N_CORR = self.corrected_spt_number
 
         if f_w <= 1.2:
-            return 12 * N_CORR * (1 / (self.CW() * self.FD())) * self.SR()
+            return 12 * N_CORR * (1 / (self._CW() * self._FD())) * self._SR()
 
         return (
             8
             * N_CORR
             * ((3.28 * f_w + 1) / (3.28 * f_w)) ** 2
-            * (1 / (self.CW() * self.FD()))
-            * self.SR()
+            * (1 / (self._CW() * self._FD()))
+            * self._SR()
         )
 
 
@@ -389,17 +367,12 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     r"""Allowable bearing capacity for mat foundation on cohesionless soils
     according to ``Terzaghi & Peck (1948)``.
 
-    Parameters
-    ----------
-    corrected_spt_number : float
-        Lowest (or average) uncorrected SPT N-value (60% energy) within
-        the foundation influence zone i.e :math:`D_f` to :math:`D_f + 2B`
-    tol_settlement : float, mm
-        Tolerable settlement.
-    water_depth : float, m
-        Depth of water below ground surface.
-    foundation_size : float
-        Size of foundation.
+    :param float corrected_spt_number: Lowest (or average) uncorrected SPT
+        N-value (60% energy) within the foundation influence zone i.e
+        :math:`D_f` to :math:`D_f + 2B`
+    :param float tol_settlement: Tolerable settlement of foundation.
+    :param float water_depth: Depth of water below ground surface.
+    :param FoundationSize foundation_size: Size of foundation.
 
     Notes
     -----
@@ -438,8 +411,9 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     @quantity("Pressure")
     @round_
     def bearing_capacity(self):
-        """Return allowable bearing capacity for raft foundation on
-        cohesionless soils. |rarr| :math:`kN/m^2`
+        """
+        Return allowable bearing capacity for raft foundation on cohesionless
+        soils. |rarr| :math:`kN/m^2`
         """
         N_CORR = self.corrected_spt_number
-        return 8 * N_CORR * (1 / (self.CW() * self.FD())) * self.SR()
+        return 8 * N_CORR * (1 / (self._CW() * self._FD())) * self._SR()

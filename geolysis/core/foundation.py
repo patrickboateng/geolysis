@@ -5,13 +5,7 @@ from typing import Optional, Protocol
 
 from geolysis.core.utils import INF
 
-__all__ = [
-    "create_foundation",
-    "CircularFooting",
-    "SquareFooting",
-    "RectangularFooting",
-    "FoundationSize",
-]
+__all__ = ["create_foundation"]
 
 
 class FootingCreationError(TypeError):
@@ -54,19 +48,11 @@ class StripFooting:
 class CircularFooting:
     """A class representation of circular footing.
 
-    Parameters
-    ----------
-    diameter : float, m
-        Diameter of foundation footing.
+    :param float diameter: Diameter of foundation footing. (m)
 
-    Attributes
-    ----------
-    width : float, m
-    length : float, m
+    .. seealso::
 
-    See Also
-    --------
-    SquareFooting, RectangularFooting
+        :class:`SquareFooting`, :class:`RectangularFooting`
 
     Notes
     -----
@@ -112,18 +98,11 @@ class CircularFooting:
 class SquareFooting:
     """A class representation of square footing.
 
-    Parameters
-    ----------
-    width : float, m
-        Width of foundation footing.
+    :param float width: Width of foundation footing. (m)
 
-    Attributes
-    ----------
-    length : float, m
+    .. seealso::
 
-    See Also
-    --------
-    CircularFooting, RectangularFooting
+        :class:`CircularFooting`, :class:`RectangularFooting`
 
     Examples
     --------
@@ -152,16 +131,12 @@ class SquareFooting:
 class RectangularFooting:
     """A class representation of rectangular footing.
 
-    Parameters
-    ----------
-    width : float, m
-        Width of foundation footing.
-    length : float, m
-        Length of foundation footing.
+    :param float width: Width of foundation footing. (m)
+    :param float length: Length of foundation footing. (m)
 
-    See Also
-    --------
-    CircularFooting, SquareFooting
+    .. seealso::
+
+        :class:`CircularFooting`, :class:`SquareFooting`
 
     Examples
     --------
@@ -182,23 +157,13 @@ class RectangularFooting:
 class FoundationSize:
     """A simple class representing a foundation structure.
 
-    Parameters
-    ----------
-    depth : float, m
-        Depth of foundation.
-    footing_size : FootingSize
-        Represents the size of the foundation footing.
+    :param float depth: Depth of foundation. (m)
+    :param FootingSize footing_size: Represents the size of the foundation
+        footing.
 
-    Attributes
-    ----------
-    thickness : float, m
-    width : float, m
-    length : float, m
-    footing_shape : _FootingShape
+    .. seealso::
 
-    See Also
-    --------
-    FootingSize
+        :class:`FootingSize`
 
     Examples
     --------
@@ -260,26 +225,16 @@ def create_foundation(
     """A factory function that encapsulate the creation of a foundation
     footing.
 
-    Parameters
-    ----------
-    width : float, m
-        Width of foundation footing.
-    length : float, optional, m
-        Length of foundation footing.
-    footing_shape : Shape | str, default=Shape.SQUARE
-        Shape of foundation footing.
+    :param float width: Width of foundation footing (m)
+    :param float length: Length of foundation footing, defaults to None. (m)
+    :param Shape | str footing_shape: Shape of foundation footing, defaults to
+        :class:`Shape.SQUARE` or "square"
 
-    Returns
-    -------
-    FootingSize
-        Size of foundation footing.
+    :raises FootingCreationError: Exception raised when footing is not created
+        successfully.
 
-    Raises
-    ------
-    FootingCreationError
-        Exception raised when footing is not created successfully.
-
-    # TODO: Update examples to test for strip footing creation.
+    :return: Size of foundation footing.
+    :rtype: FootingSize
 
     Examples
     --------

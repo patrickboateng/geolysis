@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Final, Optional
+from typing import Final, NamedTuple, Optional
 
 from geolysis.core.utils import isclose, round_
 
@@ -7,6 +7,10 @@ __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
 
 class SizeDistError(Exception):
+    pass
+
+
+class PSDAggSumError(ValueError):
     pass
 
 
@@ -48,30 +52,12 @@ class AtterbergLimits:
 
     The main use of Atterberg Limits is in the classification of soils.
 
-    Parameters
-    ----------
-    liquid_limit : float
-        Water content beyond which soils flows under their own weight.
-        It can also be defined as the minimum moisture content at which
-        a soil flows upon application of a very small shear force.
-
-    plastic_limit : float
-        Water content at which plastic deformation can be initiated. It
-        is also the minimum water content at which soil can be rolled into
-        a thread 3mm thick. (molded without breaking)
-
-    Attributes
-    ----------
-    plasticity_index : float
-    A_line : float
-    type_of_fines : str
-
-    Methods
-    -------
-    above_A_LINE
-    limit_plot_in_hatched_zone
-    liquidity_index
-    consistency_index
+    :param float liquid_limit: Water content beyond which soils flows under
+        their own weight. It can also be defined as the minimum moisture content
+        at which a soil flows upon application of a very small shear force.
+    :param float plastic_limit: Water content at which plastic deformation can
+        be initiated. It is also the minimum water content at which soil can be
+        rolled into a thread 3mm thick. (molded without breaking)
 
     Examples
     --------
@@ -157,10 +143,7 @@ class AtterbergLimits:
         indicate that the soil is in a hard (desiccated) state. It is also known
         as Water-Plasticity ratio.
 
-        Parameters
-        ----------
-        nmc : float
-            Moisture contents of the soil in natural condition. (NMC)
+        :param float nmc: Moisture contents of the soil in natural condition.
 
         Notes
         -----
@@ -185,10 +168,7 @@ class AtterbergLimits:
         indicate the soil is in the liquid state. It is also known as Relative
         Consistency.
 
-        Parameters
-        ----------
-        nmc : float
-            Moisture contents of the soil in natural condition. (NMC)
+        :param float nmc: Moisture contents of the soil in natural condition.
 
         Notes
         -----
@@ -199,18 +179,12 @@ class AtterbergLimits:
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
 
-@dataclass(frozen=True)
-class SizeDistribution:
+class SizeDistribution(NamedTuple):
     """Features obtained from the Particle Size Distribution graph.
 
-    Parameters
-    ----------
-    d_10 : float, mm
-        Diameter at which 10% of the soil by weight is finer.
-    d_30 : float, mm
-        Diameter at which 30% of the soil by weight is finer.
-    d_60 : float, mm
-        Diameter at which 60% of the soil by weight is finer.
+    :param float d_10: Diameter at which 10% of the soil by weight is finer.
+    :param float d_30: Diameter at which 30% of the soil by weight is finer.
+    :param float d_60: Diameter at which 60% of the soil by weight is finer.
     """
 
     d_10: float
@@ -218,12 +192,10 @@ class SizeDistribution:
     d_60: float
 
     @property
-    @round_(2)
     def coeff_of_curvature(self) -> float:
         return (self.d_30**2) / (self.d_60 * self.d_10)
 
     @property
-    @round_(2)
     def coeff_of_uniformity(self) -> float:
         return self.d_60 / self.d_10
 
@@ -231,11 +203,8 @@ class SizeDistribution:
         """Grade of soil sample. Soil grade can either be well graded or poorly
         graded.
 
-        Parameters
-        ----------
-        coarse_soil : str
-            Coarse fraction of the soil sample. Valid arguments are "G" for
-            gravel and "S" for SAND.
+        :param str coarse_soil: Coarse fraction of the soil sample. Valid
+            arguments are "G" for gravel and "S" for SAND.
         """
 
         if coarse_soil == GRAVEL and (
@@ -264,23 +233,10 @@ class PSD:
     particles in a sample and graphing the results to illustrate the
     distribution of the particle sizes.
 
-    Parameters
-    ----------
-    fines : float
-        Percentage of fines in soil sample i.e. the percentage of soil sample
-        passing through No. 200 sieve (0.075mm)
-    sand : float
-        Percentage of sand in soil sample.
-
-    Attributes
-    ----------
-    coeff_of_curvature : float
-    coeff_of_uniformity : float
-    type_of_coarse : str
-
-    Raises
-    ------
-    SoilDistError
+    :param float fines: Percentage of fines in soil sample i.e. the percentage
+        of soil sample passing through No. 200 sieve (0.075mm)
+    :param float sand: Percentage of sand in soil sample.
+    :param float gravel: Percentage of gravel in soil sample, defaults to None.
 
     Examples
     --------
@@ -319,12 +275,27 @@ class PSD:
     'Well graded'
     """
 
-    fines: float
-    sand: float
-    size_dist: Optional[SizeDistribution] = None
+    def __init__(
+        self,
+        fines: float,
+        sand: float,
+        gravel: Optional[float] = None,
+        size_dist: Optional[SizeDistribution] = None,
+    ):
+        self.fines = fines
+        self.sand = sand
+        self.gravel = (
+            (100 - (self.fines + self.sand)) if gravel is None else gravel
+        )
+        self.size_dist = (
+            SizeDistribution(0, 0, 0) if size_dist is None else size_dist
+        )
 
-    def __post_init__(self) -> None:
-        self.gravel = 100 - (self.fines + self.sand)
+        total_agg = self.fines + self.sand + self.gravel
+
+        if not isclose(total_agg, 100.0, rel_tol=0.01):
+            err_msg = f"fines + sand + gravels = 100% not {total_agg}"
+            raise PSDAggSumError(err_msg)
 
     @property
     def type_of_coarse(self) -> str:
@@ -332,6 +303,7 @@ class PSD:
         return GRAVEL if self.gravel > self.sand else SAND
 
     @property
+    @round_(2)
     def coeff_of_curvature(self) -> float:
         r"""Coefficient of curvature of soil sample.
 
@@ -342,10 +314,10 @@ class PSD:
         For the soil to be well graded, the value of :math:`C_c` must be
         between 1 and 3.
         """
-        self.check_size_dist()
-        return self.size_dist.coeff_of_curvature  # type: ignore
+        return self.size_dist.coeff_of_curvature
 
     @property
+    @round_(2)
     def coeff_of_uniformity(self) -> float:
         r"""Coefficient of uniformity of soil sample.
 
@@ -360,16 +332,11 @@ class PSD:
         Higher values of :math:`C_u` indicates that the soil mass consists of
         soil particles with different size ranges.
         """
-        self.check_size_dist()
-        return self.size_dist.coeff_of_uniformity  # type: ignore
-
-    def check_size_dist(self) -> None:
-        if not self.size_dist:
-            raise SizeDistError("size_dist cannot be None")
+        return self.size_dist.coeff_of_uniformity
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
-        return self.size_dist is not None
+        return any(self.size_dist)
 
     def grade(self) -> str:
         r"""Return the grade of the soil sample, either well graded or poorly
@@ -380,8 +347,7 @@ class PSD:
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 4` (for gravels)
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
         """
-        self.check_size_dist()
-        return self.size_dist.grade(coarse_soil=self.type_of_coarse)  # type: ignore
+        return self.size_dist.grade(coarse_soil=self.type_of_coarse)
 
 
 class AASHTO:
@@ -400,18 +366,14 @@ class AASHTO:
 
     The Group Index ``(GI)`` is used to further evaluate soils within a group.
 
-    Parameters
-    ----------
-    liquid_limit : float
-        Water content beyond which soils flows under their own weight.
-    plasticity_index : float
-        Range of water content over which soil remains in plastic condition.
-    fines : float
-        Percentage of fines in soil sample i.e. the percentage of soil sample
-        passing through No. 200 sieve (0.075mm).
-    add_group_idx : bool, default=True
-        Used to indicate whether the group index should be added to the
-        classification or not. Defaults to True.
+    :param float liquid_limit: Water content beyond which soils flows under
+        their own weight.
+    :param float plasticity_index: Range of water content over which soil
+        remains in plastic condition.
+    :param float fines: Percentage of fines in soil sample i.e. the percentage
+        of soil sample passing through No. 200 sieve (0.075mm).
+    :param bool add_group_idx: Used to indicate whether the group index should
+        be added to the classification or not. Defaults to True.
 
     Notes
     -----
@@ -569,30 +531,17 @@ class USCS:
     Highly Organic soils are identified by visual inspection. These soils are
     termed as Peat. (:math:`P_t`)
 
-    Parameters
-    ----------
-    liquid_limit : float
-        Water content beyond which soils flows under their own weight. It can
-        also be defined as the minimum moisture content at which a soil flows
-        upon application of a very small shear force.
-    plastic_limit : float
-        Water content at which plastic deformation can be initiated. It is also
-        the minimum water content at which soil can be rolled into a thread 3mm
-        thick (molded without breaking)
-    fines : float
-        Percentage of fines in soil sample i.e. The percentage of soil sample
-        passing through No. 200 sieve (0.075mm)
-    sand : float
-        Percentage of sand in soil sample (%)
-    organic : bool, default=False
-        Indicates whether soil is organic or not.
-
-    Attributes
-    ----------
-    atterberg_limits : AtterbergLimits
-    psd : PSD
-    soil_class : str
-    soil_desc : str
+    :param float liquid_limit: Water content beyond which soils flows under
+        their own weight. It can also be defined as the minimum moisture content
+        at which a soil flows upon application of a very small shear force.
+    :param float plastic_limit: Water content at which plastic deformation can
+        be initiated. It is also the minimum water content at which soil can be
+        rolled into a thread 3mm thick (molded without breaking)
+    :param float fines: Percentage of fines in soil sample i.e. The percentage
+        of soil sample passing through No. 200 sieve (0.075mm)
+    :param float sand: Percentage of sand in soil sample (%)
+    :param bool organic: Indicates whether soil is organic or not, defaults to
+        False.
 
     Examples
     --------

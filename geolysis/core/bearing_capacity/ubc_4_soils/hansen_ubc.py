@@ -18,6 +18,8 @@ from geolysis.core.utils import (
     tan,
 )
 
+__all__ = ["HansenUltimateBearingCapacity"]
+
 
 class HansenBearingCapacityFactor:
     @classmethod
@@ -161,34 +163,18 @@ class HansenInclinationFactor:
 
 
 class HansenUltimateBearingCapacity(UltimateBearingCapacity):
-    r"""Ultimate bearing capacity for footings on cohesionless soils
-    according to ``Hansen 1961``.
+    r"""Ultimate bearing capacity for footings on cohesionless soils according
+    to ``Hansen 1961``.
 
-    Parameters
-    ----------
-    soil_friction_angle : float
-        Internal angle of friction of soil material.
-    cohesion : float
-        Cohesion of soil material.
-    moist_unit_wgt : float
-        Moist (Bulk) unit weight of soil material.
-    foundation_size : FoundationSize
-        Size of foundation.
-    water_level : float
-        Depth of water below the ground surface.
-    local_shear_failure : float
-        Indicates if local shear failure is likely to occur therefore
-        modifies the soil_friction_angle and cohesion of the soil
+    :param float soil_friction_angle: Internal angle of friction of soil
         material.
-    e : float
-        Deviation of the applied load from the center of the footing
-        also know as eccentricity.
-
-    Attributes
-    ----------
-    n_c
-    n_q
-    n_gamma
+    :param float cohesion: Cohesion of soil material.
+    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
+    :param FoundationSize foundation_size: Size of foundation.
+    :param float water_level: Depth of water below the ground surface.
+    :param float local_shear_failure: Indicates if local shear failure is likely
+        to occur therefore modifies the soil_friction_angle and cohesion of the
+        soil material.
 
     Notes
     -----
@@ -282,7 +268,6 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
-
         return (
             self._cohesion_term(1)
             + self._surcharge_term()
