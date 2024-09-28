@@ -1,7 +1,7 @@
 import functools
 import math
 import statistics
-from typing import Callable, Iterable, SupportsRound
+from typing import Callable, Iterable, SupportsRound, TypeAlias
 
 from geolysis.core._conf import Q_, UnitSystem, get_option
 
@@ -24,6 +24,7 @@ __all__ = [
 PI = math.pi
 INF = math.inf
 
+Number: TypeAlias = int | float
 
 isclose = math.isclose
 
