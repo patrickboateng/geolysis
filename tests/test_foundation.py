@@ -28,7 +28,7 @@ class TestSquareFooting(unittest.TestCase):
 
 class TestFoundationSize(unittest.TestCase):
     def testAttributes(self):
-        fs = FoundationSize(depth=1.5, footing_shape=SquareFooting(width=1.2))
+        fs = FoundationSize(depth=1.5, footing_size=SquareFooting(width=1.2))
 
         fs.width = 1.4
         self.assertAlmostEqual(fs.width, 1.4)
@@ -36,6 +36,6 @@ class TestFoundationSize(unittest.TestCase):
         fs.length = 1.5
         self.assertAlmostEqual(fs.length, 1.5)
 
-        footing_shape = CircularFooting(diameter=1.5)
-        fs.footing_shape = footing_shape
-        self.assertEqual(fs.footing_shape, CircularFooting(diameter=1.5))
+        footing_type = CircularFooting(diameter=1.5)
+        fs.footing_size = footing_type
+        self.assertEqual(fs.footing_size, CircularFooting(diameter=1.5))
