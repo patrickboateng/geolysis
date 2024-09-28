@@ -1,9 +1,11 @@
+import enum
 from abc import abstractmethod
-from dataclasses import KW_ONLY, dataclass, field
-from numbers import Number
-from typing import Final, Optional, Protocol, Sequence
+from dataclasses import dataclass, field
+from typing import Final, Protocol, Sequence
 
-from geolysis.core.utils import isclose, log10, mean, round_, sqrt
+import attrs
+
+from geolysis.core.utils import Number, isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "weighted_spt_n_design",
@@ -26,27 +28,27 @@ class OPCError(ValueError):
 class SPTCorrection(Protocol):
     @property
     @abstractmethod
-    def corrected_spt_number(self) -> float: ...
+    def corrected_spt_number(self) -> Number: ...
 
 
 class OPC(Protocol):
-    std_spt_number: float
-    eop: float
+    std_spt_number: Number
+    eop: Number
 
     @property
     @abstractmethod
-    def correction(self) -> float: ...
+    def correction(self) -> Number: ...
 
     @property
     @round_(0)
-    def corrected_spt_number(self) -> float:
+    def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
         corrected_spt = self.correction * self.std_spt_number
         return min(corrected_spt, 2 * self.std_spt_number)
 
 
 @round_(0)
-def weighted_spt_n_design(spt_numbers: Sequence[float]):
+def weighted_spt_n_design(spt_numbers: Sequence[Number]):
     r"""Calculates the weighted average of the corrected SPT N-values within the
     foundation influence zone.
 
@@ -58,7 +60,7 @@ def weighted_spt_n_design(spt_numbers: Sequence[float]):
     under consideration by giving the highest weightage to the closest N-value
     from the base.
 
-    :param Sequence[float] spt_numbers: SPT N-values within the foundation
+    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
         influence zone. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -90,11 +92,11 @@ def weighted_spt_n_design(spt_numbers: Sequence[float]):
 
 
 @round_(0)
-def average_spt_n_design(spt_numbers: Sequence[float]):
+def average_spt_n_design(spt_numbers: Sequence[Number]):
     r"""Calculates the average of the corrected SPT N-values within the
     foundation influence zone.
 
-    :param Sequence[float] spt_numbers: SPT N-values within the foundation
+    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
         influence zone. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -108,11 +110,11 @@ def average_spt_n_design(spt_numbers: Sequence[float]):
 
 
 @round_(0)
-def minimum_spt_n_design(spt_numbers: Sequence[float]):
+def minimum_spt_n_design(spt_numbers: Sequence[Number]):
     """The lowest N-value within the influence zone can be taken as the
     :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
 
-    :param Sequence[float] spt_numbers: SPT N-values within the foundation
+    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
         influence zone. i.e. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -125,7 +127,21 @@ def minimum_spt_n_design(spt_numbers: Sequence[float]):
     return min(spt_numbers)
 
 
-@dataclass
+#: TODO: document this
+class HammerType(enum.StrEnum):
+    AUTOMATIC = enum.auto()
+    DONUT_1 = enum.auto()
+    DONUT_2 = enum.auto()
+    SAFETY = enum.auto()
+    DROP = PIN = enum.auto()
+
+
+class SamplerType(enum.StrEnum):
+    STANDARD = enum.auto()
+    NON_STANDARD = enum.auto()
+
+
+@attrs.define
 class EnergyCorrection:
     r"""SPT N-value standardized for field procedures.
 
@@ -137,13 +153,13 @@ class EnergyCorrection:
     transferred to the tip of the standard split spoon.
 
     :param int recorded_spt_number: Recorded SPT N-value from field.
-    :param float energy_percentage: Energy percentage reaching the tip of the
+    :param Number energy_percentage: Energy percentage reaching the tip of the
         sampler, defaults to 0.6
-    :param float hammer_efficiency: Hammer efficiency, defaults to 0.6
-    :param float borehole_diameter_correction: Borehole diameter correction,
+    :param Number hammer_efficiency: Hammer efficiency, defaults to 0.6
+    :param Number borehole_diameter_correction: Borehole diameter correction,
         defaults to 1.0
-    :param float sampler_correction: Sampler correction, defaults to 1.0
-    :param float rod_length_correction: Rod length correction, defaults to 0.75
+    :param Number sampler_correction: Sampler correction, defaults to 1.0
+    :param Number rod_length_correction: Rod length correction, defaults to 0.75
 
     Notes
     -----
@@ -163,30 +179,83 @@ class EnergyCorrection:
     22.0
     """
 
-    recorded_spt_number: float
+    recorded_spt_number: int = attrs.field(
+        validator=[
+            attrs.validators.instance_of(int),
+            attrs.validators.gt(0),
+            attrs.validators.le(100),
+        ]
+    )
+    energy_percentage: Number = attrs.field(
+        default=0.6,
+        validator=[attrs.validators.gt(0), attrs.validators.le(1.00)],
+    )
+    hammer_type: HammerType = attrs.field(
+        default=HammerType.DONUT_1,
+        kw_only=True,
+    )
+    borehole_diameter: Number = attrs.field(
+        default=65,
+        validator=[attrs.validators.ge(65), attrs.validators.le(200)],
+        kw_only=True,
+    )
+    sampler_type: SamplerType = attrs.field(
+        default=SamplerType.STANDARD,
+        kw_only=True,
+    )
+    rod_length: Number = attrs.field(
+        default=3,
+        validator=attrs.validators.instance_of(Number),
+        kw_only=True,
+    )
 
-    _: KW_ONLY
-
-    rod_length: Optional[float] = None
-    energy_percentage: float = 0.6
-    hammer_efficiency: float = 0.6
-    borehole_diameter_correction: float = 1.0
-    sampler_correction: float = 1.0
-    rod_length_correction: float = 0.75
-
-    def __post_init__(self):
-        if isinstance(self.rod_length, Number):
-            if 3.0 < self.rod_length <= 4.0:
-                self.rod_length_correction = 0.75
-            elif 4.0 < self.rod_length <= 6.0:
-                self.rod_length_correction = 0.85
-            elif 6.0 < self.rod_length <= 10.0:
-                self.rod_length_correction = 0.95
-            else:
-                self.rod_length_correction = 1.00
+    HAMMER_EFFICIENCY_FACTORS: Final = {
+        HammerType.AUTOMATIC: 0.70,
+        HammerType.DONUT_1: 0.60,
+        HammerType.DONUT_2: 0.50,
+        HammerType.SAFETY: 0.55,
+        HammerType.DROP: 0.45,
+        HammerType.PIN: 0.45,
+    }
+    SAMPLER_CORRECTION_FACTORS: Final = {
+        SamplerType.STANDARD: 1.00,
+        SamplerType.NON_STANDARD: 1.20,
+    }
 
     @property
-    def correction(self) -> float:
+    def hammer_efficiency(self) -> Number:
+        return self.HAMMER_EFFICIENCY_FACTORS[self.hammer_type]
+
+    @property
+    def borehole_diameter_correction(self) -> Number:
+        if 65 <= self.borehole_diameter <= 115:
+            corr = 1.00
+        elif 115 < self.borehole_diameter <= 150:
+            corr = 1.05
+        else:
+            corr = 1.15
+
+        return corr
+
+    @property
+    def sampler_correction(self) -> Number:
+        return self.SAMPLER_CORRECTION_FACTORS[self.sampler_type]
+
+    @property
+    def rod_length_correction(self) -> Number:
+        if 3.0 <= self.rod_length <= 4.0:
+            corr = 0.75
+        elif 4.0 < self.rod_length <= 6.0:
+            corr = 0.85
+        elif 6.0 < self.rod_length <= 10.0:
+            corr = 0.95
+        else:
+            corr = 1.00
+
+        return corr
+
+    @property
+    def correction(self) -> Number:
         """SPT Correction."""
         return (
             self.hammer_efficiency
@@ -197,7 +266,7 @@ class EnergyCorrection:
 
     @property
     @round_(0)
-    def corrected_spt_number(self) -> float:
+    def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
         return self.correction * self.recorded_spt_number
 
@@ -206,8 +275,8 @@ class EnergyCorrection:
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
-    :param float std_spt_number: SPT N-value standardized for field procedures.
-    :param float eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param Number std_spt_number: SPT N-value standardized for field procedures.
+    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -231,7 +300,7 @@ class GibbsHoltzOPC(OPC):
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 280.0
 
-    def __init__(self, std_spt_number: float, eop: float) -> None:
+    def __init__(self, std_spt_number: Number, eop: Number) -> None:
         self.std_spt_number = std_spt_number
         self.eop = eop
 
@@ -239,11 +308,11 @@ class GibbsHoltzOPC(OPC):
         return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
 
     @property
-    def eop(self) -> float:
+    def eop(self) -> Number:
         return self._eop
 
     @eop.setter
-    def eop(self, __val: float):
+    def eop(self, __val: Number):
         if __val <= 0 or __val > self.STD_PRESSURE:
             err_msg = f"eop = {__val} cannot be <= 0 or > 280 kPa"
             raise OPCError(err_msg)
@@ -251,7 +320,7 @@ class GibbsHoltzOPC(OPC):
         self._eop = __val
 
     @property
-    def correction(self) -> float:
+    def correction(self) -> Number:
         """SPT Correction."""
         corr = 350.0 / (self.eop + 70)
         if corr > 2.0:
@@ -264,8 +333,8 @@ class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
 
-    :param float std_spt_number: SPT N-value standardized for field procedures.
-    :param float eop: Effective overburden pressure. (:math:`kN/m^2`)
+    :param Number std_spt_number: SPT N-value standardized for field procedures.
+    :param Number eop: Effective overburden pressure. (:math:`kN/m^2`)
 
     Notes
     -----
@@ -290,11 +359,11 @@ class BazaraaPeckOPC(OPC):
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = field(default=71.8, init=False)
 
-    std_spt_number: float
-    eop: float
+    std_spt_number: Number
+    eop: Number
 
     @property
-    def correction(self) -> float:
+    def correction(self) -> Number:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
@@ -310,8 +379,8 @@ class BazaraaPeckOPC(OPC):
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
-    :param float std_spt_number: SPT N-value standardized for field procedures
-    :param float eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param Number std_spt_number: SPT N-value standardized for field procedures
+    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -330,7 +399,7 @@ class PeckOPC(OPC):
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 24.0
 
-    def __init__(self, std_spt_number: float, eop: float) -> None:
+    def __init__(self, std_spt_number: Number, eop: Number) -> None:
         self.std_spt_number = std_spt_number
         self.eop = eop
 
@@ -338,18 +407,18 @@ class PeckOPC(OPC):
         return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
 
     @property
-    def eop(self) -> float:
+    def eop(self) -> Number:
         return self._eop
 
     @eop.setter
-    def eop(self, __val: float):
+    def eop(self, __val: Number):
         if __val < self.STD_PRESSURE:
             err_msg = f"eop = {__val} cannot be less than 24"
             raise OPCError(err_msg)
         self._eop = __val
 
     @property
-    def correction(self) -> float:
+    def correction(self) -> Number:
         """SPT Correction."""
         return 0.77 * log10(2000 / self.eop)
 
@@ -358,8 +427,8 @@ class PeckOPC(OPC):
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
-    :param float std_spt_number: SPT N-value standardized for field procedures
-    :param float eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param Number std_spt_number: SPT N-value standardized for field procedures
+    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -375,7 +444,7 @@ class LiaoWhitmanOPC(OPC):
     23.0
     """
 
-    def __init__(self, std_spt_number: float, eop: float) -> None:
+    def __init__(self, std_spt_number: Number, eop: Number) -> None:
         self.std_spt_number = std_spt_number
         self.eop = eop
 
@@ -383,18 +452,18 @@ class LiaoWhitmanOPC(OPC):
         return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
 
     @property
-    def eop(self) -> float:
+    def eop(self) -> Number:
         return self._eop
 
     @eop.setter
-    def eop(self, __val: float):
+    def eop(self, __val: Number):
         if __val <= 0:
             err_msg = f"eop = {__val} cannot be less than or equal to 0"
             raise OPCError(err_msg)
         self._eop = __val
 
     @property
-    def correction(self) -> float:
+    def correction(self) -> Number:
         """SPT Correction."""
         return sqrt(100 / self.eop)
 
@@ -403,8 +472,8 @@ class LiaoWhitmanOPC(OPC):
 class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
-    :param float std_spt_number: SPT N-value standardized for field procedures
-    :param float eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param Number std_spt_number: SPT N-value standardized for field procedures
+    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -420,11 +489,11 @@ class SkemptonOPC(OPC):
     22.0
     """
 
-    std_spt_number: float
-    eop: float
+    std_spt_number: Number
+    eop: Number
 
     @property
-    def correction(self) -> float:
+    def correction(self) -> Number:
         """SPT Correction."""
         return 2 / (1 + 0.01044 * self.eop)
 
@@ -437,7 +506,7 @@ class DilatancyCorrection:
     correction, overburden pressure correction is applied first and then
     dilatancy correction is applied.
 
-    :param float spt_number: SPT N-value standardized for field procedures
+    :param Number spt_number: SPT N-value standardized for field procedures
         and/or corrected for overburden pressure.
 
     Notes
@@ -459,11 +528,11 @@ class DilatancyCorrection:
     19.0
     """
 
-    spt_number: float
+    spt_number: Number
 
     @property
     @round_
-    def corrected_spt_number(self) -> float:
+    def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
         if self.spt_number <= 15:
             return self.spt_number
