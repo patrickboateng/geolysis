@@ -1,9 +1,9 @@
 import enum
-from abc import abstractmethod
-from dataclasses import dataclass
-from typing import Optional, Protocol
+from typing import Final, Optional, TypeAlias
 
-from geolysis.core.utils import INF
+import attrs
+
+from geolysis.core.utils import INF, Number
 
 __all__ = ["create_foundation"]
 
@@ -19,32 +19,23 @@ class Shape(enum.StrEnum):
     RECTANGLE = enum.auto()
 
 
-class _FootingShape(Protocol):
-    type_: Shape
-
-    @property
-    @abstractmethod
-    def width(self) -> float: ...
-
-    @width.setter
-    def width(self, __val: float): ...
-
-    @property
-    @abstractmethod
-    def length(self) -> float: ...
-
-    @length.setter
-    def length(self, __val: float): ...
+validators: Final = [
+    attrs.validators.instance_of((int, float)),
+    attrs.validators.gt(0.0),
+]
 
 
-@dataclass
+@attrs.define
 class StripFooting:
-    width: float
-    length: float = INF
-    type_ = Shape.STRIP
+    width: Number = attrs.field(validator=validators)
+    length: Number = attrs.field(default=INF, validator=validators)
+
+    shape_: Final[Shape] = attrs.field(
+        default=Shape.STRIP, init=False, on_setattr=attrs.setters.frozen
+    )
 
 
-@dataclass
+@attrs.define
 class CircularFooting:
     """A class representation of circular footing.
 
@@ -72,29 +63,31 @@ class CircularFooting:
     1.2
     """
 
-    diameter: float
-    type_ = Shape.CIRCLE
+    diameter: Number = attrs.field(validator=validators)
+    shape_: Final[Shape] = attrs.field(
+        default=Shape.CIRCLE, init=False, on_setattr=attrs.setters.frozen
+    )
 
     @property
-    def width(self) -> float:
+    def width(self) -> Number:
         """Diameter of foundation footing."""
         return self.diameter
 
     @width.setter
-    def width(self, __val: float):
-        self.diameter = __val
+    def width(self, val: Number):
+        self.diameter = val
 
     @property
-    def length(self) -> float:
+    def length(self) -> Number:
         """Diameter of foundation footing."""
         return self.diameter
 
     @length.setter
-    def length(self, __val: float):
-        self.diameter = __val
+    def length(self, val: Number):
+        self.diameter = val
 
 
-@dataclass
+@attrs.define
 class SquareFooting:
     """A class representation of square footing.
 
@@ -114,20 +107,22 @@ class SquareFooting:
     1.2
     """
 
-    width: float
-    type_ = Shape.SQUARE
+    width: Number = attrs.field(validator=validators)
+    shape_: Final[Shape] = attrs.field(
+        default=Shape.SQUARE, init=False, on_setattr=attrs.setters.frozen
+    )
 
     @property
-    def length(self) -> float:
+    def length(self) -> Number:
         """Length of foundation footing."""
         return self.width
 
     @length.setter
-    def length(self, __val: float):
-        self.width = __val
+    def length(self, val: Number):
+        self.width = val
 
 
-@dataclass
+@attrs.define
 class RectangularFooting:
     """A class representation of rectangular footing.
 
@@ -148,12 +143,21 @@ class RectangularFooting:
     1.4
     """
 
-    width: float
-    length: float
-    type_ = Shape.RECTANGLE
+    width: Number = attrs.field(validator=validators)
+    length: Number = attrs.field(validator=validators)
+    shape_: Final[Shape] = attrs.field(
+        default=Shape.RECTANGLE,
+        init=False,
+        on_setattr=attrs.setters.frozen,
+    )
 
 
-@dataclass
+_FootingSize: TypeAlias = (
+    StripFooting | SquareFooting | CircularFooting | RectangularFooting
+)
+
+
+@attrs.define
 class FoundationSize:
     """A simple class representing a foundation structure.
 
@@ -184,18 +188,21 @@ class FoundationSize:
     1.2
     """
 
-    depth: float
-    footing_shape: _FootingShape
-    eccentricity: float = 0.0
+    depth: Number = attrs.field(validator=validators)
+    footing_size: _FootingSize = attrs.field()
+    eccentricity: Number = attrs.field(
+        default=0.0,
+        validator=attrs.validators.ge(0.0),
+    )
 
     @property
     def width(self) -> float:
         """Width of foundation footing."""
-        return self.footing_shape.width
+        return self.footing_size.width
 
     @width.setter
-    def width(self, __val: float):
-        self.footing_shape.width = __val
+    def width(self, val: float):
+        self.footing_size.width = val
 
     @property
     def effective_width(self) -> float:
@@ -204,15 +211,15 @@ class FoundationSize:
     @property
     def length(self) -> float:
         """Length of foundation footing."""
-        return self.footing_shape.length
+        return self.footing_size.length
 
     @length.setter
-    def length(self, __val: float):
-        self.footing_shape.length = __val
+    def length(self, val: float):
+        self.footing_size.length = val
 
     @property
-    def footing_type(self) -> Shape:
-        return self.footing_shape.type_
+    def footing_shape(self) -> Shape:
+        return self.footing_size.shape_
 
 
 def create_foundation(
@@ -243,27 +250,24 @@ def create_foundation(
     if isinstance(footing_shape, str):
         footing_shape = footing_shape.casefold()
 
-    match footing_shape:
-        case Shape.STRIP:
-            _footing_shape = StripFooting(width=width)
-        case Shape.SQUARE:
-            _footing_shape = SquareFooting(width=width)
-        case Shape.CIRCLE:
-            _footing_shape = CircularFooting(diameter=width)
-        case Shape.RECTANGLE:
-            if length:
-                _footing_shape = RectangularFooting(width=width, length=length)
-            else:
-                err_msg = "The length of the footing must be provided"
-                raise FootingCreationError(err_msg)
-        case _:
-            err_msg = (
-                "Supported footing shapes are SQUARE, RECTANGLE, and CIRCLE"
-            )
+    if footing_shape == Shape.STRIP:
+        footing_size = StripFooting(width=width)
+    elif footing_shape == Shape.SQUARE:
+        footing_size = SquareFooting(width=width)
+    elif footing_shape == Shape.CIRCLE:
+        footing_size = CircularFooting(diameter=width)
+    elif footing_shape == Shape.RECTANGLE:
+        if length:
+            footing_size = RectangularFooting(width=width, length=length)
+        else:
+            err_msg = "The length of the footing must be provided"
             raise FootingCreationError(err_msg)
+    else:
+        err_msg = "Supported footing shapes are SQUARE, RECTANGLE, and CIRCLE"
+        raise FootingCreationError(err_msg)
 
     return FoundationSize(
         depth=depth,
         eccentricity=eccentricity,
-        footing_shape=_footing_shape,
+        footing_size=footing_size,
     )
