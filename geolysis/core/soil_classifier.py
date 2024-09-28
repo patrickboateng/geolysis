@@ -6,7 +6,7 @@ from geolysis.core.utils import isclose, round_
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
 
-class SizeDistError(Exception):
+class SizeDistError(ZeroDivisionError):
     pass
 
 
@@ -254,12 +254,12 @@ class PSD:
     >>> psd.coeff_of_curvature
     Traceback (most recent call last):
         ...
-    SizeDistError: size_dist cannot be None
+    ZeroDivisionError: division by zero
 
     >>> psd.coeff_of_uniformity
     Traceback (most recent call last):
         ...
-    SizeDistError: size_dist cannot be None
+    ZeroDivisionError: division by zero
 
     >>> size_dist = SizeDistribution(d_10=0.07, d_30=0.30, d_60=0.8)
     >>> psd = PSD(fines=10.29, sand=81.89, size_dist=size_dist)
