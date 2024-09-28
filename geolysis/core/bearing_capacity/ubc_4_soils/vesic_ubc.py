@@ -37,7 +37,7 @@ class VesicShapeFactor:
     def s_c(cls, f_angle: float, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
-        f_type = foundation_size.footing_type
+        f_type = foundation_size.footing_shape
 
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
@@ -62,7 +62,7 @@ class VesicShapeFactor:
     def s_q(cls, f_angle: float, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
-        f_type = foundation_size.footing_type
+        f_type = foundation_size.footing_shape
 
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
@@ -84,7 +84,7 @@ class VesicShapeFactor:
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
-        f_type = foundation_size.footing_type
+        f_type = foundation_size.footing_shape
 
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE

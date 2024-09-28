@@ -48,7 +48,7 @@ class HansenShapeFactor:
     def s_c(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
-        f_type = foundation_size.footing_type
+        f_type = foundation_size.footing_shape
 
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
@@ -70,7 +70,7 @@ class HansenShapeFactor:
     def s_q(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
-        f_type = foundation_size.footing_type
+        f_type = foundation_size.footing_shape
 
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
@@ -92,7 +92,7 @@ class HansenShapeFactor:
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
-        f_type = foundation_size.footing_type
+        f_type = foundation_size.footing_shape
 
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
