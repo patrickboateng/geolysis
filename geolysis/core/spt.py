@@ -1,6 +1,5 @@
 import enum
 from abc import abstractmethod
-from dataclasses import dataclass, field
 from typing import Final, Protocol, Sequence
 
 import attrs
@@ -20,6 +19,8 @@ __all__ = [
     "DilatancyCorrection",
 ]
 
+DP: Final = 1
+
 
 class OPCError(ValueError):
     pass
@@ -35,19 +36,53 @@ class OPC(Protocol):
     std_spt_number: Number
     eop: Number
 
-    @property
     @abstractmethod
     def correction(self) -> Number: ...
 
-    @property
-    @round_(0)
+    @round_(DP)
     def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
-        corrected_spt = self.correction * self.std_spt_number
+        corrected_spt = self.correction() * self.std_spt_number
         return min(corrected_spt, 2 * self.std_spt_number)
 
 
-@round_(0)
+@round_(DP)
+def average_spt_n_design(spt_numbers: Sequence[Number]):
+    r"""Calculates the average of the corrected SPT N-values within the
+    foundation influence zone.
+
+    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
+        influence zone. ``spt_numbers`` can either be **corrected** or
+        **uncorrected** SPT N-values.
+
+    Examples
+    --------
+    >>> from geolysis.core.spt import average_spt_n_design
+    >>> average_spt_n_design([7.0, 15.0, 18.0])
+    13.3
+    """
+    return mean(spt_numbers)
+
+
+@round_(DP)
+def minimum_spt_n_design(spt_numbers: Sequence[Number]):
+    """The lowest N-value within the influence zone can be taken as the
+    :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+
+    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
+        influence zone. i.e. ``spt_numbers`` can either be **corrected** or
+        **uncorrected** SPT N-values.
+
+    Examples
+    --------
+    >>> from geolysis.core.spt import minimum_spt_n_design
+    >>> minimum_spt_n_design([7.0, 15.0, 18.0])
+    7.0
+    """
+    return min(spt_numbers)
+
+
+@round_(DP)
 def weighted_spt_n_design(spt_numbers: Sequence[Number]):
     r"""Calculates the weighted average of the corrected SPT N-values within the
     foundation influence zone.
@@ -77,7 +112,7 @@ def weighted_spt_n_design(spt_numbers: Sequence[Number]):
     --------
     >>> from geolysis.core.spt import weighted_spt_n_design
     >>> weighted_spt_n_design([7.0, 15.0, 18.0])
-    9.0
+    9.4
     """
 
     sum_total = 0.0
@@ -89,42 +124,6 @@ def weighted_spt_n_design(spt_numbers: Sequence[Number]):
         total_wgts += wgt
 
     return sum_total / total_wgts
-
-
-@round_(0)
-def average_spt_n_design(spt_numbers: Sequence[Number]):
-    r"""Calculates the average of the corrected SPT N-values within the
-    foundation influence zone.
-
-    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
-        influence zone. ``spt_numbers`` can either be **corrected** or
-        **uncorrected** SPT N-values.
-
-    Examples
-    --------
-    >>> from geolysis.core.spt import average_spt_n_design
-    >>> average_spt_n_design([7.0, 15.0, 18.0])
-    13.0
-    """
-    return mean(spt_numbers)
-
-
-@round_(0)
-def minimum_spt_n_design(spt_numbers: Sequence[Number]):
-    """The lowest N-value within the influence zone can be taken as the
-    :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
-
-    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
-        influence zone. i.e. ``spt_numbers`` can either be **corrected** or
-        **uncorrected** SPT N-values.
-
-    Examples
-    --------
-    >>> from geolysis.core.spt import minimum_spt_n_design
-    >>> minimum_spt_n_design([7.0, 15.0, 18.0])
-    7.0
-    """
-    return min(spt_numbers)
 
 
 #: TODO: document this
@@ -175,8 +174,8 @@ class EnergyCorrection:
     --------
     >>> from geolysis.core.spt import EnergyCorrection
     >>> energy_cor = EnergyCorrection(recorded_spt_number=30)
-    >>> energy_cor.corrected_spt_number
-    22.0
+    >>> energy_cor.corrected_spt_number()
+    22.5
     """
 
     recorded_spt_number: int = attrs.field(
@@ -204,8 +203,8 @@ class EnergyCorrection:
         kw_only=True,
     )
     rod_length: Number = attrs.field(
-        default=3,
-        validator=attrs.validators.instance_of(Number),
+        default=3.0,
+        validator=attrs.validators.instance_of(float),
         kw_only=True,
     )
 
@@ -254,7 +253,6 @@ class EnergyCorrection:
 
         return corr
 
-    @property
     def correction(self) -> Number:
         """SPT Correction."""
         return (
@@ -264,14 +262,13 @@ class EnergyCorrection:
             * self.rod_length_correction
         ) / self.energy_percentage
 
-    @property
-    @round_(0)
+    @round_(DP)
     def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
-        return self.correction * self.recorded_spt_number
+        return self.correction() * self.recorded_spt_number
 
 
-@dataclass
+@attrs.define
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
@@ -293,33 +290,29 @@ class GibbsHoltzOPC(OPC):
     --------
     >>> from geolysis.core.spt import GibbsHoltzOPC
     >>> opc_cor = GibbsHoltzOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.corrected_spt_number
-    23.0
+    >>> opc_cor.corrected_spt_number()
+    23.2
     """
+
+    std_spt_number: Number = attrs.field(
+        validator=attrs.validators.instance_of(float)
+    )
+    eop: Number = attrs.field(
+        validator=[
+            attrs.validators.instance_of(float),
+            attrs.validators.gt(0),
+        ]
+    )
+
+    eop.validator(  # type: ignore
+        lambda self, attr, val: attrs.validators.le(self.STD_PRESSURE)(
+            self, attr, val
+        )
+    )
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 280.0
 
-    def __init__(self, std_spt_number: Number, eop: Number) -> None:
-        self.std_spt_number = std_spt_number
-        self.eop = eop
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
-
-    @property
-    def eop(self) -> Number:
-        return self._eop
-
-    @eop.setter
-    def eop(self, __val: Number):
-        if __val <= 0 or __val > self.STD_PRESSURE:
-            err_msg = f"eop = {__val} cannot be <= 0 or > 280 kPa"
-            raise OPCError(err_msg)
-
-        self._eop = __val
-
-    @property
     def correction(self) -> Number:
         """SPT Correction."""
         corr = 350.0 / (self.eop + 70)
@@ -328,7 +321,7 @@ class GibbsHoltzOPC(OPC):
         return corr
 
 
-@dataclass
+@attrs.define
 class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
@@ -352,17 +345,22 @@ class BazaraaPeckOPC(OPC):
     --------
     >>> from geolysis.core.spt import BazaraaPeckOPC
     >>> opc_cor = BazaraaPeckOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.corrected_spt_number
+    >>> opc_cor.corrected_spt_number()
     21.0
     """
 
+    std_spt_number: Number = attrs.field(
+        validator=attrs.validators.instance_of(float)
+    )
+    eop: Number = attrs.field(
+        validator=[
+            attrs.validators.instance_of(float),
+            attrs.validators.ge(0),
+        ]
+    )
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE: Final = field(default=71.8, init=False)
+    STD_PRESSURE: Final = attrs.field(default=71.8, init=False)
 
-    std_spt_number: Number
-    eop: Number
-
-    @property
     def correction(self) -> Number:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
@@ -375,7 +373,7 @@ class BazaraaPeckOPC(OPC):
         return corr
 
 
-@dataclass
+@attrs.define
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
@@ -392,38 +390,29 @@ class PeckOPC(OPC):
     --------
     >>> from geolysis.core.spt import PeckOPC
     >>> opc_cor = PeckOPC(std_spt_number=23.0, eop=100.0)
-    >>> opc_cor.corrected_spt_number
+    >>> opc_cor.corrected_spt_number()
     23.0
     """
+
+    std_spt_number: Number = attrs.field(
+        validator=attrs.validators.instance_of(float)
+    )
+    eop: Number = attrs.field(
+        validator=[
+            attrs.validators.instance_of(float),
+            attrs.validators.ge(24),
+        ]
+    )
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 24.0
 
-    def __init__(self, std_spt_number: Number, eop: Number) -> None:
-        self.std_spt_number = std_spt_number
-        self.eop = eop
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
-
-    @property
-    def eop(self) -> Number:
-        return self._eop
-
-    @eop.setter
-    def eop(self, __val: Number):
-        if __val < self.STD_PRESSURE:
-            err_msg = f"eop = {__val} cannot be less than 24"
-            raise OPCError(err_msg)
-        self._eop = __val
-
-    @property
     def correction(self) -> Number:
         """SPT Correction."""
         return 0.77 * log10(2000 / self.eop)
 
 
-@dataclass
+@attrs.define
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
@@ -440,35 +429,26 @@ class LiaoWhitmanOPC(OPC):
     --------
     >>> from geolysis.core.spt import LiaoWhitmanOPC
     >>> opc_cor = LiaoWhitmanOPC(std_spt_number=23.0, eop=100.0)
-    >>> opc_cor.corrected_spt_number
+    >>> opc_cor.corrected_spt_number()
     23.0
     """
 
-    def __init__(self, std_spt_number: Number, eop: Number) -> None:
-        self.std_spt_number = std_spt_number
-        self.eop = eop
+    std_spt_number: Number = attrs.field(
+        validator=attrs.validators.instance_of(float)
+    )
+    eop: Number = attrs.field(
+        validator=[
+            attrs.validators.instance_of(float),
+            attrs.validators.gt(0),
+        ]
+    )
 
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.std_spt_number=}, {self.eop=})"
-
-    @property
-    def eop(self) -> Number:
-        return self._eop
-
-    @eop.setter
-    def eop(self, __val: Number):
-        if __val <= 0:
-            err_msg = f"eop = {__val} cannot be less than or equal to 0"
-            raise OPCError(err_msg)
-        self._eop = __val
-
-    @property
     def correction(self) -> Number:
         """SPT Correction."""
         return sqrt(100 / self.eop)
 
 
-@dataclass
+@attrs.define
 class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
@@ -485,20 +465,21 @@ class SkemptonOPC(OPC):
     --------
     >>> from geolysis.core.spt import SkemptonOPC
     >>> opc_cor = SkemptonOPC(std_spt_number=22.5, eop=100.0)
-    >>> opc_cor.corrected_spt_number
+    >>> opc_cor.corrected_spt_number()
     22.0
     """
 
-    std_spt_number: Number
-    eop: Number
+    std_spt_number: Number = attrs.field(
+        validator=attrs.validators.instance_of(float)
+    )
+    eop: Number = attrs.field(validator=[attrs.validators.instance_of(float)])
 
-    @property
     def correction(self) -> Number:
         """SPT Correction."""
         return 2 / (1 + 0.01044 * self.eop)
 
 
-@dataclass
+@attrs.define
 class DilatancyCorrection:
     r"""Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
 
@@ -506,7 +487,7 @@ class DilatancyCorrection:
     correction, overburden pressure correction is applied first and then
     dilatancy correction is applied.
 
-    :param Number spt_number: SPT N-value standardized for field procedures
+    :param Number std_spt_number: SPT N-value standardized for field procedures
         and/or corrected for overburden pressure.
 
     Notes
@@ -523,18 +504,19 @@ class DilatancyCorrection:
     Examples
     --------
     >>> from geolysis.core.spt import DilatancyCorrection
-    >>> dil_cor = DilatancyCorrection(spt_number=23)
-    >>> dil_cor.corrected_spt_number
+    >>> dil_cor = DilatancyCorrection(std_spt_number=23)
+    >>> dil_cor.corrected_spt_number()
     19.0
     """
 
-    spt_number: Number
+    std_spt_number: Number = attrs.field(
+        validator=attrs.validators.instance_of(float)
+    )
 
-    @property
-    @round_
+    @round_(DP)
     def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
-        if self.spt_number <= 15:
-            return self.spt_number
+        if self.std_spt_number <= 15:
+            return self.std_spt_number
 
-        return 15 + 0.5 * (self.spt_number - 15)
+        return 15 + 0.5 * (self.std_spt_number - 15)
