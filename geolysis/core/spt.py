@@ -179,14 +179,15 @@ class EnergyCorrection:
     """
 
     recorded_spt_number: int = attrs.field(
+        converter=int,
         validator=[
-            attrs.validators.instance_of(int),
             attrs.validators.gt(0),
             attrs.validators.le(100),
-        ]
+        ],
     )
     energy_percentage: Number = attrs.field(
         default=0.6,
+        converter=float,
         validator=[attrs.validators.gt(0), attrs.validators.le(1.00)],
     )
     hammer_type: HammerType = attrs.field(
@@ -194,8 +195,9 @@ class EnergyCorrection:
         kw_only=True,
     )
     borehole_diameter: Number = attrs.field(
-        default=65,
-        validator=[attrs.validators.ge(65), attrs.validators.le(200)],
+        default=65.0,
+        converter=float,
+        validator=[attrs.validators.ge(65.0), attrs.validators.le(200.0)],
         kw_only=True,
     )
     sampler_type: SamplerType = attrs.field(
@@ -204,7 +206,7 @@ class EnergyCorrection:
     )
     rod_length: Number = attrs.field(
         default=3.0,
-        validator=attrs.validators.instance_of(float),
+        converter=float,
         kw_only=True,
     )
 
@@ -294,14 +296,10 @@ class GibbsHoltzOPC(OPC):
     23.2
     """
 
-    std_spt_number: Number = attrs.field(
-        validator=attrs.validators.instance_of(float)
-    )
+    std_spt_number: Number = attrs.field(converter=float)
     eop: Number = attrs.field(
-        validator=[
-            attrs.validators.instance_of(float),
-            attrs.validators.gt(0),
-        ]
+        converter=float,
+        validator=[attrs.validators.gt(0)],
     )
 
     eop.validator(  # type: ignore
@@ -349,14 +347,10 @@ class BazaraaPeckOPC(OPC):
     21.0
     """
 
-    std_spt_number: Number = attrs.field(
-        validator=attrs.validators.instance_of(float)
-    )
+    std_spt_number: Number = attrs.field(converter=float)
     eop: Number = attrs.field(
-        validator=[
-            attrs.validators.instance_of(float),
-            attrs.validators.ge(0),
-        ]
+        converter=float,
+        validator=[attrs.validators.ge(0)],
     )
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = attrs.field(default=71.8, init=False)
@@ -394,14 +388,10 @@ class PeckOPC(OPC):
     23.0
     """
 
-    std_spt_number: Number = attrs.field(
-        validator=attrs.validators.instance_of(float)
-    )
+    std_spt_number: Number = attrs.field(converter=float)
     eop: Number = attrs.field(
-        validator=[
-            attrs.validators.instance_of(float),
-            attrs.validators.ge(24),
-        ]
+        converter=float,
+        validator=[attrs.validators.ge(24.0)],
     )
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
@@ -409,7 +399,7 @@ class PeckOPC(OPC):
 
     def correction(self) -> Number:
         """SPT Correction."""
-        return 0.77 * log10(2000 / self.eop)
+        return 0.77 * log10(2000.0 / self.eop)
 
 
 @attrs.define
@@ -433,19 +423,15 @@ class LiaoWhitmanOPC(OPC):
     23.0
     """
 
-    std_spt_number: Number = attrs.field(
-        validator=attrs.validators.instance_of(float)
-    )
+    std_spt_number: Number = attrs.field(converter=float)
     eop: Number = attrs.field(
-        validator=[
-            attrs.validators.instance_of(float),
-            attrs.validators.gt(0),
-        ]
+        converter=float,
+        validator=[attrs.validators.gt(0.0)],
     )
 
     def correction(self) -> Number:
         """SPT Correction."""
-        return sqrt(100 / self.eop)
+        return sqrt(100.0 / self.eop)
 
 
 @attrs.define
@@ -469,14 +455,12 @@ class SkemptonOPC(OPC):
     22.0
     """
 
-    std_spt_number: Number = attrs.field(
-        validator=attrs.validators.instance_of(float)
-    )
-    eop: Number = attrs.field(validator=[attrs.validators.instance_of(float)])
+    std_spt_number: Number = attrs.field(converter=float)
+    eop: Number = attrs.field(converter=float)
 
     def correction(self) -> Number:
         """SPT Correction."""
-        return 2 / (1 + 0.01044 * self.eop)
+        return 2 / (1.0 + 0.01044 * self.eop)
 
 
 @attrs.define
@@ -504,19 +488,17 @@ class DilatancyCorrection:
     Examples
     --------
     >>> from geolysis.core.spt import DilatancyCorrection
-    >>> dil_cor = DilatancyCorrection(std_spt_number=23)
+    >>> dil_cor = DilatancyCorrection(std_spt_number=23.0)
     >>> dil_cor.corrected_spt_number()
     19.0
     """
 
-    std_spt_number: Number = attrs.field(
-        validator=attrs.validators.instance_of(float)
-    )
+    std_spt_number: Number = attrs.field(converter=float)
 
     @round_(DP)
     def corrected_spt_number(self) -> Number:
         """Corrected SPT N-value."""
-        if self.std_spt_number <= 15:
+        if self.std_spt_number <= 15.0:
             return self.std_spt_number
 
-        return 15 + 0.5 * (self.std_spt_number - 15)
+        return 15.0 + 0.5 * (self.std_spt_number - 15.0)
