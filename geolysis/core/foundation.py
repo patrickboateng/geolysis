@@ -19,16 +19,17 @@ class Shape(enum.StrEnum):
     RECTANGLE = enum.auto()
 
 
-validators: Final = [
-    attrs.validators.instance_of((int, float)),
-    attrs.validators.gt(0.0),
-]
+validators: Final = [attrs.validators.gt(0.0)]
 
 
 @attrs.define
 class StripFooting:
-    width: Number = attrs.field(validator=validators)
-    length: Number = attrs.field(default=INF, validator=validators)
+    width: Number = attrs.field(converter=float, validator=validators)
+    length: Number = attrs.field(
+        default=INF,
+        converter=float,
+        validator=validators,
+    )
 
     shape_: Final[Shape] = attrs.field(
         default=Shape.STRIP, init=False, on_setattr=attrs.setters.frozen
@@ -63,9 +64,11 @@ class CircularFooting:
     1.2
     """
 
-    diameter: Number = attrs.field(validator=validators)
+    diameter: Number = attrs.field(converter=float, validator=validators)
     shape_: Final[Shape] = attrs.field(
-        default=Shape.CIRCLE, init=False, on_setattr=attrs.setters.frozen
+        default=Shape.CIRCLE,
+        init=False,
+        on_setattr=attrs.setters.frozen,
     )
 
     @property
@@ -107,9 +110,11 @@ class SquareFooting:
     1.2
     """
 
-    width: Number = attrs.field(validator=validators)
+    width: Number = attrs.field(converter=float, validator=validators)
     shape_: Final[Shape] = attrs.field(
-        default=Shape.SQUARE, init=False, on_setattr=attrs.setters.frozen
+        default=Shape.SQUARE,
+        init=False,
+        on_setattr=attrs.setters.frozen,
     )
 
     @property
@@ -143,8 +148,8 @@ class RectangularFooting:
     1.4
     """
 
-    width: Number = attrs.field(validator=validators)
-    length: Number = attrs.field(validator=validators)
+    width: Number = attrs.field(converter=float, validator=validators)
+    length: Number = attrs.field(converter=float, validator=validators)
     shape_: Final[Shape] = attrs.field(
         default=Shape.RECTANGLE,
         init=False,
@@ -188,9 +193,10 @@ class FoundationSize:
     1.2
     """
 
-    depth: Number = attrs.field(validator=validators)
+    depth: Number = attrs.field(converter=float, validator=validators)
     footing_size: _FootingSize = attrs.field()
     eccentricity: Number = attrs.field(
+        converter=float,
         default=0.0,
         validator=attrs.validators.ge(0.0),
     )
