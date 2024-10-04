@@ -1,5 +1,6 @@
 import enum
-from typing import Final, Optional, TypeAlias
+from abc import abstractmethod
+from typing import Final, Optional, Protocol
 
 import attrs
 
@@ -19,25 +20,44 @@ class Shape(enum.StrEnum):
     RECTANGLE = enum.auto()
 
 
-validators: Final = [attrs.validators.gt(0.0)]
+class FootingSize(Protocol):
+    shape_: Shape
+
+    @property
+    @abstractmethod
+    def width(self) -> float: ...
+
+    @width.setter
+    def width(self, val: float): ...
+
+    @property
+    @abstractmethod
+    def length(self) -> float: ...
+
+    @length.setter
+    def length(self, val): ...
 
 
 @attrs.define
-class StripFooting:
-    width: Number = attrs.field(converter=float, validator=validators)
+class StripFooting(FootingSize):
+    width: Number = attrs.field(
+        converter=float,
+        validator=attrs.validators.gt(0.0),
+    )
     length: Number = attrs.field(
         default=INF,
         converter=float,
-        validator=validators,
+        validator=attrs.validators.gt(0.0),
     )
-
     shape_: Final[Shape] = attrs.field(
-        default=Shape.STRIP, init=False, on_setattr=attrs.setters.frozen
+        default=Shape.STRIP,
+        init=False,
+        on_setattr=attrs.setters.frozen,
     )
 
 
 @attrs.define
-class CircularFooting:
+class CircularFooting(FootingSize):
     """A class representation of circular footing.
 
     :param float diameter: Diameter of foundation footing. (m)
@@ -64,13 +84,17 @@ class CircularFooting:
     1.2
     """
 
-    diameter: Number = attrs.field(converter=float, validator=validators)
+    diameter: Number = attrs.field(
+        converter=float,
+        validator=attrs.validators.gt(0.0),
+    )
     shape_: Final[Shape] = attrs.field(
         default=Shape.CIRCLE,
         init=False,
         on_setattr=attrs.setters.frozen,
     )
 
+    #: TODO: use attrs for these properties.
     @property
     def width(self) -> Number:
         """Diameter of foundation footing."""
@@ -91,7 +115,7 @@ class CircularFooting:
 
 
 @attrs.define
-class SquareFooting:
+class SquareFooting(FootingSize):
     """A class representation of square footing.
 
     :param float width: Width of foundation footing. (m)
@@ -110,12 +134,17 @@ class SquareFooting:
     1.2
     """
 
-    width: Number = attrs.field(converter=float, validator=validators)
+    width: Number = attrs.field(
+        converter=float,
+        validator=attrs.validators.gt(0.0),
+    )
     shape_: Final[Shape] = attrs.field(
         default=Shape.SQUARE,
         init=False,
         on_setattr=attrs.setters.frozen,
     )
+
+    #: TODO: use attrs for this properties
 
     @property
     def length(self) -> Number:
@@ -128,7 +157,7 @@ class SquareFooting:
 
 
 @attrs.define
-class RectangularFooting:
+class RectangularFooting(FootingSize):
     """A class representation of rectangular footing.
 
     :param float width: Width of foundation footing. (m)
@@ -148,18 +177,19 @@ class RectangularFooting:
     1.4
     """
 
-    width: Number = attrs.field(converter=float, validator=validators)
-    length: Number = attrs.field(converter=float, validator=validators)
+    width: Number = attrs.field(
+        converter=float,
+        validator=attrs.validators.gt(0.0),
+    )
+    length: Number = attrs.field(
+        converter=float,
+        validator=attrs.validators.gt(0.0),
+    )
     shape_: Final[Shape] = attrs.field(
         default=Shape.RECTANGLE,
         init=False,
         on_setattr=attrs.setters.frozen,
     )
-
-
-_FootingSize: TypeAlias = (
-    StripFooting | SquareFooting | CircularFooting | RectangularFooting
-)
 
 
 @attrs.define
@@ -193,8 +223,11 @@ class FoundationSize:
     1.2
     """
 
-    depth: Number = attrs.field(converter=float, validator=validators)
-    footing_size: _FootingSize = attrs.field()
+    depth: Number = attrs.field(
+        converter=float,
+        validator=attrs.validators.gt(0.0),
+    )
+    footing_size: FootingSize = attrs.field()
     eccentricity: Number = attrs.field(
         converter=float,
         default=0.0,
@@ -206,10 +239,6 @@ class FoundationSize:
         """Width of foundation footing."""
         return self.footing_size.width
 
-    @width.setter
-    def width(self, val: float):
-        self.footing_size.width = val
-
     @property
     def effective_width(self) -> float:
         return self.width - 2 * self.eccentricity
@@ -218,10 +247,6 @@ class FoundationSize:
     def length(self) -> float:
         """Length of foundation footing."""
         return self.footing_size.length
-
-    @length.setter
-    def length(self, val: float):
-        self.footing_size.length = val
 
     @property
     def footing_shape(self) -> Shape:
