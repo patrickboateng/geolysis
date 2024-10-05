@@ -1,11 +1,11 @@
 import enum
-from typing import Final, Optional, Protocol, cast
+from typing import Final, Optional, Protocol
 
 import attrs
 
 from geolysis.core.utils import INF, Number
 
-__all__ = ["create_foundation"]
+# __all__ = ["create_foundation"]
 
 
 class custom_field:
@@ -23,7 +23,7 @@ class custom_field:
         self.fdel: Final = delattr
         self.__doc__ = doc
 
-    def __get__(self, obj, objtype=None) -> Number:
+    def __get__(self, obj, objtype=None):
         if self.ref_obj is not None:
             ref_obj = self.fget(obj, self.ref_obj)
             return self.fget(ref_obj, self.ref_attr)
@@ -45,6 +45,8 @@ class custom_field:
 
 
 class Shape(enum.StrEnum):
+    """"""
+
     STRIP = enum.auto()
     CIRCLE = enum.auto()
     SQUARE = enum.auto()
@@ -68,11 +70,7 @@ class StripFooting(FootingSize):
         converter=float,
         validator=attrs.validators.gt(0.0),
     )
-    shape_: Final[Shape] = attrs.field(
-        default=Shape.STRIP,
-        init=False,
-        on_setattr=attrs.setters.frozen,
-    )
+    shape_: Final[Shape] = attrs.field(default=Shape.STRIP, init=False)
 
 
 @attrs.define
@@ -85,14 +83,13 @@ class CircularFooting(FootingSize):
 
         :class:`SquareFooting`, :class:`RectangularFooting`
 
-    Notes
-    -----
-    The ``width`` and ``length`` properties refer to the diameter
-    of the circular footing. This is to make it compatible with the
-    protocol square and rectangular footing follow.
+    .. note::
 
-    Examples
-    --------
+        The ``width`` and ``length`` properties refer to the diameter
+        of the circular footing. This is to make it compatible with the
+        protocol square and rectangular footing follow.
+
+
     >>> from geolysis.core.foundation import CircularFooting
     >>> circ_footing = CircularFooting(diameter=1.2)
     >>> circ_footing.diameter
@@ -107,13 +104,9 @@ class CircularFooting(FootingSize):
         converter=float,
         validator=attrs.validators.gt(0.0),
     )
-    width = cast(Number, custom_field(ref_attr="diameter"))
-    length = cast(Number, custom_field(ref_attr="diameter"))
-    shape_: Final[Shape] = attrs.field(
-        default=Shape.CIRCLE,
-        init=False,
-        on_setattr=attrs.setters.frozen,
-    )
+    width = custom_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
+    length = custom_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
+    shape_: Final[Shape] = attrs.field(default=Shape.CIRCLE, init=False)
 
 
 @attrs.define
@@ -126,26 +119,22 @@ class SquareFooting(FootingSize):
 
         :class:`CircularFooting`, :class:`RectangularFooting`
 
-    Examples
-    --------
-    >>> from geolysis.core.foundation import SquareFooting
-    >>> sq_footing = SquareFooting(width=1.2)
-    >>> sq_footing.width
-    1.2
-    >>> sq_footing.length
-    1.2
+    .. code::
+
+        >>> from geolysis.core.foundation import SquareFooting
+        >>> sq_footing = SquareFooting(width=1.2)
+        >>> sq_footing.width
+        1.2
+        >>> sq_footing.length
+        1.2
     """
 
     width: Number = attrs.field(
         converter=float,
         validator=attrs.validators.gt(0.0),
     )
-    length = cast(Number, custom_field(ref_attr="width"))
-    shape_: Final[Shape] = attrs.field(
-        default=Shape.SQUARE,
-        init=False,
-        on_setattr=attrs.setters.frozen,
-    )
+    length = custom_field(ref_attr="width", doc="Width of footing. (m)")  # type: ignore
+    shape_: Final[Shape] = attrs.field(default=Shape.SQUARE, init=False)
 
 
 @attrs.define
@@ -159,14 +148,14 @@ class RectangularFooting(FootingSize):
 
         :class:`CircularFooting`, :class:`SquareFooting`
 
-    Examples
-    --------
-    >>> from geolysis.core.foundation import RectangularFooting
-    >>> rect_footing = RectangularFooting(width=1.2, length=1.4)
-    >>> rect_footing.width
-    1.2
-    >>> rect_footing.length
-    1.4
+    .. code::
+
+        >>> from geolysis.core.foundation import RectangularFooting
+        >>> rect_footing = RectangularFooting(width=1.2, length=1.4)
+        >>> rect_footing.width
+        1.2
+        >>> rect_footing.length
+        1.4
     """
 
     width: Number = attrs.field(
@@ -177,11 +166,7 @@ class RectangularFooting(FootingSize):
         converter=float,
         validator=attrs.validators.gt(0.0),
     )
-    shape_: Final[Shape] = attrs.field(
-        default=Shape.RECTANGLE,
-        init=False,
-        on_setattr=attrs.setters.frozen,
-    )
+    shape_: Final[Shape] = attrs.field(default=Shape.RECTANGLE, init=False)
 
 
 @attrs.define
@@ -192,12 +177,6 @@ class FoundationSize:
     :param FootingSize footing_size: Represents the size of the foundation
         footing.
 
-    .. seealso::
-
-        :class:`FootingSize`
-
-    Examples
-    --------
     >>> from geolysis.core.foundation import (
     ...     FoundationSize,
     ...     CircularFooting,
@@ -249,15 +228,12 @@ def create_foundation(
     :param Shape | str footing_shape: Shape of foundation footing, defaults to
         :class:`Shape.SQUARE` or "square"
 
-    :raises FootingCreationError: Exception raised when footing is not created
-        successfully.
+    :raises ValueError: Raised when length is not provided for a rectangular
+        footing.
+    :raises TypeError: Raised if an invalid footing shape is provided.
 
-    :return: Size of foundation footing.
-    :rtype: FootingSize
-
-    Examples
-    --------
-
+    :return: Size of foundation.
+    :rtype: FoundationSize
     """
     if isinstance(footing_shape, str):
         footing_shape = footing_shape.casefold()
@@ -270,15 +246,10 @@ def create_foundation(
         footing_size = CircularFooting(diameter=width)
     elif footing_shape == Shape.RECTANGLE:
         if not length:
-            err_msg = "The length of the footing must be provided"
-            raise ValueError(err_msg)
+            raise ValueError("Length of footing must be provided.")
         footing_size = RectangularFooting(width=width, length=length)
     else:
-        err_msg = (
-            "Supported footing shapes are STRIP,"
-            " SQUARE, RECTANGLE, and CIRCLE"
-        )
-        raise TypeError(err_msg)
+        raise TypeError("Invalid footing shape.")
 
     return FoundationSize(
         depth=depth,
