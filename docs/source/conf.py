@@ -36,10 +36,10 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
-    "numpydoc",
+    # "numpydoc",
     "autoapi.extension",
     "notfound.extension",
-    # "enum_tools.autoenum",
+    "enum_tools.autoenum",
 ]
 
 templates_path = ["_templates"]
