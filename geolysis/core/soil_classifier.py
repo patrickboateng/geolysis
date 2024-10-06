@@ -1,8 +1,9 @@
 from typing import Final
 
 import attrs
+from attrs import field, validators
 
-from geolysis.core.utils import Number, isclose, round_
+from geolysis.core.utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
@@ -53,10 +54,10 @@ class AtterbergLimits:
 
     The main use of Atterberg Limits is in the classification of soils.
 
-    :param Number liquid_limit: Water content beyond which soils flows under
+    :param int | float liquid_limit: Water content beyond which soils flows under
         their own weight. It can also be defined as the minimum moisture content
         at which a soil flows upon application of a very small shear force.
-    :param Number plastic_limit: Water content at which plastic deformation can
+    :param int | float plastic_limit: Water content at which plastic deformation can
         be initiated. It is also the minimum water content at which soil can be
         rolled into a thread 3mm thick. (molded without breaking)
 
@@ -92,12 +93,12 @@ class AtterbergLimits:
     181.56
     """
 
-    liquid_limit: Number
-    plastic_limit: Number
+    liquid_limit: int | float
+    plastic_limit: int | float
 
     @property
     @round_
-    def plasticity_index(self) -> Number:
+    def plasticity_index(self) -> int | float:
         """Plasticity index (PI) is the range of water content over which the
         soil remains in the plastic state.
 
@@ -110,7 +111,7 @@ class AtterbergLimits:
 
     @property
     @round_
-    def A_line(self) -> Number:
+    def A_line(self) -> int | float:
         """The ``A-line`` is used to determine if a soil is clayey or silty.
 
         .. math:: A = 0.73(LL - 20)
@@ -135,7 +136,7 @@ class AtterbergLimits:
         return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
     @round_
-    def liquidity_index(self, nmc: Number) -> Number:
+    def liquidity_index(self, nmc: int | float) -> int | float:
         r"""Return the liquidity index of the soil.
 
         Liquidity index of a soil indicates the nearness of its ``natural water
@@ -144,7 +145,7 @@ class AtterbergLimits:
         indicate that the soil is in a hard (desiccated) state. It is also known
         as Water-Plasticity ratio.
 
-        :param Number nmc: Moisture contents of the soil in natural condition.
+        :param int | float nmc: Moisture contents of the soil in natural condition.
 
         Notes
         -----
@@ -155,7 +156,7 @@ class AtterbergLimits:
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100
 
     @round_
-    def consistency_index(self, nmc: Number) -> Number:
+    def consistency_index(self, nmc: int | float) -> int | float:
         r"""Return the consistency index of the soil.
 
         Consistency index indicates the consistency (firmness) of soil. It shows
@@ -169,7 +170,7 @@ class AtterbergLimits:
         indicate the soil is in the liquid state. It is also known as Relative
         Consistency.
 
-        :param Number nmc: Moisture contents of the soil in natural condition.
+        :param int | float nmc: Moisture contents of the soil in natural condition.
 
         Notes
         -----
@@ -184,21 +185,21 @@ class AtterbergLimits:
 class SizeDistribution:
     """Features obtained from the Particle Size Distribution graph.
 
-    :param Number d_10: Diameter at which 10% of the soil by weight is finer.
-    :param Number d_30: Diameter at which 30% of the soil by weight is finer.
-    :param Number d_60: Diameter at which 60% of the soil by weight is finer.
+    :param int | float d_10: Diameter at which 10% of the soil by weight is finer.
+    :param int | float d_30: Diameter at which 30% of the soil by weight is finer.
+    :param int | float d_60: Diameter at which 60% of the soil by weight is finer.
     """
 
-    d_10: Number
-    d_30: Number
-    d_60: Number
+    d_10: int | float
+    d_30: int | float
+    d_60: int | float
 
     @property
-    def coeff_of_curvature(self) -> Number:
+    def coeff_of_curvature(self) -> int | float:
         return (self.d_30**2) / (self.d_60 * self.d_10)
 
     @property
-    def coeff_of_uniformity(self) -> Number:
+    def coeff_of_uniformity(self) -> int | float:
         return self.d_60 / self.d_10
 
     def grade(self, coarse_soil: str) -> str:
@@ -235,10 +236,10 @@ class PSD:
     particles in a sample and graphing the results to illustrate the
     distribution of the particle sizes.
 
-    :param Number fines: Percentage of fines in soil sample i.e. the percentage
+    :param int | float fines: Percentage of fines in soil sample i.e. the percentage
         of soil sample passing through No. 200 sieve (0.075mm)
-    :param Number sand: Percentage of sand in soil sample.
-    :param Number gravel: Percentage of gravel in soil sample, defaults to None.
+    :param int | float sand: Percentage of sand in soil sample.
+    :param int | float gravel: Percentage of gravel in soil sample, defaults to None.
 
     Examples
     --------
@@ -277,23 +278,20 @@ class PSD:
     'Well graded'
     """
 
-    fines: Number = attrs.field(validator=attrs.validators.ge(0))
-    sand: Number = attrs.field(validator=attrs.validators.ge(0))
-    gravel: Number = attrs.field(validator=attrs.validators.ge(0))
-
-    size_dist: SizeDistribution = attrs.field(
+    fines: int | float = field(validator=validators.ge(0))
+    sand: int | float = field(validator=validators.ge(0))
+    gravel: int | float = field(validator=validators.ge(0))
+    size_dist: SizeDistribution = field(
         default=SizeDistribution(d_10=0, d_30=0, d_60=0),
-        validator=attrs.validators.instance_of(SizeDistribution),
+        validator=validators.instance_of(SizeDistribution),
     )
 
     gravel.default(lambda self: 100.0 - (self.fines + self.sand))  # type: ignore
 
     def __attrs_post_init__(self):
         total_agg = self.fines + self.sand + self.gravel
-
         if not isclose(total_agg, 100.0, rel_tol=0.01):
-            err_msg = f"fines + sand + gravels = 100% not {total_agg}"
-            raise PSDAggSumError(err_msg)
+            raise PSDAggSumError("Aggregates do not sum up to 100.")
 
     @property
     def type_of_coarse(self) -> str:
@@ -302,7 +300,7 @@ class PSD:
 
     @property
     @round_(2)
-    def coeff_of_curvature(self) -> Number:
+    def coeff_of_curvature(self) -> int | float:
         r"""Coefficient of curvature of soil sample.
 
         Coefficient of curvature :math:`(C_c)` is given by the formula:
@@ -316,7 +314,7 @@ class PSD:
 
     @property
     @round_(2)
-    def coeff_of_uniformity(self) -> Number:
+    def coeff_of_uniformity(self) -> int | float:
         r"""Coefficient of uniformity of soil sample.
 
         Coefficient of uniformity :math:`(C_u)` is given by the formula:
@@ -364,11 +362,11 @@ class AASHTO:
 
     The Group Index ``(GI)`` is used to further evaluate soils within a group.
 
-    :param Number liquid_limit: Water content beyond which soils flows under
+    :param int | float liquid_limit: Water content beyond which soils flows under
         their own weight.
-    :param Number plasticity_index: Range of water content over which soil
+    :param int | float plasticity_index: Range of water content over which soil
         remains in plastic condition.
-    :param Number fines: Percentage of fines in soil sample i.e. the percentage
+    :param int | float fines: Percentage of fines in soil sample i.e. the percentage
         of soil sample passing through No. 200 sieve (0.075mm).
     :param bool add_group_idx: Used to indicate whether the group index should
         be added to the classification or not. Defaults to True.
@@ -419,9 +417,9 @@ class AASHTO:
 
     def __init__(
         self,
-        liquid_limit: Number,
-        plasticity_index: Number,
-        fines: Number,
+        liquid_limit: int | float,
+        plasticity_index: int | float,
+        fines: int | float,
         add_group_idx=True,
     ):
         self.liquid_limit = liquid_limit
@@ -494,7 +492,7 @@ class AASHTO:
         self.add_group_idx = tmp_state
         return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
 
-    def group_index(self) -> Number:
+    def group_index(self) -> int | float:
         """Return the Group Index (GI) of the soil sample."""
 
         LL = self.liquid_limit
@@ -529,15 +527,15 @@ class USCS:
     Highly Organic soils are identified by visual inspection. These soils are
     termed as Peat. (:math:`P_t`)
 
-    :param Number liquid_limit: Water content beyond which soils flows under
+    :param int | float liquid_limit: Water content beyond which soils flows under
         their own weight. It can also be defined as the minimum moisture content
         at which a soil flows upon application of a very small shear force.
-    :param Number plastic_limit: Water content at which plastic deformation can
+    :param int | float plastic_limit: Water content at which plastic deformation can
         be initiated. It is also the minimum water content at which soil can be
         rolled into a thread 3mm thick (molded without breaking)
-    :param Number fines: Percentage of fines in soil sample i.e. The percentage
+    :param int | float fines: Percentage of fines in soil sample i.e. The percentage
         of soil sample passing through No. 200 sieve (0.075mm)
-    :param Number sand: Percentage of sand in soil sample (%)
+    :param int | float sand: Percentage of sand in soil sample (%)
     :param bool organic: Indicates whether soil is organic or not, defaults to
         False.
 
