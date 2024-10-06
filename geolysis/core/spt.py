@@ -3,8 +3,9 @@ from abc import abstractmethod
 from typing import Final, Protocol, Sequence
 
 import attrs
+from attrs import field, validators
 
-from geolysis.core.utils import Number, isclose, log10, mean, round_, sqrt
+from geolysis.core.utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "weighted_spt_n_design",
@@ -29,29 +30,29 @@ class OPCError(ValueError):
 class SPTCorrection(Protocol):
     @property
     @abstractmethod
-    def corrected_spt_number(self) -> Number: ...
+    def corrected_spt_number(self) -> int | float: ...
 
 
 class OPC(Protocol):
-    std_spt_number: Number
-    eop: Number
+    std_spt_number: int | float
+    eop: int | float
 
     @abstractmethod
-    def correction(self) -> Number: ...
+    def correction(self) -> int | float: ...
 
     @round_(DP)
-    def corrected_spt_number(self) -> Number:
+    def corrected_spt_number(self) -> int | float:
         """Corrected SPT N-value."""
         corrected_spt = self.correction() * self.std_spt_number
         return min(corrected_spt, 2 * self.std_spt_number)
 
 
 @round_(DP)
-def average_spt_n_design(spt_numbers: Sequence[Number]):
+def average_spt_n_design(spt_numbers: Sequence[int | float]):
     r"""Calculates the average of the corrected SPT N-values within the
     foundation influence zone.
 
-    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
+    :param Sequence[int | float] spt_numbers: SPT N-values within the foundation
         influence zone. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -65,11 +66,11 @@ def average_spt_n_design(spt_numbers: Sequence[Number]):
 
 
 @round_(DP)
-def minimum_spt_n_design(spt_numbers: Sequence[Number]):
+def minimum_spt_n_design(spt_numbers: Sequence[int | float]):
     """The lowest N-value within the influence zone can be taken as the
     :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
 
-    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
+    :param Sequence[int | float] spt_numbers: SPT N-values within the foundation
         influence zone. i.e. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -83,7 +84,7 @@ def minimum_spt_n_design(spt_numbers: Sequence[Number]):
 
 
 @round_(DP)
-def weighted_spt_n_design(spt_numbers: Sequence[Number]):
+def weighted_spt_n_design(spt_numbers: Sequence[int | float]):
     r"""Calculates the weighted average of the corrected SPT N-values within the
     foundation influence zone.
 
@@ -95,7 +96,7 @@ def weighted_spt_n_design(spt_numbers: Sequence[Number]):
     under consideration by giving the highest weightage to the closest N-value
     from the base.
 
-    :param Sequence[Number] spt_numbers: SPT N-values within the foundation
+    :param Sequence[int | float] spt_numbers: SPT N-values within the foundation
         influence zone. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -152,13 +153,14 @@ class EnergyCorrection:
     transferred to the tip of the standard split spoon.
 
     :param int recorded_spt_number: Recorded SPT N-value from field.
-    :param Number energy_percentage: Energy percentage reaching the tip of the
+    :param int | float energy_percentage: Energy percentage reaching the tip of the
         sampler, defaults to 0.6
-    :param Number hammer_efficiency: Hammer efficiency, defaults to 0.6
-    :param Number borehole_diameter_correction: Borehole diameter correction,
-        defaults to 1.0
-    :param Number sampler_correction: Sampler correction, defaults to 1.0
-    :param Number rod_length_correction: Rod length correction, defaults to 0.75
+    :param int | float hammer_efficiency: Hammer efficiency, defaults to 0.6
+    :param int | float borehole_diameter_correction: Borehole diameter
+        correction, defaults to 1.0
+    :param int | float sampler_correction: Sampler correction, defaults to 1.0
+    :param int | float rod_length_correction: Rod length correction,
+        defaults to 0.75
 
     Notes
     -----
@@ -178,35 +180,27 @@ class EnergyCorrection:
     22.5
     """
 
-    recorded_spt_number: int = attrs.field(
+    recorded_spt_number: int = field(
         converter=int,
-        validator=[
-            attrs.validators.gt(0),
-            attrs.validators.le(100),
-        ],
+        validator=[validators.gt(0), validators.le(100)],
     )
-    energy_percentage: Number = attrs.field(
+    energy_percentage: int | float = field(
         default=0.6,
-        converter=float,
-        validator=[attrs.validators.gt(0), attrs.validators.le(1.00)],
+        validator=[validators.gt(0), validators.le(1.00)],
     )
-    hammer_type: HammerType = attrs.field(
-        default=HammerType.DONUT_1,
-        kw_only=True,
-    )
-    borehole_diameter: Number = attrs.field(
+    borehole_diameter: int | float = field(
         default=65.0,
-        converter=float,
-        validator=[attrs.validators.ge(65.0), attrs.validators.le(200.0)],
+        validator=[validators.ge(65.0), validators.le(200.0)],
         kw_only=True,
     )
+    rod_length: int | float = field(
+        default=3.0,
+        validator=validators.gt(0.0),
+        kw_only=True,
+    )
+    hammer_type: HammerType = field(default=HammerType.DONUT_1, kw_only=True)
     sampler_type: SamplerType = attrs.field(
         default=SamplerType.STANDARD,
-        kw_only=True,
-    )
-    rod_length: Number = attrs.field(
-        default=3.0,
-        converter=float,
         kw_only=True,
     )
 
@@ -224,11 +218,11 @@ class EnergyCorrection:
     }
 
     @property
-    def hammer_efficiency(self) -> Number:
+    def hammer_efficiency(self) -> int | float:
         return self.HAMMER_EFFICIENCY_FACTORS[self.hammer_type]
 
     @property
-    def borehole_diameter_correction(self) -> Number:
+    def borehole_diameter_correction(self) -> int | float:
         if 65 <= self.borehole_diameter <= 115:
             corr = 1.00
         elif 115 < self.borehole_diameter <= 150:
@@ -239,11 +233,11 @@ class EnergyCorrection:
         return corr
 
     @property
-    def sampler_correction(self) -> Number:
+    def sampler_correction(self) -> int | float:
         return self.SAMPLER_CORRECTION_FACTORS[self.sampler_type]
 
     @property
-    def rod_length_correction(self) -> Number:
+    def rod_length_correction(self) -> int | float:
         if 3.0 <= self.rod_length <= 4.0:
             corr = 0.75
         elif 4.0 < self.rod_length <= 6.0:
@@ -255,7 +249,7 @@ class EnergyCorrection:
 
         return corr
 
-    def correction(self) -> Number:
+    def correction(self) -> int | float:
         """SPT Correction."""
         return (
             self.hammer_efficiency
@@ -265,7 +259,7 @@ class EnergyCorrection:
         ) / self.energy_percentage
 
     @round_(DP)
-    def corrected_spt_number(self) -> Number:
+    def corrected_spt_number(self) -> int | float:
         """Corrected SPT N-value."""
         return self.correction() * self.recorded_spt_number
 
@@ -274,8 +268,8 @@ class EnergyCorrection:
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
-    :param Number std_spt_number: SPT N-value standardized for field procedures.
-    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param int | float std_spt_number: SPT N-value standardized for field procedures.
+    :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -296,22 +290,12 @@ class GibbsHoltzOPC(OPC):
     23.2
     """
 
-    std_spt_number: Number = attrs.field(converter=float)
-    eop: Number = attrs.field(
-        converter=float,
-        validator=[attrs.validators.gt(0)],
+    std_spt_number: int | float = field(validator=validators.gt(0))
+    eop: int | float = field(
+        validator=[validators.gt(0.0), validators.le(280.0)]
     )
 
-    eop.validator(  # type: ignore
-        lambda self, attr, val: attrs.validators.le(self.STD_PRESSURE)(
-            self, attr, val
-        )
-    )
-
-    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE: Final = 280.0
-
-    def correction(self) -> Number:
+    def correction(self) -> int | float:
         """SPT Correction."""
         corr = 350.0 / (self.eop + 70)
         if corr > 2.0:
@@ -324,8 +308,8 @@ class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
 
-    :param Number std_spt_number: SPT N-value standardized for field procedures.
-    :param Number eop: Effective overburden pressure. (:math:`kN/m^2`)
+    :param int | float std_spt_number: SPT N-value standardized for field procedures.
+    :param int | float eop: Effective overburden pressure. (:math:`kN/m^2`)
 
     Notes
     -----
@@ -347,15 +331,13 @@ class BazaraaPeckOPC(OPC):
     21.0
     """
 
-    std_spt_number: Number = attrs.field(converter=float)
-    eop: Number = attrs.field(
-        converter=float,
-        validator=[attrs.validators.ge(0)],
-    )
-    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE: Final = attrs.field(default=71.8, init=False)
+    std_spt_number: int | float = field(validator=validators.gt(0))
+    eop: int | float = field(validator=validators.ge(0))
 
-    def correction(self) -> Number:
+    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
+    STD_PRESSURE: Final = 71.8
+
+    def correction(self) -> int | float:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
@@ -371,8 +353,8 @@ class BazaraaPeckOPC(OPC):
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
-    :param Number std_spt_number: SPT N-value standardized for field procedures
-    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param int | float std_spt_number: SPT N-value standardized for field procedures
+    :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -388,16 +370,10 @@ class PeckOPC(OPC):
     23.0
     """
 
-    std_spt_number: Number = attrs.field(converter=float)
-    eop: Number = attrs.field(
-        converter=float,
-        validator=[attrs.validators.ge(24.0)],
-    )
+    std_spt_number: int | float = field(validator=validators.gt(0))
+    eop: int | float = field(validator=validators.ge(24.0))
 
-    #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
-    STD_PRESSURE: Final = 24.0
-
-    def correction(self) -> Number:
+    def correction(self) -> int | float:
         """SPT Correction."""
         return 0.77 * log10(2000.0 / self.eop)
 
@@ -406,8 +382,8 @@ class PeckOPC(OPC):
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
-    :param Number std_spt_number: SPT N-value standardized for field procedures
-    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param int | float std_spt_number: SPT N-value standardized for field procedures
+    :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -423,13 +399,10 @@ class LiaoWhitmanOPC(OPC):
     23.0
     """
 
-    std_spt_number: Number = attrs.field(converter=float)
-    eop: Number = attrs.field(
-        converter=float,
-        validator=[attrs.validators.gt(0.0)],
-    )
+    std_spt_number: int | float = field(validator=validators.gt(0))
+    eop: int | float = field(validator=attrs.validators.gt(0.0))
 
-    def correction(self) -> Number:
+    def correction(self) -> int | float:
         """SPT Correction."""
         return sqrt(100.0 / self.eop)
 
@@ -438,8 +411,9 @@ class LiaoWhitmanOPC(OPC):
 class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
-    :param Number std_spt_number: SPT N-value standardized for field procedures
-    :param Number eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param int | float std_spt_number: SPT N-value standardized for field
+        procedures.
+    :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
     -----
@@ -455,10 +429,10 @@ class SkemptonOPC(OPC):
     22.0
     """
 
-    std_spt_number: Number = attrs.field(converter=float)
-    eop: Number = attrs.field(converter=float)
+    std_spt_number: int | float = field(validator=validators.gt(0))
+    eop: int | float = field()
 
-    def correction(self) -> Number:
+    def correction(self) -> int | float:
         """SPT Correction."""
         return 2 / (1.0 + 0.01044 * self.eop)
 
@@ -471,8 +445,8 @@ class DilatancyCorrection:
     correction, overburden pressure correction is applied first and then
     dilatancy correction is applied.
 
-    :param Number std_spt_number: SPT N-value standardized for field procedures
-        and/or corrected for overburden pressure.
+    :param int | float std_spt_number: SPT N-value standardized for field
+        procedures and/or corrected for overburden pressure.
 
     Notes
     -----
@@ -493,10 +467,10 @@ class DilatancyCorrection:
     19.0
     """
 
-    std_spt_number: Number = attrs.field(converter=float)
+    std_spt_number: int | float = field(validator=validators.gt(0))
 
     @round_(DP)
-    def corrected_spt_number(self) -> Number:
+    def corrected_spt_number(self) -> int | float:
         """Corrected SPT N-value."""
         if self.std_spt_number <= 15.0:
             return self.std_spt_number
