@@ -1,7 +1,13 @@
 import functools
 import math
 import statistics
-from typing import Callable, Iterable, SupportsRound, TypeAlias
+from typing import (
+    Callable,
+    Final,
+    Iterable,
+    Optional,
+    SupportsRound,
+)
 
 from geolysis.core._conf import Q_, UnitSystem, get_option
 
@@ -24,7 +30,6 @@ __all__ = [
 PI = math.pi
 INF = math.inf
 
-Number: TypeAlias = int | float
 
 isclose = math.isclose
 
@@ -128,7 +133,6 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
                 dp = ndigits
             else:
                 dp = get_option("dp")
-
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
@@ -143,8 +147,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
         f = ndigits
         return dec(f)
 
-    err_msg = "ndigits should be an int or a callable."
-    raise TypeError(err_msg)
+    raise TypeError("ndigits should be an int or a callable.")
 
 
 def quantity(quant: str):
@@ -160,3 +163,49 @@ def quantity(quant: str):
         return wrapper
 
     return decorator
+
+
+def ref_field(
+    *,
+    ref_attr: str,
+    ref_obj: Optional[str] = None,
+    doc: Optional[str] = None,
+):
+    """A field that reference another field."""
+    return Attribute(ref_attr=ref_attr, ref_obj=ref_obj, doc=doc)
+
+
+class Attribute:
+    def __init__(
+        self,
+        *,
+        ref_attr: str,
+        ref_obj: Optional[str] = None,
+        doc: Optional[str] = None,
+    ):
+        self.ref_attr = ref_attr
+        self.ref_obj = ref_obj
+        self.fget: Final = getattr
+        self.fset: Final = setattr
+        self.fdel: Final = delattr
+        self.__doc__ = doc
+
+    def __get__(self, obj, objtype=None):
+        if self.ref_obj is not None:
+            ref_obj = self.fget(obj, self.ref_obj)
+            return self.fget(ref_obj, self.ref_attr)
+        return self.fget(obj, self.ref_attr)
+
+    def __set__(self, obj, value) -> None:
+        if self.ref_obj is not None:
+            ref_obj = self.fget(obj, self.ref_obj)
+            self.fset(ref_obj, self.ref_attr, value)
+        else:
+            self.fset(obj, self.ref_attr, value)
+
+    #: TODO: check deleter
+    def __delete__(self, obj) -> None:
+        self.fdel(obj, self.property_name)
+
+    def __set_name__(self, objtype, property_name) -> None:
+        self.property_name = property_name
