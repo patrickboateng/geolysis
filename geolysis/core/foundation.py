@@ -8,7 +8,9 @@ from geolysis.core.utils import INF, Number
 # __all__ = ["create_foundation"]
 
 
-class custom_field:
+class _ref_field:
+    """A field that reference another field."""
+
     def __init__(
         self,
         *,
@@ -61,13 +63,9 @@ class FootingSize(Protocol):
 
 @attrs.define
 class StripFooting(FootingSize):
-    width: Number = attrs.field(
-        converter=float,
-        validator=attrs.validators.gt(0.0),
-    )
+    width: Number = attrs.field(validator=attrs.validators.gt(0.0))
     length: Number = attrs.field(
         default=INF,
-        converter=float,
         validator=attrs.validators.gt(0.0),
     )
     shape_: Final[Shape] = attrs.field(default=Shape.STRIP, init=False)
@@ -100,12 +98,9 @@ class CircularFooting(FootingSize):
     1.2
     """
 
-    diameter: Number = attrs.field(
-        converter=float,
-        validator=attrs.validators.gt(0.0),
-    )
-    width = custom_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
-    length = custom_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
+    diameter: Number = attrs.field(validator=attrs.validators.gt(0.0))
+    width = _ref_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
+    length = _ref_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
     shape_: Final[Shape] = attrs.field(default=Shape.CIRCLE, init=False)
 
 
@@ -129,11 +124,8 @@ class SquareFooting(FootingSize):
         1.2
     """
 
-    width: Number = attrs.field(
-        converter=float,
-        validator=attrs.validators.gt(0.0),
-    )
-    length = custom_field(ref_attr="width", doc="Width of footing. (m)")  # type: ignore
+    width: Number = attrs.field(validator=attrs.validators.gt(0.0))
+    length = _ref_field(ref_attr="width", doc="Width of footing. (m)")  # type: ignore
     shape_: Final[Shape] = attrs.field(default=Shape.SQUARE, init=False)
 
 
@@ -158,14 +150,8 @@ class RectangularFooting(FootingSize):
         1.4
     """
 
-    width: Number = attrs.field(
-        converter=float,
-        validator=attrs.validators.gt(0.0),
-    )
-    length: Number = attrs.field(
-        converter=float,
-        validator=attrs.validators.gt(0.0),
-    )
+    width: Number = attrs.field(validator=attrs.validators.gt(0.0))
+    length: Number = attrs.field(validator=attrs.validators.gt(0.0))
     shape_: Final[Shape] = attrs.field(default=Shape.RECTANGLE, init=False)
 
 
@@ -194,19 +180,15 @@ class FoundationSize:
     1.2
     """
 
-    depth: Number = attrs.field(
-        converter=float,
-        validator=attrs.validators.gt(0.0),
-    )
+    depth: Number = attrs.field(validator=attrs.validators.gt(0.0))
     footing_size: FootingSize = attrs.field()
     eccentricity: Number = attrs.field(
-        converter=float,
         default=0.0,
         validator=attrs.validators.ge(0.0),
     )
-    width = custom_field(ref_attr="width", ref_obj="footing_size")
-    length = custom_field(ref_attr="length", ref_obj="footing_size")
-    footing_shape = custom_field(ref_attr="shape_", ref_obj="footing_size")
+    width = _ref_field(ref_attr="width", ref_obj="footing_size")
+    length = _ref_field(ref_attr="length", ref_obj="footing_size")
+    footing_shape = _ref_field(ref_attr="shape_", ref_obj="footing_size")
 
     @property
     def effective_width(self) -> float:
