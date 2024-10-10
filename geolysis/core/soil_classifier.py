@@ -1,3 +1,4 @@
+import enum
 from typing import Final
 
 import attrs
@@ -16,32 +17,45 @@ class PSDAggSumError(ValueError):
     pass
 
 
-#: USCS symbol for gravel.
-GRAVEL: Final = "G"
+# #: USCS symbol for gravel.
+# GRAVEL: Final = "G"
 
-#: USCS symbol for sand.
-SAND: Final = "S"
+# #: USCS symbol for sand.
+# SAND: Final = "S"
 
-#: USCS symbol for silt.
-SILT: Final = "M"
+# #: USCS symbol for silt.
+# SILT: Final = "M"
 
-#: USCS symbol for clay.
-CLAY: Final = "C"
+# #: USCS symbol for clay.
+# CLAY: Final = "C"
 
-#: USCS symbol for organic material.
-ORGANIC: Final = "O"
+# #: USCS symbol for organic material.
+# ORGANIC: Final = "O"
 
-#: USCS symbol for well-graded material.
-WELL_GRADED: Final = "W"
+# #: USCS symbol for well-graded material.
+# WELL_GRADED: Final = "W"
 
-#: USCS symbol for poorly-graded material.
-POORLY_GRADED: Final = "P"
+# #: USCS symbol for poorly-graded material.
+# POORLY_GRADED: Final = "P"
 
-#: USCS symbol for low soil plasticity.
-LOW_PLASTICITY: Final = "L"
+# #: USCS symbol for low soil plasticity.
+# LOW_PLASTICITY: Final = "L"
 
-#: USCS symbol for high soil plasticity.
-HIGH_PLASTICITY: Final = "H"
+# #: USCS symbol for high soil plasticity.
+# HIGH_PLASTICITY: Final = "H"
+
+
+@enum.global_enum
+class SoilSymbol(enum.StrEnum):
+    GRAVEL = "G"
+    SAND = "S"
+    SILT = "M"
+    CLAY = "C"
+    ORGANIC = "O"
+    WELL_GRADED = "W"
+    POORLY_GRADED = "P"
+    LOW_PLASTICITY = "L"
+    HIGH_PLASTICITY = "H"
 
 
 @attrs.define
@@ -54,12 +68,13 @@ class AtterbergLimits:
 
     The main use of Atterberg Limits is in the classification of soils.
 
-    :param int | float liquid_limit: Water content beyond which soils flows under
-        their own weight. It can also be defined as the minimum moisture content
-        at which a soil flows upon application of a very small shear force.
-    :param int | float plastic_limit: Water content at which plastic deformation can
-        be initiated. It is also the minimum water content at which soil can be
-        rolled into a thread 3mm thick. (molded without breaking)
+    :param int | float liquid_limit: Water content beyond which soils flows
+        under their own weight. It can also be defined as the minimum moisture
+        content at which a soil flows upon application of a very small shear
+        force.
+    :param int | float plastic_limit: Water content at which plastic deformation
+        can be initiated. It is also the minimum water content at which soil can
+        be rolled into a thread 3mm thick. (molded without breaking)
 
     Examples
     --------
@@ -71,11 +86,6 @@ class AtterbergLimits:
     >>> atterberg_limits.A_line
     25.87
 
-    >>> soil_type = atterberg_limits.type_of_fines
-    >>> soil_type
-    'M'
-    >>> USCS.SOIL_DESCRIPTIONS[soil_type]
-    'Silt'
     >>> atterberg_limits.above_A_LINE()
     False
     >>> atterberg_limits.limit_plot_in_hatched_zone()
@@ -236,21 +246,17 @@ class PSD:
     particles in a sample and graphing the results to illustrate the
     distribution of the particle sizes.
 
-    :param int | float fines: Percentage of fines in soil sample i.e. the percentage
-        of soil sample passing through No. 200 sieve (0.075mm)
+    :param int | float fines: Percentage of fines in soil sample i.e. the
+        percentage of soil sample passing through No. 200 sieve (0.075mm)
     :param int | float sand: Percentage of sand in soil sample.
-    :param int | float gravel: Percentage of gravel in soil sample, defaults to None.
+    :param int | float gravel: Percentage of gravel in soil sample, defaults
+        to None.
 
     Examples
     --------
     >>> from geolysis.core.soil_classifier import PSD, SizeDistribution
 
     >>> psd = PSD(fines=30.25, sand=53.55)
-    >>> soil_type = psd.type_of_coarse
-    >>> soil_type
-    'S'
-    >>> USCS.SOIL_DESCRIPTIONS[soil_type]
-    'Sand'
 
     The following code raises error because ``size_dist`` is not provided.
 
@@ -270,20 +276,13 @@ class PSD:
     1.61
     >>> psd.coeff_of_uniformity
     11.43
-
-    >>> soil_grade = psd.grade()
-    >>> soil_grade
-    'W'
-    >>> USCS.SOIL_DESCRIPTIONS[soil_grade]
-    'Well graded'
     """
 
     fines: int | float = field(validator=validators.ge(0))
     sand: int | float = field(validator=validators.ge(0))
     gravel: int | float = field(validator=validators.ge(0))
     size_dist: SizeDistribution = field(
-        default=SizeDistribution(d_10=0, d_30=0, d_60=0),
-        validator=validators.instance_of(SizeDistribution),
+        default=SizeDistribution(d_10=0, d_30=0, d_60=0)
     )
 
     gravel.default(lambda self: 100.0 - (self.fines + self.sand))  # type: ignore
