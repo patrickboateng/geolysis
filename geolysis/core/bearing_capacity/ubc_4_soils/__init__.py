@@ -17,14 +17,6 @@ class SoilProperties(TypedDict, total=False):
 
 
 def k(f_d: float, f_w: float) -> float:
-    """
-    Parameters
-    ----------
-    f_d : float
-        Depth of foundation footing
-    f_w : float
-        Width of foundation footing
-    """
     return arctan(d2w) if (d2w := f_d / f_w) > 1 else d2w
 
 
@@ -58,7 +50,6 @@ class UltimateBearingCapacity(ABC):
 
         # effective overburden pressure (surcharge)
         eop = self.moist_unit_wgt * f_d
-
         return eop * self.n_q * self.s_q * self.d_q * self.i_q * water_corr
 
     def _embedment_term(self, coef: float = 0.5) -> float:
@@ -100,8 +91,8 @@ class UltimateBearingCapacity(ABC):
     @property
     def cohesion(self) -> float:
         """
-        Return cohesion for ``local shear`` in the case of ``local shear failure``
-        and cohesion for ``general shear`` in the case of ``general shear failure``.
+        Return cohesion for local shear in the case of local shear failure and
+        cohesion for general shear in the case of general shear failure.
         """
         return (
             (2 / 3) * self._cohesion

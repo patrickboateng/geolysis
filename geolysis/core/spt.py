@@ -153,8 +153,8 @@ class EnergyCorrection:
     transferred to the tip of the standard split spoon.
 
     :param int recorded_spt_number: Recorded SPT N-value from field.
-    :param int | float energy_percentage: Energy percentage reaching the tip of the
-        sampler, defaults to 0.6
+    :param int | float energy_percentage: Energy percentage reaching the tip of
+        the sampler, defaults to 0.6
     :param int | float hammer_efficiency: Hammer efficiency, defaults to 0.6
     :param int | float borehole_diameter_correction: Borehole diameter
         correction, defaults to 1.0
@@ -268,7 +268,8 @@ class EnergyCorrection:
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field procedures.
+    :param int | float std_spt_number: SPT N-value standardized for field
+        procedures.
     :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
@@ -308,7 +309,8 @@ class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field procedures.
+    :param int | float std_spt_number: SPT N-value standardized for field
+        procedures.
     :param int | float eop: Effective overburden pressure. (:math:`kN/m^2`)
 
     Notes
@@ -319,7 +321,8 @@ class BazaraaPeckOPC(OPC):
 
         C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
 
-        C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o}, \, \sigma_o \gt 71.8kN/m^2
+        C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o},
+            \, \sigma_o \gt 71.8kN/m^2
 
         C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
 
@@ -345,7 +348,6 @@ class BazaraaPeckOPC(OPC):
             corr = 4 / (1 + 0.0418 * self.eop)
         else:
             corr = 4 / (3.25 + 0.0104 * self.eop)
-
         return corr
 
 
@@ -353,7 +355,8 @@ class BazaraaPeckOPC(OPC):
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field procedures
+    :param int | float std_spt_number: SPT N-value standardized for field
+        procedures.
     :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
     Notes
@@ -382,8 +385,9 @@ class PeckOPC(OPC):
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field procedures
-    :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
+    :param int | float std_spt_number: SPT N-value standardized for field
+        procedures.
+    :param int | float eop: Effective overburden pressure. (:math:`kN/m^2`)
 
     Notes
     -----
@@ -399,7 +403,7 @@ class LiaoWhitmanOPC(OPC):
     23.0
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0))
+    std_spt_number: int | float = field(validator=validators.gt(0.0))
     eop: int | float = field(validator=attrs.validators.gt(0.0))
 
     def correction(self) -> int | float:
