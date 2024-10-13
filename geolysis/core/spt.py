@@ -117,14 +117,14 @@ def weighted_spt_n_design(spt_numbers: Sequence[int | float]):
     """
 
     sum_total = 0.0
-    total_wgts = 0.0
+    sum_wgts = 0.0
 
     for i, corrected_spt in enumerate(spt_numbers, start=1):
         wgt = 1 / i**2
         sum_total += wgt * corrected_spt
-        total_wgts += wgt
+        sum_wgts += wgt
 
-    return sum_total / total_wgts
+    return sum_total / sum_wgts
 
 
 #: TODO: document this
@@ -298,9 +298,9 @@ class GibbsHoltzOPC(OPC):
 
     def correction(self) -> int | float:
         """SPT Correction."""
-        corr = 350.0 / (self.eop + 70)
+        corr = 350.0 / (self.eop + 70.0)
         if corr > 2.0:
-            corr /= 2
+            corr /= 2.0
         return corr
 
 
