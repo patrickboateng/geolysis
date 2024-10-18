@@ -1,6 +1,6 @@
 from geolysis.core.bearing_capacity.ubc_4_soils import (
     DP,
-    SoilProperties,
+    Soil,
     UltimateBearingCapacity,
     k,
 )
@@ -170,7 +170,7 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
 
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: Soil,
         foundation_size: FoundationSize,
         load_angle_incl: float = 0.0,
         water_level: float = INF,

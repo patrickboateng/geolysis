@@ -1,5 +1,5 @@
 from geolysis.core.bearing_capacity.ubc_4_soils import (
-    SoilProperties,
+    Soil,
     UltimateBearingCapacity,
 )
 from geolysis.core.foundation import FoundationSize
@@ -95,7 +95,7 @@ class TerzaghiInclinationFactor:
 class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: Soil,
         foundation_size: FoundationSize,
         water_level: float = INF,
         apply_local_shear: bool = False,
