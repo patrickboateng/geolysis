@@ -20,7 +20,7 @@ __all__ = [
     "DilatancyCorrection",
 ]
 
-DP: Final = 1
+DP: Final[int] = 1
 
 
 class OPCError(ValueError):
@@ -30,25 +30,25 @@ class OPCError(ValueError):
 class SPTCorrection(Protocol):
     @property
     @abstractmethod
-    def corrected_spt_number(self) -> int | float: ...
+    def corrected_spt_number(self) -> float: ...
 
 
 class OPC(Protocol):
-    std_spt_number: int | float
+    std_spt_number: float
     eop: int | float
 
     @abstractmethod
-    def correction(self) -> int | float: ...
+    def correction(self) -> float: ...
 
     @round_(DP)
-    def corrected_spt_number(self) -> int | float:
+    def corrected_spt_number(self) -> float:
         """Corrected SPT N-value."""
         corrected_spt = self.correction() * self.std_spt_number
         return min(corrected_spt, 2 * self.std_spt_number)
 
 
 @round_(DP)
-def average_spt_n_design(spt_numbers: Sequence[int | float]):
+def average_spt_n_design(spt_numbers: Sequence[float]):
     r"""Calculates the average of the corrected SPT N-values within the
     foundation influence zone.
 
@@ -66,7 +66,7 @@ def average_spt_n_design(spt_numbers: Sequence[int | float]):
 
 
 @round_(DP)
-def minimum_spt_n_design(spt_numbers: Sequence[int | float]):
+def minimum_spt_n_design(spt_numbers: Sequence[float]):
     """The lowest N-value within the influence zone can be taken as the
     :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
 
@@ -84,7 +84,7 @@ def minimum_spt_n_design(spt_numbers: Sequence[int | float]):
 
 
 @round_(DP)
-def weighted_spt_n_design(spt_numbers: Sequence[int | float]):
+def weighted_spt_n_design(spt_numbers: Sequence[float]):
     r"""Calculates the weighted average of the corrected SPT N-values within the
     foundation influence zone.
 
@@ -181,8 +181,7 @@ class EnergyCorrection:
     """
 
     recorded_spt_number: int = field(
-        converter=int,
-        validator=[validators.gt(0), validators.le(100)],
+        validator=[validators.gt(0), validators.le(100)]
     )
     energy_percentage: int | float = field(
         default=0.6,
@@ -237,7 +236,7 @@ class EnergyCorrection:
         return self.SAMPLER_CORRECTION_FACTORS[self.sampler_type]
 
     @property
-    def rod_length_correction(self) -> int | float:
+    def rod_length_correction(self) -> float:
         if 3.0 <= self.rod_length <= 4.0:
             corr = 0.75
         elif 4.0 < self.rod_length <= 6.0:
@@ -249,7 +248,7 @@ class EnergyCorrection:
 
         return corr
 
-    def correction(self) -> int | float:
+    def correction(self) -> float:
         """SPT Correction."""
         return (
             self.hammer_efficiency
@@ -259,7 +258,7 @@ class EnergyCorrection:
         ) / self.energy_percentage
 
     @round_(DP)
-    def corrected_spt_number(self) -> int | float:
+    def corrected_spt_number(self) -> float:
         """Corrected SPT N-value."""
         return self.correction() * self.recorded_spt_number
 
@@ -291,12 +290,12 @@ class GibbsHoltzOPC(OPC):
     23.2
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0))
+    std_spt_number: float = field(validator=validators.gt(0))
     eop: int | float = field(
         validator=[validators.gt(0.0), validators.le(280.0)]
     )
 
-    def correction(self) -> int | float:
+    def correction(self) -> float:
         """SPT Correction."""
         corr = 350.0 / (self.eop + 70.0)
         if corr > 2.0:
@@ -334,13 +333,13 @@ class BazaraaPeckOPC(OPC):
     21.0
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0))
+    std_spt_number: float = field(validator=validators.gt(0))
     eop: int | float = field(validator=validators.ge(0))
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 71.8
 
-    def correction(self) -> int | float:
+    def correction(self) -> float:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
@@ -373,10 +372,10 @@ class PeckOPC(OPC):
     23.0
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0))
+    std_spt_number: float = field(validator=validators.gt(0))
     eop: int | float = field(validator=validators.ge(24.0))
 
-    def correction(self) -> int | float:
+    def correction(self) -> float:
         """SPT Correction."""
         return 0.77 * log10(2000.0 / self.eop)
 
@@ -403,10 +402,10 @@ class LiaoWhitmanOPC(OPC):
     23.0
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0.0))
+    std_spt_number: float = field(validator=validators.gt(0.0))
     eop: int | float = field(validator=attrs.validators.gt(0.0))
 
-    def correction(self) -> int | float:
+    def correction(self) -> float:
         """SPT Correction."""
         return sqrt(100.0 / self.eop)
 
@@ -433,12 +432,12 @@ class SkemptonOPC(OPC):
     22.0
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0))
+    std_spt_number: float = field(validator=validators.gt(0))
     eop: int | float = field()
 
-    def correction(self) -> int | float:
+    def correction(self) -> float:
         """SPT Correction."""
-        return 2 / (1.0 + 0.01044 * self.eop)
+        return 2.0 / (1.0 + 0.01044 * self.eop)
 
 
 @attrs.define
@@ -471,10 +470,10 @@ class DilatancyCorrection:
     19.0
     """
 
-    std_spt_number: int | float = field(validator=validators.gt(0))
+    std_spt_number: float = field(validator=validators.gt(0))
 
     @round_(DP)
-    def corrected_spt_number(self) -> int | float:
+    def corrected_spt_number(self) -> float:
         """Corrected SPT N-value."""
         if self.std_spt_number <= 15.0:
             return self.std_spt_number
