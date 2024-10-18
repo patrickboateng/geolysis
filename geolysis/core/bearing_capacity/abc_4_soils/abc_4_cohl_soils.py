@@ -99,8 +99,8 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
         Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        f_w = self.foundation_size.width
         N_CORR = self.corrected_spt_number
+        f_w = self.foundation_size.width
 
         if f_w <= 1.2:
             return 19.16 * N_CORR * self._FD() * self._SR()
@@ -207,8 +207,8 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        f_w = self.foundation_size.width
         N_CORR = self.corrected_spt_number
+        f_w = self.foundation_size.width
 
         if f_w <= 1.2:
             return 12 * N_CORR * self._FD() * self._SR()
@@ -348,8 +348,8 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         Return allowable bearing capacity for isolated foundation on
         cohesionless soils. |rarr| :math:`kN/m^2`
         """
-        f_w = self.foundation_size.width
         N_CORR = self.corrected_spt_number
+        f_w = self.foundation_size.width
 
         if f_w <= 1.2:
             return 12 * N_CORR * (1 / (self._CW() * self._FD())) * self._SR()
