@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+from collections import UserDict
 from typing import Required, TypedDict
+
+import attrs
 
 from geolysis.core.foundation import FoundationSize
 from geolysis.core.utils import INF, arctan, tan
@@ -10,27 +13,34 @@ __all__ = []
 DP = 2
 
 
-class SoilProperties(TypedDict, total=False):
-    friction_angle: Required[float]
-    cohesion: Required[float]
-    moist_unit_wgt: Required[float]
-
-
 def k(f_d: float, f_w: float) -> float:
     return arctan(d2w) if (d2w := f_d / f_w) > 1 else d2w
+
+
+# class SoilProperties(TypedDict, total=False):
+#     friction_angle: Required[float]
+#     cohesion: Required[float]
+#     moist_unit_wgt: Required[float]
+
+
+@attrs.define
+class Soil:
+    friction_angle: float
+    cohesion: float
+    moist_unit_wgt: float
 
 
 class UltimateBearingCapacity(ABC):
     def __init__(
         self,
-        soil_properties: SoilProperties,
+        soil_properties: Soil,
         foundation_size: FoundationSize,
         water_level: float = INF,
         apply_local_shear: bool = False,
     ) -> None:
-        self._friction_angle = soil_properties["friction_angle"]
-        self._cohesion = soil_properties["cohesion"]
-        self.moist_unit_wgt = soil_properties["moist_unit_wgt"]
+        self._friction_angle = soil_properties.friction_angle
+        self._cohesion = soil_properties.cohesion
+        self.moist_unit_wgt = soil_properties.moist_unit_wgt
         self.water_level = water_level
         self.foundation_size = foundation_size
         self.apply_local_shear = apply_local_shear
