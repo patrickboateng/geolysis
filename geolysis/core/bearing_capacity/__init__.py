@@ -1,4 +1,4 @@
-from geolysis.core._config import UnitSystem
+from geolysis.core._config.config import UnitSystem
 
 from .abc_4_soils.abc_4_cohl_soils import (
     BowlesABC4MatFoundation,
