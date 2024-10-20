@@ -4,7 +4,7 @@ from . import (
     spt,
     utils,
 )
-from ._config import (
+from ._config.config import (
     Q_,
     UnitSystem,
     get_option,
