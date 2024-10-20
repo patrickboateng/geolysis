@@ -52,7 +52,7 @@ def average_spt_n_design(spt_numbers: Sequence[float]):
     r"""Calculates the average of the corrected SPT N-values within the
     foundation influence zone.
 
-    :param Sequence[int | float] spt_numbers: SPT N-values within the foundation
+    :param Sequence[float] spt_numbers: SPT N-values within the foundation
         influence zone. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -70,7 +70,7 @@ def minimum_spt_n_design(spt_numbers: Sequence[float]):
     """The lowest N-value within the influence zone can be taken as the
     :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
 
-    :param Sequence[int | float] spt_numbers: SPT N-values within the foundation
+    :param Sequence[float] spt_numbers: SPT N-values within the foundation
         influence zone. i.e. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -96,7 +96,7 @@ def weighted_spt_n_design(spt_numbers: Sequence[float]):
     under consideration by giving the highest weightage to the closest N-value
     from the base.
 
-    :param Sequence[int | float] spt_numbers: SPT N-values within the foundation
+    :param Sequence[float] spt_numbers: SPT N-values within the foundation
         influence zone. ``spt_numbers`` can either be **corrected** or
         **uncorrected** SPT N-values.
 
@@ -267,7 +267,7 @@ class EnergyCorrection:
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field
+    :param float std_spt_number: SPT N-value standardized for field
         procedures.
     :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
@@ -308,7 +308,7 @@ class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field
+    :param float std_spt_number: SPT N-value standardized for field
         procedures.
     :param int | float eop: Effective overburden pressure. (:math:`kN/m^2`)
 
@@ -354,7 +354,7 @@ class BazaraaPeckOPC(OPC):
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field
+    :param float std_spt_number: SPT N-value standardized for field
         procedures.
     :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
@@ -384,7 +384,7 @@ class PeckOPC(OPC):
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field
+    :param float std_spt_number: SPT N-value standardized for field
         procedures.
     :param int | float eop: Effective overburden pressure. (:math:`kN/m^2`)
 
@@ -414,7 +414,7 @@ class LiaoWhitmanOPC(OPC):
 class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
-    :param int | float std_spt_number: SPT N-value standardized for field
+    :param float std_spt_number: SPT N-value standardized for field
         procedures.
     :param int | float eop: Effective overburden pressure (:math:`kN/m^2`)
 
@@ -448,7 +448,7 @@ class DilatancyCorrection:
     correction, overburden pressure correction is applied first and then
     dilatancy correction is applied.
 
-    :param int | float std_spt_number: SPT N-value standardized for field
+    :param float std_spt_number: SPT N-value standardized for field
         procedures and/or corrected for overburden pressure.
 
     Notes
