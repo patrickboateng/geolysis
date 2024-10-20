@@ -9,7 +9,7 @@ from typing import (
     SupportsRound,
 )
 
-from geolysis.core._config import Q_, UnitSystem, get_option
+from geolysis.core._config.config import Q_, UnitSystem, get_option
 
 __all__ = [
     "exp",
