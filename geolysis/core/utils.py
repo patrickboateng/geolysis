@@ -9,7 +9,7 @@ from typing import (
     SupportsRound,
 )
 
-from geolysis.core._config.config import Q_, UnitSystem, get_option
+from geolysis.core._config.config import OPTION, Q_, UnitSystem, get_option
 
 __all__ = [
     "exp",
@@ -132,7 +132,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
             if not callable(ndigits):
                 dp = ndigits
             else:
-                dp = get_option("dp")
+                dp = get_option(OPTION.DP)
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
@@ -154,8 +154,8 @@ def quantity(quant: str):
     def decorator(fn: Callable):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
-            default_unit = getattr(UnitSystem.SI, quant)
-            unit_system = get_option("unit_system")
+            default_unit = getattr(UnitSystem.DEFAULT_UNIT, quant)
+            unit_system = get_option(OPTION.UNIT_SYSTEM)
             preffered_unit = getattr(unit_system, quant)
             ret = fn(*args, **kwargs)
             return Q_(ret, default_unit).to_compact(preffered_unit)
@@ -167,10 +167,10 @@ def quantity(quant: str):
 
 def field(*, attr: str, obj: Optional[str] = None, doc: Optional[str] = None):
     """A field that reference another field."""
-    return Attribute(attr=attr, obj=obj, doc=doc)
+    return _Attribute(attr=attr, obj=obj, doc=doc)
 
 
-class Attribute:
+class _Attribute:
     def __init__(
         self,
         *,
