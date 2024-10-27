@@ -4,7 +4,8 @@ from typing import Final, Optional, Protocol
 import attrs
 from attrs import field, validators
 
-from geolysis.core.utils import INF, ref_field
+from geolysis.core import utils
+from geolysis.core.utils import INF
 
 # __all__ = ["create_foundation"]
 
@@ -43,9 +44,9 @@ class CircularFooting(FootingSize):
 
     .. note::
 
-        The ``width`` and ``length`` properties refer to the diameter
-        of the circular footing. This is to make it compatible with the
-        protocol square and rectangular footing follow.
+        The ``width`` and ``length`` properties refer to the diameter of the
+        circular footing. This is to make it compatible with the protocol square
+        and rectangular footing follow.
 
 
     >>> from geolysis.core.foundation import CircularFooting
@@ -61,8 +62,8 @@ class CircularFooting(FootingSize):
     diameter: int | float = field(validator=validators.gt(0.0))
     shape_: Final[Shape] = field(default=Shape.CIRCLE, init=False)
 
-    width = ref_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
-    length = ref_field(ref_attr="diameter", doc="Diameter of footing.")  # type: ignore
+    width = utils.field(attr="diameter", doc="Diameter of footing.")  # type: ignore
+    length = utils.field(attr="diameter", doc="Diameter of footing.")  # type: ignore
 
 
 @attrs.define
@@ -88,7 +89,7 @@ class SquareFooting(FootingSize):
     width: int | float = field(validator=validators.gt(0.0))
     shape_: Final[Shape] = field(default=Shape.SQUARE, init=False)
 
-    length = ref_field(ref_attr="width", doc="Width of footing. (m)")  # type: ignore
+    length = utils.field(attr="width", doc="Width of footing. (m)")  # type: ignore
 
 
 @attrs.define
@@ -148,9 +149,9 @@ class FoundationSize:
         default=0.0, validator=validators.ge(0.0)
     )
 
-    width = ref_field(ref_attr="width", ref_obj="footing_size")
-    length = ref_field(ref_attr="length", ref_obj="footing_size")
-    footing_shape = ref_field(ref_attr="shape_", ref_obj="footing_size")
+    width = utils.field(attr="width", obj="footing_size")
+    length = utils.field(attr="length", obj="footing_size")
+    footing_shape = utils.field(attr="shape_", obj="footing_size")
 
     @property
     def effective_width(self) -> float:

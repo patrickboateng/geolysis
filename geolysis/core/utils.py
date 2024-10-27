@@ -165,26 +165,21 @@ def quantity(quant: str):
     return decorator
 
 
-def ref_field(
-    *,
-    ref_attr: str,
-    ref_obj: Optional[str] = None,
-    doc: Optional[str] = None,
-):
+def field(*, attr: str, obj: Optional[str] = None, doc: Optional[str] = None):
     """A field that reference another field."""
-    return Attribute(ref_attr=ref_attr, ref_obj=ref_obj, doc=doc)
+    return Attribute(attr=attr, obj=obj, doc=doc)
 
 
 class Attribute:
     def __init__(
         self,
         *,
-        ref_attr: str,
-        ref_obj: Optional[str] = None,
+        attr: str,
+        obj: Optional[str] = None,
         doc: Optional[str] = None,
     ):
-        self.ref_attr = ref_attr
-        self.ref_obj = ref_obj
+        self.ref_attr = attr
+        self.ref_obj = obj
         self.fget: Final = getattr
         self.fset: Final = setattr
         self.fdel: Final = delattr
