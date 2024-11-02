@@ -32,6 +32,7 @@ jobs:
         run: pytest
 
   coverage:
+    if: github.ref != 'refs/heads/dev'
     needs: test
     runs-on: windows-latest
     steps:
