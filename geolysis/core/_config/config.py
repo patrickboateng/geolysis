@@ -1,46 +1,44 @@
 import enum
 from typing import Any, Callable, NamedTuple
 
-from pint import UnitRegistry
+import pint
 
 from geolysis.core._config import validators
 
-UNIT_REGISTRY = UnitRegistry()
-Q_ = UNIT_REGISTRY.Quantity
+
+class CustomQuantity(pint.UnitRegistry.Quantity):
+    pass
 
 
-class OPTION(enum.StrEnum):
-    DP = enum.auto()
-    UNIT_SYSTEM = enum.auto()
+class CustomUnit(pint.UnitRegistry.Unit):
+    pass
+
+
+class UnitRegistry(
+    pint.registry.GenericUnitRegistry[CustomQuantity, CustomUnit]
+):
+    Quantity = CustomQuantity
+    Unit = CustomUnit
 
 
 class UnitSystem(enum.StrEnum):
-    """Physical unit systems."""
+    CGS = "cgs"
+    MKS = "mks"
+    BRITISH_IMPERIAL = "imperial"
+    US_IMPERIAL = "US"
+    SI = "SI"
 
-    CGS = enum.auto()
-    MKS = enum.auto()
-    IMPERIAL = enum.auto()
-    SI = enum.auto()
-    DEFAULT_UNIT = SI
 
-    def __getitem__(self, key) -> str:
-        return getattr(self, key)
+UReg = UnitRegistry(system=UnitSystem.SI, cache_folder=":auto:")
+Quantity = UReg.Quantity
 
-    @property
-    def Pressure(self):
-        if self is self.CGS:
-            unit = UNIT_REGISTRY.barye
-        elif self is self.MKS or self is self.SI:
-            unit = UNIT_REGISTRY.kPa
-        elif self is self.IMPERIAL:
-            unit = UNIT_REGISTRY.psi
-        else:
-            # TODO: Add error msg
-            raise Exception(
-                "Invalid UnitSystem. Available UnitSystems are CGS,"
-                " MKS, IMPERIAL and SI."
-            )
-        return unit
+
+########################################################
+
+
+class Option(enum.StrEnum):
+    DP = enum.auto()
+    UNIT_SYSTEM = enum.auto()
 
 
 class RegisteredOption(NamedTuple):
@@ -55,15 +53,15 @@ _registered_options: dict[str, RegisteredOption] = {}
 _reserved_keys: list[str] = []
 
 
-def _get_registered_option(opt: OPTION) -> Any:
+def _get_registered_option(opt: Option) -> Any:
     return _registered_options.get(opt)
 
 
-def get_option(opt: OPTION) -> Any:
+def get_option(opt: Option) -> Any:
     return _global_config[opt]
 
 
-def set_option(opt: OPTION, val: Any) -> None:
+def set_option(opt: Option, val: Any) -> None:
     _opt = _get_registered_option(opt)
 
     if _opt and _opt.validator:
@@ -72,12 +70,12 @@ def set_option(opt: OPTION, val: Any) -> None:
     _global_config[opt] = val
 
 
-def reset_option(opt: OPTION):
+def reset_option(opt: Option):
     val = _registered_options[opt].defval
     set_option(opt, val)
 
 
-def register_option(opt: OPTION, defval: Any, doc="", validator=None):
+def register_option(opt: Option, defval: Any, doc="", validator=None):
     import keyword
 
     if validator:
@@ -102,5 +100,5 @@ def register_option(opt: OPTION, defval: Any, doc="", validator=None):
     )
 
 
-register_option(OPTION.DP, defval=4, validator=validators.instance_of(int))
-register_option(OPTION.UNIT_SYSTEM, defval=UnitSystem.SI)
+register_option(Option.DP, defval=4, validator=validators.instance_of(int))
+register_option(Option.UNIT_SYSTEM, defval=UnitSystem.SI)
