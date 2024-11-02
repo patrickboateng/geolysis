@@ -23,6 +23,9 @@ class UnitSystem(enum.StrEnum):
     SI = enum.auto()
     DEFAULT_UNIT = SI
 
+    def __getitem__(self, key) -> str:
+        return getattr(self, key)
+
     @property
     def Pressure(self):
         if self is self.CGS:
