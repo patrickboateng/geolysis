@@ -47,7 +47,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 
   publish-to-testpypi:
-    name: Sign the Python distribution with to TestPyPI
+    name: Publish Python distribution to TestPyPI
     needs: build
     runs-on: ubuntu-latest
 
