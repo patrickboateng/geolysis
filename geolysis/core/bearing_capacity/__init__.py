@@ -1,5 +1,3 @@
-from geolysis.core._config.config import UnitSystem
-
 from .abc_4_soils.abc_4_cohl_soils import (
     BowlesABC4MatFoundation,
     BowlesABC4PadFoundation,
@@ -16,6 +14,3 @@ from .ubc_4_soils.terzaghi_ubc import (
     TerzaghiUBC4StripFooting,
 )
 from .ubc_4_soils.vesic_ubc import VesicUltimateBearingCapacity
-
-#: Default unit for bearing capacity of soil.
-DEFAULT_UNIT = UnitSystem.SI.Pressure
