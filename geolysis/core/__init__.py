@@ -5,7 +5,7 @@ from . import (
     utils,
 )
 from ._config.config import (
-    Q_,
+    Quantity,
     UnitSystem,
     get_option,
     reset_option,
