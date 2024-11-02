@@ -2,4 +2,4 @@ from . import core
 
 __all__ = ["core"]
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
