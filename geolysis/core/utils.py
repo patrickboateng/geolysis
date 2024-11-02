@@ -154,9 +154,9 @@ def quantity(quant: str):
     def decorator(fn: Callable):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
-            default_unit = getattr(UnitSystem.DEFAULT_UNIT, quant)
+            default_unit = UnitSystem.DEFAULT_UNIT[quant]
             unit_system = get_option(OPTION.UNIT_SYSTEM)
-            preffered_unit = getattr(unit_system, quant)
+            preffered_unit = unit_system[quant]
             res = fn(*args, **kwargs)
             return Q_(res, default_unit).to_compact(preffered_unit)
 
