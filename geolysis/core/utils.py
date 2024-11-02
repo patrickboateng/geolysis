@@ -1,21 +1,24 @@
 import functools
 import math
-import statistics
+from math import exp, isclose, log10, sqrt
+from math import inf as INF
+from math import pi as PI
+from statistics import fmean as mean
 from typing import (
     Callable,
     Final,
-    Iterable,
     Optional,
     SupportsRound,
 )
 
-from geolysis.core._config.config import OPTION, Q_, UnitSystem, get_option
+from geolysis.core._config.config import (
+    Option,
+    Quantity,
+    UnitSystem,
+    get_option,
+)
 
 __all__ = [
-    "exp",
-    "log10",
-    "sqrt",
-    "mean",
     "deg2rad",
     "rad2deg",
     "tan",
@@ -26,32 +29,6 @@ __all__ = [
     "round_",
     "quantity",
 ]
-
-PI = math.pi
-INF = math.inf
-
-
-isclose = math.isclose
-
-
-def exp(x: float, /) -> float:
-    """Return e to the power of x"""
-    return math.exp(x)
-
-
-def log10(x: float, /) -> float:
-    """Return the base 10 logarithm of x."""
-    return math.log10(x)
-
-
-def sqrt(x: float, /) -> float:
-    """Return the square root of x."""
-    return math.sqrt(x)
-
-
-def mean(data: Iterable[float]) -> float:
-    """Compute the arithmetic mean of data."""
-    return statistics.fmean(data=data)
 
 
 def deg2rad(x: float, /) -> float:
@@ -132,7 +109,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
             if not callable(ndigits):
                 dp = ndigits
             else:
-                dp = get_option(OPTION.DP)
+                dp = get_option(Option.DP)
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
@@ -150,15 +127,15 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     raise TypeError("ndigits should be an int or a callable.")
 
 
-def quantity(quant: str):
+def quantity(unit):
     def decorator(fn: Callable):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
-            default_unit = UnitSystem.DEFAULT_UNIT[quant]
-            unit_system = get_option(OPTION.UNIT_SYSTEM)
-            preffered_unit = unit_system[quant]
-            res = fn(*args, **kwargs)
-            return Q_(res, default_unit).to_compact(preffered_unit)
+            return (
+                Quantity(fn(*args, **kwargs), unit)
+                .to_base_units()
+                .to_compact()
+            )
 
         return wrapper
 
