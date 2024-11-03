@@ -17,6 +17,7 @@ from geolysis.core.utils import (
     sin,
     tan,
 )
+from geolysis.core._config.config import UReg
 
 __all__ = ["HansenUltimateBearingCapacity"]
 
@@ -264,7 +265,7 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     def i_gamma(self) -> float:
         return self.incl_factor.i_gamma(self.load_angle)
 
-    @quantity("Pressure")
+    @quantity(unit=UReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
