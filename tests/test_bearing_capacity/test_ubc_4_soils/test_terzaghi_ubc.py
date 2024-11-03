@@ -2,8 +2,8 @@ import unittest
 
 import pytest
 
-from geolysis.core import Q_
-from geolysis.core.bearing_capacity import DEFAULT_UNIT
+from geolysis.core import Quantity
+from geolysis.core._config.config import UReg
 from geolysis.core.bearing_capacity.ubc_4_soils import Soil
 from geolysis.core.bearing_capacity.ubc_4_soils.terzaghi_ubc import (
     TerzaghiBearingCapacityFactor,
@@ -67,8 +67,9 @@ class TestTerzaghiUBC4StripFooting:
             foundation_size=fs,
             water_level=water_level,
         )
+        print(t_ubc.bearing_capacity())
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(res, DEFAULT_UNIT).to_compact().magnitude
+        expected = Quantity(res, UReg.kPa).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
 
 
@@ -93,7 +94,7 @@ class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
             apply_local_shear=True,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(323.008, DEFAULT_UNIT).to_compact().magnitude
+        expected = Quantity(323.008, UReg.kPa).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
 
 
@@ -120,7 +121,7 @@ class TestTerzaghiUBC4CircFooting(unittest.TestCase):
             apply_local_shear=True,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(318.9094, DEFAULT_UNIT).to_compact().magnitude
+        expected = Quantity(318.9094, UReg.kPa).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
 
 
@@ -146,5 +147,5 @@ class TestTerzaghiUBC4RectFooting(unittest.TestCase):
             apply_local_shear=True,
         )
         actual = t_ubc.bearing_capacity().magnitude
-        expected = Q_(300.0316, DEFAULT_UNIT).to_compact().magnitude
+        expected = Quantity(300.0316, UReg.kPa).to_compact().magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
