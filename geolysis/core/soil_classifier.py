@@ -12,10 +12,6 @@ class SizeDistError(ZeroDivisionError):
     pass
 
 
-class PSDAggSumError(ValueError):
-    pass
-
-
 @enum.global_enum
 class USCSSoilSymbol(enum.StrEnum):
     GRAVEL = "G"
