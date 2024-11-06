@@ -1,13 +1,24 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+import json
+from typing import Annotated, Optional
 
-from geolysis.core.soil_classifier import (
-    AASHTO,
-    PSD,
-    USCS,
-    AtterbergLimits,
-    SizeDistribution,
-)
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from geolysis.core.soil_classifier import SCType, SoilClassificationFactory
+
+
+class SoilParam(BaseModel):
+    liquid_limit: int | float
+    plastic_limit: int | float
+    fines: int | float
+    sand: Optional[float] = None
+    d_10: int | float = 0
+    d_30: int | float = 0
+    d_60: int | float = 0
+    add_group_idx: bool = True
+    organic: bool = False
+
 
 app = FastAPI()
 
@@ -20,37 +31,26 @@ app.add_middleware(
 )
 
 
-@app.get("/aashto/")
-async def aashto(
-    liquidLimit: float,
-    plasticityIndex: float,
-    fines: float,
-    addGroupIndex: bool,
-):
-    clf = AASHTO(
-        liquid_limit=liquidLimit,
-        plasticity_index=plasticityIndex,
-        fines=fines,
-        add_group_idx=addGroupIndex,
+def get_soil_classification(soil_params: SoilParam, clf_type: SCType):
+    params = json.loads(soil_params.model_dump_json())
+    clf = SoilClassificationFactory.create_soil_classifier(
+        **params,
+        clf_type=clf_type,
     )
-
     return {"classification": clf.classify(), "description": clf.description()}
+
+
+@app.get("/aashto/")
+async def aashto(soil_param: Annotated[SoilParam, Query()]):
+    return get_soil_classification(
+        soil_params=soil_param,
+        clf_type=SCType.AASHTO,
+    )
 
 
 @app.get("/uscs/")
-async def uscs(
-    liquidLimit: float,
-    plasticLimit: float,
-    fines: float,
-    sand: float,
-    d_10: float,
-    d_30: float,
-    d_60: float,
-    organic: bool,
-):
-    al = AtterbergLimits(liquid_limit=liquidLimit, plastic_limit=plasticLimit)
-    size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
-    psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
-    clf = USCS(atterberg_limits=al, psd=psd, organic=organic)
-
-    return {"classification": clf.classify(), "description": clf.description()}
+async def uscs(soil_param: Annotated[SoilParam, Query()]):
+    return get_soil_classification(
+        soil_params=soil_param,
+        clf_type=SCType.USCS,
+    )
