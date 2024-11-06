@@ -1,8 +1,7 @@
 import enum
-from typing import Final
+from typing import Final, Optional
 
 import attrs
-from attrs import field, validators
 
 from geolysis.core.utils import isclose, round_
 
@@ -28,6 +27,16 @@ class USCSSoilSymbol(enum.StrEnum):
     POORLY_GRADED = "P"
     LOW_PLASTICITY = "L"
     HIGH_PLASTICITY = "H"
+
+
+@enum.global_enum
+class AASHTOSoilSymbol(enum.StrEnum): ...
+
+
+# Soil classification type
+class SCType(enum.StrEnum):
+    AASHTO = enum.auto()
+    USCS = enum.auto()
 
 
 @attrs.define
@@ -213,7 +222,7 @@ class SizeDistribution:
         return grade
 
 
-@attrs.define
+# @attrs.define
 class PSD:
     r"""Quantitative proportions by mass of various sizes of particles present
     in a soil.
@@ -255,19 +264,16 @@ class PSD:
     11.43
     """
 
-    fines: int | float = field(validator=validators.ge(0))
-    sand: int | float = field(validator=validators.ge(0))
-    gravel: int | float = field(validator=validators.ge(0))
-    size_dist: SizeDistribution = field(
-        default=SizeDistribution(d_10=0, d_30=0, d_60=0)
-    )
-
-    gravel.default(lambda self: 100.0 - (self.fines + self.sand))  # type: ignore
-
-    def __attrs_post_init__(self):
-        total_agg = self.fines + self.sand + self.gravel
-        if not isclose(total_agg, 100.0, rel_tol=0.01):
-            raise PSDAggSumError("Aggregates do not sum up to 100.")
+    def __init__(
+        self,
+        fines: int | float,
+        sand: int | float,
+        size_dist: Optional[SizeDistribution] = None,
+    ):
+        self.fines = fines
+        self.sand = sand
+        self.gravel = 100 - (fines + sand)
+        self.size_dist = size_dist if size_dist else SizeDistribution(0, 0, 0)
 
     @property
     def type_of_coarse(self) -> str:
@@ -360,7 +366,7 @@ class AASHTO:
     --------
     >>> from geolysis.core.soil_classifier import AASHTO
 
-    >>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3, fines=11.18)
+    >>> aashto_clf = AASHTO(liquid_limit=30.2, plastic_limit=23.9, fines=11.18)
     >>> aashto_clf.group_index()
     0.0
     >>> aashto_clf.classify()
@@ -394,12 +400,13 @@ class AASHTO:
     def __init__(
         self,
         liquid_limit: int | float,
-        plasticity_index: int | float,
+        plastic_limit: int | float,
         fines: int | float,
         add_group_idx=True,
     ):
         self.liquid_limit = liquid_limit
-        self.plasticity_index = plasticity_index
+        self.plastic_limit = plastic_limit
+        self.plasticity_index = liquid_limit - plastic_limit
         self.fines = fines
         self.add_group_idx = add_group_idx
 
@@ -685,3 +692,39 @@ class USCS:
         clf = self.classify()
         soil_desc = [USCS.SOIL_DESCRIPTIONS[cls] for cls in clf.split(",")]
         return " or ".join(soil_desc)
+
+
+class SoilClassificationFactory:
+    @classmethod
+    def create_soil_classifier(
+        cls,
+        *,
+        liquid_limit: int | float,
+        plastic_limit: int | float,
+        fines: int | float,
+        sand: Optional[float] = None,
+        d_10: int | float = 0,
+        d_30: int | float = 0,
+        d_60: int | float = 0,
+        add_group_idx: bool = True,
+        organic: bool = False,
+        clf_type: SCType = SCType.AASHTO,
+    ) -> AASHTO | USCS:
+        if clf_type is SCType.AASHTO:
+            return AASHTO(
+                liquid_limit=liquid_limit,
+                plastic_limit=plastic_limit,
+                fines=fines,
+                add_group_idx=add_group_idx,
+            )
+
+        if sand is None:
+            raise ValueError("sand is required for USCS classification")
+
+        al = AtterbergLimits(
+            liquid_limit=liquid_limit,
+            plastic_limit=plastic_limit,
+        )
+        size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
+        psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
+        return USCS(atterberg_limits=al, psd=psd, organic=organic)
