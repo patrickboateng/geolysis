@@ -16,5 +16,5 @@ pytest = "*"
 pre-commit = "*"
 pytest-cov = "*"
 
-[requires]
-python_version = "3.11"
+# [requires]
+# python_version = "3.11"
