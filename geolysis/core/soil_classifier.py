@@ -690,37 +690,34 @@ class USCS:
         return " or ".join(soil_desc)
 
 
-class SoilClassificationFactory:
-    @classmethod
-    def create_soil_classifier(
-        cls,
-        *,
-        liquid_limit: int | float,
-        plastic_limit: int | float,
-        fines: int | float,
-        sand: Optional[float] = None,
-        d_10: int | float = 0,
-        d_30: int | float = 0,
-        d_60: int | float = 0,
-        add_group_idx: bool = True,
-        organic: bool = False,
-        clf_type: SCType = SCType.AASHTO,
-    ) -> AASHTO | USCS:
-        if clf_type is SCType.AASHTO:
-            return AASHTO(
-                liquid_limit=liquid_limit,
-                plastic_limit=plastic_limit,
-                fines=fines,
-                add_group_idx=add_group_idx,
-            )
-
-        if sand is None:
-            raise ValueError("sand is required for USCS classification")
-
-        al = AtterbergLimits(
+def create_soil_classifier(
+    *,
+    liquid_limit: int | float,
+    plastic_limit: int | float,
+    fines: int | float,
+    sand: Optional[float] = None,
+    d_10: int | float = 0,
+    d_30: int | float = 0,
+    d_60: int | float = 0,
+    add_group_idx: bool = True,
+    organic: bool = False,
+    clf_type: SCType = SCType.AASHTO,
+) -> AASHTO | USCS:
+    if clf_type is SCType.AASHTO:
+        return AASHTO(
             liquid_limit=liquid_limit,
             plastic_limit=plastic_limit,
+            fines=fines,
+            add_group_idx=add_group_idx,
         )
-        size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
-        psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
-        return USCS(atterberg_limits=al, psd=psd, organic=organic)
+
+    if sand is None:
+        raise ValueError("sand is required for USCS classification")
+
+    al = AtterbergLimits(
+        liquid_limit=liquid_limit,
+        plastic_limit=plastic_limit,
+    )
+    size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
+    psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
+    return USCS(atterberg_limits=al, psd=psd, organic=organic)
