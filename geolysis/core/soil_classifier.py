@@ -26,7 +26,19 @@ class USCSSoilSymbol(enum.StrEnum):
 
 
 @enum.global_enum
-class AASHTOSoilSymbol(enum.StrEnum): ...
+class AASHTOSoilSymbol(enum.StrEnum):
+    A_1_a = "A-1-a"
+    A_1_b = "A-1-b"
+    A_3 = "A-3"
+    A_2_4 = "A-2-4"
+    A_2_5 = "A-2-5"
+    A_2_6 = "A-2-6"
+    A_2_7 = "A-2-7"
+    A_4 = "A-4"
+    A_5 = "A-5"
+    A_6 = "A-6"
+    A_7_5 = "A-7-5"
+    A_7_6 = "A-7-6"
 
 
 # Soil classification type
@@ -415,7 +427,7 @@ class AASHTO:
             soil_class = self._coarse_soil_classifier()
         if self.add_group_idx:
             soil_class = f"{soil_class}({self.group_index():.0f})"
-        return soil_class
+        return str(soil_class)
 
     def _coarse_soil_classifier(self) -> str:
         # A-3, Fine sand
@@ -423,17 +435,18 @@ class AASHTO:
         PI = self.plasticity_index
 
         if self.fines <= 10 and isclose(PI, 0, rel_tol=0.01):
-            soil_class = "A-3"
+            soil_class = A_3
         # A-1-a -> A-1-b, Stone fragments, gravel, and sand
         elif self.fines <= 15 and PI <= 6:
-            soil_class = "A-1-a"
+            soil_class = A_1_a
         elif self.fines <= 25 and PI <= 6:
-            soil_class = "A-1-b"
+            soil_class = A_1_b
         # A-2-4 -> A-2-7, Silty or clayey gravel and sand
         elif LL <= 40:
-            soil_class = "A-2-4" if PI <= 10 else "A-2-6"
+            soil_class = A_2_4 if PI <= 10 else A_2_6
         else:
-            soil_class = "A-2-5" if PI <= 10 else "A-2-7"
+            soil_class = A_2_5 if PI <= 10 else A_2_7
+
         return soil_class
 
     def _fine_soil_classifier(self) -> str:
@@ -443,12 +456,12 @@ class AASHTO:
         PI = self.plasticity_index
 
         if LL <= 40:
-            soil_class = "A-4" if PI <= 10 else "A-6"
+            soil_class = A_4 if PI <= 10 else A_6
         else:
             if PI <= 10:
-                soil_class = "A-5"
+                soil_class = A_5
             else:
-                soil_class = "A-7-5" if PI <= (LL - 30) else "A-7-6"
+                soil_class = A_7_5 if PI <= (LL - 30) else A_7_6
         return soil_class
 
     def classify(self) -> str:
