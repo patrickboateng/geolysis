@@ -7,11 +7,14 @@ name = "pypi"
 attrs = "*"
 fastapi = {extras = ["standard"], version = "*"}
 pint = "==0.23"
+pyside6 = "*"
+matplotlib = "*"
+numpy = "==1.26.4"
 
 [dev-packages]
 pytest = "*"
-geolysis = {file = ".", editable = true}
 pre-commit = "*"
+pytest-cov = "*"
 
 [requires]
-python_version = "3.11"
+python_version = ">=3.11"
