@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from geolysis.core._config.config import UReg
+from geolysis.core._config.config import UnitReg
 from geolysis.core.foundation import FoundationSize
 from geolysis.core.utils import quantity, round_
 
@@ -93,7 +93,7 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -150,7 +150,7 @@ class BowlesABC4MatFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -201,7 +201,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -258,7 +258,7 @@ class MeyerhofABC4MatFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -342,7 +342,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
         return min(CW, 2)
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -409,7 +409,7 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     ... )
     """
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """

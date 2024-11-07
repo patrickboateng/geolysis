@@ -29,8 +29,8 @@ class UnitSystem(enum.StrEnum):
     SI = "SI"
 
 
-UReg = UnitRegistry(system=UnitSystem.SI, cache_folder=":auto:")
-Quantity = UReg.Quantity
+UnitReg = UnitRegistry(system=UnitSystem.SI, cache_folder=":auto:")
+Quantity = UnitReg.Quantity
 
 
 ########################################################

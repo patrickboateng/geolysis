@@ -1,4 +1,4 @@
-from geolysis.core._config.config import UReg
+from geolysis.core._config.config import UnitReg
 from geolysis.core.bearing_capacity.ubc_4_soils import (
     DP,
     Soil,
@@ -239,7 +239,7 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
     def i_gamma(self) -> float:
         return self.incl_factor.i_gamma(self.friction_angle, self.load_angle)
 
-    @quantity(unit=UReg.kPa)
+    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
