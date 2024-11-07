@@ -4,13 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pint = "*"
 attrs = "*"
-fastapi = "*"
+fastapi = {extras = ["standard"], version = "*"}
+pint = "==0.23"
 
 [dev-packages]
-pre-commit = "*"
 pytest = "*"
+geolysis = {file = ".", editable = true}
+pre-commit = "*"
 
 [requires]
 python_version = "3.11"
