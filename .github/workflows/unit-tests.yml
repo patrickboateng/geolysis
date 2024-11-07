@@ -30,7 +30,7 @@ jobs:
           python -m pip install pipenv
           pipenv install
       - name: Test with pytest
-        run: pytest
+        run: pipenv run pytest
 
   coverage:
     if: github.ref == 'refs/heads/main'
