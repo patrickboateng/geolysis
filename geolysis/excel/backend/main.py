@@ -5,7 +5,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from geolysis.core.soil_classifier import SCType, SoilClassificationFactory
+from geolysis.core.soil_classifier import SCType, create_soil_classifier
 
 
 class SoilParam(BaseModel):
@@ -31,26 +31,17 @@ app.add_middleware(
 )
 
 
-def get_soil_classification(soil_params: SoilParam, clf_type: SCType):
-    params = json.loads(soil_params.model_dump_json())
-    clf = SoilClassificationFactory.create_soil_classifier(
-        **params,
-        clf_type=clf_type,
-    )
+def _soil_classification(soil_param: SoilParam, clf_type: SCType):
+    params = json.loads(soil_param.model_dump_json())
+    clf = create_soil_classifier(**params, clf_type=clf_type)
     return {"classification": clf.classify(), "description": clf.description()}
 
 
 @app.get("/aashto/")
 async def aashto(soil_param: Annotated[SoilParam, Query()]):
-    return get_soil_classification(
-        soil_params=soil_param,
-        clf_type=SCType.AASHTO,
-    )
+    return _soil_classification(soil_param=soil_param, clf_type=SCType.AASHTO)
 
 
 @app.get("/uscs/")
 async def uscs(soil_param: Annotated[SoilParam, Query()]):
-    return get_soil_classification(
-        soil_params=soil_param,
-        clf_type=SCType.USCS,
-    )
+    return _soil_classification(soil_param=soil_param, clf_type=SCType.USCS)
