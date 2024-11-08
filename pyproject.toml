@@ -94,4 +94,4 @@ docstring-code-line-length = 79
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "utils.py" = ["F401"]
-"soil_classifier.py" = ["F821"]
+"soil_classifier.py" = ["F821", "E741"]
