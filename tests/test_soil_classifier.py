@@ -101,13 +101,13 @@ class TestUSCS:
     @pytest.mark.parametrize(
         "al,_psd,clf",
         [
-            ((30.8, 20.7), (10.29, 81.89), "SW-SC,SP-SC"),
-            ((24.4, 14.7), (9.77, 44.82), "GW-GC,GP-GC"),
-            ((49.5, 33.6), (6.93, 91.79), "SW-SM,SP-SM"),
-            ((30.33, 23.42), (8.93, 7.69), "GW-GM,GP-GM"),
-            ((35.32, 25.57), (9.70, 5.63), "GW-GM,GP-GM"),
-            ((26.17, 19.69), (12.00, 8.24), "GW-GC,GP-GC"),
-            ((32.78, 22.99), (3.87, 15.42), "GW,GP"),
+            ((30.8, 20.7), (10.29, 81.89), ("SW-SC", "SP-SC")),
+            ((24.4, 14.7), (9.77, 44.82), ("GW-GC", "GP-GC")),
+            ((49.5, 33.6), (6.93, 91.79), ("SW-SM", "SP-SM")),
+            ((30.33, 23.42), (8.93, 7.69), ("GW-GM", "GP-GM")),
+            ((35.32, 25.57), (9.70, 5.63), ("GW-GM", "GP-GM")),
+            ((26.17, 19.69), (12.00, 8.24), ("GW-GC", "GP-GC")),
+            ((32.78, 22.99), (3.87, 15.42), ("GW", "GP")),
         ],
     )
     def test_dual_classification_no_psd_coeff(
@@ -121,6 +121,8 @@ class TestUSCS:
         uscs = USCS(atterberg_limits, psd)
 
         assert uscs.classify() == clf
+
+        assert uscs.description()
 
     @pytest.mark.parametrize(
         "al,_psd,clf",

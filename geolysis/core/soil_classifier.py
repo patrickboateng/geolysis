@@ -1,5 +1,5 @@
 import enum
-from typing import Final, Optional
+from typing import Iterable, Optional
 
 import attrs
 
@@ -10,35 +10,6 @@ __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
 class SizeDistError(ZeroDivisionError):
     pass
-
-
-@enum.global_enum
-class USCSSoilSymbol(enum.StrEnum):
-    GRAVEL = "G"
-    SAND = "S"
-    SILT = "M"
-    CLAY = "C"
-    ORGANIC = "O"
-    WELL_GRADED = "W"
-    POORLY_GRADED = "P"
-    LOW_PLASTICITY = "L"
-    HIGH_PLASTICITY = "H"
-
-
-@enum.global_enum
-class AASHTOSoilSymbol(enum.StrEnum):
-    A_1_a = "A-1-a"
-    A_1_b = "A-1-b"
-    A_3 = "A-3"
-    A_2_4 = "A-2-4"
-    A_2_5 = "A-2-5"
-    A_2_6 = "A-2-6"
-    A_2_7 = "A-2-7"
-    A_4 = "A-4"
-    A_5 = "A-5"
-    A_6 = "A-6"
-    A_7_5 = "A-7-5"
-    A_7_6 = "A-7-6"
 
 
 # Soil classification type
@@ -118,7 +89,7 @@ class AtterbergLimits:
         return 0.73 * (self.liquid_limit - 20.0)
 
     @property
-    def type_of_fines(self) -> str:
+    def fine_material_type(self) -> str:
         """
         Determines whether the soil is either clay or :silt.
         """
@@ -230,7 +201,6 @@ class SizeDistribution:
         return grade
 
 
-# @attrs.define
 class PSD:
     r"""Quantitative proportions by mass of various sizes of particles present
     in a soil.
@@ -284,7 +254,7 @@ class PSD:
         self.size_dist = size_dist if size_dist else SizeDistribution(0, 0, 0)
 
     @property
-    def type_of_coarse(self) -> str:
+    def coarse_material_type(self) -> str:
         """Determines whether the soil is either gravel or sand."""
         return GRAVEL if self.gravel > self.sand else SAND
 
@@ -333,7 +303,77 @@ class PSD:
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 4` (for gravels)
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
         """
-        return self.size_dist.grade(coarse_soil=self.type_of_coarse)
+        return self.size_dist.grade(coarse_soil=self.coarse_material_type)
+
+
+class ClfSymbol(enum.Enum):
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, str):
+            return self.symbol == value
+        return super().__eq__(value)
+
+    @property
+    def symbol(self) -> str:
+        return self.value[0]
+
+    @property
+    def description(self) -> str:
+        return self.value[1]
+
+
+@enum.global_enum
+class USCSSymbol(ClfSymbol):
+    G = GRAVEL = ("G", "Gravel")
+    S = SAND = ("S", "Sand")
+    M = SILT = ("M", "Silt")
+    C = CLAY = ("C", "Clay")
+    O = ORGANIC = ("O", "Organic")
+    W = WELL_GRADED = ("W", "Well graded")
+    P = POORLY_GRADED = ("P", "Poorly graded")
+    L = LOW_PLASTICITY = ("L", "Low plasticity")
+    H = HIGH_PLASTICITY = ("H", "High plasticity")
+    GW = ("GW", "Well graded gravels")
+    GP = ("GP", "Poorly graded gravels")
+    GM = ("GM", "Silty gravels")
+    GC = ("GC", "Clayey gravels")
+    GM_GC = ("GM-GC", "Gravelly clayey silt")
+    GW_GM = ("GW-GM", "Well graded gravel with silt")
+    GP_GM = ("GP-GM", "Poorly graded gravel with silt")
+    GW_GC = ("GW-GC", "Well graded gravel with clay")
+    GP_GC = ("GP-GC", "Poorly graded gravel with clay")
+    SW = ("SW", "Well graded sands")
+    SP = ("SP", "Poorly graded sands")
+    SM = ("SM", "Silty sands")
+    SC = ("SC", "Clayey sands")
+    SM_SC = ("SM-SC", "Sandy clayey silt")
+    SW_SM = ("SW-SM", "Well graded sand with silt")
+    SP_SM = ("SP-SM", "Poorly graded sand with silt")
+    SW_SC = ("SW-SC", "Well graded sand with clay")
+    SP_SC = ("SP-SC", "Poorly graded sand with clay")
+    ML = ("ML", "Inorganic silts with low plasticity")
+    CL = ("CL", "Inorganic clays with low plasticity")
+    ML_CL = ("ML-CL", "Clayey silt with low plasticity")
+    OL = ("OL", "Organic clays with low plasticity")
+    MH = ("MH", "Inorganic silts with high plasticity")
+    CH = ("CH", "Inorganic clays with high plasticity")
+    OH = ("OH", "Organic silts with high plasticity")
+    Pt = ("Pt", "Highly organic soils")
+
+
+@enum.global_enum
+class AASHTOSymbol(ClfSymbol):
+    A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
+    A_1_b = ("A-1-b", "Stone fragments, gravel, and sand")
+    A_3 = ("A-3", "Fine sand")
+    A_2_4 = ("A-2-4", "Silty or clayey gravel and sand")
+    A_2_5 = ("A-2-5", "Silty or clayey gravel and sand")
+    A_2_6 = ("A-2-6", "Silty or clayey gravel and sand")
+    A_2_7 = ("A-2-7", "Silty or clayey gravel and sand")
+    A_4 = ("A-4", "Silty soils")
+    A_5 = ("A-5", "Silty soils")
+    A_6 = ("A-6", "Clayey soils")
+    A_7_5 = ("A-7-5", "Clayey soils")
+    A_7_6 = ("A-7-6", "Clayey soils")
 
 
 class AASHTO:
@@ -390,21 +430,6 @@ class AASHTO:
     'A-2-4'
     """
 
-    SOIL_DESCRIPTIONS: Final = {
-        "A-1-a": "Stone fragments, gravel, and sand",
-        "A-1-b": "Stone fragments, gravel, and sand",
-        "A-3": "Fine sand",
-        "A-2-4": "Silty or clayey gravel and sand",
-        "A-2-5": "Silty or clayey gravel and sand",
-        "A-2-6": "Silty or clayey gravel and sand",
-        "A-2-7": "Silty or clayey gravel and sand",
-        "A-4": "Silty soils",
-        "A-5": "Silty soils",
-        "A-6": "Clayey soils",
-        "A-7-5": "Clayey soils",
-        "A-7-6": "Clayey soils",
-    }
-
     def __init__(
         self,
         liquid_limit: int | float,
@@ -417,64 +442,6 @@ class AASHTO:
         self.plasticity_index = liquid_limit - plastic_limit
         self.fines = fines
         self.add_group_idx = add_group_idx
-
-    def _classify(self) -> str:
-        # Silts A4-A7
-        if self.fines > 35:
-            soil_class = self._fine_soil_classifier()
-        # Coarse A1-A3
-        else:
-            soil_class = self._coarse_soil_classifier()
-        if self.add_group_idx:
-            soil_class = f"{soil_class}({self.group_index():.0f})"
-        return str(soil_class)
-
-    def _coarse_soil_classifier(self) -> str:
-        # A-3, Fine sand
-        LL = self.liquid_limit
-        PI = self.plasticity_index
-
-        if self.fines <= 10 and isclose(PI, 0, rel_tol=0.01):
-            soil_class = A_3
-        # A-1-a -> A-1-b, Stone fragments, gravel, and sand
-        elif self.fines <= 15 and PI <= 6:
-            soil_class = A_1_a
-        elif self.fines <= 25 and PI <= 6:
-            soil_class = A_1_b
-        # A-2-4 -> A-2-7, Silty or clayey gravel and sand
-        elif LL <= 40:
-            soil_class = A_2_4 if PI <= 10 else A_2_6
-        else:
-            soil_class = A_2_5 if PI <= 10 else A_2_7
-
-        return soil_class
-
-    def _fine_soil_classifier(self) -> str:
-        # A-4 -> A-5, Silty Soils
-        # A-6 -> A-7, Clayey Soils
-        LL = self.liquid_limit
-        PI = self.plasticity_index
-
-        if LL <= 40:
-            soil_class = A_4 if PI <= 10 else A_6
-        else:
-            if PI <= 10:
-                soil_class = A_5
-            else:
-                soil_class = A_7_5 if PI <= (LL - 30) else A_7_6
-        return soil_class
-
-    def classify(self) -> str:
-        """Return the AASHTO classification of the soil."""
-        return self._classify()
-
-    def description(self) -> str:
-        """Return the AASHTO description of the soil."""
-        tmp_state = self.add_group_idx
-        self.add_group_idx = False
-        soil_cls = self.classify()
-        self.add_group_idx = tmp_state
-        return AASHTO.SOIL_DESCRIPTIONS[soil_cls]
 
     def group_index(self) -> int | float:
         """Return the Group Index (GI) of the soil sample."""
@@ -489,6 +456,73 @@ class AASHTO:
         d = 1 if (x_0 := PI - 10) < 0 else min(x_0, 20)
 
         return round(a * (0.2 + 0.005 * b) + 0.01 * c * d, 0)
+
+    def description(self) -> str:
+        """Return the AASHTO description of the soil."""
+        tmp_state = self.add_group_idx
+        self.add_group_idx = False
+        soil_clf = self._classify()
+        self.add_group_idx = tmp_state
+        return soil_clf.description
+
+    def classify(self) -> str:
+        """Return the AASHTO classification of the soil."""
+        symb = self._classify().symbol
+
+        if self.add_group_idx:
+            symb = f"{symb}({self.group_index():.0f})"
+
+        return symb
+
+    def _classify(self) -> AASHTOSymbol:
+        # Silts A4-A7
+        if self.fines > 35:
+            soil_class = self._fine_soil_classifier()
+        # Coarse A1-A3
+        else:
+            soil_class = self._coarse_soil_classifier()
+
+        return soil_class
+
+    def _fine_soil_classifier(self) -> AASHTOSymbol:
+        # A-4 -> A-5, Silty Soils
+        # A-6 -> A-7, Clayey Soils
+        LL = self.liquid_limit
+        PI = self.plasticity_index
+
+        if LL <= 40:
+            soil_clf = AASHTOSymbol.A_4 if PI <= 10 else AASHTOSymbol.A_6
+        else:
+            if PI <= 10:
+                soil_clf = AASHTOSymbol.A_5
+            else:
+                soil_clf = (
+                    AASHTOSymbol.A_7_5
+                    if PI <= (LL - 30)
+                    else AASHTOSymbol.A_7_6
+                )
+
+        return soil_clf
+
+    def _coarse_soil_classifier(self) -> AASHTOSymbol:
+        # A-3, Fine sand
+        LL = self.liquid_limit
+        PI = self.plasticity_index
+
+        if self.fines <= 10 and isclose(PI, 0, rel_tol=0.01):
+            soil_clf = AASHTOSymbol.A_3
+        # A-1-a -> A-1-b, Stone fragments, gravel, and sand
+        elif self.fines <= 15 and PI <= 6:
+            soil_clf = AASHTOSymbol.A_1_a
+        elif self.fines <= 25 and PI <= 6:
+            soil_clf = AASHTOSymbol.A_1_b
+        # A-2-4 -> A-2-7, Silty or clayey gravel and sand
+        elif LL <= 40:
+            soil_clf = AASHTOSymbol.A_2_4 if PI <= 10 else AASHTOSymbol.A_2_6
+        else:
+            soil_clf = AASHTOSymbol.A_2_5 if PI <= 10 else AASHTOSymbol.A_2_7
+
+        return soil_clf
 
 
 class USCS:
@@ -551,44 +585,6 @@ class USCS:
     'Well graded sand with clay'
     """
 
-    SOIL_DESCRIPTIONS: Final = {
-        "G": "Gravel",
-        "S": "Sand",
-        "M": "Silt",
-        "C": "Clay",
-        "O": "Organic",
-        "W": "Well graded",
-        "P": "Poorly graded",
-        "L": "Low plasticity",
-        "H": "High plasticity",
-        "GW": "Well graded gravels",
-        "GP": "Poorly graded gravels",
-        "GM": "Silty gravels",
-        "GC": "Clayey gravels",
-        "GM-GC": "Gravelly clayey silt",
-        "GW-GM": "Well graded gravel with silt",
-        "GP-GM": "Poorly graded gravel with silt",
-        "GW-GC": "Well graded gravel with clay",
-        "GP-GC": "Poorly graded gravel with clay",
-        "SW": "Well graded sands",
-        "SP": "Poorly graded sands",
-        "SM": "Silty sands",
-        "SC": "Clayey sands",
-        "SM-SC": "Sandy clayey silt",
-        "SW-SM": "Well graded sand with silt",
-        "SP-SM": "Poorly graded sand with silt",
-        "SW-SC": "Well graded sand with clay",
-        "SP-SC": "Poorly graded sand with clay",
-        "ML": "Inorganic silts with low plasticity",
-        "CL": "Inorganic clays with low plasticity",
-        "ML-CL": "Clayey silt with low plasticity",
-        "OL": "Organic clays with low plasticity",
-        "MH": "Inorganic silts with high plasticity",
-        "CH": "Inorganic clays with high plasticity",
-        "OH": "Organic silts with high plasticity",
-        "Pt": "Highly organic soils",
-    }
-
     def __init__(
         self,
         atterberg_limits: AtterbergLimits,
@@ -599,7 +595,28 @@ class USCS:
         self.psd = psd
         self.organic = organic
 
-    def _classify(self) -> str:
+    def description(self) -> str | Iterable[str]:
+        """Return the USCS description of the soil."""
+        soil_clf = self._classify()
+
+        if isinstance(soil_clf, USCSSymbol):
+            return soil_clf.description
+        elif isinstance(soil_clf, str):
+            return USCSSymbol[soil_clf].description
+        else:
+            return tuple(map(lambda v: USCSSymbol[v].description, soil_clf))
+
+    def classify(self) -> str | Iterable[str]:
+        """Return the USCS classification of the soil."""
+        soil_clf = self._classify()
+        if isinstance(soil_clf, USCSSymbol):
+            return soil_clf.symbol
+        elif isinstance(soil_clf, str):
+            return soil_clf.replace("_", "-")
+        else:
+            return tuple(map(lambda v: v.replace("_", "-"), soil_clf))
+
+    def _classify(self) -> USCSSymbol | str | Iterable[str]:
         # Fine grained, Run Atterberg
         if self.psd.fines > 50:
             return self._fine_soil_classifier()
@@ -608,55 +625,7 @@ class USCS:
         # Gravel or Sand
         return self._coarse_soil_classifier()
 
-    def _dual_soil_classifier(self) -> str:
-        fine_soil = self.atterberg_limits.type_of_fines
-        coarse_soil = self.psd.type_of_coarse
-
-        return f"{coarse_soil}{self.psd.grade()}-{coarse_soil}{fine_soil}"
-
-    def _coarse_soil_classifier(self) -> str:
-        coarse_soil = self.psd.type_of_coarse
-
-        # More than 12% pass No. 200 sieve
-        if self.psd.fines > 12:
-            # Above A-line
-            if self.atterberg_limits.above_A_LINE():
-                soil_class = f"{coarse_soil}{CLAY}"
-
-            # Limit plot in hatched zone on plasticity chart
-            elif self.atterberg_limits.limit_plot_in_hatched_zone():
-                soil_class = f"{coarse_soil}{SILT}-{coarse_soil}{CLAY}"
-
-            # Below A-line
-            else:
-                soil_class = f"{coarse_soil}{SILT}"
-
-        elif 5 <= self.psd.fines <= 12:
-            # Requires dual symbol based on graduation and plasticity chart
-            if self.psd.has_particle_sizes():
-                soil_class = self._dual_soil_classifier()
-
-            else:
-                fine_soil = self.atterberg_limits.type_of_fines
-                soil_class = (
-                    f"{coarse_soil}{WELL_GRADED}-{coarse_soil}{fine_soil},"
-                    f"{coarse_soil}{POORLY_GRADED}-{coarse_soil}{fine_soil}"
-                )
-
-        # Less than 5% pass No. 200 sieve
-        # Obtain Cc and Cu from grain size graph
-        else:
-            if self.psd.has_particle_sizes():
-                soil_class = f"{coarse_soil}{self.psd.grade()}"
-
-            else:
-                soil_class = (
-                    f"{coarse_soil}{WELL_GRADED},{coarse_soil}{POORLY_GRADED}"
-                )
-
-        return soil_class
-
-    def _fine_soil_classifier(self) -> str:
+    def _fine_soil_classifier(self) -> USCSSymbol:
         LL = self.atterberg_limits.liquid_limit
         PI = self.atterberg_limits.plasticity_index
 
@@ -664,43 +633,101 @@ class USCS:
             # Low LL
             # Above A-line and PI > 7
             if (self.atterberg_limits.above_A_LINE()) and (PI > 7):
-                soil_class = f"{CLAY}{LOW_PLASTICITY}"
+                soil_clf = USCSSymbol.CL
 
             # Limit plot in hatched area on plasticity chart
             elif self.atterberg_limits.limit_plot_in_hatched_zone():
-                soil_class = f"{SILT}{LOW_PLASTICITY}-{CLAY}{LOW_PLASTICITY}"
+                soil_clf = USCSSymbol.ML_CL
 
             # Below A-line or PI < 4
             else:
-                if self.organic:
-                    soil_class = f"{ORGANIC}{LOW_PLASTICITY}"
-                else:
-                    soil_class = f"{SILT}{LOW_PLASTICITY}"
+                soil_clf = USCSSymbol.OL if self.organic else USCSSymbol.ML
 
         # High LL
         else:
             # Above A-Line
             if self.atterberg_limits.above_A_LINE():
-                soil_class = f"{CLAY}{HIGH_PLASTICITY}"
+                soil_clf = USCSSymbol.CH
 
             # Below A-Line
             else:
-                if self.organic:
-                    soil_class = f"{ORGANIC}{HIGH_PLASTICITY}"
-                else:
-                    soil_class = f"{SILT}{HIGH_PLASTICITY}"
+                soil_clf = USCSSymbol.OH if self.organic else USCSSymbol.MH
 
-        return soil_class
+        return soil_clf
 
-    def classify(self) -> str:
-        """Return the USCS classification of the soil."""
-        return self._classify()
+    def _coarse_soil_classifier(self) -> USCSSymbol | Iterable[str]:
+        coarse_material_type = self.psd.coarse_material_type
 
-    def description(self) -> str:
-        """Return the USCS description of the soil."""
-        clf = self.classify()
-        soil_desc = [USCS.SOIL_DESCRIPTIONS[cls] for cls in clf.split(",")]
-        return " or ".join(soil_desc)
+        # More than 12% pass No. 200 sieve
+        if self.psd.fines > 12:
+            # Above A-line
+            if self.atterberg_limits.above_A_LINE():
+                soil_clf = f"{coarse_material_type}{USCSSymbol.CLAY}"
+
+            # Limit plot in hatched zone on plasticity chart
+            elif self.atterberg_limits.limit_plot_in_hatched_zone():
+                soil_clf = (
+                    USCSSymbol.GM_GC
+                    if coarse_material_type == USCSSymbol.GRAVEL
+                    else USCSSymbol.SM_SC
+                )
+
+            # Below A-line
+            else:
+                soil_clf = (
+                    USCSSymbol.GM
+                    if coarse_material_type == USCSSymbol.GRAVEL
+                    else USCSSymbol.SM
+                )
+
+        elif 5 <= self.psd.fines <= 12:
+            # Requires dual symbol based on graduation and plasticity chart
+            if self.psd.has_particle_sizes():
+                soil_clf = self._dual_soil_classifier()
+
+            else:
+                fine_material_type = self.atterberg_limits.fine_material_type
+
+                soil_clf = (
+                    f"{coarse_material_type}{USCSSymbol.WELL_GRADED}_"
+                    f"{coarse_material_type}{fine_material_type}",
+                    f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}_"
+                    f"{coarse_material_type}{fine_material_type}",
+                )
+
+                # soil_clf = (
+                #     f"{coarse_material_type}{USCSSymbol.WELL_GRADED}_"
+                #     f"{coarse_material_type}{fine_material_type},"
+                #     f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}_"
+                #     f"{coarse_material_type}{fine_material_type}"
+                # )
+
+        # Less than 5% pass No. 200 sieve
+        # Obtain Cc and Cu from grain size graph
+        else:
+            if self.psd.has_particle_sizes():
+                soil_clf = f"{coarse_material_type}{self.psd.grade()}"
+
+            else:
+                soil_clf = (
+                    f"{coarse_material_type}{USCSSymbol.WELL_GRADED}",
+                    f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}",
+                )
+                # soil_clf = (
+                #     f"{coarse_material_type}{USCSSymbol.WELL_GRADED},"
+                #     f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}"
+                # )
+
+        return soil_clf
+
+    def _dual_soil_classifier(self) -> str:
+        fine_material_type = self.atterberg_limits.fine_material_type
+        coarse_material_type = self.psd.coarse_material_type
+
+        return (
+            f"{coarse_material_type}{self.psd.grade()}_"
+            f"{coarse_material_type}{fine_material_type}"
+        )
 
 
 def create_soil_classifier(
