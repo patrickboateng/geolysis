@@ -14,7 +14,6 @@ from typing import (
 from geolysis.core._config.config import (
     Option,
     Quantity,
-    UnitSystem,
     get_option,
 )
 
