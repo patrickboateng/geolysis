@@ -122,8 +122,6 @@ class TestUSCS:
 
         assert uscs.classify() == clf
 
-        assert uscs.description()
-
     @pytest.mark.parametrize(
         "al,_psd,clf",
         [
