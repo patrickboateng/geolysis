@@ -13,9 +13,79 @@ class SizeDistError(ZeroDivisionError):
 
 
 # Soil classification type
-class SCType(enum.StrEnum):
+class ClfType(enum.StrEnum):
     AASHTO = enum.auto()
     USCS = enum.auto()
+
+
+class ClfSymbol(enum.Enum):
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, str):
+            return self.symbol == value
+        return super().__eq__(value)
+
+    @property
+    def symbol(self) -> str:
+        return self.value[0]
+
+    @property
+    def description(self) -> str:
+        return self.value[1]
+
+
+@enum.global_enum
+class USCSSymbol(ClfSymbol):
+    G = GRAVEL = ("G", "Gravel")
+    S = SAND = ("S", "Sand")
+    M = SILT = ("M", "Silt")
+    C = CLAY = ("C", "Clay")
+    O = ORGANIC = ("O", "Organic")
+    W = WELL_GRADED = ("W", "Well graded")
+    P = POORLY_GRADED = ("P", "Poorly graded")
+    L = LOW_PLASTICITY = ("L", "Low plasticity")
+    H = HIGH_PLASTICITY = ("H", "High plasticity")
+    GW = ("GW", "Well graded gravels")
+    GP = ("GP", "Poorly graded gravels")
+    GM = ("GM", "Silty gravels")
+    GC = ("GC", "Clayey gravels")
+    GM_GC = ("GM-GC", "Gravelly clayey silt")
+    GW_GM = ("GW-GM", "Well graded gravel with silt")
+    GP_GM = ("GP-GM", "Poorly graded gravel with silt")
+    GW_GC = ("GW-GC", "Well graded gravel with clay")
+    GP_GC = ("GP-GC", "Poorly graded gravel with clay")
+    SW = ("SW", "Well graded sands")
+    SP = ("SP", "Poorly graded sands")
+    SM = ("SM", "Silty sands")
+    SC = ("SC", "Clayey sands")
+    SM_SC = ("SM-SC", "Sandy clayey silt")
+    SW_SM = ("SW-SM", "Well graded sand with silt")
+    SP_SM = ("SP-SM", "Poorly graded sand with silt")
+    SW_SC = ("SW-SC", "Well graded sand with clay")
+    SP_SC = ("SP-SC", "Poorly graded sand with clay")
+    ML = ("ML", "Inorganic silts with low plasticity")
+    CL = ("CL", "Inorganic clays with low plasticity")
+    ML_CL = ("ML-CL", "Clayey silt with low plasticity")
+    OL = ("OL", "Organic clays with low plasticity")
+    MH = ("MH", "Inorganic silts with high plasticity")
+    CH = ("CH", "Inorganic clays with high plasticity")
+    OH = ("OH", "Organic silts with high plasticity")
+    Pt = ("Pt", "Highly organic soils")
+
+
+@enum.global_enum
+class AASHTOSymbol(ClfSymbol):
+    A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
+    A_1_b = ("A-1-b", "Stone fragments, gravel, and sand")
+    A_3 = ("A-3", "Fine sand")
+    A_2_4 = ("A-2-4", "Silty or clayey gravel and sand")
+    A_2_5 = ("A-2-5", "Silty or clayey gravel and sand")
+    A_2_6 = ("A-2-6", "Silty or clayey gravel and sand")
+    A_2_7 = ("A-2-7", "Silty or clayey gravel and sand")
+    A_4 = ("A-4", "Silty soils")
+    A_5 = ("A-5", "Silty soils")
+    A_6 = ("A-6", "Clayey soils")
+    A_7_5 = ("A-7-5", "Clayey soils")
+    A_7_6 = ("A-7-6", "Clayey soils")
 
 
 @attrs.define
@@ -89,11 +159,11 @@ class AtterbergLimits:
         return 0.73 * (self.liquid_limit - 20.0)
 
     @property
-    def fine_material_type(self) -> str:
+    def fine_material_type(self) -> USCSSymbol:
         """
         Determines whether the soil is either clay or :silt.
         """
-        return CLAY if self.above_A_LINE() else SILT
+        return USCSSymbol.CLAY if self.above_A_LINE() else USCSSymbol.SILT
 
     def above_A_LINE(self) -> bool:
         """Checks if the soil sample is above A-Line."""
@@ -177,7 +247,7 @@ class SizeDistribution:
     def coeff_of_uniformity(self) -> int | float:
         return self.d_60 / self.d_10
 
-    def grade(self, coarse_soil: str) -> str:
+    def grade(self, coarse_soil: USCSSymbol) -> USCSSymbol:
         """Grade of soil sample. Soil grade can either be well graded or poorly
         graded.
 
@@ -185,18 +255,18 @@ class SizeDistribution:
             arguments are "G" for gravel and "S" for SAND.
         """
 
-        if coarse_soil == GRAVEL and (
+        if coarse_soil is USCSSymbol.GRAVEL and (
             1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4
         ):
-            grade = WELL_GRADED
+            grade = USCSSymbol.WELL_GRADED
 
-        elif coarse_soil == SAND and (
+        elif coarse_soil is USCSSymbol.SAND and (
             1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 6
         ):
-            grade = WELL_GRADED
+            grade = USCSSymbol.WELL_GRADED
 
         else:
-            grade = POORLY_GRADED
+            grade = USCSSymbol.POORLY_GRADED
 
         return grade
 
@@ -254,9 +324,11 @@ class PSD:
         self.size_dist = size_dist if size_dist else SizeDistribution(0, 0, 0)
 
     @property
-    def coarse_material_type(self) -> str:
+    def coarse_material_type(self) -> USCSSymbol:
         """Determines whether the soil is either gravel or sand."""
-        return GRAVEL if self.gravel > self.sand else SAND
+        return (
+            USCSSymbol.GRAVEL if self.gravel > self.sand else USCSSymbol.SAND
+        )
 
     @property
     @round_(2)
@@ -294,7 +366,7 @@ class PSD:
         """Checks if soil sample has particle sizes."""
         return any(attrs.astuple(self.size_dist))
 
-    def grade(self) -> str:
+    def grade(self) -> USCSSymbol:
         r"""Return the grade of the soil sample, either well graded or poorly
         graded.
 
@@ -304,76 +376,6 @@ class PSD:
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
         """
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
-
-
-class ClfSymbol(enum.Enum):
-    def __eq__(self, value: object) -> bool:
-        if isinstance(value, str):
-            return self.symbol == value
-        return super().__eq__(value)
-
-    @property
-    def symbol(self) -> str:
-        return self.value[0]
-
-    @property
-    def description(self) -> str:
-        return self.value[1]
-
-
-@enum.global_enum
-class USCSSymbol(ClfSymbol):
-    G = GRAVEL = ("G", "Gravel")
-    S = SAND = ("S", "Sand")
-    M = SILT = ("M", "Silt")
-    C = CLAY = ("C", "Clay")
-    O = ORGANIC = ("O", "Organic")
-    W = WELL_GRADED = ("W", "Well graded")
-    P = POORLY_GRADED = ("P", "Poorly graded")
-    L = LOW_PLASTICITY = ("L", "Low plasticity")
-    H = HIGH_PLASTICITY = ("H", "High plasticity")
-    GW = ("GW", "Well graded gravels")
-    GP = ("GP", "Poorly graded gravels")
-    GM = ("GM", "Silty gravels")
-    GC = ("GC", "Clayey gravels")
-    GM_GC = ("GM-GC", "Gravelly clayey silt")
-    GW_GM = ("GW-GM", "Well graded gravel with silt")
-    GP_GM = ("GP-GM", "Poorly graded gravel with silt")
-    GW_GC = ("GW-GC", "Well graded gravel with clay")
-    GP_GC = ("GP-GC", "Poorly graded gravel with clay")
-    SW = ("SW", "Well graded sands")
-    SP = ("SP", "Poorly graded sands")
-    SM = ("SM", "Silty sands")
-    SC = ("SC", "Clayey sands")
-    SM_SC = ("SM-SC", "Sandy clayey silt")
-    SW_SM = ("SW-SM", "Well graded sand with silt")
-    SP_SM = ("SP-SM", "Poorly graded sand with silt")
-    SW_SC = ("SW-SC", "Well graded sand with clay")
-    SP_SC = ("SP-SC", "Poorly graded sand with clay")
-    ML = ("ML", "Inorganic silts with low plasticity")
-    CL = ("CL", "Inorganic clays with low plasticity")
-    ML_CL = ("ML-CL", "Clayey silt with low plasticity")
-    OL = ("OL", "Organic clays with low plasticity")
-    MH = ("MH", "Inorganic silts with high plasticity")
-    CH = ("CH", "Inorganic clays with high plasticity")
-    OH = ("OH", "Organic silts with high plasticity")
-    Pt = ("Pt", "Highly organic soils")
-
-
-@enum.global_enum
-class AASHTOSymbol(ClfSymbol):
-    A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
-    A_1_b = ("A-1-b", "Stone fragments, gravel, and sand")
-    A_3 = ("A-3", "Fine sand")
-    A_2_4 = ("A-2-4", "Silty or clayey gravel and sand")
-    A_2_5 = ("A-2-5", "Silty or clayey gravel and sand")
-    A_2_6 = ("A-2-6", "Silty or clayey gravel and sand")
-    A_2_7 = ("A-2-7", "Silty or clayey gravel and sand")
-    A_4 = ("A-4", "Silty soils")
-    A_5 = ("A-5", "Silty soils")
-    A_6 = ("A-6", "Clayey soils")
-    A_7_5 = ("A-7-5", "Clayey soils")
-    A_7_6 = ("A-7-6", "Clayey soils")
 
 
 class AASHTO:
@@ -477,12 +479,12 @@ class AASHTO:
     def _classify(self) -> AASHTOSymbol:
         # Silts A4-A7
         if self.fines > 35:
-            soil_class = self._fine_soil_classifier()
+            soil_clf = self._fine_soil_classifier()
         # Coarse A1-A3
         else:
-            soil_class = self._coarse_soil_classifier()
+            soil_clf = self._coarse_soil_classifier()
 
-        return soil_class
+        return soil_clf
 
     def _fine_soil_classifier(self) -> AASHTOSymbol:
         # A-4 -> A-5, Silty Soils
@@ -655,7 +657,7 @@ class USCS:
 
         return soil_clf
 
-    def _coarse_soil_classifier(self) -> USCSSymbol | Iterable[str]:
+    def _coarse_soil_classifier(self) -> USCSSymbol | str | Iterable[str]:
         coarse_material_type = self.psd.coarse_material_type
 
         # More than 12% pass No. 200 sieve
@@ -695,13 +697,6 @@ class USCS:
                     f"{coarse_material_type}{fine_material_type}",
                 )
 
-                # soil_clf = (
-                #     f"{coarse_material_type}{USCSSymbol.WELL_GRADED}_"
-                #     f"{coarse_material_type}{fine_material_type},"
-                #     f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}_"
-                #     f"{coarse_material_type}{fine_material_type}"
-                # )
-
         # Less than 5% pass No. 200 sieve
         # Obtain Cc and Cu from grain size graph
         else:
@@ -713,10 +708,6 @@ class USCS:
                     f"{coarse_material_type}{USCSSymbol.WELL_GRADED}",
                     f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}",
                 )
-                # soil_clf = (
-                #     f"{coarse_material_type}{USCSSymbol.WELL_GRADED},"
-                #     f"{coarse_material_type}{USCSSymbol.POORLY_GRADED}"
-                # )
 
         return soil_clf
 
@@ -741,9 +732,12 @@ def create_soil_classifier(
     d_60: int | float = 0,
     add_group_idx: bool = True,
     organic: bool = False,
-    clf_type: SCType = SCType.AASHTO,
+    clf_type: ClfType | None = None,
 ) -> AASHTO | USCS:
-    if clf_type is SCType.AASHTO:
+    if clf_type is None:
+        raise ValueError("clf_type must be specified")
+
+    if clf_type is ClfType.AASHTO:
         return AASHTO(
             liquid_limit=liquid_limit,
             plastic_limit=plastic_limit,
