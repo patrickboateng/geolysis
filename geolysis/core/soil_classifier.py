@@ -176,7 +176,7 @@ class AtterbergLimits:
         return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
     @round_
-    def liquidity_index(self, nmc: int | float) -> int | float:
+    def liquidity_index(self, nmc: int | float) -> float:
         r"""Return the liquidity index of the soil.
 
         Liquidity index of a soil indicates the nearness of its ``natural water
@@ -194,10 +194,10 @@ class AtterbergLimits:
 
         .. math:: I_l = \dfrac{w - PL}{PI} \cdot 100
         """
-        return ((nmc - self.plastic_limit) / self.plasticity_index) * 100
+        return ((nmc - self.plastic_limit) / self.plasticity_index) * 100.0
 
     @round_
-    def consistency_index(self, nmc: int | float) -> int | float:
+    def consistency_index(self, nmc: int | float) -> float:
         r"""Return the consistency index of the soil.
 
         Consistency index indicates the consistency (firmness) of soil. It shows
@@ -240,11 +240,11 @@ class SizeDistribution:
     d_60: int | float
 
     @property
-    def coeff_of_curvature(self) -> int | float:
+    def coeff_of_curvature(self) -> float:
         return (self.d_30**2) / (self.d_60 * self.d_10)
 
     @property
-    def coeff_of_uniformity(self) -> int | float:
+    def coeff_of_uniformity(self) -> float:
         return self.d_60 / self.d_10
 
     def grade(self, coarse_soil: USCSSymbol) -> USCSSymbol:
@@ -332,7 +332,7 @@ class PSD:
 
     @property
     @round_(2)
-    def coeff_of_curvature(self) -> int | float:
+    def coeff_of_curvature(self) -> float:
         r"""Coefficient of curvature of soil sample.
 
         Coefficient of curvature :math:`(C_c)` is given by the formula:
@@ -346,7 +346,7 @@ class PSD:
 
     @property
     @round_(2)
-    def coeff_of_uniformity(self) -> int | float:
+    def coeff_of_uniformity(self) -> float:
         r"""Coefficient of uniformity of soil sample.
 
         Coefficient of uniformity :math:`(C_u)` is given by the formula:
@@ -469,12 +469,12 @@ class AASHTO:
 
     def classify(self) -> str:
         """Return the AASHTO classification of the soil."""
-        symb = self._classify().symbol
+        soil_clf = self._classify().symbol
 
         if self.add_group_idx:
-            symb = f"{symb}({self.group_index():.0f})"
+            soil_clf = f"{soil_clf}({self.group_index():.0f})"
 
-        return symb
+        return soil_clf
 
     def _classify(self) -> AASHTOSymbol:
         # Silts A4-A7
@@ -616,7 +616,7 @@ class USCS:
         elif isinstance(soil_clf, str):
             return soil_clf.replace("_", "-")
         else:
-            return tuple(map(lambda v: v.replace("_", "-"), soil_clf))
+            return tuple(map(lambda clf: clf.replace("_", "-"), soil_clf))
 
     def _classify(self) -> USCSSymbol | str | Iterable[str]:
         # Fine grained, Run Atterberg
