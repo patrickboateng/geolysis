@@ -11,11 +11,7 @@ from typing import (
     SupportsRound,
 )
 
-from geolysis.core._config.config import (
-    Option,
-    Quantity,
-    get_option,
-)
+from geolysis.core._config.config import DecimalPlacesReg, Quantity
 
 __all__ = [
     "deg2rad",
@@ -108,7 +104,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
             if not callable(ndigits):
                 dp = ndigits
             else:
-                dp = get_option(Option.DP)
+                dp = DecimalPlacesReg.DECIMAL_PLACES
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
