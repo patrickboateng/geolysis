@@ -616,7 +616,7 @@ class USCS:
         elif isinstance(soil_clf, str):
             return soil_clf.replace("_", "-")
         else:
-            return tuple(map(lambda clf: clf.replace("_", "-"), soil_clf))
+            return tuple(map(lambda v: v.replace("_", "-"), soil_clf))
 
     def _classify(self) -> USCSSymbol | str | Iterable[str]:
         # Fine grained, Run Atterberg
