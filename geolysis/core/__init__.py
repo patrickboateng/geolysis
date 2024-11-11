@@ -4,11 +4,5 @@ from . import (
     spt,
     utils,
 )
-from ._config.config import (
-    Quantity,
-    UnitSystem,
-    get_option,
-    reset_option,
-    set_option,
-)
+from ._config.config import Quantity, UnitSystem
 from .bearing_capacity.abc_4_soils import abc_4_cohl_soils
