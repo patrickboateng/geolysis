@@ -104,7 +104,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
             if not callable(ndigits):
                 dp = ndigits
             else:
-                dp = DecimalPlacesReg.DECIMAL_PLACES
+                dp = DecimalPlacesReg.decimal_places
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
