@@ -4,7 +4,7 @@ import pytest
 
 from geolysis.core import Quantity
 from geolysis.core._config.config import UnitReg
-from geolysis.core.bearing_capacity.ubc_4_soils import Soil
+from geolysis.core.bearing_capacity.ubc_4_soils import SoilProperties
 from geolysis.core.bearing_capacity.ubc_4_soils.terzaghi_ubc import (
     TerzaghiBearingCapacityFactor,
     TerzaghiUBC4CircFooting,
@@ -47,13 +47,17 @@ class TestTerzaghiUBC4StripFooting:
         ("soil_prop", "fs", "water_level", "res"),
         [
             (
-                Soil(friction_angle=35.0, cohesion=15.0, moist_unit_wgt=18.0),
+                SoilProperties(
+                    friction_angle=35.0, cohesion=15.0, moist_unit_wgt=18.0
+                ),
                 dict(depth=1, width=1.2, footing_shape=Shape.STRIP),
                 INF,
                 2114.586,
             ),
             (
-                Soil(friction_angle=35.0, cohesion=15.0, moist_unit_wgt=18.0),
+                SoilProperties(
+                    friction_angle=35.0, cohesion=15.0, moist_unit_wgt=18.0
+                ),
                 dict(depth=1.5, width=2.0, footing_shape=Shape.STRIP),
                 0.4,
                 1993.59,
@@ -80,7 +84,7 @@ class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
-        self.soil_prop = Soil(
+        self.soil_prop = SoilProperties(
             friction_angle=25.0,
             cohesion=15.0,
             moist_unit_wgt=18.0,
@@ -105,7 +109,7 @@ class TestTerzaghiUBC4CircFooting(unittest.TestCase):
             width=2.3,
             footing_shape=Shape.CIRCLE,
         )
-        self.soil_prop: Soil = Soil(
+        self.soil_prop: SoilProperties = SoilProperties(
             **{
                 "friction_angle": 25.0,
                 "cohesion": 15.0,
@@ -133,7 +137,7 @@ class TestTerzaghiUBC4RectFooting(unittest.TestCase):
             length=2.5,
             footing_shape=Shape.RECTANGLE,
         )
-        self.soil_prop: Soil = Soil(
+        self.soil_prop: SoilProperties = SoilProperties(
             friction_angle=25.0,
             cohesion=15.0,
             moist_unit_wgt=18.0,

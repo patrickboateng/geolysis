@@ -1,7 +1,7 @@
 import pytest
 
 from geolysis.core._config.config import Quantity, UnitReg
-from geolysis.core.bearing_capacity.ubc_4_soils import Soil
+from geolysis.core.bearing_capacity.ubc_4_soils import SoilProperties
 from geolysis.core.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor,
     HansenUltimateBearingCapacity,
@@ -42,7 +42,7 @@ class TestHansenUBC:
             width=2.0,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = Soil(
+        soil_prop = SoilProperties(
             friction_angle=20.0,
             cohesion=20.0,
             moist_unit_wgt=18.0,

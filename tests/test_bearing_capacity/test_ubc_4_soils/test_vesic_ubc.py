@@ -2,7 +2,7 @@ import pytest
 
 from geolysis.core import Quantity
 from geolysis.core._config.config import UnitReg
-from geolysis.core.bearing_capacity.ubc_4_soils import Soil
+from geolysis.core.bearing_capacity.ubc_4_soils import SoilProperties
 from geolysis.core.bearing_capacity.ubc_4_soils.vesic_ubc import (
     VesicUltimateBearingCapacity,
 )
@@ -19,7 +19,7 @@ class TestVesicUBC:
             eccentricity=0.2,
             footing_shape=Shape.SQUARE,
         )
-        soil_prop = Soil(
+        soil_prop = SoilProperties(
             friction_angle=0.0,
             cohesion=100.0,
             moist_unit_wgt=21.0,
