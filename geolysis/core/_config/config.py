@@ -4,16 +4,27 @@ import pint
 
 
 class DecimalPlacesRegistry:
-    DEFAULT_DECIMAL_PLACES = 4
+    DEFAULT_DECIMAL_PLACES = 2
 
-    __slots__ = ("decimal_places",)
+    __slots__ = ("_decimal_places",)
 
     def __init__(self):
-        self.decimal_places = self.DEFAULT_DECIMAL_PLACES
+        self._decimal_places = self.DEFAULT_DECIMAL_PLACES
+
+    @property
+    def decimal_places(self) -> int:
+        return self._decimal_places
+
+    @decimal_places.setter
+    def decimal_places(self, val: int) -> None:
+        if isinstance(val, int):
+            self._decimal_places = val
+        else:
+            raise ValueError("val must be an int")
 
     def reset(self) -> None:
         """Resets decimal places to the default value."""
-        self.decimal_places = self.DEFAULT_DECIMAL_PLACES
+        self._decimal_places = self.DEFAULT_DECIMAL_PLACES
 
 
 class CustomQuantity(pint.UnitRegistry.Quantity):
