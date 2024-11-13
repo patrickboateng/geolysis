@@ -28,6 +28,8 @@ class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement.
     MAX_TOL_SETTLEMENT = 25.4
 
+    __slots__ = ("corrected_spt_number", "_tol_settlement", "foundation_size")
+
     def __init__(
         self,
         corrected_spt_number: float,
@@ -35,13 +37,20 @@ class AllowableBearingCapacity(ABC):
         foundation_size: FoundationSize,
     ) -> None:
         self.corrected_spt_number = corrected_spt_number
-        self.foundation_size = foundation_size
         self.tol_settlement = tol_settlement
+        self.foundation_size = foundation_size
 
-        _chk_settlement(self.tol_settlement, self.MAX_TOL_SETTLEMENT)
+    @property
+    def tol_settlement(self) -> float:
+        return self._tol_settlement
+
+    @tol_settlement.setter
+    def tol_settlement(self, val: float) -> None:
+        _chk_settlement(val, self.MAX_TOL_SETTLEMENT)
+        self._tol_settlement = val
 
     def _SR(self) -> float:
-        return self.tol_settlement / self.MAX_TOL_SETTLEMENT
+        return self._tol_settlement / self.MAX_TOL_SETTLEMENT
 
     def _FD(self) -> float:
         f_d = self.foundation_size.depth

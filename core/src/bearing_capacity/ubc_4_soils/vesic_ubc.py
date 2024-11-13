@@ -1,7 +1,6 @@
 from geolysis.core._config.config import UnitReg
 from geolysis.core.bearing_capacity.ubc_4_soils import (
-    DP,
-    Soil,
+    SoilProperties,
     UltimateBearingCapacity,
     k,
 )
@@ -17,24 +16,24 @@ __all__ = ["VesicUltimateBearingCapacity"]
 
 class VesicBearingCapacityFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def n_c(cls, f_angle: float) -> float:
         return HansenBearingCapacityFactor.n_c(f_angle)
 
     @classmethod
-    @round_(DP)
+    @round_
     def n_q(cls, f_angle: float) -> float:
         return HansenBearingCapacityFactor.n_q(f_angle)
 
     @classmethod
-    @round_(DP)
+    @round_
     def n_gamma(cls, f_angle: float) -> float:
         return 2 * (cls.n_q(f_angle) + 1) * tan(f_angle)
 
 
 class VesicShapeFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def s_c(cls, f_angle: float, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
@@ -59,7 +58,7 @@ class VesicShapeFactor:
         return sf
 
     @classmethod
-    @round_(DP)
+    @round_
     def s_q(cls, f_angle: float, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
@@ -81,7 +80,7 @@ class VesicShapeFactor:
         return sf
 
     @classmethod
-    @round_(DP)
+    @round_
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
@@ -105,36 +104,36 @@ class VesicShapeFactor:
 
 class VesicDepthFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def d_c(cls, foundation_size: FoundationSize) -> float:
         return HansenDepthFactor.d_c(foundation_size)
 
     @classmethod
-    @round_(DP)
+    @round_
     def d_q(cls, f_angle: float, foundation_size: FoundationSize) -> float:
         f_d = foundation_size.depth
         f_w = foundation_size.width
         return 1 + 2 * tan(f_angle) * (1 - sin(f_angle)) ** 2 * k(f_d, f_w)
 
     @classmethod
-    @round_(DP)
+    @round_
     def d_gamma(cls) -> float:
         return 1.0
 
 
 class VesicInclinationFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def i_c(cls, load_angle: float) -> float:
         return (1 - load_angle / 90) ** 2
 
     @classmethod
-    @round_(DP)
+    @round_
     def i_q(cls, load_angle: float) -> float:
         return cls.i_c(load_angle=load_angle)
 
     @classmethod
-    @round_(DP)
+    @round_
     def i_gamma(cls, f_angle: float, load_angle: float) -> float:
         return (
             1.0 if isclose(f_angle, 0.0) else (1 - load_angle / f_angle) ** 2
@@ -171,7 +170,7 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
 
     def __init__(
         self,
-        soil_properties: Soil,
+        soil_properties: SoilProperties,
         foundation_size: FoundationSize,
         load_angle_incl: float = 0.0,
         water_level: float = INF,

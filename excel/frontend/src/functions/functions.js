@@ -12,13 +12,13 @@
  * @returns {string} AASHTO classification of the soil.
  *
  */
-export async function aashtoClassification(liquidLimit, plasticityIndex, fines, addGroupIndex = true) {
+export async function aashtoClassification(liquidLimit, plasticLimit, fines, addGroupIndex = true) {
   try {
     const params = new URLSearchParams({
-      liquidLimit,
-      plasticityIndex,
-      fines,
-      addGroupIndex,
+      liquid_limit: liquidLimit,
+      plastic_limit: plasticLimit,
+      fines: fines,
+      add_group_idx: addGroupIndex,
     });
     const url = `http://localhost:8000/aashto/?${params.toString()}`;
 
@@ -65,14 +65,14 @@ export async function uscsClassification(
 ) {
   try {
     const params = new URLSearchParams({
-      liquidLimit,
-      plasticLimit,
-      fines,
-      sand,
-      d_10,
-      d_30,
-      d_60,
-      organic,
+      liquid_limit: liquidLimit,
+      plastic_limit: plasticLimit,
+      fines: fines,
+      sand: sand,
+      d_10: d_10,
+      d_30: d_30,
+      d_60: d_60,
+      organic: organic,
     });
     const url = `http://localhost:8000/uscs/?${params.toString()}`;
 

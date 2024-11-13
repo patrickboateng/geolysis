@@ -9,9 +9,6 @@ from geolysis.core.utils import INF, arctan, tan
 
 __all__ = []
 
-#: Number of decimal places
-DP = 2
-
 
 def k(f_d: float, f_w: float) -> float:
     return arctan(d2w) if (d2w := f_d / f_w) > 1 else d2w
@@ -24,7 +21,7 @@ def k(f_d: float, f_w: float) -> float:
 
 
 @attrs.define
-class Soil:
+class SoilProperties:
     friction_angle: float
     cohesion: float
     moist_unit_wgt: float
@@ -33,7 +30,7 @@ class Soil:
 class UltimateBearingCapacity(ABC):
     def __init__(
         self,
-        soil_properties: Soil,
+        soil_properties: SoilProperties,
         foundation_size: FoundationSize,
         water_level: float = INF,
         apply_local_shear: bool = False,

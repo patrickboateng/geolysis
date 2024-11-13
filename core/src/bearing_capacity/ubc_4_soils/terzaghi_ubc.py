@@ -1,6 +1,6 @@
 from geolysis.core._config.config import UnitReg
 from geolysis.core.bearing_capacity.ubc_4_soils import (
-    Soil,
+    SoilProperties,
     UltimateBearingCapacity,
 )
 from geolysis.core.foundation import FoundationSize
@@ -24,13 +24,10 @@ __all__ = [
     "TerzaghiUBC4RectFooting",
 ]
 
-#: Number of decimal places
-DP = 2
-
 
 class TerzaghiBearingCapacityFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def n_c(cls, f_angle: float) -> float:
         return (
             5.7
@@ -39,14 +36,14 @@ class TerzaghiBearingCapacityFactor:
         )
 
     @classmethod
-    @round_(DP)
+    @round_
     def n_q(cls, f_angle: float) -> float:
         return exp((3 * PI / 2 - deg2rad(f_angle)) * tan(f_angle)) / (
             2 * (cos(45 + f_angle / 2)) ** 2
         )
 
     @classmethod
-    @round_(DP)
+    @round_
     def n_gamma(cls, f_angle: float) -> float:
         return (cls.n_q(f_angle) - 1) * tan(1.4 * f_angle)
 
@@ -96,7 +93,7 @@ class TerzaghiInclinationFactor:
 class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
     def __init__(
         self,
-        soil_properties: Soil,
+        soil_properties: SoilProperties,
         foundation_size: FoundationSize,
         water_level: float = INF,
         apply_local_shear: bool = False,

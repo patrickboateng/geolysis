@@ -1,7 +1,6 @@
 from geolysis.core._config.config import UnitReg
 from geolysis.core.bearing_capacity.ubc_4_soils import (
-    DP,
-    Soil,
+    SoilProperties,
     UltimateBearingCapacity,
     k,
 )
@@ -24,7 +23,7 @@ __all__ = ["HansenUltimateBearingCapacity"]
 
 class HansenBearingCapacityFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def n_c(cls, f_angle: float) -> float:
         return (
             5.14
@@ -33,19 +32,19 @@ class HansenBearingCapacityFactor:
         )
 
     @classmethod
-    @round_(DP)
+    @round_
     def n_q(cls, f_angle: float) -> float:
         return (tan(45 + f_angle / 2)) ** 2 * (exp(PI * tan(f_angle)))
 
     @classmethod
-    @round_(DP)
+    @round_
     def n_gamma(cls, f_angle) -> float:
         return 1.8 * (cls.n_q(f_angle) - 1) * tan(f_angle)
 
 
 class HansenShapeFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def s_c(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
@@ -67,7 +66,7 @@ class HansenShapeFactor:
         return sf
 
     @classmethod
-    @round_(DP)
+    @round_
     def s_q(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
@@ -89,7 +88,7 @@ class HansenShapeFactor:
         return sf
 
     @classmethod
-    @round_(DP)
+    @round_
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
@@ -115,7 +114,7 @@ class HansenShapeFactor:
 
 class HansenDepthFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def d_c(cls, foundation_size: FoundationSize) -> float:
         f_d = foundation_size.depth
         f_w = foundation_size.width
@@ -123,7 +122,7 @@ class HansenDepthFactor:
         return 1 + 0.4 * k(f_d, f_w)
 
     @classmethod
-    @round_(DP)
+    @round_
     def d_q(cls, f_angle: float, foundation_size: FoundationSize) -> float:
         f_d = foundation_size.depth
         f_w = foundation_size.width
@@ -134,14 +133,14 @@ class HansenDepthFactor:
         return 1 + 2 * tan(f_angle) * (1 - sin(f_angle)) ** 2 * k(f_d, f_w)
 
     @classmethod
-    @round_(DP)
+    @round_
     def d_gamma(cls) -> float:
         return 1.0
 
 
 class HansenInclinationFactor:
     @classmethod
-    @round_(DP)
+    @round_
     def i_c(
         cls,
         cohesion: float,
@@ -153,12 +152,12 @@ class HansenInclinationFactor:
         return 1 - cos(load_angle) / (2 * cohesion * f_w * f_l)
 
     @classmethod
-    @round_(DP)
+    @round_
     def i_q(cls, load_angle: float) -> float:
         return 1 - (1.5 * cos(load_angle)) / sin(load_angle)
 
     @classmethod
-    @round_(DP)
+    @round_
     def i_gamma(cls, load_angle: float) -> float:
         return cls.i_q(load_angle) ** 2
 
@@ -193,7 +192,7 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     def __init__(
         self,
-        soil_properties: Soil,
+        soil_properties: SoilProperties,
         foundation_size: FoundationSize,
         water_level: float = INF,
         load_angle_incl: float = 90,
