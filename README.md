@@ -56,14 +56,14 @@ to advanced geotechnical designs.
    application will depend. Developers can also use `geolysis.core` to power
    their applications.
 
-1. `geolysis.ui (Qt, PySide6)`
+1. `geolysis.gui (Qt, PySide6)`
 
    `geolysis.ui` is a Graphical User Interface (GUI) which will enable users to
    graphically interact with `geolysis`. Users will be able to input data and
    view generated plots, such as `PSD` curves, `Atterberg Limits` plots,
    `Compaction` curves, etc within the application.
 
-1. `geolysis.excel (Javascript & Others)`
+1. `geolysis.excel (Javascript/TypeScript & Others)`
 
    `geolysis.excel` provides a Microsoft Excel add-in for simple geotechnical
    analysis. _More on this later._
@@ -72,8 +72,6 @@ to advanced geotechnical designs.
 
    `geolysis.ai` explores the use of Artificial Intelligence (**AI**) in
    enhancing productivity in Geotechnical Engineering.
-
-Lastly `geolysis.docs` is the documentation project for `geolysis`.
 
 ## Project Links
 
