@@ -29,8 +29,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pipenv
           pipenv install --dev
+        working-directory: ./core
       - name: Test with pytest
         run: pipenv run pytest
+        working-directory: ./core
 
   coverage:
     if: github.ref == 'refs/heads/main'
@@ -47,11 +49,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pipenv
           pipenv install
+        working-directory: ./core
 
       - name: Test with coverage.py
         run: |
           coverage run -m --rcfile=pyproject.toml pytest
           coverage lcov
+        working-directory: ./core
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
         with:
