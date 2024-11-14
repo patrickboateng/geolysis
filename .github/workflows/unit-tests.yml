@@ -29,6 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pipenv
           pipenv install --dev
+          pipenv run pip install -e .
         working-directory: ./core
       - name: Test with pytest
         run: pipenv run pytest
@@ -49,6 +50,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pipenv
           pipenv install
+          pipenv run pip install -e .
         working-directory: ./core
 
       - name: Test with coverage.py
