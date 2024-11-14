@@ -1,12 +1,11 @@
 import pytest
 
-from geolysis.core import Quantity
-from geolysis.core._config.config import UnitReg
-from geolysis.core.bearing_capacity.ubc_4_soils import SoilProperties
-from geolysis.core.bearing_capacity.ubc_4_soils.vesic_ubc import (
+from src._config.config import Quantity, UnitReg
+from src.bearing_capacity.ubc_4_soils import SoilProperties
+from src.bearing_capacity.ubc_4_soils.vesic_ubc import (
     VesicUltimateBearingCapacity,
 )
-from geolysis.core.foundation import Shape, create_foundation
+from src.foundation import Shape, create_foundation
 
 ERROR_TOL = 0.01
 

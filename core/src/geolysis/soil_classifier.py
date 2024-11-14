@@ -3,7 +3,7 @@ from typing import Iterable, Optional
 
 import attrs
 
-from geolysis.core.utils import isclose, round_
+from src.utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 

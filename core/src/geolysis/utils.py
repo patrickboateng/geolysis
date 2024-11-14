@@ -11,7 +11,7 @@ from typing import (
     SupportsRound,
 )
 
-from geolysis.core._config.config import DecimalPlacesReg, Quantity
+from src._config.config import DecimalPlacesReg, Quantity
 
 __all__ = [
     "deg2rad",

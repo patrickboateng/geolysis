@@ -5,7 +5,7 @@ from typing import Final, Protocol, Sequence
 import attrs
 from attrs import field, validators
 
-from geolysis.core.utils import isclose, log10, mean, round_, sqrt
+from src.utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "weighted_spt_n_design",

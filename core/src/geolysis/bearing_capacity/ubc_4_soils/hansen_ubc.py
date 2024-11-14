@@ -1,11 +1,11 @@
-from geolysis.core._config.config import UnitReg
-from geolysis.core.bearing_capacity.ubc_4_soils import (
+from src._config.config import UnitReg
+from src.bearing_capacity.ubc_4_soils import (
     SoilProperties,
     UltimateBearingCapacity,
     k,
 )
-from geolysis.core.foundation import FoundationSize, Shape
-from geolysis.core.utils import (
+from src.foundation import FoundationSize, Shape
+from src.utils import (
     INF,
     PI,
     cos,

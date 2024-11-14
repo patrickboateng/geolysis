@@ -4,8 +4,8 @@ from typing import Final, Optional, Protocol
 import attrs
 from attrs import field, validators
 
-from geolysis.core import utils
-from geolysis.core.utils import INF
+import src.utils as utils
+from src.utils import INF
 
 # __all__ = ["create_foundation"]
 

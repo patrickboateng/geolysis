@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from geolysis.core._config.config import UnitReg
-from geolysis.core.foundation import FoundationSize
-from geolysis.core.utils import quantity, round_
+from src._config.config import UnitReg
+from src.foundation import FoundationSize
+from src.utils import quantity, round_
 
 __all__ = [
     "BowlesABC4PadFoundation",

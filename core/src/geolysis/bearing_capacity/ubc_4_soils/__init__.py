@@ -4,8 +4,8 @@ from typing import Required, TypedDict
 
 import attrs
 
-from geolysis.core.foundation import FoundationSize
-from geolysis.core.utils import INF, arctan, tan
+from src.foundation import FoundationSize
+from src.utils import INF, arctan, tan
 
 __all__ = []
 
