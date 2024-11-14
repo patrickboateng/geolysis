@@ -2,17 +2,17 @@ import unittest
 
 import pytest
 
-from src._config.config import Quantity, UnitReg
-from src.bearing_capacity.ubc_4_soils import SoilProperties
-from src.bearing_capacity.ubc_4_soils.terzaghi_ubc import (
+from geolysis._config.config import Quantity, UnitReg
+from geolysis.bearing_capacity.ubc_4_soils import SoilProperties
+from geolysis.bearing_capacity.ubc_4_soils.terzaghi_ubc import (
     TerzaghiBearingCapacityFactor,
     TerzaghiUBC4CircFooting,
     TerzaghiUBC4RectFooting,
     TerzaghiUBC4SquareFooting,
     TerzaghiUBC4StripFooting,
 )
-from src.foundation import Shape, create_foundation
-from src.utils import INF
+from geolysis.foundation import Shape, create_foundation
+from geolysis.utils import INF
 
 ERROR_TOL = 0.01
 

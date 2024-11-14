@@ -1,15 +1,15 @@
-from src._config.config import UnitReg
-from src.bearing_capacity.ubc_4_soils import (
+from geolysis._config.config import UnitReg
+from geolysis.bearing_capacity.ubc_4_soils import (
     SoilProperties,
     UltimateBearingCapacity,
     k,
 )
-from src.bearing_capacity.ubc_4_soils.hansen_ubc import (
+from geolysis.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor,
     HansenDepthFactor,
 )
-from src.foundation import FoundationSize, Shape
-from src.utils import INF, isclose, quantity, round_, sin, tan
+from geolysis.foundation import FoundationSize, Shape
+from geolysis.utils import INF, isclose, quantity, round_, sin, tan
 
 __all__ = ["VesicUltimateBearingCapacity"]
 

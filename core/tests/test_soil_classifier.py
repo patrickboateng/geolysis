@@ -3,8 +3,8 @@ from typing import Sequence
 
 import pytest
 
-from src.soil_classifier import AASHTO, PSD, USCS, SizeDistribution
-from src.soil_classifier import AtterbergLimits as AL
+from geolysis.soil_classifier import AASHTO, PSD, USCS, SizeDistribution
+from geolysis.soil_classifier import AtterbergLimits as AL
 
 
 class TestAL(unittest.TestCase):

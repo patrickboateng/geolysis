@@ -4,10 +4,8 @@ from typing import Final, Optional, Protocol
 import attrs
 from attrs import field, validators
 
-import src.utils as utils
-from src.utils import INF
-
-# __all__ = ["create_foundation"]
+import geolysis.utils as utils
+from geolysis.utils import INF
 
 
 class Shape(enum.StrEnum):
@@ -49,7 +47,7 @@ class CircularFooting(FootingSize):
         and rectangular footing follow.
 
 
-    >>> from geolysis.core.foundation import CircularFooting
+    >>> from geolysis.foundation import CircularFooting
     >>> circ_footing = CircularFooting(diameter=1.2)
     >>> circ_footing.diameter
     1.2
@@ -78,7 +76,7 @@ class SquareFooting(FootingSize):
 
     .. code::
 
-        >>> from geolysis.core.foundation import SquareFooting
+        >>> from geolysis.foundation import SquareFooting
         >>> sq_footing = SquareFooting(width=1.2)
         >>> sq_footing.width
         1.2
@@ -105,7 +103,7 @@ class RectangularFooting(FootingSize):
 
     .. code::
 
-        >>> from geolysis.core.foundation import RectangularFooting
+        >>> from geolysis.foundation import RectangularFooting
         >>> rect_footing = RectangularFooting(width=1.2, length=1.4)
         >>> rect_footing.width
         1.2
@@ -126,7 +124,7 @@ class FoundationSize:
     :param FootingSize footing_size: Represents the size of the foundation
         footing.
 
-    >>> from geolysis.core.foundation import (
+    >>> from geolysis.foundation import (
     ...     FoundationSize,
     ...     CircularFooting,
     ...     Shape,

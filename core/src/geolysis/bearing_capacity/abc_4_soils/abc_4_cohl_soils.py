@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from src._config.config import UnitReg
-from src.foundation import FoundationSize
-from src.utils import quantity, round_
+from geolysis._config.config import UnitReg
+from geolysis.foundation import FoundationSize
+from geolysis.utils import quantity, round_
 
 __all__ = [
     "BowlesABC4PadFoundation",
@@ -89,8 +89,8 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity import BowlesABC4PadFoundation
-    >>> from geolysis.core.foundation import create_foundation, Shape
+    >>> from geolysis.bearing_capacity import BowlesABC4PadFoundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
     ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
@@ -146,8 +146,8 @@ class BowlesABC4MatFoundation(AllowableBearingCapacity):
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity import BowlesABC4MatFoundation
-    >>> from geolysis.core.foundation import create_foundation, Shape
+    >>> from geolysis.bearing_capacity import BowlesABC4MatFoundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
     ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
@@ -197,8 +197,8 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity import MeyerhofABC4PadFoundation
-    >>> from geolysis.core.foundation import create_foundation, Shape
+    >>> from geolysis.bearing_capacity import MeyerhofABC4PadFoundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
     ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
@@ -254,8 +254,8 @@ class MeyerhofABC4MatFoundation(AllowableBearingCapacity):
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity import MeyerhofABC4MatFoundation
-    >>> from geolysis.core.foundation import create_foundation, Shape
+    >>> from geolysis.bearing_capacity import MeyerhofABC4MatFoundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
     ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
@@ -315,8 +315,8 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity import TerzaghiABC4PadFoundation
-    >>> from geolysis.core.foundation import create_foundation, Shape
+    >>> from geolysis.bearing_capacity import TerzaghiABC4PadFoundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
     ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
@@ -404,8 +404,8 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
 
     Examples
     --------
-    >>> from geolysis.core.bearing_capacity import TerzaghiABC4MatFoundation
-    >>> from geolysis.core.foundation import create_foundation, Shape
+    >>> from geolysis.bearing_capacity import TerzaghiABC4MatFoundation
+    >>> from geolysis.foundation import create_foundation, Shape
 
     >>> foundation_size = create_foundation(
     ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE

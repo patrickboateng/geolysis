@@ -3,7 +3,7 @@ from typing import Iterable, Optional
 
 import attrs
 
-from src.utils import isclose, round_
+from geolysis.utils import isclose, round_
 
 __all__ = ["AtterbergLimits", "PSD", "AASHTO", "USCS"]
 
@@ -108,7 +108,7 @@ class AtterbergLimits:
 
     Examples
     --------
-    >>> from geolysis.core.soil_classifier import AtterbergLimits as AL
+    >>> from geolysis.soil_classifier import AtterbergLimits as AL
 
     >>> atterberg_limits = AL(liquid_limit=55.44, plastic_limit=33.31)
     >>> atterberg_limits.plasticity_index
@@ -288,7 +288,7 @@ class PSD:
 
     Examples
     --------
-    >>> from geolysis.core.soil_classifier import PSD, SizeDistribution
+    >>> from geolysis.soil_classifier import PSD, SizeDistribution
 
     >>> psd = PSD(fines=30.25, sand=53.55)
 
@@ -414,7 +414,7 @@ class AASHTO:
 
     Examples
     --------
-    >>> from geolysis.core.soil_classifier import AASHTO
+    >>> from geolysis.soil_classifier import AASHTO
 
     >>> aashto_clf = AASHTO(liquid_limit=30.2, plastic_limit=23.9, fines=11.18)
     >>> aashto_clf.group_index()
@@ -562,7 +562,7 @@ class USCS:
 
     Examples
     --------
-    >>> from geolysis.core.soil_classifier import (
+    >>> from geolysis.soil_classifier import (
     ...     AtterbergLimits,
     ...     PSD,
     ...     USCS,

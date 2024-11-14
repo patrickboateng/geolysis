@@ -1,6 +1,6 @@
 import unittest
 
-from src.spt import (
+from geolysis.spt import (
     BazaraaPeckOPC,
     DilatancyCorrection,
     GibbsHoltzOPC,

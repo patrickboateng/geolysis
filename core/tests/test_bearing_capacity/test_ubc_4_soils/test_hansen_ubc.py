@@ -1,12 +1,12 @@
 import pytest
 
-from src._config.config import Quantity, UnitReg
-from src.bearing_capacity.ubc_4_soils import SoilProperties
-from src.bearing_capacity.ubc_4_soils.hansen_ubc import (
+from geolysis._config.config import Quantity, UnitReg
+from geolysis.bearing_capacity.ubc_4_soils import SoilProperties
+from geolysis.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor,
     HansenUltimateBearingCapacity,
 )
-from src.foundation import Shape, create_foundation
+from geolysis.foundation import Shape, create_foundation
 
 ERROR_TOL = 0.01
 

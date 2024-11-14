@@ -1,6 +1,6 @@
 import pytest
 
-from src.utils import (
+from geolysis.utils import (
     PI,
     cos,
     cot,

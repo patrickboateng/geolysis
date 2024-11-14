@@ -5,7 +5,7 @@ from typing import Final, Protocol, Sequence
 import attrs
 from attrs import field, validators
 
-from src.utils import isclose, log10, mean, round_, sqrt
+from geolysis.utils import isclose, log10, mean, round_, sqrt
 
 __all__ = [
     "weighted_spt_n_design",
@@ -58,7 +58,7 @@ def average_spt_n_design(spt_numbers: Sequence[float]):
 
     Examples
     --------
-    >>> from geolysis.core.spt import average_spt_n_design
+    >>> from geolysis.spt import average_spt_n_design
     >>> average_spt_n_design([7.0, 15.0, 18.0])
     13.3
     """
@@ -76,7 +76,7 @@ def minimum_spt_n_design(spt_numbers: Sequence[float]):
 
     Examples
     --------
-    >>> from geolysis.core.spt import minimum_spt_n_design
+    >>> from geolysis.spt import minimum_spt_n_design
     >>> minimum_spt_n_design([7.0, 15.0, 18.0])
     7.0
     """
@@ -111,7 +111,7 @@ def weighted_spt_n_design(spt_numbers: Sequence[float]):
 
     Examples
     --------
-    >>> from geolysis.core.spt import weighted_spt_n_design
+    >>> from geolysis.spt import weighted_spt_n_design
     >>> weighted_spt_n_design([7.0, 15.0, 18.0])
     9.4
     """
@@ -174,7 +174,7 @@ class EnergyCorrection:
 
     Examples
     --------
-    >>> from geolysis.core.spt import EnergyCorrection
+    >>> from geolysis.spt import EnergyCorrection
     >>> energy_cor = EnergyCorrection(recorded_spt_number=30)
     >>> energy_cor.corrected_spt_number()
     22.5
@@ -284,7 +284,7 @@ class GibbsHoltzOPC(OPC):
 
     Examples
     --------
-    >>> from geolysis.core.spt import GibbsHoltzOPC
+    >>> from geolysis.spt import GibbsHoltzOPC
     >>> opc_cor = GibbsHoltzOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.corrected_spt_number()
     23.2
@@ -327,7 +327,7 @@ class BazaraaPeckOPC(OPC):
 
     Examples
     --------
-    >>> from geolysis.core.spt import BazaraaPeckOPC
+    >>> from geolysis.spt import BazaraaPeckOPC
     >>> opc_cor = BazaraaPeckOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.corrected_spt_number()
     21.0
@@ -366,7 +366,7 @@ class PeckOPC(OPC):
 
     Examples
     --------
-    >>> from geolysis.core.spt import PeckOPC
+    >>> from geolysis.spt import PeckOPC
     >>> opc_cor = PeckOPC(std_spt_number=23.0, eop=100.0)
     >>> opc_cor.corrected_spt_number()
     23.0
@@ -396,7 +396,7 @@ class LiaoWhitmanOPC(OPC):
 
     Examples
     --------
-    >>> from geolysis.core.spt import LiaoWhitmanOPC
+    >>> from geolysis.spt import LiaoWhitmanOPC
     >>> opc_cor = LiaoWhitmanOPC(std_spt_number=23.0, eop=100.0)
     >>> opc_cor.corrected_spt_number()
     23.0
@@ -426,7 +426,7 @@ class SkemptonOPC(OPC):
 
     Examples
     --------
-    >>> from geolysis.core.spt import SkemptonOPC
+    >>> from geolysis.spt import SkemptonOPC
     >>> opc_cor = SkemptonOPC(std_spt_number=22.5, eop=100.0)
     >>> opc_cor.corrected_spt_number()
     22.0
@@ -464,7 +464,7 @@ class DilatancyCorrection:
 
     Examples
     --------
-    >>> from geolysis.core.spt import DilatancyCorrection
+    >>> from geolysis.spt import DilatancyCorrection
     >>> dil_cor = DilatancyCorrection(std_spt_number=23.0)
     >>> dil_cor.corrected_spt_number()
     19.0

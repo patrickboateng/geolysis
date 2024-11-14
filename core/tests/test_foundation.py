@@ -1,6 +1,6 @@
 import unittest
 
-from src.foundation import CircularFooting, SquareFooting
+from geolysis.foundation import CircularFooting, SquareFooting
 
 
 class TestCircularFooting(unittest.TestCase):

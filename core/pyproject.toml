@@ -33,7 +33,7 @@ classifiers = [
 dynamic = ["version"]
 
 [tool.setuptools.dynamic]
-version = { attr = "src.__version__" }
+version = { attr = "geolysis.__version__" }
 
 [project.urls]
 Homepage = "https://github.com/patrickboateng/geolysis"
@@ -53,7 +53,7 @@ dev = ["pytest", "pytest-cov", "coverage"]
 [tool.pytest.ini_options]
 addopts = "-ra --verbose --strict-markers --doctest-modules --ignore-glob=**/ui/*"
 minversion = "6.0"
-# testpaths = ["tests", "src"]
+testpaths = ["tests", "src"]
 doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NUMBER"]
 
 [tool.docformatter]
