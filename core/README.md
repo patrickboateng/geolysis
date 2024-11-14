@@ -53,7 +53,7 @@ AASHTO classification
 
 ```python
 
->>> from geolysis.core.soil_classifier import ClfType, create_soil_classifier
+>>> from geolysis.soil_classifier import ClfType, create_soil_classifier
 >>> aashto_clf = create_soil_classifier(
 ...     liquid_limit=30.2,
 ...     plastic_limit=23.9,
@@ -71,7 +71,7 @@ USCS Classification
 
 ```python
 
->>> from geolysis.core.soil_classifier import ClfType, create_soil_classifier
+>>> from geolysis.soil_classifier import ClfType, create_soil_classifier
 >>> uscs_clf = create_soil_classifier(
 ...     liquid_limit=34.1,
 ...     plastic_limit=21.1,
