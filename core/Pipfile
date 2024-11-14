@@ -16,4 +16,4 @@ pytest = "*"
 pytest-cov = "*"
 blackdoc = "*"
 pre-commit = "*"
-geolysis = {file = ".", editable = true}
+coverage = "*"
