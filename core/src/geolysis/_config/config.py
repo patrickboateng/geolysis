@@ -1,6 +1,13 @@
+import abc
 import enum
+import typing
 
 import pint
+
+
+class RegistryProtocol(typing.Protocol):
+    @abc.abstractmethod
+    def reset(self) -> None: ...
 
 
 class DecimalPlacesRegistry:
@@ -27,6 +34,14 @@ class DecimalPlacesRegistry:
         self._decimal_places = self.DEFAULT_DECIMAL_PLACES
 
 
+class UnitSystem(enum.StrEnum):
+    CGS = "cgs"
+    MKS = "mks"
+    BRITISH_IMPERIAL = "imperial"
+    US_IMPERIAL = "US"
+    SI = "SI"
+
+
 class CustomQuantity(pint.UnitRegistry.Quantity):
     pass
 
@@ -38,18 +53,14 @@ class CustomUnit(pint.UnitRegistry.Unit):
 class UnitRegistry(
     pint.registry.GenericUnitRegistry[CustomQuantity, CustomUnit]
 ):
+    DEFAULT_UNIT_SYSTEM = UnitSystem.SI
     Quantity = CustomQuantity
     Unit = CustomUnit
 
-
-class UnitSystem(enum.StrEnum):
-    CGS = "cgs"
-    MKS = "mks"
-    BRITISH_IMPERIAL = "imperial"
-    US_IMPERIAL = "US"
-    SI = "SI"
+    def reset(self) -> None:
+        self.system = self.DEFAULT_UNIT_SYSTEM
 
 
 DecimalPlacesReg = DecimalPlacesRegistry()
-UnitReg = UnitRegistry(system=UnitSystem.SI, cache_folder=":auto:")
+UnitReg = UnitRegistry(system=UnitSystem.SI)
 Quantity = UnitReg.Quantity
