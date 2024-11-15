@@ -1,16 +1,12 @@
 import functools
 import math
+import typing
 from math import exp, isclose, log10, sqrt
 from math import inf as INF
 from math import pi as PI
 from statistics import fmean as mean
-from typing import (
-    Callable,
-    Final,
-    Optional,
-    SupportsRound,
-)
 
+# from typing import Callable, SupportsRound
 from geolysis._config.config import DecimalPlacesReg, Quantity
 
 __all__ = [
@@ -61,7 +57,7 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
+def round_(ndigits: int | typing.Callable[..., typing.SupportsRound]):
     """A decorator that rounds the result of a callable to a specified number of
     decimal places.
 
@@ -123,7 +119,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
 
 
 def quantity(unit):
-    def decorator(fn: Callable):
+    def decorator(fn: typing.Callable):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
             return (
@@ -135,44 +131,3 @@ def quantity(unit):
         return wrapper
 
     return decorator
-
-
-def field(*, attr: str, obj: Optional[str] = None, doc: Optional[str] = None):
-    """A field that reference another field."""
-    return _Attribute(attr=attr, obj=obj, doc=doc)
-
-
-class _Attribute:
-    def __init__(
-        self,
-        *,
-        attr: str,
-        obj: Optional[str] = None,
-        doc: Optional[str] = None,
-    ):
-        self.ref_attr = attr
-        self.ref_obj = obj
-        self.fget: Final = getattr
-        self.fset: Final = setattr
-        self.fdel: Final = delattr
-        self.__doc__ = doc
-
-    def __get__(self, obj, objtype=None):
-        if self.ref_obj is not None:
-            ref_obj = self.fget(obj, self.ref_obj)
-            return self.fget(ref_obj, self.ref_attr)
-        return self.fget(obj, self.ref_attr)
-
-    def __set__(self, obj, value) -> None:
-        if self.ref_obj is not None:
-            ref_obj = self.fget(obj, self.ref_obj)
-            self.fset(ref_obj, self.ref_attr, value)
-        else:
-            self.fset(obj, self.ref_attr, value)
-
-    #: TODO: check deleter
-    def __delete__(self, obj) -> None:
-        self.fdel(obj, self.property_name)
-
-    def __set_name__(self, objtype, property_name) -> None:
-        self.property_name = property_name
