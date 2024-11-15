@@ -11,12 +11,6 @@ def k(f_d: float, f_w: float) -> float:
     return arctan(d2w) if (d2w := f_d / f_w) > 1 else d2w
 
 
-# class SoilProperties(TypedDict, total=False):
-#     friction_angle: Required[float]
-#     cohesion: Required[float]
-#     moist_unit_wgt: Required[float]
-
-
 @dataclasses.dataclass
 class SoilProperties:
     friction_angle: float
