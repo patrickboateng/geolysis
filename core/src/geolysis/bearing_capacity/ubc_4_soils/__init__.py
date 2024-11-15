@@ -1,8 +1,5 @@
-from abc import ABC, abstractmethod
-from collections import UserDict
-from typing import Required, TypedDict
-
-import attrs
+import abc
+import dataclasses
 
 from geolysis.foundation import FoundationSize
 from geolysis.utils import INF, arctan, tan
@@ -20,14 +17,14 @@ def k(f_d: float, f_w: float) -> float:
 #     moist_unit_wgt: Required[float]
 
 
-@attrs.define
+@dataclasses.dataclass
 class SoilProperties:
     friction_angle: float
     cohesion: float
     moist_unit_wgt: float
 
 
-class UltimateBearingCapacity(ABC):
+class UltimateBearingCapacity(abc.ABC):
     def __init__(
         self,
         soil_properties: SoilProperties,
@@ -107,53 +104,53 @@ class UltimateBearingCapacity(ABC):
             else self._cohesion
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     def bearing_capacity(self): ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def n_c(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def n_q(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def n_gamma(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def s_c(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def s_q(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def s_gamma(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def d_c(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def d_q(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def d_gamma(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def i_c(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def i_q(self) -> float: ...
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def i_gamma(self) -> float: ...
