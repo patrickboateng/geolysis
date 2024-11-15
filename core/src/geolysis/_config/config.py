@@ -1,6 +1,4 @@
-import abc
 import enum
-import typing
 
 import pint
 
@@ -11,11 +9,6 @@ class UnitSystem(enum.StrEnum):
     BRITISH_IMPERIAL = "imperial"
     US_IMPERIAL = "US"
     SI = "SI"
-
-
-class RegistryProtocol(typing.Protocol):
-    @abc.abstractmethod
-    def reset(self) -> None: ...
 
 
 class DecimalPlacesRegistry:
