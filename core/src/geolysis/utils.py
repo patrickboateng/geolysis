@@ -6,7 +6,6 @@ from math import inf as INF
 from math import pi as PI
 from statistics import fmean as mean
 
-# from typing import Callable, SupportsRound
 from geolysis._config.config import DecimalPlacesReg, Quantity
 
 __all__ = [
@@ -124,11 +123,7 @@ def quantity(unit):
     def decorator(fn: typing.Callable):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
-            return (
-                Quantity(fn(*args, **kwargs), unit)
-                .to_base_units()
-                .to_compact()
-            )
+            return Quantity(fn(*args, **kwargs), unit).to_compact(unit)
 
         return wrapper
 
