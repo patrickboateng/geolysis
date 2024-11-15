@@ -51,7 +51,7 @@ class UnitRegistry(
     Unit = CustomUnit
 
     def reset(self) -> None:
-        self.system = self.DEFAULT_UNIT_SYSTEM
+        self.default_system = self.DEFAULT_UNIT_SYSTEM
 
 
 DecimalPlacesReg = DecimalPlacesRegistry()
