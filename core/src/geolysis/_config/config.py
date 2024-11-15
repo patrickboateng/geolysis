@@ -5,6 +5,14 @@ import typing
 import pint
 
 
+class UnitSystem(enum.StrEnum):
+    CGS = "cgs"
+    MKS = "mks"
+    BRITISH_IMPERIAL = "imperial"
+    US_IMPERIAL = "US"
+    SI = "SI"
+
+
 class RegistryProtocol(typing.Protocol):
     @abc.abstractmethod
     def reset(self) -> None: ...
@@ -32,14 +40,6 @@ class DecimalPlacesRegistry:
     def reset(self) -> None:
         """Resets decimal places to the default value."""
         self._decimal_places = self.DEFAULT_DECIMAL_PLACES
-
-
-class UnitSystem(enum.StrEnum):
-    CGS = "cgs"
-    MKS = "mks"
-    BRITISH_IMPERIAL = "imperial"
-    US_IMPERIAL = "US"
-    SI = "SI"
 
 
 class CustomQuantity(pint.UnitRegistry.Quantity):
