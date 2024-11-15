@@ -24,22 +24,24 @@ __all__ = ["HansenUltimateBearingCapacity"]
 class HansenBearingCapacityFactor:
     @classmethod
     @round_
-    def n_c(cls, f_angle: float) -> float:
+    def n_c(cls, friction_angle: float) -> float:
         return (
             5.14
-            if isclose(f_angle, 0.0)
-            else cot(f_angle) * (cls.n_q(f_angle) - 1)
+            if isclose(friction_angle, 0.0)
+            else cot(friction_angle) * (cls.n_q(friction_angle) - 1.0)
         )
 
     @classmethod
     @round_
-    def n_q(cls, f_angle: float) -> float:
-        return (tan(45 + f_angle / 2)) ** 2 * (exp(PI * tan(f_angle)))
+    def n_q(cls, friction_angle: float) -> float:
+        return (tan(45.0 + friction_angle / 2.0)) ** 2.0 * (
+            exp(PI * tan(friction_angle))
+        )
 
     @classmethod
     @round_
-    def n_gamma(cls, f_angle) -> float:
-        return 1.8 * (cls.n_q(f_angle) - 1) * tan(f_angle)
+    def n_gamma(cls, friction_angle: float) -> float:
+        return 1.8 * (cls.n_q(friction_angle) - 1.0) * tan(friction_angle)
 
 
 class HansenShapeFactor:
@@ -207,50 +209,45 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
         self.load_angle = load_angle_incl
 
-        self.bearing_cpty_factor = HansenBearingCapacityFactor()
-        self.shape_factor = HansenShapeFactor()
-        self.depth_factor = HansenDepthFactor()
-        self.incl_factor = HansenInclinationFactor()
-
     @property
     def n_c(self) -> float:
-        return self.bearing_cpty_factor.n_c(self.friction_angle)
+        return HansenBearingCapacityFactor.n_c(self.friction_angle)
 
     @property
     def n_q(self) -> float:
-        return self.bearing_cpty_factor.n_q(self.friction_angle)
+        return HansenBearingCapacityFactor.n_q(self.friction_angle)
 
     @property
     def n_gamma(self) -> float:
-        return self.bearing_cpty_factor.n_gamma(self.friction_angle)
+        return HansenBearingCapacityFactor.n_gamma(self.friction_angle)
 
     @property
     def s_c(self) -> float:
-        return self.shape_factor.s_c(self.foundation_size)
+        return HansenShapeFactor.s_c(self.foundation_size)
 
     @property
     def s_q(self) -> float:
-        return self.shape_factor.s_q(self.foundation_size)
+        return HansenShapeFactor.s_q(self.foundation_size)
 
     @property
     def s_gamma(self) -> float:
-        return self.shape_factor.s_gamma(self.foundation_size)
+        return HansenShapeFactor.s_gamma(self.foundation_size)
 
     @property
     def d_c(self) -> float:
-        return self.depth_factor.d_c(self.foundation_size)
+        return HansenDepthFactor.d_c(self.foundation_size)
 
     @property
     def d_q(self) -> float:
-        return self.depth_factor.d_q(self.friction_angle, self.foundation_size)
+        return HansenDepthFactor.d_q(self.friction_angle, self.foundation_size)
 
     @property
     def d_gamma(self) -> float:
-        return self.depth_factor.d_gamma()
+        return HansenDepthFactor.d_gamma()
 
     @property
     def i_c(self) -> float:
-        return self.incl_factor.i_c(
+        return HansenInclinationFactor.i_c(
             self.cohesion,
             self.load_angle,
             self.foundation_size,
@@ -258,18 +255,18 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def i_q(self) -> float:
-        return self.incl_factor.i_q(self.load_angle)
+        return HansenInclinationFactor.i_q(self.load_angle)
 
     @property
     def i_gamma(self) -> float:
-        return self.incl_factor.i_gamma(self.load_angle)
+        return HansenInclinationFactor.i_gamma(self.load_angle)
 
     @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
         return (
-            self._cohesion_term(1)
+            self._cohesion_term(1.0)
             + self._surcharge_term()
             + self._embedment_term(0.5)
         )

@@ -28,24 +28,24 @@ __all__ = [
 class TerzaghiBearingCapacityFactor:
     @classmethod
     @round_
-    def n_c(cls, f_angle: float) -> float:
+    def n_c(cls, friction_angle: float) -> float:
         return (
             5.7
-            if isclose(f_angle, 0.0)
-            else cot(f_angle) * (cls.n_q(f_angle) - 1)
+            if isclose(friction_angle, 0.0)
+            else cot(friction_angle) * (cls.n_q(friction_angle) - 1)
         )
 
     @classmethod
     @round_
-    def n_q(cls, f_angle: float) -> float:
-        return exp((3 * PI / 2 - deg2rad(f_angle)) * tan(f_angle)) / (
-            2 * (cos(45 + f_angle / 2)) ** 2
-        )
+    def n_q(cls, friction_angle: float) -> float:
+        return exp(
+            (3 * PI / 2 - deg2rad(friction_angle)) * tan(friction_angle)
+        ) / (2 * (cos(45 + friction_angle / 2)) ** 2)
 
     @classmethod
     @round_
-    def n_gamma(cls, f_angle: float) -> float:
-        return (cls.n_q(f_angle) - 1) * tan(1.4 * f_angle)
+    def n_gamma(cls, friction_angle: float) -> float:
+        return (cls.n_q(friction_angle) - 1) * tan(1.4 * friction_angle)
 
 
 class TerzaghiShapeFactor:
@@ -105,18 +105,13 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
             apply_local_shear,
         )
 
-        self.bearing_cpty_factor = TerzaghiBearingCapacityFactor()
-        self.shape_factor = TerzaghiShapeFactor()
-        self.depth_factor = TerzaghiDepthFactor()
-        self.incl_factor = TerzaghiInclinationFactor()
-
     @property
     def n_c(self) -> float:
         r"""Bearing capacity factor :math:`N_c`.
 
         .. math:: N_c = \cot \phi (N_q - 1)
         """
-        return self.bearing_cpty_factor.n_c(self.friction_angle)
+        return TerzaghiBearingCapacityFactor.n_c(self.friction_angle)
 
     @property
     def n_q(self) -> float:
@@ -127,7 +122,7 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
             N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
                   {2\cos^2(45 + \frac{\phi}{2})}
         """
-        return self.bearing_cpty_factor.n_q(self.friction_angle)
+        return TerzaghiBearingCapacityFactor.n_q(self.friction_angle)
 
     @property
     def n_gamma(self) -> float:
@@ -135,52 +130,52 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
 
         .. math:: N_{\gamma} =  (N_q - 1) \tan(1.4\phi)
         """
-        return self.bearing_cpty_factor.n_gamma(self.friction_angle)
+        return TerzaghiBearingCapacityFactor.n_gamma(self.friction_angle)
 
     @property
     def s_c(self) -> float:
         """Shape factor :math:`s_c`."""
-        return self.shape_factor.s_c()
+        return TerzaghiShapeFactor.s_c()
 
     @property
     def s_q(self) -> float:
         """Shape factor :math:`s_q`."""
-        return self.shape_factor.s_q()
+        return TerzaghiShapeFactor.s_q()
 
     @property
     def s_gamma(self) -> float:
         r"""Shape factor :math:`s_{\gamma}`."""
-        return self.shape_factor.s_gamma()
+        return TerzaghiShapeFactor.s_gamma()
 
     @property
     def d_c(self) -> float:
         """Depth factor :math:`d_c`."""
-        return self.depth_factor.d_c()
+        return TerzaghiDepthFactor.d_c()
 
     @property
     def d_q(self) -> float:
         """Depth factor :math:`d_q`."""
-        return self.depth_factor.d_q()
+        return TerzaghiDepthFactor.d_q()
 
     @property
     def d_gamma(self) -> float:
         r"""Depth factor :math:`d_{\gamma}`."""
-        return self.depth_factor.d_gamma()
+        return TerzaghiDepthFactor.d_gamma()
 
     @property
     def i_c(self) -> float:
         """Inclination factor :math:`i_c`."""
-        return self.incl_factor.i_c()
+        return TerzaghiInclinationFactor.i_c()
 
     @property
     def i_q(self) -> float:
         """Inclination factor :math:`i_q`."""
-        return self.incl_factor.i_q()
+        return TerzaghiInclinationFactor.i_q()
 
     @property
     def i_gamma(self) -> float:
         r"""Inclination factor :math:`i_{\gamma}`."""
-        return self.incl_factor.i_gamma()
+        return TerzaghiInclinationFactor.i_gamma()
 
 
 class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
@@ -294,7 +289,7 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
         f_w = self.foundation_size.width
         f_l = self.foundation_size.length
         coh_coef = 1 + 0.3 * (f_w / f_l)
-        emb_coef = (1 - 0.2 * (f_w / f_l)) / 2
+        emb_coef = (1 - 0.2 * (f_w / f_l)) / 2.0
         return (
             self._cohesion_term(coh_coef)
             + self._surcharge_term()
