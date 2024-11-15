@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+import abc
 
 from geolysis._config.config import UnitReg
 from geolysis.foundation import FoundationSize
@@ -24,7 +24,7 @@ def _chk_settlement(tol_settlement: float, max_tol_settlement: float):
         raise SettlementError(err_msg)
 
 
-class AllowableBearingCapacity(ABC):
+class AllowableBearingCapacity(abc.ABC):
     #: Maximum tolerable foundation settlement.
     MAX_TOL_SETTLEMENT = 25.4
 
@@ -57,7 +57,7 @@ class AllowableBearingCapacity(ABC):
         f_w = self.foundation_size.width
         return min(1 + 0.33 * f_d / f_w, 1.33)
 
-    @abstractmethod
+    @abc.abstractmethod
     def bearing_capacity(self): ...
 
 
