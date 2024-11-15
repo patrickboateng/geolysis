@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis._config.config import Quantity, UnitReg
+from geolysis._config.config import Quantity
 from geolysis.bearing_capacity.ubc_4_soils import SoilProperties
 from geolysis.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor,
@@ -52,5 +52,5 @@ class TestHansenUBC:
             foundation_size=fs,
         )
         actual = h_ubc.bearing_capacity().magnitude
-        expected = Quantity(809.36, UnitReg.kPa).to_compact().magnitude
+        expected = Quantity(809.36, "kPa").magnitude
         assert actual == pytest.approx(expected, ERROR_TOL)
