@@ -57,7 +57,9 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(ndigits: int | typing.Callable[..., typing.SupportsRound]):
+def round_(
+    ndigits: int | typing.Callable[..., typing.SupportsRound],
+) -> typing.Callable:
     """A decorator that rounds the result of a callable to a specified number of
     decimal places.
 
@@ -94,7 +96,7 @@ def round_(ndigits: int | typing.Callable[..., typing.SupportsRound]):
     TypeError: ndigits should be an int or a callable.
     """
 
-    def dec(fn):
+    def dec(fn) -> typing.Callable[..., float]:
         @functools.wraps(fn)
         def wrapper(*args, **kwargs) -> float:
             if not callable(ndigits):
