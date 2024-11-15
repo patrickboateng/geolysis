@@ -1,11 +1,43 @@
 import enum
-from typing import Final, Optional, Protocol
+import typing
 
-import attrs
-from attrs import field, validators
-
-import geolysis.utils as utils
 from geolysis.utils import INF
+
+
+class _RefField:
+    def __init__(
+        self,
+        *,
+        attr: str,
+        obj: typing.Optional[str] = None,
+        doc: typing.Optional[str] = None,
+    ):
+        self.ref_attr = attr
+        self.ref_obj = obj
+        self.fget: typing.Final = getattr
+        self.fset: typing.Final = setattr
+        self.fdel: typing.Final = delattr
+        self.__doc__ = doc
+
+    def __get__(self, obj, objtype=None) -> int | float:
+        if self.ref_obj is not None:
+            ref_obj = self.fget(obj, self.ref_obj)
+            return self.fget(ref_obj, self.ref_attr)
+        return self.fget(obj, self.ref_attr)
+
+    def __set__(self, obj, value) -> None:
+        if self.ref_obj is not None:
+            ref_obj = self.fget(obj, self.ref_obj)
+            self.fset(ref_obj, self.ref_attr, value)
+        else:
+            self.fset(obj, self.ref_attr, value)
+
+    #: TODO: check deleter
+    def __delete__(self, obj) -> None:
+        self.fdel(obj, self.property_name)
+
+    def __set_name__(self, objtype, property_name) -> None:
+        self.property_name = property_name
 
 
 class Shape(enum.StrEnum):
@@ -17,21 +49,40 @@ class Shape(enum.StrEnum):
     RECTANGLE = enum.auto()
 
 
-class FootingSize(Protocol):
+class FootingSize(typing.Protocol):
     shape_: Shape
-    width: float
-    length: float
+    width: float | _RefField
+    length: float | _RefField
 
 
-@attrs.define
-class StripFooting(FootingSize):
-    width: int | float = field(validator=validators.gt(0.0))
-    length: int | float = field(default=INF, validator=validators.gt(0.0))
-    shape_: Final[Shape] = field(default=Shape.STRIP, init=False)
+class StripFooting:
+    def __init__(self, width: float, length: float = INF) -> None:
+        self._width = width
+        self._length = length
+        self._shape_ = Shape.STRIP
+
+    @property
+    def width(self) -> float:
+        return self._width
+
+    @width.setter
+    def width(self, val: float):
+        self._width = val
+
+    @property
+    def length(self) -> float:
+        return self._length
+
+    @length.setter
+    def length(self, val: float):
+        self._length = val
+
+    @property
+    def shape_(self) -> Shape:
+        return self._shape_
 
 
-@attrs.define
-class CircularFooting(FootingSize):
+class CircularFooting:
     """A class representation of circular footing.
 
     :param float diameter: Diameter of foundation footing. (m)
@@ -46,7 +97,6 @@ class CircularFooting(FootingSize):
         circular footing. This is to make it compatible with the protocol square
         and rectangular footing follow.
 
-
     >>> from geolysis.foundation import CircularFooting
     >>> circ_footing = CircularFooting(diameter=1.2)
     >>> circ_footing.diameter
@@ -57,15 +107,27 @@ class CircularFooting(FootingSize):
     1.2
     """
 
-    diameter: int | float = field(validator=validators.gt(0.0))
-    shape_: Final[Shape] = field(default=Shape.CIRCLE, init=False)
+    width = _RefField(attr="diameter", doc="Diameter of footing.")
+    length = _RefField(attr="diameter", doc="Diameter of footing.")
 
-    width = utils.field(attr="diameter", doc="Diameter of footing.")  # type: ignore
-    length = utils.field(attr="diameter", doc="Diameter of footing.")  # type: ignore
+    def __init__(self, diameter: float):
+        self._diameter = diameter
+        self._shape_ = Shape.CIRCLE
+
+    @property
+    def diameter(self) -> float:
+        return self._diameter
+
+    @diameter.setter
+    def diameter(self, val):
+        self._diameter = val
+
+    @property
+    def shape_(self) -> Shape:
+        return self._shape_
 
 
-@attrs.define
-class SquareFooting(FootingSize):
+class SquareFooting:
     """A class representation of square footing.
 
     :param float width: Width of foundation footing. (m)
@@ -84,14 +146,26 @@ class SquareFooting(FootingSize):
         1.2
     """
 
-    width: int | float = field(validator=validators.gt(0.0))
-    shape_: Final[Shape] = field(default=Shape.SQUARE, init=False)
+    length = _RefField(attr="width", doc="Width of footing. (m)")
 
-    length = utils.field(attr="width", doc="Width of footing. (m)")  # type: ignore
+    def __init__(self, width: float):
+        self._width = width
+        self._shape_ = Shape.SQUARE
+
+    @property
+    def width(self) -> float:
+        return self._width
+
+    @width.setter
+    def width(self, val: float):
+        self._width = val
+
+    @property
+    def shape_(self) -> Shape:
+        return self._shape_
 
 
-@attrs.define
-class RectangularFooting(FootingSize):
+class RectangularFooting:
     """A class representation of rectangular footing.
 
     :param float width: Width of foundation footing. (m)
@@ -111,12 +185,32 @@ class RectangularFooting(FootingSize):
         1.4
     """
 
-    width: int | float = field(validator=validators.gt(0.0))
-    length: int | float = field(validator=validators.gt(0.0))
-    shape_: Final[Shape] = field(default=Shape.RECTANGLE, init=False)
+    def __init__(self, width: float, length: float):
+        self._width = width
+        self._length = length
+        self._shape_ = Shape.RECTANGLE
+
+    @property
+    def width(self) -> float:
+        return self._width
+
+    @width.setter
+    def width(self, val: float):
+        self._width = val
+
+    @property
+    def length(self) -> float:
+        return self._length
+
+    @length.setter
+    def length(self, val: float):
+        self._length = val
+
+    @property
+    def shape_(self) -> Shape:
+        return self._shape_
 
 
-@attrs.define
 class FoundationSize:
     """A simple class representing a foundation structure.
 
@@ -141,15 +235,43 @@ class FoundationSize:
     1.2
     """
 
-    depth: int | float = field(validator=validators.gt(0.0))
-    footing_size: FootingSize = field()
-    eccentricity: int | float = field(
-        default=0.0, validator=validators.ge(0.0)
-    )
+    width = _RefField(attr="width", obj="footing_size")
+    length = _RefField(attr="length", obj="footing_size")
+    footing_shape = _RefField(attr="shape_", obj="footing_size")
 
-    width = utils.field(attr="width", obj="footing_size")
-    length = utils.field(attr="length", obj="footing_size")
-    footing_shape = utils.field(attr="shape_", obj="footing_size")
+    def __init__(
+        self,
+        depth: float,
+        footing_size: FootingSize,
+        eccentricity: float = 0.0,
+    ) -> None:
+        self._depth = depth
+        self._footing_size = footing_size
+        self._eccentricity = eccentricity
+
+    @property
+    def depth(self) -> float:
+        return self._depth
+
+    @depth.setter
+    def depth(self, val: float):
+        self._depth = val
+
+    @property
+    def eccentricity(self) -> float:
+        return self._eccentricity
+
+    @eccentricity.setter
+    def eccentricity(self, val: float):
+        self._eccentricity = val
+
+    @property
+    def footing_size(self) -> FootingSize:
+        return self._footing_size
+
+    @footing_size.setter
+    def footing_size(self, val: FootingSize):
+        self._footing_size = val
 
     @property
     def effective_width(self) -> float:
@@ -159,7 +281,7 @@ class FoundationSize:
 def create_foundation(
     depth: float,
     width: float,
-    length: Optional[float] = None,
+    length: typing.Optional[float] = None,
     eccentricity: float = 0.0,
     footing_shape: Shape | str = Shape.SQUARE,
 ) -> FoundationSize:
