@@ -3,7 +3,6 @@ from geolysis.bearing_capacity.ubc_4_soils import (
     UltimateBearingCapacity,
     k,
 )
-from geolysis._config.config import UnitReg
 from geolysis.foundation import FoundationSize, Shape
 from geolysis.utils import (
     INF,
@@ -12,7 +11,6 @@ from geolysis.utils import (
     cot,
     exp,
     isclose,
-    quantity,
     round_,
     sin,
     tan,
@@ -261,7 +259,6 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     def i_gamma(self) -> float:
         return HansenInclinationFactor.i_gamma(self.load_angle)
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""

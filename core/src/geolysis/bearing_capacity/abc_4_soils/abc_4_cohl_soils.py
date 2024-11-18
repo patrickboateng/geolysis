@@ -102,7 +102,6 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -159,7 +158,6 @@ class BowlesABC4MatFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -267,7 +265,6 @@ class MeyerhofABC4MatFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -351,7 +348,6 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
         return min(CW, 2)
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """
@@ -418,7 +414,6 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     ... )
     """
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """

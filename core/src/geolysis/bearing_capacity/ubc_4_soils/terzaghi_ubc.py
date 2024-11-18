@@ -1,4 +1,3 @@
-from geolysis._config.config import UnitReg
 from geolysis.bearing_capacity.ubc_4_soils import (
     SoilProperties,
     UltimateBearingCapacity,
@@ -12,7 +11,6 @@ from geolysis.utils import (
     deg2rad,
     exp,
     isclose,
-    quantity,
     round_,
     tan,
 )
@@ -205,7 +203,6 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
 
     """
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
@@ -243,7 +240,6 @@ class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
 
     """
 
-    @quantity(UnitReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         return (
@@ -283,7 +279,6 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
 
     """
 
-    @quantity(UnitReg.kPa)
     @round_
     def bearing_capacity(self) -> float:
         f_w = self.foundation_size.width
@@ -322,6 +317,5 @@ class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectFooting):
 
     """
 
-    @quantity(UnitReg.kPa)
     def bearing_capacity(self):
         return super().bearing_capacity()
