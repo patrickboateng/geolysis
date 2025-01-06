@@ -6,8 +6,6 @@ from math import inf as INF
 from math import pi as PI
 from statistics import fmean as mean
 
-from geolysis._config.config import DecimalPlacesReg, Quantity
-
 __all__ = [
     "deg2rad",
     "rad2deg",
@@ -17,7 +15,6 @@ __all__ = [
     "cos",
     "arctan",
     "round_",
-    "quantity",
 ]
 
 
@@ -101,7 +98,8 @@ def round_(
             if not callable(ndigits):
                 dp = ndigits
             else:
-                dp = DecimalPlacesReg.decimal_places
+                # Default decimal places is 2.
+                dp = 2
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
@@ -117,14 +115,3 @@ def round_(
         return dec(f)
 
     raise TypeError("ndigits should be an int or a callable.")
-
-
-def quantity(unit):
-    def decorator(fn: typing.Callable):
-        @functools.wraps(fn)
-        def wrapper(*args, **kwargs):
-            return Quantity(fn(*args, **kwargs), unit).to_compact(unit)
-
-        return wrapper
-
-    return decorator

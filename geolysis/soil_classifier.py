@@ -1,7 +1,6 @@
 import enum
+from dataclasses import astuple, dataclass
 from typing import Iterable, Optional
-
-import attrs
 
 from geolysis.utils import isclose, round_
 
@@ -88,7 +87,7 @@ class AASHTOSymbol(ClfSymbol):
     A_7_6 = ("A-7-6", "Clayey soils")
 
 
-@attrs.define
+@dataclass
 class AtterbergLimits:
     """Water contents at which soil changes from one state to the other.
 
@@ -223,7 +222,7 @@ class AtterbergLimits:
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
 
-@attrs.define(slots=True)
+@dataclass
 class SizeDistribution:
     """Features obtained from the Particle Size Distribution graph.
 
@@ -364,7 +363,7 @@ class PSD:
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
-        return any(attrs.astuple(self.size_dist))
+        return any(astuple(self.size_dist))
 
     def grade(self) -> USCSSymbol:
         r"""Return the grade of the soil sample, either well graded or poorly

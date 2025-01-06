@@ -1,8 +1,7 @@
 import abc
 
-from geolysis._config.config import UnitReg
 from geolysis.foundation import FoundationSize
-from geolysis.utils import quantity, round_
+from geolysis.utils import round_
 
 __all__ = [
     "BowlesABC4PadFoundation",
@@ -208,7 +207,6 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     ... )
     """
 
-    @quantity(unit=UnitReg.kPa)
     @round_
     def bearing_capacity(self):
         """

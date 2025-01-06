@@ -4,7 +4,7 @@ import typing
 from geolysis.utils import INF
 
 
-class _RefField:
+class _Field:
     def __init__(
         self,
         *,
@@ -51,8 +51,8 @@ class Shape(enum.StrEnum):
 
 class FootingSize(typing.Protocol):
     shape_: Shape
-    width: float | _RefField
-    length: float | _RefField
+    width: float | _Field
+    length: float | _Field
 
 
 class StripFooting:
@@ -107,8 +107,8 @@ class CircularFooting:
     1.2
     """
 
-    width = _RefField(attr="diameter", doc="Diameter of footing.")
-    length = _RefField(attr="diameter", doc="Diameter of footing.")
+    width = _Field(attr="diameter", doc="Diameter of footing.")
+    length = _Field(attr="diameter", doc="Diameter of footing.")
 
     def __init__(self, diameter: float):
         self._diameter = diameter
@@ -146,7 +146,7 @@ class SquareFooting:
         1.2
     """
 
-    length = _RefField(attr="width", doc="Width of footing. (m)")
+    length = _Field(attr="width", doc="Width of footing. (m)")
 
     def __init__(self, width: float):
         self._width = width
@@ -235,9 +235,9 @@ class FoundationSize:
     1.2
     """
 
-    width = _RefField(attr="width", obj="footing_size")
-    length = _RefField(attr="length", obj="footing_size")
-    footing_shape = _RefField(attr="shape_", obj="footing_size")
+    width = _Field(attr="width", obj="footing_size")
+    length = _Field(attr="length", obj="footing_size")
+    footing_shape = _Field(attr="shape_", obj="footing_size")
 
     def __init__(
         self,

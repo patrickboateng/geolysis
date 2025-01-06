@@ -1,9 +1,7 @@
 import enum
 from abc import abstractmethod
+from dataclasses import dataclass
 from typing import Final, Protocol, Sequence
-
-import attrs
-from attrs import field, validators
 
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 
@@ -141,7 +139,7 @@ class SamplerType(enum.StrEnum):
     NON_STANDARD = enum.auto()
 
 
-@attrs.define
+@dataclass
 class EnergyCorrection:
     r"""SPT N-value standardized for field procedures.
 
@@ -180,30 +178,37 @@ class EnergyCorrection:
     22.5
     """
 
-    recorded_spt_number: int = field(
-        validator=[validators.gt(0), validators.le(100)]
-    )
-    energy_percentage: int | float = field(
-        default=0.6,
-        validator=[validators.gt(0), validators.le(1.00)],
-    )
-    borehole_diameter: int | float = field(
-        default=65.0,
-        validator=[validators.ge(65.0), validators.le(200.0)],
-        kw_only=True,
-    )
-    rod_length: int | float = field(
-        default=3.0,
-        validator=validators.gt(0.0),
-        kw_only=True,
-    )
-    hammer_type: HammerType = field(default=HammerType.DONUT_1, kw_only=True)
-    sampler_type: SamplerType = attrs.field(
-        default=SamplerType.STANDARD,
-        kw_only=True,
-    )
+    recorded_spt_number: int
+    energy_percentage: float
+    borehole_diameter: float
+    rod_length: float
+    hammer_type: HammerType
+    sampler_type: SamplerType
 
-    HAMMER_EFFICIENCY_FACTORS: Final = {
+    # recorded_spt_number: int = field(
+    #     validator=[validators.gt(0), validators.le(100)]
+    # )
+    # energy_percentage: int | float = field(
+    #     default=0.6,
+    #     validator=[validators.gt(0), validators.le(1.00)],
+    # )
+    # borehole_diameter: int | float = field(
+    #     default=65.0,
+    #     validator=[validators.ge(65.0), validators.le(200.0)],
+    #     kw_only=True,
+    # )
+    # rod_length: int | float = field(
+    #     default=3.0,
+    #     validator=validators.gt(0.0),
+    #     kw_only=True,
+    # )
+    # hammer_type: HammerType = field(default=HammerType.DONUT_1, kw_only=True)
+    # sampler_type: SamplerType = attrs.field(
+    #     default=SamplerType.STANDARD,
+    #     kw_only=True,
+    # )
+
+    HAMMER_EFFICIENCY_FACTOR = {
         HammerType.AUTOMATIC: 0.70,
         HammerType.DONUT_1: 0.60,
         HammerType.DONUT_2: 0.50,
@@ -211,7 +216,7 @@ class EnergyCorrection:
         HammerType.DROP: 0.45,
         HammerType.PIN: 0.45,
     }
-    SAMPLER_CORRECTION_FACTORS: Final = {
+    SAMPLER_CORRECTION_FACTORS = {
         SamplerType.STANDARD: 1.00,
         SamplerType.NON_STANDARD: 1.20,
     }
@@ -263,7 +268,7 @@ class EnergyCorrection:
         return self.correction() * self.recorded_spt_number
 
 
-@attrs.define
+@dataclass
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
@@ -290,10 +295,13 @@ class GibbsHoltzOPC(OPC):
     23.2
     """
 
-    std_spt_number: float = field(validator=validators.gt(0))
-    eop: int | float = field(
-        validator=[validators.gt(0.0), validators.le(280.0)]
-    )
+    std_spt_number: float
+    eop: float
+
+    # std_spt_number: float = field(validator=validators.gt(0))
+    # eop: int | float = field(
+    #     validator=[validators.gt(0.0), validators.le(280.0)]
+    # )
 
     def correction(self) -> float:
         """SPT Correction."""
@@ -303,7 +311,7 @@ class GibbsHoltzOPC(OPC):
         return corr
 
 
-@attrs.define
+@dataclass
 class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
@@ -333,8 +341,11 @@ class BazaraaPeckOPC(OPC):
     21.0
     """
 
-    std_spt_number: float = field(validator=validators.gt(0))
-    eop: int | float = field(validator=validators.ge(0))
+    std_spt_number: float
+    eop: float
+
+    # std_spt_number: float = field(validator=validators.gt(0))
+    # eop: int | float = field(validator=validators.ge(0))
 
     #: Maximum effective overburden pressure. |rarr| :math:`kN/m^2`
     STD_PRESSURE: Final = 71.8
@@ -350,7 +361,7 @@ class BazaraaPeckOPC(OPC):
         return corr
 
 
-@attrs.define
+@dataclass
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al (1974)``.
 
@@ -372,15 +383,18 @@ class PeckOPC(OPC):
     23.0
     """
 
-    std_spt_number: float = field(validator=validators.gt(0))
-    eop: int | float = field(validator=validators.ge(24.0))
+    std_spt_number: float
+    eop: float
+
+    # std_spt_number: float = field(validator=validators.gt(0))
+    # eop: int | float = field(validator=validators.ge(24.0))
 
     def correction(self) -> float:
         """SPT Correction."""
         return 0.77 * log10(2000.0 / self.eop)
 
 
-@attrs.define
+@dataclass
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
@@ -402,15 +416,18 @@ class LiaoWhitmanOPC(OPC):
     23.0
     """
 
-    std_spt_number: float = field(validator=validators.gt(0.0))
-    eop: int | float = field(validator=attrs.validators.gt(0.0))
+    std_spt_number: float
+    eop: float
+
+    # std_spt_number: float = field(validator=validators.gt(0.0))
+    # eop: int | float = field(validator=attrs.validators.gt(0.0))
 
     def correction(self) -> float:
         """SPT Correction."""
         return sqrt(100.0 / self.eop)
 
 
-@attrs.define
+@dataclass
 class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
@@ -432,15 +449,18 @@ class SkemptonOPC(OPC):
     22.0
     """
 
-    std_spt_number: float = field(validator=validators.gt(0))
-    eop: int | float = field()
+    std_spt_number: float
+    eop: float
+
+    # std_spt_number: float = field(validator=validators.gt(0))
+    # eop: int | float = field()
 
     def correction(self) -> float:
         """SPT Correction."""
         return 2.0 / (1.0 + 0.01044 * self.eop)
 
 
-@attrs.define
+@dataclass
 class DilatancyCorrection:
     r"""Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
 
@@ -470,7 +490,9 @@ class DilatancyCorrection:
     19.0
     """
 
-    std_spt_number: float = field(validator=validators.gt(0))
+    std_spt_number: float
+
+    # std_spt_number: float = field(validator=validators.gt(0))
 
     @round_(DP)
     def corrected_spt_number(self) -> float:
