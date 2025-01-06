@@ -12,7 +12,6 @@ from geolysis.spt import (
 
 
 class TestGibbsHoltzOPC(unittest.TestCase):
-    @pytest.mark.skip(reason="Logic not implemented yet")
     def testErrors(self):
         with self.assertRaises(ValueError):
             GibbsHoltzOPC(std_spt_number=15.4, eop=0.0)
@@ -28,14 +27,12 @@ class TestBazaraaPeckOPC(unittest.TestCase):
 
 
 class TestPeckOPC(unittest.TestCase):
-    @pytest.mark.skip(reason="Logic not implemented yet")
     def testErrors(self):
         with self.assertRaises(ValueError):
             PeckOPC(std_spt_number=12.8, eop=15.8)
 
 
 class TestLiaoWhitmanOPC(unittest.TestCase):
-    @pytest.mark.skip(reason="Logic not implemented yet")
     def testErrors(self):
         with self.assertRaises(ValueError):
             LiaoWhitmanOPC(std_spt_number=16.7, eop=0.0)
