@@ -3,9 +3,11 @@ from geolysis.bearing_capacity import SoilProperties
 from geolysis.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor, HansenDepthFactor)
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import INF, isclose, round_, sin, tan, arctan
+from geolysis.utils import INF, isclose, round_, sin, tan
 
-__all__ = ["VesicUltimateBearingCapacity"]
+__all__ = ["VesicBearingCapacityFactor", "VesicShapeFactor",
+           "VesicDepthFactor", "VesicInclinationFactor",
+           "VesicUltimateBearingCapacity"]
 
 
 class VesicBearingCapacityFactor:
