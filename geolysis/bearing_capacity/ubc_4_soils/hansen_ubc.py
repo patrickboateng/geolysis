@@ -1,7 +1,7 @@
-from geolysis.bearing_capacity.ubc_4_soils import (UltimateBearingCapacity, k)
+from geolysis.bearing_capacity.ubc_4_soils import UltimateBearingCapacity, k
 from geolysis.bearing_capacity import SoilProperties
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import (INF, PI, cos, cot, exp, isclose, round_, sin, tan)
+from geolysis.utils import inf, pi, cos, cot, exp, isclose, round_, sin, tan
 
 __all__ = ["HansenBearingCapacityFactor",
            "HansenDepthFactor", "HansenUltimateBearingCapacity"]
@@ -18,7 +18,7 @@ class HansenBearingCapacityFactor:
     @round_
     def n_q(cls, friction_angle: float) -> float:
         return ((tan(45.0 + friction_angle / 2.0)) ** 2.0
-                * (exp(PI * tan(friction_angle))))
+                * (exp(pi * tan(friction_angle))))
 
     @classmethod
     @round_
@@ -171,7 +171,7 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     """
 
     def __init__(self, soil_properties: SoilProperties,
-                 foundation_size: FoundationSize, water_level=INF,
+                 foundation_size: FoundationSize, water_level=inf,
                  load_angle_incl=90.0, apply_local_shear=False) -> None:
         super().__init__(soil_properties, foundation_size, water_level,
                          apply_local_shear)

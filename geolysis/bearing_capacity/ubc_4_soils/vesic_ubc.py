@@ -3,7 +3,7 @@ from geolysis.bearing_capacity import SoilProperties
 from geolysis.bearing_capacity.ubc_4_soils.hansen_ubc import (
     HansenBearingCapacityFactor, HansenDepthFactor)
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import INF, isclose, round_, sin, tan
+from geolysis.utils import inf, isclose, round_, sin, tan
 
 __all__ = ["VesicBearingCapacityFactor", "VesicShapeFactor",
            "VesicDepthFactor", "VesicInclinationFactor",
@@ -165,7 +165,7 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
 
     def __init__(self, soil_properties: SoilProperties,
                  foundation_size: FoundationSize, load_angle_incl: float = 0.0,
-                 water_level: float = INF,
+                 water_level: float = inf,
                  apply_local_shear: bool = False) -> None:
         super().__init__(soil_properties, foundation_size, water_level,
                          apply_local_shear)

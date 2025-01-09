@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from geolysis.bearing_capacity import SoilProperties
 from geolysis.foundation import FoundationSize
-from geolysis.utils import INF, arctan, tan
+from geolysis.utils import inf, arctan, tan
 
 __all__ = ["k", "UltimateBearingCapacity", "TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircFooting", "TerzaghiUBC4RectFooting",
@@ -16,7 +16,7 @@ def k(f_d: float, f_w: float) -> float:
 
 class UltimateBearingCapacity(ABC):
     def __init__(self, soil_properties: SoilProperties,
-                 foundation_size: FoundationSize, water_level: float = INF,
+                 foundation_size: FoundationSize, water_level: float = inf,
                  apply_local_shear: bool = False) -> None:
         self._friction_angle = soil_properties["friction_angle"]
         self._cohesion = soil_properties["cohesion"]
@@ -31,7 +31,7 @@ class UltimateBearingCapacity(ABC):
     def _surcharge_term(self) -> float:
         f_d = self.foundation_size.depth
 
-        if self.water_level == INF:
+        if self.water_level == inf:
             water_corr = 1.0  #: water correction
         else:
             #: a -> water level above the base of the foundation
@@ -46,7 +46,7 @@ class UltimateBearingCapacity(ABC):
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.effective_width
 
-        if self.water_level == INF:
+        if self.water_level == inf:
             # water correction
             water_corr = 1.0
         else:

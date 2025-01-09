@@ -3,7 +3,7 @@ from abc import ABC
 from geolysis.bearing_capacity.ubc_4_soils import UltimateBearingCapacity
 from geolysis.bearing_capacity import SoilProperties
 from geolysis.foundation import FoundationSize
-from geolysis.utils import (INF, PI, cos, cot, deg2rad, exp, isclose, round_,
+from geolysis.utils import (inf, pi, cos, cot, deg2rad, exp, isclose, round_,
                             tan)
 
 __all__ = ["TerzaghiBearingCapacityFactor", "TerzaghiUBC4StripFooting",
@@ -15,16 +15,15 @@ class TerzaghiBearingCapacityFactor:
     @classmethod
     @round_
     def n_c(cls, friction_angle: float) -> float:
-        return (
-            5.7
-            if isclose(friction_angle, 0.0)
-            else cot(friction_angle) * (cls.n_q(friction_angle) - 1)
-        )
+        if isclose(friction_angle, 0.0):
+            return 5.7
+        else:
+            return cot(friction_angle) * (cls.n_q(friction_angle) - 1.0)
 
     @classmethod
     @round_
     def n_q(cls, friction_angle: float) -> float:
-        return exp((3 * PI / 2 - deg2rad(friction_angle)) * tan(friction_angle)
+        return exp((3 * pi / 2 - deg2rad(friction_angle)) * tan(friction_angle)
                    ) / (2 * (cos(45 + friction_angle / 2)) ** 2)
 
     @classmethod
@@ -77,7 +76,7 @@ class TerzaghiInclinationFactor:
 
 class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
     def __init__(self, soil_properties: SoilProperties,
-                 foundation_size: FoundationSize, water_level: float = INF,
+                 foundation_size: FoundationSize, water_level: float = inf,
                  apply_local_shear: bool = False, ) -> None:
         super().__init__(soil_properties, foundation_size, water_level,
                          apply_local_shear)
