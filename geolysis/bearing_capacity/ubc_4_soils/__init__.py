@@ -1,34 +1,26 @@
-import abc
-import dataclasses
+from abc import ABC, abstractmethod
 
+from geolysis.bearing_capacity import SoilProperties
 from geolysis.foundation import FoundationSize
 from geolysis.utils import INF, arctan, tan
 
-__all__ = []
+__all__ = ["k", "UltimateBearingCapacity", "TerzaghiUBC4StripFooting",
+           "TerzaghiUBC4CircFooting", "TerzaghiUBC4RectFooting",
+           "TerzaghiUBC4SquareFooting", "HansenUltimateBearingCapacity",
+           "VesicUltimateBearingCapacity"]
 
 
 def k(f_d: float, f_w: float) -> float:
     return arctan(d2w) if (d2w := f_d / f_w) > 1 else d2w
 
 
-@dataclasses.dataclass
-class SoilProperties:
-    friction_angle: float
-    cohesion: float
-    moist_unit_wgt: float
-
-
-class UltimateBearingCapacity(abc.ABC):
-    def __init__(
-        self,
-        soil_properties: SoilProperties,
-        foundation_size: FoundationSize,
-        water_level: float = INF,
-        apply_local_shear: bool = False,
-    ) -> None:
-        self._friction_angle = soil_properties.friction_angle
-        self._cohesion = soil_properties.cohesion
-        self.moist_unit_wgt = soil_properties.moist_unit_wgt
+class UltimateBearingCapacity(ABC):
+    def __init__(self, soil_properties: SoilProperties,
+                 foundation_size: FoundationSize, water_level: float = INF,
+                 apply_local_shear: bool = False) -> None:
+        self._friction_angle = soil_properties["friction_angle"]
+        self._cohesion = soil_properties["cohesion"]
+        self.moist_unit_wgt = soil_properties["moist_unit_wgt"]
         self.water_level = water_level
         self.foundation_size = foundation_size
         self.apply_local_shear = apply_local_shear
@@ -62,29 +54,18 @@ class UltimateBearingCapacity(abc.ABC):
             b = max(self.water_level - f_d, 0)
             water_corr = min(0.5 + 0.5 * b / f_w, 1)
 
-        return (
-            coef
-            * self.moist_unit_wgt
-            * f_w
-            * self.n_gamma
-            * self.s_gamma
-            * self.d_gamma
-            * self.i_gamma
-            * water_corr
-        )
+        return (coef * self.moist_unit_wgt * f_w * self.n_gamma * self.s_gamma
+                * self.d_gamma * self.i_gamma * water_corr)
 
     @property
     def friction_angle(self) -> float:
         """
         Return friction angle for ``local shear`` in the case of
-        ``local shear failure`` and cohesion for ``general shear`` in
+        ``local shear failure`` and friction angle for ``general shear`` in
         the case of ``general shear failure``.
         """
-        return (
-            arctan((2 / 3) * tan(self._friction_angle))
-            if self.apply_local_shear
-            else self._friction_angle
-        )
+        return (arctan((2 / 3) * tan(self._friction_angle))
+                if self.apply_local_shear else self._friction_angle)
 
     @property
     def cohesion(self) -> float:
@@ -92,59 +73,75 @@ class UltimateBearingCapacity(abc.ABC):
         Return cohesion for local shear in the case of local shear failure and
         cohesion for general shear in the case of general shear failure.
         """
-        return (
-            (2 / 3) * self._cohesion
-            if self.apply_local_shear
-            else self._cohesion
-        )
+        return ((2 / 3) * self._cohesion
+                if self.apply_local_shear else self._cohesion)
 
-    @abc.abstractmethod
-    def bearing_capacity(self): ...
+    @abstractmethod
+    def bearing_capacity(self):
+        ...
 
     @property
-    @abc.abstractmethod
-    def n_c(self) -> float: ...
+    @abstractmethod
+    def n_c(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def n_q(self) -> float: ...
+    @abstractmethod
+    def n_q(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def n_gamma(self) -> float: ...
+    @abstractmethod
+    def n_gamma(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def s_c(self) -> float: ...
+    @abstractmethod
+    def s_c(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def s_q(self) -> float: ...
+    @abstractmethod
+    def s_q(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def s_gamma(self) -> float: ...
+    @abstractmethod
+    def s_gamma(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def d_c(self) -> float: ...
+    @abstractmethod
+    def d_c(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def d_q(self) -> float: ...
+    @abstractmethod
+    def d_q(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def d_gamma(self) -> float: ...
+    @abstractmethod
+    def d_gamma(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def i_c(self) -> float: ...
+    @abstractmethod
+    def i_c(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def i_q(self) -> float: ...
+    @abstractmethod
+    def i_q(self) -> float:
+        ...
 
     @property
-    @abc.abstractmethod
-    def i_gamma(self) -> float: ...
+    @abstractmethod
+    def i_gamma(self) -> float:
+        ...
+
+
+from .terzaghi_ubc import (TerzaghiUBC4StripFooting, TerzaghiUBC4CircFooting,
+                           TerzaghiUBC4SquareFooting, TerzaghiUBC4RectFooting)
+from .hansen_ubc import HansenUltimateBearingCapacity
+from .vesic_ubc import VesicUltimateBearingCapacity

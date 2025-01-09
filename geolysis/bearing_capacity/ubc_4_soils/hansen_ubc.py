@@ -1,40 +1,24 @@
-from geolysis.bearing_capacity.ubc_4_soils import (
-    SoilProperties,
-    UltimateBearingCapacity,
-    k,
-)
+from geolysis.bearing_capacity.ubc_4_soils import (UltimateBearingCapacity, k)
+from geolysis.bearing_capacity import SoilProperties
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import (
-    INF,
-    PI,
-    cos,
-    cot,
-    exp,
-    isclose,
-    round_,
-    sin,
-    tan,
-)
+from geolysis.utils import (INF, PI, cos, cot, exp, isclose, round_, sin, tan)
 
-__all__ = ["HansenUltimateBearingCapacity"]
+__all__ = ["HansenBearingCapacityFactor",
+           "HansenDepthFactor", "HansenUltimateBearingCapacity"]
 
 
 class HansenBearingCapacityFactor:
     @classmethod
     @round_
     def n_c(cls, friction_angle: float) -> float:
-        return (
-            5.14
-            if isclose(friction_angle, 0.0)
-            else cot(friction_angle) * (cls.n_q(friction_angle) - 1.0)
-        )
+        return (5.14 if isclose(friction_angle, 0.0)
+                else cot(friction_angle) * (cls.n_q(friction_angle) - 1.0))
 
     @classmethod
     @round_
     def n_q(cls, friction_angle: float) -> float:
-        return (tan(45.0 + friction_angle / 2.0)) ** 2.0 * (
-            exp(PI * tan(friction_angle))
-        )
+        return ((tan(45.0 + friction_angle / 2.0)) ** 2.0
+                * (exp(PI * tan(friction_angle))))
 
     @classmethod
     @round_
@@ -141,12 +125,8 @@ class HansenDepthFactor:
 class HansenInclinationFactor:
     @classmethod
     @round_
-    def i_c(
-        cls,
-        cohesion: float,
-        load_angle: float,
-        foundation_size: FoundationSize,
-    ) -> float:
+    def i_c(cls, cohesion: float, load_angle: float,
+            foundation_size: FoundationSize) -> float:
         f_w = foundation_size.width
         f_l = foundation_size.length
         return 1 - cos(load_angle) / (2 * cohesion * f_w * f_l)
@@ -190,21 +170,11 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     """
 
-    def __init__(
-        self,
-        soil_properties: SoilProperties,
-        foundation_size: FoundationSize,
-        water_level: float = INF,
-        load_angle_incl: float = 90,
-        apply_local_shear: bool = False,
-    ) -> None:
-        super().__init__(
-            soil_properties,
-            foundation_size,
-            water_level,
-            apply_local_shear,
-        )
-
+    def __init__(self, soil_properties: SoilProperties,
+                 foundation_size: FoundationSize, water_level=INF,
+                 load_angle_incl=90.0, apply_local_shear=False) -> None:
+        super().__init__(soil_properties, foundation_size, water_level,
+                         apply_local_shear)
         self.load_angle = load_angle_incl
 
     @property
@@ -245,11 +215,8 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def i_c(self) -> float:
-        return HansenInclinationFactor.i_c(
-            self.cohesion,
-            self.load_angle,
-            self.foundation_size,
-        )
+        return HansenInclinationFactor.i_c(self.cohesion, self.load_angle,
+                                           self.foundation_size)
 
     @property
     def i_q(self) -> float:
@@ -261,9 +228,5 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        """Ultimate bearing capacity of soil."""
-        return (
-            self._cohesion_term(1.0)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
-        )
+        return (self._cohesion_term(1.0)
+                + self._surcharge_term() + self._embedment_term(0.5))

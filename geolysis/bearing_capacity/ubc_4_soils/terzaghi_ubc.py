@@ -1,26 +1,14 @@
-from geolysis.bearing_capacity.ubc_4_soils import (
-    SoilProperties,
-    UltimateBearingCapacity,
-)
-from geolysis.foundation import FoundationSize
-from geolysis.utils import (
-    INF,
-    PI,
-    cos,
-    cot,
-    deg2rad,
-    exp,
-    isclose,
-    round_,
-    tan,
-)
+from abc import ABC
 
-__all__ = [
-    "TerzaghiUBC4StripFooting",
-    "TerzaghiUBC4CircFooting",
-    "TerzaghiUBC4SquareFooting",
-    "TerzaghiUBC4RectFooting",
-]
+from geolysis.bearing_capacity.ubc_4_soils import UltimateBearingCapacity
+from geolysis.bearing_capacity import SoilProperties
+from geolysis.foundation import FoundationSize
+from geolysis.utils import (INF, PI, cos, cot, deg2rad, exp, isclose, round_,
+                            tan)
+
+__all__ = ["TerzaghiBearingCapacityFactor", "TerzaghiUBC4StripFooting",
+           "TerzaghiUBC4CircFooting", "TerzaghiUBC4SquareFooting",
+           "TerzaghiUBC4RectFooting"]
 
 
 class TerzaghiBearingCapacityFactor:
@@ -36,9 +24,8 @@ class TerzaghiBearingCapacityFactor:
     @classmethod
     @round_
     def n_q(cls, friction_angle: float) -> float:
-        return exp(
-            (3 * PI / 2 - deg2rad(friction_angle)) * tan(friction_angle)
-        ) / (2 * (cos(45 + friction_angle / 2)) ** 2)
+        return exp((3 * PI / 2 - deg2rad(friction_angle)) * tan(friction_angle)
+                   ) / (2 * (cos(45 + friction_angle / 2)) ** 2)
 
     @classmethod
     @round_
@@ -88,20 +75,12 @@ class TerzaghiInclinationFactor:
         return 1.0
 
 
-class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity):
-    def __init__(
-        self,
-        soil_properties: SoilProperties,
-        foundation_size: FoundationSize,
-        water_level: float = INF,
-        apply_local_shear: bool = False,
-    ) -> None:
-        super().__init__(
-            soil_properties,
-            foundation_size,
-            water_level,
-            apply_local_shear,
-        )
+class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
+    def __init__(self, soil_properties: SoilProperties,
+                 foundation_size: FoundationSize, water_level: float = INF,
+                 apply_local_shear: bool = False, ) -> None:
+        super().__init__(soil_properties, foundation_size, water_level,
+                         apply_local_shear)
 
     @property
     def n_c(self) -> float:
@@ -190,7 +169,7 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
         to occur therefore modifies the soil_friction_angle and cohesion of the
         soil material.
     :param float e: Deviation of the applied load from the center of the
-        footing, also know as eccentricity.
+        footing, also known as eccentricity.
 
     Notes
     -----
@@ -206,11 +185,8 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
-        return (
-            self._cohesion_term(1)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
-        )
+        return (self._cohesion_term(1.0) + self._surcharge_term()
+                + self._embedment_term(0.5))
 
 
 class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
@@ -227,7 +203,7 @@ class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
         to occur therefore modifies the soil_friction_angle and cohesion of the
         soil material.
     :param float e: Deviation of the applied load from the center of the
-        footing, also know as eccentricity.
+        footing, also known as eccentricity.
 
     Notes
     -----
@@ -242,11 +218,8 @@ class TerzaghiUBC4CircFooting(TerzaghiUltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        return (
-            self._cohesion_term(1.3)
-            + self._surcharge_term()
-            + self._embedment_term(0.3)
-        )
+        return (self._cohesion_term(1.3) + self._surcharge_term()
+                + self._embedment_term(0.3))
 
 
 class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
@@ -263,7 +236,7 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
         to occur therefore modifies the soil_friction_angle and cohesion of the
         soil material.
     :param float e: Deviation of the applied load from the center of the
-        footing, also know as eccentricity.
+        footing, also known as eccentricity.
 
     Notes
     -----
@@ -285,11 +258,8 @@ class TerzaghiUBC4RectFooting(TerzaghiUltimateBearingCapacity):
         f_l = self.foundation_size.length
         coh_coef = 1 + 0.3 * (f_w / f_l)
         emb_coef = (1 - 0.2 * (f_w / f_l)) / 2.0
-        return (
-            self._cohesion_term(coh_coef)
-            + self._surcharge_term()
-            + self._embedment_term(emb_coef)
-        )
+        return (self._cohesion_term(coh_coef) + self._surcharge_term()
+                + self._embedment_term(emb_coef))
 
 
 class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectFooting):

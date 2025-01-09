@@ -1,14 +1,9 @@
-from geolysis.bearing_capacity.ubc_4_soils import (
-    SoilProperties,
-    UltimateBearingCapacity,
-    k,
-)
+from geolysis.bearing_capacity.ubc_4_soils import (UltimateBearingCapacity, k)
+from geolysis.bearing_capacity import SoilProperties
 from geolysis.bearing_capacity.ubc_4_soils.hansen_ubc import (
-    HansenBearingCapacityFactor,
-    HansenDepthFactor,
-)
+    HansenBearingCapacityFactor, HansenDepthFactor)
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import INF, isclose, round_, sin, tan
+from geolysis.utils import INF, isclose, round_, sin, tan, arctan
 
 __all__ = ["VesicUltimateBearingCapacity"]
 
@@ -27,15 +22,14 @@ class VesicBearingCapacityFactor:
     @classmethod
     @round_
     def n_gamma(cls, friction_angle: float) -> float:
-        return 2 * (cls.n_q(friction_angle) + 1) * tan(friction_angle)
+        return 2.0 * (cls.n_q(friction_angle) + 1.0) * tan(friction_angle)
 
 
 class VesicShapeFactor:
     @classmethod
     @round_
-    def s_c(
-        cls, friction_angle: float, foundation_size: FoundationSize
-    ) -> float:
+    def s_c(cls, friction_angle: float,
+            foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
         f_type = foundation_size.footing_shape
@@ -46,23 +40,20 @@ class VesicShapeFactor:
         n_q = VesicBearingCapacityFactor.n_q(friction_angle)
         n_c = VesicBearingCapacityFactor.n_c(friction_angle)
 
-        match f_type:
-            case Shape.STRIP:
-                sf = 1.0
-            case Shape.RECTANGLE:
-                sf = 1 + (f_w / f_l) * (n_q / n_c)
-            case Shape.SQUARE | Shape.CIRCLE:
-                sf = 1 + (n_q / n_c)
-            case _:
-                raise ValueError
-
+        if f_type == Shape.STRIP:
+            sf = 1.0
+        elif f_type == Shape.RECTANGLE:
+            sf = 1.0 + (f_w / f_l) * (n_q / n_c)
+        elif f_type in (Shape.SQUARE, Shape.CIRCLE):
+            sf = 1.0 + (n_q / n_c)
+        else:
+            raise ValueError
         return sf
 
     @classmethod
     @round_
-    def s_q(
-        cls, friction_angle: float, foundation_size: FoundationSize
-    ) -> float:
+    def s_q(cls, friction_angle: float,
+            foundation_size: FoundationSize) -> float:
         f_w = foundation_size.effective_width
         f_l = foundation_size.length
         f_type = foundation_size.footing_shape
@@ -70,15 +61,14 @@ class VesicShapeFactor:
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
 
-        match f_type:
-            case Shape.STRIP:
-                sf = 1.0
-            case Shape.RECTANGLE:
-                sf = 1 + (f_w / f_l) * tan(friction_angle)
-            case Shape.SQUARE | Shape.CIRCLE:
-                sf = 1 + tan(friction_angle)
-            case _:
-                raise ValueError
+        if f_type == Shape.STRIP:
+            sf = 1.0
+        elif f_type == Shape.RECTANGLE:
+            sf = 1.0 + (f_w / f_l) * tan(friction_angle)
+        elif f_type in (Shape.SQUARE, Shape.CIRCLE):
+            sf = 1.0 + tan(friction_angle)
+        else:
+            raise ValueError
 
         return sf
 
@@ -92,15 +82,14 @@ class VesicShapeFactor:
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
 
-        match f_type:
-            case Shape.STRIP:
-                sf = 1.0
-            case Shape.RECTANGLE:
-                sf = 1 - 0.4 * (f_w / f_l)
-            case Shape.SQUARE | Shape.CIRCLE:
-                sf = 0.6
-            case _:
-                raise ValueError
+        if f_type == Shape.STRIP:
+            sf = 1.0
+        elif f_type == Shape.RECTANGLE:
+            sf = 1.0 - 0.4 * (f_w / f_l)
+        elif f_type in (Shape.SQUARE, Shape.CIRCLE):
+            sf = 0.6
+        else:
+            raise ValueError
 
         return sf
 
@@ -113,14 +102,12 @@ class VesicDepthFactor:
 
     @classmethod
     @round_
-    def d_q(
-        cls, friction_angle: float, foundation_size: FoundationSize
-    ) -> float:
+    def d_q(cls, friction_angle: float,
+            foundation_size: FoundationSize) -> float:
         f_d = foundation_size.depth
         f_w = foundation_size.width
-        return 1 + 2 * tan(friction_angle) * (
-            1 - sin(friction_angle)
-        ) ** 2 * k(f_d, f_w)
+        return (1 + 2 * tan(friction_angle) * (1 - sin(friction_angle)) ** 2
+                * k(f_d, f_w))
 
     @classmethod
     @round_
@@ -142,11 +129,8 @@ class VesicInclinationFactor:
     @classmethod
     @round_
     def i_gamma(cls, friction_angle: float, load_angle: float) -> float:
-        return (
-            1.0
-            if isclose(friction_angle, 0.0)
-            else (1 - load_angle / friction_angle) ** 2.0
-        )
+        return (1.0 if isclose(friction_angle, 0.0)
+                else (1 - load_angle / friction_angle) ** 2.0)
 
 
 class VesicUltimateBearingCapacity(UltimateBearingCapacity):
@@ -177,21 +161,12 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
 
     """
 
-    def __init__(
-        self,
-        soil_properties: SoilProperties,
-        foundation_size: FoundationSize,
-        load_angle_incl: float = 0.0,
-        water_level: float = INF,
-        apply_local_shear: bool = False,
-    ) -> None:
-        super().__init__(
-            soil_properties,
-            foundation_size,
-            water_level,
-            apply_local_shear,
-        )
-
+    def __init__(self, soil_properties: SoilProperties,
+                 foundation_size: FoundationSize, load_angle_incl: float = 0.0,
+                 water_level: float = INF,
+                 apply_local_shear: bool = False) -> None:
+        super().__init__(soil_properties, foundation_size, water_level,
+                         apply_local_shear)
         self.load_angle = load_angle_incl
 
     @property
@@ -240,16 +215,11 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def i_gamma(self) -> float:
-        return VesicInclinationFactor.i_gamma(
-            self.friction_angle,
-            self.load_angle,
-        )
+        return VesicInclinationFactor.i_gamma(self.friction_angle,
+                                              self.load_angle)
 
     @round_
     def bearing_capacity(self) -> float:
         """Ultimate bearing capacity of soil."""
-        return (
-            self._cohesion_term(1)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
-        )
+        return (self._cohesion_term(1.0) + self._surcharge_term()
+                + self._embedment_term(0.5))
