@@ -9,6 +9,7 @@ name = "pypi"
 pytest = "*"
 pre-commit = "*"
 build = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.11"
