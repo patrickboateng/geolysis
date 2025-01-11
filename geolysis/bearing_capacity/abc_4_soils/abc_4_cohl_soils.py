@@ -225,6 +225,11 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         super().__init__(corrected_spt_number, tol_settlement, foundation_size)
         self.water_depth = water_depth
 
+    def _fd(self) -> float:
+        f_d = self.foundation_size.depth
+        f_w = self.foundation_size.width
+        return min(1 + 0.25 * f_d / f_w, 1.25)
+
     def _cw(self):
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.width
