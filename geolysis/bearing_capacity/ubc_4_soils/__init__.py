@@ -7,7 +7,11 @@ from geolysis.utils import inf, arctan, tan
 __all__ = ["k", "UltimateBearingCapacity", "TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircFooting", "TerzaghiUBC4RectFooting",
            "TerzaghiUBC4SquareFooting", "HansenUltimateBearingCapacity",
-           "VesicUltimateBearingCapacity"]
+           "HansenBearingCapacityFactor", "HansenShapeFactor",
+           "HansenInclinationFactor", "HansenDepthFactor",
+           "VesicUltimateBearingCapacity", "VesicBearingCapacityFactor",
+           "VesicShapeFactor", "VesicInclinationFactor", "VesicDepthFactor",
+           "VesicInclinationFactor"]
 
 
 def k(f_d: float, f_w: float) -> float:
@@ -143,5 +147,9 @@ class UltimateBearingCapacity(ABC):
 
 from .terzaghi_ubc import (TerzaghiUBC4StripFooting, TerzaghiUBC4CircFooting,
                            TerzaghiUBC4SquareFooting, TerzaghiUBC4RectFooting)
-from .hansen_ubc import HansenUltimateBearingCapacity
-from .vesic_ubc import VesicUltimateBearingCapacity
+from .hansen_ubc import (HansenUltimateBearingCapacity, HansenDepthFactor,
+                         HansenBearingCapacityFactor, HansenShapeFactor,
+                         HansenInclinationFactor)
+from .vesic_ubc import (VesicUltimateBearingCapacity, VesicDepthFactor,
+                        VesicBearingCapacityFactor, VesicShapeFactor,
+                        VesicInclinationFactor)
