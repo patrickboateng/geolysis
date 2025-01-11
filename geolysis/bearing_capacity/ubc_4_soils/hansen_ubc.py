@@ -3,7 +3,8 @@ from geolysis.bearing_capacity import SoilProperties
 from geolysis.foundation import FoundationSize, Shape
 from geolysis.utils import inf, pi, cos, cot, exp, isclose, round_, sin, tan
 
-__all__ = ["HansenBearingCapacityFactor",
+__all__ = ["HansenBearingCapacityFactor", "HansenShapeFactor",
+           "HansenDepthFactor", "HansenInclinationFactor",
            "HansenDepthFactor", "HansenUltimateBearingCapacity"]
 
 
@@ -11,8 +12,10 @@ class HansenBearingCapacityFactor:
     @classmethod
     @round_
     def n_c(cls, friction_angle: float) -> float:
-        return (5.14 if isclose(friction_angle, 0.0)
-                else cot(friction_angle) * (cls.n_q(friction_angle) - 1.0))
+        if isclose(friction_angle, 0.0):
+            return 5.14
+        else:
+            return cot(friction_angle) * (cls.n_q(friction_angle) - 1.0)
 
     @classmethod
     @round_
@@ -37,15 +40,14 @@ class HansenShapeFactor:
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
 
-        match f_type:
-            case Shape.STRIP:
-                sf = 10.0
-            case Shape.RECTANGLE:
-                sf = 1 + 0.2 * f_w / f_l
-            case Shape.SQUARE | Shape.CIRCLE:
-                sf = 1.3
-            case _:
-                raise ValueError
+        if f_type == Shape.STRIP:
+            sf = 10.0
+        elif f_type == Shape.RECTANGLE:
+            sf = 1 + 0.2 * f_w / f_l
+        elif f_type in (Shape.SQUARE, Shape.CIRCLE):
+            sf = 1.3
+        else:
+            raise ValueError
 
         return sf
 
@@ -59,15 +61,14 @@ class HansenShapeFactor:
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
 
-        match f_type:
-            case Shape.STRIP:
-                sf = 1.0
-            case Shape.RECTANGLE:
-                sf = 1 + 0.2 * f_w / f_l
-            case Shape.SQUARE | Shape.CIRCLE:
-                sf = 1.2
-            case _:
-                raise ValueError
+        if f_type == Shape.STRIP:
+            sf = 1.0
+        elif f_type == Shape.RECTANGLE:
+            sf = 1.0 + 0.2 * f_w / f_l
+        elif f_type in (Shape.SQUARE, Shape.CIRCLE):
+            sf = 1.2
+        else:
+            raise ValueError
 
         return sf
 
@@ -81,17 +82,16 @@ class HansenShapeFactor:
         if not isclose(f_w, f_l) and f_type != Shape.STRIP:
             f_type = Shape.RECTANGLE
 
-        match f_type:
-            case Shape.STRIP:
-                sf = 1.0
-            case Shape.RECTANGLE:
-                sf = 1 - 0.4 * f_w / f_l
-            case Shape.SQUARE:
-                sf = 0.8
-            case Shape.CIRCLE:
-                sf = 0.6
-            case _:
-                raise ValueError
+        if f_type == Shape.STRIP:
+            sf = 1.0
+        elif f_type == Shape.RECTANGLE:
+            sf = 1.0 - 0.4 * f_w / f_l
+        elif f_type == Shape.SQUARE:
+            sf = 0.8
+        elif f_type == Shape.CIRCLE:
+            sf = 0.6
+        else:
+            raise ValueError
 
         return sf
 
@@ -103,7 +103,7 @@ class HansenDepthFactor:
         f_d = foundation_size.depth
         f_w = foundation_size.width
 
-        return 1 + 0.4 * k(f_d, f_w)
+        return 1.0 + 0.4 * k(f_d, f_w)
 
     @classmethod
     @round_
@@ -114,7 +114,7 @@ class HansenDepthFactor:
         if f_angle > 25.0:
             return cls.d_c(foundation_size)
 
-        return 1 + 2 * tan(f_angle) * (1 - sin(f_angle)) ** 2 * k(f_d, f_w)
+        return 1.0 + 2.0 * tan(f_angle) * (1 - sin(f_angle)) ** 2 * k(f_d, f_w)
 
     @classmethod
     @round_
@@ -228,5 +228,5 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        return (self._cohesion_term(1.0)
-                + self._surcharge_term() + self._embedment_term(0.5))
+        return (self._cohesion_term(1.0) + self._surcharge_term()
+                + self._embedment_term(0.5))
