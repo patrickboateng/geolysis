@@ -4,7 +4,7 @@ from typing import Iterable, Optional, NamedTuple
 from geolysis.utils import isclose, round_
 
 __all__ = ["ClfType", "AtterbergLimits", "PSD", "AASHTO", "USCS",
-           "SizeDistribution"]
+           "SizeDistribution", "create_soil_classifier"]
 
 
 class SizeDistError(ZeroDivisionError):
@@ -710,19 +710,19 @@ class USCS:
                 f"{coarse_material_type}{fine_material_type}")
 
 
-def create_soil_classifier(*, liquid_limit: float, plastic_limit: float,
+def create_soil_classifier(liquid_limit: float, plastic_limit: float,
                            fines: float, sand: Optional[float] = None,
                            d_10: float = 0, d_30: float = 0, d_60: float = 0,
                            add_group_idx: bool = True, organic: bool = False,
-                           clf_type: ClfType | None = None) -> AASHTO | USCS:
+                           clf_type: ClfType | str | None = None) -> AASHTO | USCS:
     if clf_type is None:
         raise ValueError("clf_type must be specified")
 
-    if clf_type is ClfType.AASHTO:
+    if clf_type == ClfType.AASHTO:
         clf = AASHTO(liquid_limit=liquid_limit, plastic_limit=plastic_limit,
                      fines=fines, add_group_idx=add_group_idx)
 
-    elif clf_type is ClfType.USCS:
+    elif clf_type == ClfType.USCS:
         if sand is None:
             raise ValueError("sand must be specified")
 
