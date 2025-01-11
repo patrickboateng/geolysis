@@ -9,7 +9,7 @@ from geolysis.bearing_capacity.ubc_4_soils import (
     TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting,
     TerzaghiBearingCapacityFactor)
 
-from geolysis.foundation import Shape, create_foundation
+from geolysis.foundation import create_foundation
 from geolysis.utils import inf
 
 ERROR_TOL = 0.01
