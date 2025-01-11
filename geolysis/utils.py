@@ -1,21 +1,11 @@
 import functools
 import math
-import typing
-from math import exp, isclose, log10, sqrt
-from math import inf as INF
-from math import pi as PI
+from typing import Callable, SupportsRound
+from math import exp, isclose, log10, sqrt, inf, pi
 from statistics import fmean as mean
 
-__all__ = [
-    "deg2rad",
-    "rad2deg",
-    "tan",
-    "cot",
-    "sin",
-    "cos",
-    "arctan",
-    "round_",
-]
+__all__ = ["inf", "pi", "deg2rad", "rad2deg", "tan", "cot", "sin", "cos",
+           "arctan", "round_", "mean", "exp", "isclose", "log10", "sqrt"]
 
 
 def deg2rad(x: float, /) -> float:
@@ -53,46 +43,19 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(
-    ndigits: int | typing.Callable[..., typing.SupportsRound],
-) -> typing.Callable:
-    """A decorator that rounds the result of a callable to a specified number of
-    decimal places.
+def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
+    """A decorator that rounds the result of a callable to a specified number
+    of decimal places.
 
     The returned value of the callable shoud support the ``__round__`` dunder
-    method and should be a numeric value. ``ndigits`` can either be an int which
-    will indicates the number of decimal places to round to or a callable. If
-    ``ndigits`` is callable the default decimal places is 4.
+    method and should be a numeric value. ``ndigits`` can either be an int
+    which will indicates the number of decimal places to round to or a
+    callable. If ``ndigits`` is callable the default decimal places is 4.
 
-    TypeError is raised when ``ndigits`` is neither an int or a callable.
-
-    Examples
-    --------
-    >>> @round_(ndigits=2)
-    ... def area_of_circle(radius: float):
-    ...     return PI * (radius**2)
-
-    >>> area_of_circle(radius=2.0)
-    12.57
-
-    By default the function is rounded to 4 decimal places.
-
-    >>> @round_
-    ... def area_of_circle(radius: float):
-    ...     return PI * (radius**2)
-
-    >>> area_of_circle(radius=2.0)
-    12.57
-
-    >>> @round_(ndigits=2.0)
-    ... def area_of_square(width: float):
-    ...     return width**2
-    Traceback (most recent call last):
-        ...
-    TypeError: ndigits should be an int or a callable.
+    TypeError is raised when ``ndigits`` is neither an int nor a callable.
     """
 
-    def dec(fn) -> typing.Callable[..., float]:
+    def dec(fn) -> Callable[..., float]:
         @functools.wraps(fn)
         def wrapper(*args, **kwargs) -> float:
             if not callable(ndigits):
