@@ -61,7 +61,7 @@ class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
         self.soil_prop = Soil(friction_angle=25.0, cohesion=15.0,
                               moist_unit_wgt=18.0)
 
-    def testBearingCapacity(self):
+    def test_bearing_capacity(self):
         ubc = TerzaghiUBC4SquareFooting(soil_properties=self.soil_prop,
                                         foundation_size=self.fs,
                                         apply_local_shear=True)
