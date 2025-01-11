@@ -1,36 +1,15 @@
 import enum
 from abc import abstractmethod
-from dataclasses import dataclass
-from typing import Final, Protocol, Sequence
+from typing import Final, Sequence
 
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 
-__all__ = [
-    "weighted_spt_n_design",
-    "average_spt_n_design",
-    "minimum_spt_n_design",
-    "EnergyCorrection",
-    "GibbsHoltzOPC",
-    "BazaraaPeckOPC",
-    "PeckOPC",
-    "LiaoWhitmanOPC",
-    "SkemptonOPC",
-    "DilatancyCorrection",
-]
+__all__ = ["weighted_spt_n_design", "average_spt_n_design",
+           "minimum_spt_n_design", "EnergyCorrection", "GibbsHoltzOPC",
+           "BazaraaPeckOPC", "PeckOPC", "LiaoWhitmanOPC", "SkemptonOPC",
+           "DilatancyCorrection"]
 
 DP: Final[int] = 1
-
-
-# class OPCError(ValueError):
-#     pass
-#
-#
-# class SPTCorrection(Protocol):
-#     @property
-#     @abstractmethod
-#     def corrected_spt_number(self) -> float: ...
-#
-#
 
 
 @round_(DP)
@@ -164,19 +143,15 @@ class EnergyCorrection:
     >>> energy_cor.corrected_spt_number()
     22.5
     """
-    HAMMER_EFFICIENCY_FACTORS = {
-        HammerType.AUTOMATIC: 0.70,
-        HammerType.DONUT_1: 0.60,
-        HammerType.DONUT_2: 0.50,
-        HammerType.SAFETY: 0.55,
-        HammerType.DROP: 0.45,
-        HammerType.PIN: 0.45,
-    }
+    HAMMER_EFFICIENCY_FACTORS = {HammerType.AUTOMATIC: 0.70,
+                                 HammerType.DONUT_1: 0.60,
+                                 HammerType.DONUT_2: 0.50,
+                                 HammerType.SAFETY: 0.55,
+                                 HammerType.DROP: 0.45,
+                                 HammerType.PIN: 0.45}
 
-    SAMPLER_CORRECTION_FACTORS = {
-        SamplerType.STANDARD: 1.00,
-        SamplerType.NON_STANDARD: 1.20,
-    }
+    SAMPLER_CORRECTION_FACTORS = {SamplerType.STANDARD: 1.00,
+                                  SamplerType.NON_STANDARD: 1.20}
 
     def __init__(self, recorded_spt_number: int, *, energy_percentage=0.6,
                  borehole_diameter=65.0, rodlength=3.0,
@@ -194,9 +169,9 @@ class EnergyCorrection:
         return self._recorded_spt_number
 
     @recorded_spt_number.setter
-    def recorded_spt_number(self, spt_number: int) -> None:
-        if 0 < spt_number <= 100:
-            self._recorded_spt_number = spt_number
+    def recorded_spt_number(self, val: int) -> None:
+        if 0 < val <= 100:
+            self._recorded_spt_number = val
         else:
             raise ValueError("Recorded SPT number must be between 0 and 100")
 
@@ -205,9 +180,9 @@ class EnergyCorrection:
         return self._energy_percentage
 
     @energy_percentage.setter
-    def energy_percentage(self, energy_percentage: float) -> None:
-        if 0.0 < energy_percentage <= 1.00:
-            self._energy_percentage = energy_percentage
+    def energy_percentage(self, val: float) -> None:
+        if 0.0 < val <= 1.00:
+            self._energy_percentage = val
         else:
             raise ValueError("Energy percentage must be between 0.0 and 1.0")
 
@@ -216,9 +191,9 @@ class EnergyCorrection:
         return self._borehole_diameter
 
     @borehole_diameter.setter
-    def borehole_diameter(self, borehole_diameter: float) -> None:
-        if 65.0 <= borehole_diameter <= 200.0:
-            self._borehole_diameter = borehole_diameter
+    def borehole_diameter(self, val: float) -> None:
+        if 65.0 <= val <= 200.0:
+            self._borehole_diameter = val
         else:
             raise ValueError("Borehole diameter must be between 65 and 200")
 
@@ -227,9 +202,9 @@ class EnergyCorrection:
         return self._rodlength
 
     @rodlength.setter
-    def rodlength(self, rodlength: float) -> None:
-        if rodlength > 0.0:
-            self._rodlength = rodlength
+    def rodlength(self, val: float) -> None:
+        if val > 0.0:
+            self._rodlength = val
         else:
             raise ValueError("Rod length must be greater than 0.0")
 
@@ -238,16 +213,16 @@ class EnergyCorrection:
         return self._hammer_type
 
     @hammer_type.setter
-    def hammer_type(self, hammer_type: HammerType) -> None:
-        self._hammer_type = hammer_type
+    def hammer_type(self, val: HammerType) -> None:
+        self._hammer_type = val
 
     @property
     def sampler_type(self) -> SamplerType:
         return self._sampler_type
 
     @sampler_type.setter
-    def sampler_type(self, sampler_type: SamplerType) -> None:
-        self._sampler_type = sampler_type
+    def sampler_type(self, val: SamplerType) -> None:
+        self._sampler_type = val
 
     @property
     def hammer_efficiency(self) -> float:
@@ -282,12 +257,10 @@ class EnergyCorrection:
         return corr
 
     def correction(self) -> float:
-        return (
-                self.hammer_efficiency
+        return (self.hammer_efficiency
                 * self.borehole_diameter_correction
                 * self.sampler_correction
-                * self.rod_length_correction
-        ) / self.energy_percentage
+                * self.rod_length_correction) / self.energy_percentage
 
     @round_(DP)
     def corrected_spt_number(self) -> float:
@@ -310,9 +283,9 @@ class OPC:
         return self._std_spt_number
 
     @std_spt_number.setter
-    def std_spt_number(self, std_spt_number: float) -> None:
-        if std_spt_number > 0.0:
-            self._std_spt_number = std_spt_number
+    def std_spt_number(self, val: float) -> None:
+        if val > 0.0:
+            self._std_spt_number = val
         else:
             raise ValueError("Standard SPT number must be greater than 0.0")
 
@@ -355,9 +328,9 @@ class GibbsHoltzOPC(OPC):
         return self._eop
 
     @eop.setter
-    def eop(self, eop: float) -> None:
-        if 0.0 < eop <= 280.0:
-            self._eop = eop
+    def eop(self, val: float) -> None:
+        if 0.0 < val <= 280.0:
+            self._eop = val
         else:
             raise ValueError(
                 "Effective overburden pressure must be between 0.0 and 280.0")
@@ -402,22 +375,21 @@ class BazaraaPeckOPC(OPC):
         return self._eop
 
     @eop.setter
-    def eop(self, eop: float) -> None:
-        if eop >= 0.0:
-            self._eop = eop
+    def eop(self, val: float) -> None:
+        if val >= 0.0:
+            self._eop = val
         else:
-            raise ValueError(
-                "Effective overburden pressure must greater than"
-                " or equal to 0.0")
+            raise ValueError("Effective overburden pressure must greater than"
+                             " or equal to 0.0")
 
     def correction(self) -> float:
         """SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
         elif self.eop < self.STD_PRESSURE:
-            corr = 4 / (1 + 0.0418 * self.eop)
+            corr = 4.0 / (1.0 + 0.0418 * self.eop)
         else:
-            corr = 4 / (3.25 + 0.0104 * self.eop)
+            corr = 4.0 / (3.25 + 0.0104 * self.eop)
         return corr
 
 
@@ -443,13 +415,13 @@ class PeckOPC(OPC):
         return self._eop
 
     @eop.setter
-    def eop(self, eop: float) -> None:
-        if eop >= 24.0:
-            self._eop = eop
+    def eop(self, val: float) -> None:
+        if val >= 24.0:
+            self._eop = val
         else:
-            raise ValueError(
-                "Effective overburden pressure must be greater than"
-                " or equal to 24.0")
+            msg = ("Effective overburden pressure must be greater than"
+                   " or equal to 24.0")
+            raise ValueError(msg)
 
     def correction(self) -> float:
         return 0.77 * log10(2000.0 / self.eop)
@@ -466,6 +438,7 @@ class LiaoWhitmanOPC(OPC):
 
     Examples
     --------
+                "Effective overburden pressure must be greater than"
     >>> from geolysis.spt import LiaoWhitmanOPC
     >>> opc_cor = LiaoWhitmanOPC(std_spt_number=23.0, eop=100.0)
     >>> opc_cor.corrected_spt_number()
@@ -477,12 +450,12 @@ class LiaoWhitmanOPC(OPC):
         return self._eop
 
     @eop.setter
-    def eop(self, eop: float) -> None:
-        if eop > 0.0:
-            self._eop = eop
+    def eop(self, val: float) -> None:
+        if val > 0.0:
+            self._eop = val
         else:
-            raise ValueError(
-                "Effective overburden pressure must greater than 0.0")
+            msg = "Effective overburden pressure must greater than 0.0"
+            raise ValueError(msg)
 
     def correction(self) -> float:
         return sqrt(100.0 / self.eop)
@@ -510,19 +483,18 @@ class SkemptonOPC(OPC):
         return self._eop
 
     @eop.setter
-    def eop(self, eop: float) -> None:
-        if eop >= 0.0:
-            self._eop = eop
+    def eop(self, val: float) -> None:
+        if val >= 0.0:
+            self._eop = val
         else:
-            raise ValueError(
-                "Effective overburden pressure must greater than"
-                " or equal to 0.0")
+            msg = ("Effective overburden pressure must greater than"
+                   " or equal to 0.0")
+            raise ValueError(msg)
 
     def correction(self) -> float:
         return 2.0 / (1.0 + 0.01044 * self.eop)
 
 
-@dataclass
 class DilatancyCorrection:
     r"""Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
 
@@ -560,9 +532,9 @@ class DilatancyCorrection:
         return self._std_spt_number
 
     @std_spt_number.setter
-    def std_spt_number(self, std_spt_number: float) -> None:
-        if std_spt_number > 0.0:
-            self._std_spt_number = std_spt_number
+    def std_spt_number(self, val: float) -> None:
+        if val > 0.0:
+            self._std_spt_number = val
         else:
             raise ValueError("Standard SPT number must be greater than 0.0")
 
