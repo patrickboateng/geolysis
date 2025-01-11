@@ -6,9 +6,9 @@ from geolysis.utils import inf, arctan, tan
 
 __all__ = ["k", "UltimateBearingCapacity", "TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircFooting", "TerzaghiUBC4RectFooting",
-           "TerzaghiUBC4SquareFooting", "HansenUltimateBearingCapacity",
-           "HansenBearingCapacityFactor", "HansenShapeFactor",
-           "HansenInclinationFactor", "HansenDepthFactor",
+           "TerzaghiBearingCapacityFactor", "TerzaghiUBC4SquareFooting",
+           "HansenUltimateBearingCapacity", "HansenBearingCapacityFactor",
+           "HansenShapeFactor", "HansenInclinationFactor", "HansenDepthFactor",
            "VesicUltimateBearingCapacity", "VesicBearingCapacityFactor",
            "VesicShapeFactor", "VesicInclinationFactor", "VesicDepthFactor",
            "VesicInclinationFactor"]
