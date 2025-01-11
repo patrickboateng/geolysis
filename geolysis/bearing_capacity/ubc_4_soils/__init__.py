@@ -146,7 +146,8 @@ class UltimateBearingCapacity(ABC):
 
 
 from .terzaghi_ubc import (TerzaghiUBC4StripFooting, TerzaghiUBC4CircFooting,
-                           TerzaghiUBC4SquareFooting, TerzaghiUBC4RectFooting)
+                           TerzaghiUBC4SquareFooting, TerzaghiUBC4RectFooting,
+                           TerzaghiBearingCapacityFactor)
 from .hansen_ubc import (HansenUltimateBearingCapacity, HansenDepthFactor,
                          HansenBearingCapacityFactor, HansenShapeFactor,
                          HansenInclinationFactor)
