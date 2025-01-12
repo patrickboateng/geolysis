@@ -55,6 +55,8 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     TypeError is raised when ``ndigits`` is neither an int nor a callable.
     """
 
+    default = 2
+
     def dec(fn) -> Callable[..., float]:
         @functools.wraps(fn)
         def wrapper(*args, **kwargs) -> float:
@@ -62,7 +64,7 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
                 dp = ndigits
             else:
                 # Default decimal places is 2.
-                dp = 2
+                dp = default
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
 
@@ -74,7 +76,6 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
         return dec
     if callable(ndigits):
         # We're called as @round_ without parens.
-        f = ndigits
-        return dec(f)
+        return dec(ndigits)
 
     raise TypeError("ndigits should be an int or a callable.")
