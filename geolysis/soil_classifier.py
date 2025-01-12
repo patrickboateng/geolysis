@@ -438,6 +438,7 @@ class AASHTO:
         self.fines = fines
         self.add_group_idx = add_group_idx
 
+    @round_(ndigits=0)
     def group_index(self) -> int | float:
         """Return the Group Index (GI) of the soil sample."""
 
@@ -450,7 +451,7 @@ class AASHTO:
         c = 1.0 if (x_0 := fines - 15.0) < 0.0 else min(x_0, 40.0)
         d = 1.0 if (x_0 := plasticity_idx - 10.0) < 0.0 else min(x_0, 20.0)
 
-        return round(a * (0.2 + 0.005 * b) + 0.01 * c * d, ndigits=0)
+        return a * (0.2 + 0.005 * b) + 0.01 * c * d
 
     def description(self) -> str:
         """Return the AASHTO description of the soil."""
