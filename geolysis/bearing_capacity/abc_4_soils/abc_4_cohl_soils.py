@@ -66,7 +66,7 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
         :param tol_settlement: Tolerable settlement of foundation (mm).
         :type tol_settlement: float
 
-        :param foundation_size: Size of foundation.
+        :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
         super().__init__(corrected_spt_number, tol_settlement, foundation_size)
@@ -142,7 +142,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         :param tol_settlement: Tolerable settlement of foundation (mm).
         :type tol_settlement: float
 
-        :param foundation_size: Size of foundation.
+        :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
         super().__init__(corrected_spt_number, tol_settlement, foundation_size)
@@ -219,7 +219,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :param water_depth: Depth of water below ground surface (mm).
         :type water_depth: float
 
-        :param foundation_size: Size of foundation.
+        :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
         super().__init__(corrected_spt_number, tol_settlement, foundation_size)
