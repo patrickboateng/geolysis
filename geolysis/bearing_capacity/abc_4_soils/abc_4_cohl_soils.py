@@ -16,7 +16,8 @@ class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement (mm).
     MAX_TOL_SETTLEMENT = 25.4
 
-    def __init__(self, corrected_spt_number: float, tol_settlement: float,
+    def __init__(self, corrected_spt_number: float, 
+                 tol_settlement: float,
                  foundation_size: FoundationSize) -> None:
         self.corrected_spt_number = corrected_spt_number
         self.tol_settlement = tol_settlement
@@ -75,21 +76,15 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     def bearing_capacity(self):
         r""" Calculate the allowable bearing capacity of the pad foundation.
 
-        .. note:: 
+        .. math::
 
-            Allowable bearing capacity:
+            q_a(kPa) &= 19.16(N_1)_{55} f_d\left(\dfrac{S}{25.4}\right),
+                        \ B \ \le \ 1.2m
 
-            .. math::
+            q_a(kPa) &= 11.98(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2
+                        f_d \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
 
-                q_a(kPa) &= 19.16(N_1)_{55} f_d\left(\dfrac{S}{25.4}\right),
-                            \ B \ \le \ 1.2m
-
-                q_a(kPa) &= 11.98(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2
-                            f_d \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-
-            Depth factor:
-
-            .. math:: f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
+            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
         """
         n_corr = self.corrected_spt_number
         f_w = self.foundation_size.width
@@ -110,16 +105,10 @@ class BowlesABC4MatFoundation(BowlesABC4PadFoundation):
     def bearing_capacity(self) -> float:
         r""" Calculate the allowable bearing capacity of the mat foundation.
 
+        .. math:: 
+            q_a(kPa) &= 11.98(N_1)_{55}f_d\left(\dfrac{S}{25.4}\right)
 
-        .. note::
-
-            Allowable bearing capacity:
-
-            .. math:: q_a(kPa) = 11.98(N_1)_{55}f_d\left(\dfrac{S}{25.4}\right)
-
-            Depth factor:
-
-            .. math:: f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
+            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
         """
         n_corr = self.corrected_spt_number
         return 11.98 * n_corr * self._fd() * self._sr()
@@ -151,20 +140,14 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     def bearing_capacity(self):
         r"""Calculates the allowable bearing capacity of the pad foundation.
 
-        .. note::
+        .. math::
 
-            Allowable bearing capacity:
+            q_a(kPa) &= 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
 
-            .. math::
+            q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(
+                    \dfrac{S}{25.4}\right), \ B \ \gt 1.2m
 
-                q_a(kPa) &= 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
-
-                q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(
-                        \dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-
-            Depth factor:
-
-            .. math:: f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33 
+            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33 
         """
         n_corr = self.corrected_spt_number
         f_w = self.foundation_size.width
@@ -185,15 +168,11 @@ class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
     def bearing_capacity(self):
         r""" Calculate the allowable bearing capacity of the mat foundation.
 
-        .. note::
+        .. math:: 
 
-            Allowable bearing capacity:
+            q_a(kPa) &= 8 N f_d\left(\dfrac{S}{25.4}\right)
 
-            .. math:: q_a(kPa) = 8 N f_d\left(\dfrac{S}{25.4}\right)
-
-            Depth factor:
-
-            .. math:: f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
+            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
         """
         n_corr = self.corrected_spt_number
         return 8 * n_corr * self._fd() * self._sr()
@@ -245,29 +224,23 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     def bearing_capacity(self):
         r""" Calculate the allowable bearing capacity of the pad foundation. 
 
-        .. note::
+        .. math::
 
-            Allowable bearing capacity:
+            q_a(kPa) &= 12N \dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right),
+                        \ B \ \le 1.2m
 
-            .. math::
+            q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2\dfrac{1}
+                        {c_w f_d}\left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
 
-                q_a(kPa) &= 12N \dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right),
-                            \ B \ \le 1.2m
+            f_d &= 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
 
-                q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2\dfrac{1}
-                            {c_w f_d}\left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
+        Water correction for surface footing:
 
-            Depth factor:
+        .. math:: c_w = 2 - \frac{D_w}{2B} \le 2
 
-            .. math:: f_d = 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
+        Water correction for fully submerged footing :math:`D_w \le D_f`
 
-            Water correction for surface footing:
-
-            .. math:: c_w = 2 - \frac{D_w}{2B} \le 2
-
-            Water correction for fully submerged footing :math:`D_w \le D_f`
-
-            .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
+        .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
         """
         n_corr = self.corrected_spt_number
         f_w = self.foundation_size.width
@@ -275,8 +248,8 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         if f_w <= 1.2:
             return 12 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
 
-        return (8 * n_corr * ((3.28 * f_w + 1) / (3.28 * f_w)) ** 2 * (
-                1 / (self._cw() * self._fd())) * self._sr())
+        return (8 * n_corr * ((3.28 * f_w + 1) / (3.28 * f_w)) ** 2 * 
+               (1 / (self._cw() * self._fd())) * self._sr())
 
 
 class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
@@ -288,23 +261,19 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     def bearing_capacity(self):
         r"""  Calculate the allowable bearing capacity of the mat foundation.
 
-        .. note::
+        .. math:: 
+        
+            q_a(kPa) &= 8N\dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right)
 
-            Allowable bearing capacity:
+            f_d &= 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
 
-            .. math:: q_a(kPa) = 8N\dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right)
+        Water correction for surface footing:
 
-            Depth factor:
+        .. math:: c_w = 2 - \frac{D_w}{2B} \le 2
 
-            .. math:: f_d = 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
+        Water correction for fully submerged footing :math:`D_w \le D_f`
 
-            Water correction for surface footing:
-
-            .. math:: c_w = 2 - \frac{D_w}{2B} \le 2
-
-            Water correction for fully submerged footing :math:`D_w \le D_f`
-
-            .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
+        .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
         """
         n_corr = self.corrected_spt_number
         return 8 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
