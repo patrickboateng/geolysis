@@ -1,5 +1,4 @@
-from geolysis.bearing_capacity.ubc_4_soils import UltimateBearingCapacity, k
-from geolysis.bearing_capacity import SoilProperties
+from geolysis.bearing_capacity.ubc import UltimateBearingCapacity, k
 from geolysis.foundation import FoundationSize, Shape
 from geolysis.utils import inf, pi, cos, cot, exp, isclose, round_, sin, tan
 
@@ -14,8 +13,7 @@ class HansenBearingCapacityFactor:
     def n_c(cls, friction_angle: float) -> float:
         if isclose(friction_angle, 0.0):
             return 5.14
-        else:
-            return cot(friction_angle) * (cls.n_q(friction_angle) - 1.0)
+        return cot(friction_angle) * (cls.n_q(friction_angle) - 1.0)
 
     @classmethod
     @round_
@@ -129,12 +127,12 @@ class HansenInclinationFactor:
             foundation_size: FoundationSize) -> float:
         f_w = foundation_size.width
         f_l = foundation_size.length
-        return 1 - cos(load_angle) / (2 * cohesion * f_w * f_l)
+        return 1 - sin(load_angle) / (2 * cohesion * f_w * f_l)
 
     @classmethod
     @round_
     def i_q(cls, load_angle: float) -> float:
-        return 1 - (1.5 * cos(load_angle)) / sin(load_angle)
+        return 1 - (1.5 * sin(load_angle)) / cos(load_angle)
 
     @classmethod
     @round_
@@ -143,39 +141,7 @@ class HansenInclinationFactor:
 
 
 class HansenUltimateBearingCapacity(UltimateBearingCapacity):
-    r"""Ultimate bearing capacity for footings on cohesionless soils according
-    to ``Hansen 1961``.
-
-    :param float soil_friction_angle: Internal angle of friction of soil
-        material.
-    :param float cohesion: Cohesion of soil material.
-    :param float moist_unit_wgt: Moist (Bulk) unit weight of soil material.
-    :param FoundationSize foundation_size: Size of foundation.
-    :param float water_level: Depth of water below the ground surface.
-    :param float local_shear_failure: Indicates if local shear failure is likely
-        to occur therefore modifies the soil_friction_angle and cohesion of the
-        soil material.
-
-    Notes
-    -----
-    Ultimate bearing capacity for circular footing is given by the formula:
-
-    .. math::
-
-        q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
-              + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma}
-
-    Examples
-    --------
-
-    """
-
-    def __init__(self, soil_properties: SoilProperties,
-                 foundation_size: FoundationSize, water_level=inf,
-                 load_angle_incl=90.0, apply_local_shear=False) -> None:
-        super().__init__(soil_properties, foundation_size, water_level,
-                         apply_local_shear)
-        self.load_angle = load_angle_incl
+    """Ultimate bearing capacity for soils according to ``Hansen (1961)``."""
 
     @property
     def n_c(self) -> float:
@@ -215,7 +181,8 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def i_c(self) -> float:
-        return HansenInclinationFactor.i_c(self.cohesion, self.load_angle,
+        return HansenInclinationFactor.i_c(self.cohesion, 
+                                           self.load_angle,
                                            self.foundation_size)
 
     @property
@@ -228,5 +195,15 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        return (self._cohesion_term(1.0) + self._surcharge_term()
-                + self._embedment_term(0.5))
+        r"""Calculates ultimate bearing capacity.
+
+        .. math::
+
+            q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
+                  + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma}
+        """
+    
+
+        return self._cohesion_term(1.0) \
+               + self._surcharge_term() \
+               + self._embedment_term(0.5)
