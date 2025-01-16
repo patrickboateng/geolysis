@@ -1,5 +1,5 @@
 import enum
-from typing import TypeAlias, Optional, Final
+from typing import TypeAlias, Optional, Final, Any
 
 from geolysis.utils import inf
 
@@ -17,7 +17,7 @@ class _Field:
         self.fdel: Final = delattr
         self.__doc__ = doc
 
-    def __get__(self, obj, objtype=None) -> int | float:
+    def __get__(self, obj, objtype=None) -> Any:
         if self.ref_obj is not None:
             ref_obj = self.fget(obj, self.ref_obj)
             return self.fget(ref_obj, self.ref_attr)
