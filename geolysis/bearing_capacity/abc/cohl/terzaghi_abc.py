@@ -22,7 +22,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :type tol_settlement: float
 
         :param ground_water_level: Depth of water below ground level (mm).
-        :type water_depth: float
+        :type ground_water_level: float
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
