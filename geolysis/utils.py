@@ -43,14 +43,14 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
+def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable[..., float]:
     """A decorator that rounds the result of a callable to a specified number
     of decimal places.
 
-    The returned value of the callable shoud support the ``__round__`` dunder
+    The returned value of the callable should support the ``__round__`` dunder
     method and should be a numeric value. ``ndigits`` can either be an int
-    which will indicates the number of decimal places to round to or a
-    callable. If ``ndigits`` is callable the default decimal places is 4.
+    which will indicate the number of decimal places to round to or a
+    callable. If ``ndigits`` is callable the default decimal places is 2.
 
     TypeError is raised when ``ndigits`` is neither an int nor a callable.
     """
@@ -60,22 +60,18 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     def dec(fn) -> Callable[..., float]:
         @functools.wraps(fn)
         def wrapper(*args, **kwargs) -> float:
-            if not callable(ndigits):
-                dp = ndigits
-            else:
-                # Default decimal places is 2.
-                dp = default
+            dp = ndigits if not callable(ndigits) else default
             res = fn(*args, **kwargs)
             return round(res, ndigits=dp)
-
         return wrapper
 
     # See if we're being called as @round_ or @round_().
+    # We're called with parens.
     if isinstance(ndigits, int):
-        # We're called with parens.
-        return dec
+        return dec # type: ignore
+    
+    # We're called as @round_ without parens.
     if callable(ndigits):
-        # We're called as @round_ without parens.
         return dec(ndigits)
 
     raise TypeError("ndigits should be an int or a callable.")

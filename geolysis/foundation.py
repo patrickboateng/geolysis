@@ -30,16 +30,12 @@ class _Field:
         else:
             self.fset(obj, self.ref_attr, value)
 
-    #: TODO: check deleter
-    def __delete__(self, obj) -> None:
-        self.fdel(obj, self.property_name)
-
     def __set_name__(self, objtype, property_name) -> None:
         self.property_name = property_name
 
 
 class Shape(enum.StrEnum):
-    """"""
+    """Enumeration of foundation shapes."""
 
     STRIP = enum.auto()
     CIRCLE = enum.auto()
@@ -48,264 +44,151 @@ class Shape(enum.StrEnum):
 
 
 class StripFooting:
+    """A class representation of strip footing."""
+
     def __init__(self, width: float, length: float = inf) -> None:
-        self._width = width
-        self._length = length
-        self._shape_ = Shape.STRIP
+        """
+        :param width: Width of foundation footing. (m)
+        :type width: float
 
-    @property
-    def width(self) -> float:
-        return self._width
+        :param float length: Length of foundation footing, defaults to inf. (m)
+        :type length: float
+        """
+        self.width = width
+        self.length = length
+        self.shape = Shape.STRIP
 
-    @width.setter
-    def width(self, val: float):
-        self._width = val
-
-    @property
-    def length(self) -> float:
-        return self._length
-
-    @length.setter
-    def length(self, val: float):
-        self._length = val
-
-    @property
-    def shape_(self) -> Shape:
-        return self._shape_
-
-
+    
 class CircularFooting:
     """A class representation of circular footing.
-
-    .. seealso::
-
-        :class:`SquareFooting`, :class:`RectangularFooting`
 
     .. note::
 
         The ``width`` and ``length`` properties refer to the diameter of the
         circular footing. This is to make it compatible with the protocol square
         and rectangular footing follow.
-
-    >>> from geolysis.foundation import CircularFooting
-    >>> circ_footing = CircularFooting(diameter=1.2)
-    >>> circ_footing.diameter
-    1.2
-    >>> circ_footing.width
-    1.2
-    >>> circ_footing.length
-    1.2
     """
 
-    width = _Field(attr="diameter", doc="Diameter of footing.")
-    length = _Field(attr="diameter", doc="Diameter of footing.")
+    width = _Field(attr="diameter", doc="Diameter of foundation footing.")
+    length = _Field(attr="diameter", doc="Diameter of foundation footing.")
 
     def __init__(self, diameter: float):
         """
         :param float diameter: Diameter of foundation footing. (m)
         """
-        self._diameter = diameter
-        self._shape_ = Shape.CIRCLE
+        self.diameter = diameter
+        self.shape = Shape.CIRCLE
 
-    @property
-    def diameter(self) -> float:
-        return self._diameter
-
-    @diameter.setter
-    def diameter(self, val):
-        self._diameter = val
-
-    @property
-    def shape_(self) -> Shape:
-        return self._shape_
-
-
+    
 class SquareFooting:
-    """A class representation of square footing.
+    """A class representation of square footing."""
 
-    .. seealso::
-
-        :class:`CircularFooting`, :class:`RectangularFooting`
-
-    .. code::
-
-        >>> from geolysis.foundation import SquareFooting
-        >>> sq_footing = SquareFooting(width=1.2)
-        >>> sq_footing.width
-        1.2
-        >>> sq_footing.length
-        1.2
-    """
-
-    length = _Field(attr="width", doc="Width of footing. (m)")
+    length = _Field(attr="width", doc="Width of foundation footing. (m)")
 
     def __init__(self, width: float):
         """
         :param float width: Width of foundation footing. (m)
         """
-        self._width = width
-        self._shape_ = Shape.SQUARE
-
-    @property
-    def width(self) -> float:
-        return self._width
-
-    @width.setter
-    def width(self, val: float):
-        self._width = val
-
-    @property
-    def shape_(self) -> Shape:
-        return self._shape_
+        self.width = width
+        self.shape = Shape.SQUARE
 
 
 class RectangularFooting:
-    """A class representation of rectangular footing.
-
-    .. seealso::
-
-        :class:`CircularFooting`, :class:`SquareFooting`
-
-    .. code::
-
-        >>> from geolysis.foundation import RectangularFooting
-        >>> rect_footing = RectangularFooting(width=1.2, length=1.4)
-        >>> rect_footing.width
-        1.2
-        >>> rect_footing.length
-        1.4
-    """
+    """A class representation of rectangular footing."""
 
     def __init__(self, width: float, length: float):
         """
-        :param float width: Width of foundation footing. (m)
-        :param float length: Length of foundation footing. (m)
+        :param width: Width of foundation footing. (m)
+        :type width: float
+
+        :param length: Length of foundation footing. (m)
+        :type length: float
         """
-        self._width = width
-        self._length = length
-        self._shape_ = Shape.RECTANGLE
+        self.width = width
+        self.length = length
+        self.shape = Shape.RECTANGLE
 
-    @property
-    def width(self) -> float:
-        return self._width
-
-    @width.setter
-    def width(self, val: float):
-        self._width = val
-
-    @property
-    def length(self) -> float:
-        return self._length
-
-    @length.setter
-    def length(self, val: float):
-        self._length = val
-
-    @property
-    def shape_(self) -> Shape:
-        return self._shape_
-
-
+    
 FootingSize: TypeAlias = (
         StripFooting | CircularFooting | SquareFooting | RectangularFooting)
 
 
 class FoundationSize:
-    """A simple class representing a foundation structure.
+    """A simple class representing a foundation structure."""
 
-
-    >>> from geolysis.foundation import (
-    ...     FoundationSize,
-    ...     CircularFooting,
-    ...     Shape,
-    ...     create_foundation,
-    ... )
-    >>> foundation_size = create_foundation(
-    ...     depth=1.5, width=1.2, footing_shape=Shape.SQUARE
-    ... )
-    >>> foundation_size.depth
-    1.5
-    >>> foundation_size.length
-    1.2
-    >>> foundation_size.width
-    1.2
-    """
-
-    width = _Field(attr="width", obj="footing_size")
-    length = _Field(attr="length", obj="footing_size")
-    footing_shape = _Field(attr="shape_", obj="footing_size")
+    width = _Field(attr="width", obj="footing_size", 
+                   doc="Width of foundation footing. (m)")
+    length = _Field(attr="length", obj="footing_size", 
+                    doc="Length of foundation footing. (m)")
+    footing_shape = _Field(attr="shape", obj="footing_size", 
+                           doc="Shape of foundation footing.")
 
     def __init__(self, depth: float, footing_size: FootingSize,
                  eccentricity: float = 0.0) -> None:
         """
-        :param float depth: Depth of foundation. (m)
-        :param FootingSize footing_size: Represents the size of the foundation
-            footing.
+        :param depth: Depth of foundation. (m)
+        :type depth: float
+
+        :param footing_size: Represents the size of the foundation footing.
+        :type footing_size: FootingSize
+
+        :param eccentricity: The deviation of the foundation load on the center
+                             of the center of gravity of the foundation footing, 
+                             defaults to 0.0. This means that the foundation 
+                             load aligns with the center of gravity of the 
+                             foundation footing. (m)
+        :type eccentricity: float, optional
         """
-        self._depth = depth
-        self._footing_size = footing_size
-        self._eccentricity = eccentricity
-
-    @property
-    def depth(self) -> float:
-        return self._depth
-
-    @depth.setter
-    def depth(self, val: float):
-        self._depth = val
-
-    @property
-    def eccentricity(self) -> float:
-        return self._eccentricity
-
-    @eccentricity.setter
-    def eccentricity(self, val: float):
-        self._eccentricity = val
-
-    @property
-    def footing_size(self) -> FootingSize:
-        return self._footing_size
-
-    @footing_size.setter
-    def footing_size(self, val: FootingSize):
-        self._footing_size = val
+        self.depth = depth
+        self.footing_size = footing_size
+        self.eccentricity = eccentricity
 
     @property
     def effective_width(self) -> float:
+        """Returns the effective width of the foundation footing."""
         return self.width - 2 * self.eccentricity
 
 
 def create_foundation(depth: float, width: float,
                       length: Optional[float] = None,
                       eccentricity: float = 0.0,
-                      footing_shape: Shape | str = Shape.SQUARE) -> FoundationSize:
-    """A factory function that encapsulate the creation of a foundation
-    footing.
+                      shape: Shape | str = Shape.SQUARE) -> FoundationSize:
+    """A factory function that encapsulate the creation of a foundation.
 
-    :param float depth: Depth of foundation. (m)
-    :param float width: Width of foundation footing (m)
-    :param float length: Length of foundation footing, defaults to None. (m)
-    :param float eccentricity: Eccentricity of foundation, defaults to 0.0. (m)
-    :param Shape | str footing_shape: Shape of foundation footing, defaults to
-        :class:`Shape.SQUARE` or "square"
+    :param depth: Depth of foundation. (m)
+    :type depth: float
+
+    :param width: Width of foundation footing. (m)
+    :type width: float
+
+    :param length: Length of foundation footing, defaults to None. (m)
+    :type length: float, optional
+
+    :param eccentricity: The deviation of the foundation load on the center
+                         of the center of gravity of the foundation footing, 
+                         defaults to 0.0. This means that the foundation 
+                         load aligns with the center of gravity of the 
+                         foundation footing. (m)
+    :type eccentricity: float, optional
+
+    :param shape: Shape of foundation footing, defaults to :class:`Shape.SQUARE`
+    :type shape: Shape | str
 
     :raises ValueError: Raised when length is not provided for a rectangular
-        footing.
+                        footing.
     :raises TypeError: Raised if an invalid footing shape is provided.
-
-    :return: Size of foundation.
-    :rtype: FoundationSize
     """
-    if isinstance(footing_shape, str):
-        footing_shape = footing_shape.casefold()
 
-    if footing_shape == Shape.STRIP:
+    if isinstance(shape, str):
+        shape = Shape(shape.casefold())
+
+    if shape is Shape.STRIP:
         footing_size = StripFooting(width=width)
-    elif footing_shape == Shape.SQUARE:
+    elif shape is Shape.SQUARE:
         footing_size = SquareFooting(width=width)
-    elif footing_shape == Shape.CIRCLE:
+    elif shape is Shape.CIRCLE:
         footing_size = CircularFooting(diameter=width)
-    elif footing_shape == Shape.RECTANGLE:
+    elif shape is Shape.RECTANGLE:
         if not length:
             raise ValueError("Length of footing must be provided.")
         footing_size = RectangularFooting(width=width, length=length)

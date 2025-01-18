@@ -8,32 +8,34 @@ __all__ = ["ClfType", "AtterbergLimits", "PSD", "AASHTO", "USCS",
 
 
 class SizeDistError(ZeroDivisionError):
+    """Exception raised when the size distribution is not provided."""
     pass
 
-
-# Soil classification type
 class ClfType(enum.StrEnum):
+    """Enumeration of soil classification types."""
     AASHTO = enum.auto()
     USCS = enum.auto()
 
 
-class ClfSymbol(enum.Enum):
+class _ClfSymbol(enum.Enum):
     def __eq__(self, value: object) -> bool:
         if isinstance(value, str):
-            return self.symbol == value
+            return self.clf_symbol == value
         return super().__eq__(value)
 
     @property
-    def symbol(self) -> str:
+    def clf_symbol(self) -> str:
         return self.value[0]
 
     @property
-    def description(self) -> str:
+    def clf_description(self) -> str:
         return self.value[1]
 
 
 @enum.global_enum
-class USCSSymbol(ClfSymbol):
+class USCSSymbol(_ClfSymbol):
+    """Unified Soil Classification System (USCS) symbols and descriptions."""
+
     G = GRAVEL = ("G", "Gravel")
     S = SAND = ("S", "Sand")
     M = SILT = ("M", "Silt")
@@ -72,7 +74,9 @@ class USCSSymbol(ClfSymbol):
 
 
 @enum.global_enum
-class AASHTOSymbol(ClfSymbol):
+class AASHTOSymbol(_ClfSymbol):
+    """AASHTO soil classification symbols and descriptions."""
+
     A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
     A_1_b = ("A-1-b", "Stone fragments, gravel, and sand")
     A_3 = ("A-3", "Fine sand")
@@ -88,47 +92,20 @@ class AASHTOSymbol(ClfSymbol):
 
 
 class AtterbergLimits:
-    """Water contents at which soil changes from one state to the other.
+    """Represents the water contents at which soil changes from one state to 
+    the other.
 
-    In 1911, a Swedish agriculture engineer ``Atterberg`` mentioned that a
-    fined-grained soil can exist in four states, namely, liquid, plastic,
-    semi-solid or solid state.
+    :param liquid_limit: Water content beyond which soils flows under their own 
+                         weight. It can also be defined as the minimum moisture
+                         content at which a soil flows upon application of a 
+                         very small shear force.
+    :type liquid_limit: float
 
-    The main use of Atterberg Limits is in the classification of soils.
-
-    :param int | float liquid_limit: Water content beyond which soils flows
-        under their own weight. It can also be defined as the minimum moisture
-        content at which a soil flows upon application of a very small shear
-        force.
-    :param int | float plastic_limit: Water content at which plastic deformation
-        can be initiated. It is also the minimum water content at which soil can
-        be rolled into a thread 3mm thick. (molded without breaking)
-
-    Examples
-    --------
-    >>> from geolysis.soil_classifier import AtterbergLimits as AL
-
-    >>> atterberg_limits = AL(liquid_limit=55.44, plastic_limit=33.31)
-    >>> atterberg_limits.plasticity_index
-    22.13
-    >>> atterberg_limits.A_line
-    25.87
-
-    >>> atterberg_limits.above_A_LINE()
-    False
-    >>> atterberg_limits.limit_plot_in_hatched_zone()
-    False
-
-    Negative values of liquidity index indicates that the soil is in a hard
-    state.
-
-    >>> atterberg_limits.liquidity_index(nmc=15.26)
-    -81.56
-
-    A consistency index greater than 100% shows the soil is relatively strong.
-
-    >>> atterberg_limits.consistency_index(nmc=15.26)
-    181.56
+    :param plastic_limit: Water content at which plastic deformation can be 
+                          initiated. It is also the minimum water content at 
+                          which soil can be rolled into a thread 3mm thick. 
+                          (molded without breaking)
+    :type plastic_limit: float
     """
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
@@ -150,23 +127,23 @@ class AtterbergLimits:
 
     @property
     @round_
-    def A_line(self) -> float:
+    def _A_LINE(self) -> float:
         """The ``A-line`` is used to determine if a soil is clayey or silty.
 
-        .. math:: A = 0.73(LL - 20)
+        .. math:: A = 0.73(LL - 20.0)
         """
         return 0.73 * (self.liquid_limit - 20.0)
 
     @property
     def fine_material_type(self) -> USCSSymbol:
         """
-        Determines whether the soil is either clay or :silt.
+        Checks whether the soil is either clay or silt.
         """
         return USCSSymbol.CLAY if self.above_A_LINE() else USCSSymbol.SILT
 
     def above_A_LINE(self) -> bool:
         """Checks if the soil sample is above A-Line."""
-        return self.plasticity_index > self.A_line
+        return self.plasticity_index > self._A_LINE
 
     def limit_plot_in_hatched_zone(self) -> bool:
         """Checks if soil sample plot in the hatched zone on the atterberg
@@ -184,12 +161,7 @@ class AtterbergLimits:
         indicate that the soil is in a hard (desiccated) state. It is also known
         as Water-Plasticity ratio.
 
-        :param int | float nmc: Moisture contents of the soil in natural
-            condition.
-
-        Notes
-        -----
-        The ``liquidity index`` is given by the formula:
+        :param float nmc: Moisture contents of the soil in natural condition.
 
         .. math:: I_l = \dfrac{w - PL}{PI} \cdot 100
         """
@@ -210,28 +182,19 @@ class AtterbergLimits:
         indicate the soil is in the liquid state. It is also known as Relative
         Consistency.
 
-        :param int | float nmc: Moisture contents of the soil in natural
-            condition.
-
-        Notes
-        -----
-        The ``consistency index`` is given by the formula:
+        :param float nmc: Moisture contents of the soil in natural condition.
 
         .. math:: I_c = \dfrac{LL - w}{PI} \cdot 100
         """
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
 
-# @dataclass
 class SizeDistribution(NamedTuple):
     """Features obtained from the Particle Size Distribution graph.
 
-    :param int | float d_10: Diameter at which 10% of the soil by weight is
-        finer.
-    :param int | float d_30: Diameter at which 30% of the soil by weight is
-        finer.
-    :param int | float d_60: Diameter at which 60% of the soil by weight is
-        finer.
+    :param float d_10: Diameter at which 10% of the soil by weight is finer.
+    :param float d_30: Diameter at which 30% of the soil by weight is finer.
+    :param float d_60: Diameter at which 60% of the soil by weight is finer.
     """
 
     d_10: float
@@ -250,8 +213,8 @@ class SizeDistribution(NamedTuple):
         """Grade of soil sample. Soil grade can either be well graded or poorly
         graded.
 
-        :param str coarse_soil: Coarse fraction of the soil sample. Valid
-            arguments are "G" for gravel and "S" for SAND.
+        :param coarse_soil: Coarse fraction of the soil sample. Valid arguments 
+                            are ``USCSSymbol.GRAVEL`` and ``USCSSymbol.SAND``.
         """
 
         if coarse_soil is USCSSymbol.GRAVEL:
@@ -273,46 +236,21 @@ class SizeDistribution(NamedTuple):
 class PSD:
     r"""Quantitative proportions by mass of various sizes of particles present
     in a soil.
-
-    Particle Size Distribution is a method of separation of soils into
-    different fractions using a stack of sieves to measure the size of the
-    particles in a sample and graphing the results to illustrate the
-    distribution of the particle sizes.
-
-    :param int | float fines: Percentage of fines in soil sample i.e. the
-        percentage of soil sample passing through No. 200 sieve (0.075mm)
-    :param int | float sand: Percentage of sand in soil sample.
-    :param int | float gravel: Percentage of gravel in soil sample, defaults
-        to None.
-
-    Examples
-    --------
-    >>> from geolysis.soil_classifier import PSD, SizeDistribution
-
-    >>> psd = PSD(fines=30.25, sand=53.55)
-
-    The following code raises error because ``size_dist`` is not provided.
-
-    >>> psd.coeff_of_curvature
-    Traceback (most recent call last):
-        ...
-    ZeroDivisionError: division by zero
-
-    >>> psd.coeff_of_uniformity
-    Traceback (most recent call last):
-        ...
-    ZeroDivisionError: division by zero
-
-    >>> size_dist = SizeDistribution(d_10=0.07, d_30=0.30, d_60=0.8)
-    >>> psd = PSD(fines=10.29, sand=81.89, size_dist=size_dist)
-    >>> psd.coeff_of_curvature
-    1.61
-    >>> psd.coeff_of_uniformity
-    11.43
     """
 
     def __init__(self, fines: float, sand: float,
                  size_dist: Optional[SizeDistribution] = None):
+        """
+        :param fines: Percentage of fines in soil sample i.e. The percentage of 
+                      soil sample passing through No. 200 sieve (0.075mm).
+        :type fines: float
+
+        :param sand: Percentage of sand in soil sample.
+        :type sand: float
+
+        :param size_dist: Particle size distribution of soil sample.
+        :type size_dist: SizeDistribution
+        """
         self.fines = fines
         self.sand = sand
         self.gravel = 100.0 - (fines + sand)
@@ -323,19 +261,16 @@ class PSD:
         """Determines whether the soil is either gravel or sand."""
         if self.gravel > self.sand:
             return USCSSymbol.GRAVEL
-        else:
-            return USCSSymbol.SAND
-        # return (USCSSymbol.GRAVEL if self.gravel > self.sand
-        #         else USCSSymbol.SAND)
+        return USCSSymbol.SAND
 
     @property
-    @round_(2)
+    @round_
     def coeff_of_curvature(self) -> float:
         r"""Coefficient of curvature of soil sample.
 
         Coefficient of curvature :math:`(C_c)` is given by the formula:
 
-        .. math:: C_c = \dfrac{D^2_{30}}{D_{60} \times D_{10}}
+        .. math:: C_c = \dfrac{D^2_{30}}{D_{60} \cdot D_{10}}
 
         For the soil to be well graded, the value of :math:`C_c` must be
         between 1 and 3.
@@ -343,7 +278,7 @@ class PSD:
         return self.size_dist.coeff_of_curvature
 
     @property
-    @round_(2)
+    @round_
     def coeff_of_uniformity(self) -> float:
         r"""Coefficient of uniformity of soil sample.
 
@@ -392,46 +327,36 @@ class AASHTO:
 
     The Group Index ``(GI)`` is used to further evaluate soils within a group.
 
-    :param int | float liquid_limit: Water content beyond which soils flows
-        under their own weight.
-    :param int | float plasticity_index: Range of water content over which soil
-        remains in plastic condition.
-    :param int | float fines: Percentage of fines in soil sample i.e. the
-        percentage of soil sample passing through No. 200 sieve (0.075mm).
-    :param bool add_group_idx: Used to indicate whether the group index should
-        be added to the classification or not. Defaults to True.
+    .. note::
 
-    Notes
-    -----
-    The ``GI`` must be mentioned even when it is zero, to indicate that the soil
-    has been classified as per AASHTO system.
+        The ``GI`` must be mentioned even when it is zero, to indicate that the 
+        soil has been classified as per AASHTO system.
 
     .. math::
 
         GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
-
-    Examples
-    --------
-    >>> from geolysis.soil_classifier import AASHTO
-
-    >>> aashto_clf = AASHTO(liquid_limit=30.2, plastic_limit=23.9, fines=11.18)
-    >>> aashto_clf.group_index()
-    0.0
-    >>> aashto_clf.classify()
-    'A-2-4(0)'
-    >>> aashto_clf.description()
-    'Silty or clayey gravel and sand'
-
-    If you would like to exclude the group index from the classification, you
-    can do the following:
-
-    >>> aashto_clf.add_group_idx = False
-    >>> aashto_clf.classify()
-    'A-2-4'
     """
 
     def __init__(self, liquid_limit: float, plastic_limit: float, fines: float,
                  add_group_idx=True):
+        """
+        :param liquid_limit: Water content beyond which soils flows under their 
+                             own weight.
+        :type liquid_limit: float
+
+        :param plastic_limit: Range of water content over which soil remains 
+                                 in plastic condition.
+        :type plastic_limit: float
+
+        :param fines: Percentage of fines in soil sample i.e. The percentage of 
+                      soil sample passing through No. 200 sieve (0.075mm).
+        :type fines: float
+
+        :param add_group_idx: Used to indicate whether the group index should
+                              be added to the classification or not, defaults to 
+                              True.
+        :type add_group_idx: bool, optional
+        """
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
         self.plasticity_index = liquid_limit - plastic_limit
@@ -439,7 +364,7 @@ class AASHTO:
         self.add_group_idx = add_group_idx
 
     @round_(ndigits=0)
-    def group_index(self) -> int | float:
+    def group_index(self) -> float:
         """Return the Group Index (GI) of the soil sample."""
 
         liquid_lmt = self.liquid_limit
@@ -459,11 +384,11 @@ class AASHTO:
         self.add_group_idx = False
         soil_clf = self._classify()
         self.add_group_idx = tmp_state
-        return soil_clf.description
+        return soil_clf.clf_description
 
     def classify(self) -> str:
         """Return the AASHTO classification of the soil."""
-        soil_clf = self._classify().symbol
+        soil_clf = self._classify().clf_symbol
 
         if self.add_group_idx:
             soil_clf = f"{soil_clf}({self.group_index():.0f})"
@@ -549,49 +474,21 @@ class USCS:
 
     Highly Organic soils are identified by visual inspection. These soils are
     termed as Peat. (:math:`P_t`)
-
-    :param int | float liquid_limit: Water content beyond which soils flows
-        under their own weight. It can also be defined as the minimum moisture
-        content at which a soil flows upon application of a very small shear
-        force.
-    :param int | float plastic_limit: Water content at which plastic deformation
-        can be initiated. It is also the minimum water content at which soil can
-        be rolled into a thread 3mm thick (molded without breaking)
-    :param int | float fines: Percentage of fines in soil sample i.e. The
-        percentage of soil sample passing through No. 200 sieve (0.075mm)
-    :param int | float sand: Percentage of sand in soil sample (%)
-    :param bool organic: Indicates whether soil is organic or not, defaults to
-        False.
-
-    Examples
-    --------
-    >>> from geolysis.soil_classifier import (
-    ...     AtterbergLimits,
-    ...     PSD,
-    ...     USCS,
-    ...     SizeDistribution,
-    ... )
-
-    >>> al = AtterbergLimits(liquid_limit=34.1, plastic_limit=21.1)
-    >>> psd = PSD(fines=47.88, sand=37.84)
-    >>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
-    >>> uscs_clf.classify()
-    'SC'
-    >>> uscs_clf.description()
-    'Clayey sands'
-
-    >>> al = AtterbergLimits(liquid_limit=30.8, plastic_limit=20.7)
-    >>> size_dist = SizeDistribution(d_10=0.07, d_30=0.3, d_60=0.8)
-    >>> psd = PSD(fines=10.29, sand=81.89, size_dist=size_dist)
-    >>> uscs_clf = USCS(atterberg_limits=al, psd=psd)
-    >>> uscs_clf.classify()
-    'SW-SC'
-    >>> uscs_clf.description()
-    'Well graded sand with clay'
     """
 
     def __init__(self, atterberg_limits: AtterbergLimits, psd: PSD,
                  organic=False):
+        """
+        :param atterberg_limits: Atterberg limits of the soil.
+        :type atterberg_limits: AtterbergLimits
+
+        :param psd: Particle size distribution of the soil.
+        :type psd: PSD
+
+        :param organic: Indicates whether soil is organic or not, defaults to 
+                        False.
+        :type organic: bool, optional
+        """
         self.atterberg_limits = atterberg_limits
         self.psd = psd
         self.organic = organic
@@ -601,17 +498,17 @@ class USCS:
         soil_clf = self._classify()
 
         if isinstance(soil_clf, USCSSymbol):
-            return soil_clf.description
+            return soil_clf.clf_description
         elif isinstance(soil_clf, str):
-            return USCSSymbol[soil_clf].description
+            return USCSSymbol[soil_clf].clf_description
         else:
-            return tuple(map(lambda v: USCSSymbol[v].description, soil_clf))
+            return tuple(map(lambda v: USCSSymbol[v].clf_description, soil_clf))
 
     def classify(self) -> str | Iterable[str]:
         """Return the USCS classification of the soil."""
         soil_clf = self._classify()
         if isinstance(soil_clf, USCSSymbol):
-            return soil_clf.symbol
+            return soil_clf.clf_symbol
         elif isinstance(soil_clf, str):
             return soil_clf.replace("_", "-")
         else:
