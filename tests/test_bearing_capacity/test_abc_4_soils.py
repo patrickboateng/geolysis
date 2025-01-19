@@ -1,18 +1,18 @@
 import pytest
 
-from geolysis.bearing_capacity.abc_4_soils import (BowlesABC4PadFoundation,
-                                                   BowlesABC4MatFoundation,
-                                                   MeyerhofABC4PadFoundation,
-                                                   MeyerhofABC4MatFoundation,
-                                                   TerzaghiABC4PadFoundation,
-                                                   TerzaghiABC4MatFoundation)
+from geolysis.bearing_capacity.abc.cohl import (BowlesABC4PadFoundation,
+                                                BowlesABC4MatFoundation,
+                                                MeyerhofABC4PadFoundation,
+                                                MeyerhofABC4MatFoundation,
+                                                TerzaghiABC4PadFoundation,
+                                                TerzaghiABC4MatFoundation)
 from geolysis.foundation import create_foundation
 
 
 class SetUp:
     @classmethod
     def setup_class(cls):
-        fs = create_foundation(depth=1.5, width=1.2, footing_shape="square")
+        fs = create_foundation(depth=1.5, width=1.2, shape="square")
         cls.kwargs = {"corrected_spt_number": 12.0, "tol_settlement": 20.0,
                       "foundation_size": fs}
 
@@ -47,7 +47,7 @@ class TestTerzaghiABC(SetUp):
     @classmethod
     def setup_class(cls):
         super().setup_class()
-        cls.kwargs["water_depth"] = 1.2
+        cls.kwargs["ground_water_level"] = 1.2
 
     def test_terzaghi_abc_4_pad_foundation(self):
         terzaghi = TerzaghiABC4PadFoundation(**self.kwargs)
