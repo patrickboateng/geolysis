@@ -25,11 +25,6 @@ __all__ = ["UltimateBearingCapacity",
            "VesicInclinationFactor"]
 
 
-# def k(f_d: float, f_w: float) -> float:
-#     return arctan(d2w) if (d2w := f_d / f_w) > 1 else d2w
-
-   
-
 class UltimateBearingCapacity(ABC):
     def __init__(self, soil_properties: SoilProperties | dict,
                  foundation_size: FoundationSize, 
