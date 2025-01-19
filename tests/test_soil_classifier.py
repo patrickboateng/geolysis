@@ -7,7 +7,7 @@ from geolysis.soil_classifier import (AASHTO, PSD, SizeDistribution,
                                       AtterbergLimits, create_soil_classifier)
 
 
-class TestAL(unittest.TestCase):
+class TestAtterbergLimits(unittest.TestCase):
     def setUp(self) -> None:
         self.al = AtterbergLimits(liquid_limit=25.0, plastic_limit=15.0)
 
