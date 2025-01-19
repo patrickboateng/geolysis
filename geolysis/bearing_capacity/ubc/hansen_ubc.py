@@ -85,7 +85,7 @@ class HansenShapeFactor:
         if shape == Shape.STRIP:
             shape_factor = 1.0
         elif shape == Shape.RECTANGLE:
-            shape_factor = 1 + 0.2 * width / length
+            shape_factor = 1.0 + 0.2 * width / length
         elif shape in (Shape.SQUARE, Shape.CIRCLE):
             shape_factor = 1.3
         else:
@@ -232,7 +232,7 @@ class HansenInclinationFactor:
         width = foundation_size.width
         length = foundation_size.length
 
-        return 1 - sin(load_angle) / (2 * cohesion * width * length)
+        return 1.0 - sin(load_angle) / (2.0 * cohesion * width * length)
 
     @classmethod
     @round_
@@ -247,7 +247,7 @@ class HansenInclinationFactor:
 
             I_q = 1 - \frac{1.5 \sin(\alpha)}{\cos(\alpha)}
         """
-        return 1 - (1.5 * sin(load_angle)) / cos(load_angle)
+        return 1.0 - (1.5 * sin(load_angle)) / cos(load_angle)
 
     @classmethod
     @round_
@@ -262,7 +262,7 @@ class HansenInclinationFactor:
 
             I_{\gamma} = I_q^2
         """
-        return cls.i_q(load_angle) ** 2
+        return cls.i_q(load_angle) ** 2.0
 
 
 class HansenUltimateBearingCapacity(UltimateBearingCapacity):

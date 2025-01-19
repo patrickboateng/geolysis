@@ -178,7 +178,7 @@ class VesicDepthFactor:
         depth = foundation_size.depth
         width = foundation_size.width
 
-        return 1 + 0.4 * depth / width
+        return 1.0 + 0.4 * depth / width
 
     @classmethod
     @round_
@@ -199,8 +199,8 @@ class VesicDepthFactor:
         depth = foundation_size.depth
         width = foundation_size.width
 
-        return 1 + 2 * tan(friction_angle) \
-               * (1 - sin(friction_angle)) ** 2 \
+        return 1.0 + 2.0 * tan(friction_angle) \
+               * (1.0 - sin(friction_angle)) ** 2.0 \
                * (depth / width)
 
     @classmethod
@@ -229,7 +229,7 @@ class VesicInclinationFactor:
 
         .. math:: i_c = (1 - \dfrac{\alpha}{90})^2
         """
-        return (1 - load_angle / 90) ** 2
+        return (1.0 - load_angle / 90.0) ** 2.0
 
     @classmethod
     @round_
@@ -260,7 +260,7 @@ class VesicInclinationFactor:
         """
         if isclose(friction_angle, 0.0):
             return 1.0
-        return (1 - load_angle / friction_angle) ** 2.0
+        return (1.0 - load_angle / friction_angle) ** 2.0
 
 
 class VesicUltimateBearingCapacity(UltimateBearingCapacity):
