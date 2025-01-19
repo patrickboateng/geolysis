@@ -2,6 +2,7 @@ import enum
 from typing import TypeAlias, Optional, Final, Any
 
 from geolysis.utils import inf
+from geolysis import validators
 
 __all__ = ["create_foundation", "FoundationSize", "Shape", "StripFooting",
            "CircularFooting", "SquareFooting", "RectangularFooting"]
@@ -56,7 +57,29 @@ class StripFooting:
         """
         self.width = width
         self.length = length
-        self.shape = Shape.STRIP
+        self._shape = Shape.STRIP
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    @validators.gt(0.0)
+    def width(self, val):
+        self._width = val
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    @validators.ge(0.0)
+    def length(self, val):
+        self._length = val
+
+    @property
+    def shape(self):
+        return self._shape
 
     
 class CircularFooting:
@@ -77,7 +100,20 @@ class CircularFooting:
         :param float diameter: Diameter of foundation footing. (m)
         """
         self.diameter = diameter
-        self.shape = Shape.CIRCLE
+        self._shape = Shape.CIRCLE
+
+    @property
+    def diameter(self):
+        return self._diameter
+    
+    @diameter.setter
+    @validators.gt(0.0)
+    def diameter(self, val):
+        self._diameter = val
+
+    @property
+    def shape(self):
+        return self._shape
 
     
 class SquareFooting:
@@ -90,7 +126,20 @@ class SquareFooting:
         :param float width: Width of foundation footing. (m)
         """
         self.width = width
-        self.shape = Shape.SQUARE
+        self._shape = Shape.SQUARE
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    @validators.gt(0)
+    def width(self, val):
+        self._width = val
+
+    @property
+    def shape(self):
+        return self._shape
 
 
 class RectangularFooting:
@@ -106,9 +155,31 @@ class RectangularFooting:
         """
         self.width = width
         self.length = length
-        self.shape = Shape.RECTANGLE
+        self._shape = Shape.RECTANGLE
 
+    @property
+    def width(self):
+        return self._width
     
+    @width.setter
+    @validators.gt(0.0)
+    def width(self, val):
+        self._width = val
+
+    @property
+    def length(self):
+        return self._length
+    
+    @length.setter
+    @validators.gt(0.0)
+    def length(self, val):
+        self._length = val
+
+    @property
+    def shape(self):
+        return self._shape
+
+
 FootingSize: TypeAlias = (
         StripFooting | CircularFooting | SquareFooting | RectangularFooting)
 
@@ -144,9 +215,27 @@ class FoundationSize:
         self.eccentricity = eccentricity
 
     @property
+    def depth(self) -> float:
+        return self._depth
+    
+    @depth.setter
+    @validators.gt(0.0)
+    def depth(self, val: float) -> None:
+        self._depth = val
+
+    @property
+    def eccentricity(self) -> float:
+        return self._eccentricity
+    
+    @eccentricity.setter
+    @validators.ge(0.0)
+    def eccentricity(self, val: float) -> None:
+        self._eccentricity = val
+
+    @property
     def effective_width(self) -> float:
         """Returns the effective width of the foundation footing."""
-        return self.width - 2 * self.eccentricity
+        return self.width - 2.0 * self.eccentricity
 
 
 def create_foundation(depth: float, width: float,

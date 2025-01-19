@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from geolysis import SoilProperties
 from geolysis.foundation import FoundationSize, Shape
 from geolysis.utils import inf, arctan, tan, isclose
+from geolysis import validators
 
 __all__ = ["UltimateBearingCapacity", 
            "TerzaghiUBC4StripFooting",
@@ -45,7 +46,7 @@ class UltimateBearingCapacity(ABC):
         :type foundation_size: FoundationSize
 
         :param load_angle: Inclination of the applied load with the  vertical 
-                            (:math:`\alpha^{\circ}`), defaults to 0.0.
+                           (:math:`\alpha^{\circ}`), defaults to 0.0.
         :type load_angle: float, optional
 
         :param ground_water_level: Depth of the water below ground level (mm), 
@@ -78,38 +79,6 @@ class UltimateBearingCapacity(ABC):
         self.foundation_size = foundation_size
         self.apply_local_shear = apply_local_shear
 
-    def _cohesion_term(self, coef: float = 1.0) -> float:
-        return coef * self.cohesion * self.n_c * self.s_c * self.d_c * self.i_c
-
-    def _surcharge_term(self) -> float:
-        depth = self.foundation_size.depth
-
-        if self.ground_water_level == inf:
-            water_corr = 1.0  # water correction
-        else:
-            # water level above the base of the foundation
-            a = max(depth - self.ground_water_level, 0.0)
-            water_corr = min(1 - 0.5 * a / depth, 1)
-
-        # effective overburden pressure (surcharge)
-        eop = self.moist_unit_wgt * depth
-        return eop * self.n_q * self.s_q * self.d_q * self.i_q * water_corr
-
-    def _embedment_term(self, coef: float = 0.5) -> float:
-        depth = self.foundation_size.depth
-        width = self.foundation_size.effective_width
-
-        if self.ground_water_level == inf:
-            # water correction
-            water_corr = 1.0
-        else:
-            #: b -> water level below the base of the foundation
-            b = max(self.ground_water_level - depth, 0)
-            water_corr = min(0.5 + 0.5 * b / width, 1)
-
-        return coef * self.moist_unit_wgt * width * self.n_gamma \
-               * self.s_gamma * self.d_gamma * self.i_gamma * water_corr
-
     @property
     def friction_angle(self) -> float:
         """Return friction angle for local shear in the case of local shear 
@@ -120,9 +89,8 @@ class UltimateBearingCapacity(ABC):
         return self._friction_angle
 
     @friction_angle.setter
+    @validators.ge(0.0)
     def friction_angle(self, val: float):
-        if val < 0:
-            raise ValueError("Friction angle must be greater than 0.")
         self._friction_angle = val
 
     @property
@@ -135,21 +103,37 @@ class UltimateBearingCapacity(ABC):
         return self._cohesion
 
     @cohesion.setter
+    @validators.ge(0.0)
     def cohesion(self, val: float):
-        if val < 0:
-            raise ValueError("Cohesion must be greater than 0.")
         self._cohesion = val
+
+    @property
+    def moist_unit_wgt(self) -> float:
+        return self._moist_unit_wgt
+
+    @moist_unit_wgt.setter
+    @validators.gt(0.0)
+    def moist_unit_wgt(self, val: float):
+        self._moist_unit_wgt = val
+
+    @property
+    def ground_water_level(self) -> float:
+        return self._ground_water_level
+
+    @ground_water_level.setter
+    @validators.ge(0.0)
+    def ground_water_level(self, val: float):
+        self._ground_water_level = val
 
     @property
     def load_angle(self) -> float:
         return self._load_angle
 
     @load_angle.setter
+    @validators.le(90.0)
+    @validators.ge(0.0)
     def load_angle(self, val: float):
-        if 0 <= val <= 90:
-            self._load_angle = val
-        else:
-            raise ValueError("Load angle must be between 0 and 90 degrees.")
+        self._load_angle = val
 
     @property
     def s_c(self) -> float:
@@ -192,6 +176,37 @@ class UltimateBearingCapacity(ABC):
                + self._surcharge_term() \
                + self._embedment_term(0.5)
 
+    def _cohesion_term(self, coef: float = 1.0) -> float:
+        return coef * self.cohesion * self.n_c * self.s_c * self.d_c * self.i_c
+
+    def _surcharge_term(self) -> float:
+        depth = self.foundation_size.depth
+
+        if self.ground_water_level == inf:
+            water_corr = 1.0  # water correction
+        else:
+            # water level above the base of the foundation
+            a = max(depth - self.ground_water_level, 0.0)
+            water_corr = min(1 - 0.5 * a / depth, 1)
+
+        # effective overburden pressure (surcharge)
+        eop = self.moist_unit_wgt * depth
+        return eop * self.n_q * self.s_q * self.d_q * self.i_q * water_corr
+
+    def _embedment_term(self, coef: float = 0.5) -> float:
+        depth = self.foundation_size.depth
+        width = self.foundation_size.effective_width
+
+        if self.ground_water_level == inf:
+            # water correction
+            water_corr = 1.0
+        else:
+            #: b -> water level below the base of the foundation
+            b = max(self.ground_water_level - depth, 0)
+            water_corr = min(0.5 + 0.5 * b / width, 1)
+
+        return coef * self.moist_unit_wgt * width * self.n_gamma \
+               * self.s_gamma * self.d_gamma * self.i_gamma * water_corr
     @property
     @abstractmethod
     def n_c(self) -> float:

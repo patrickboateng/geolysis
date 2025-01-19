@@ -1,6 +1,7 @@
 from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
+from geolysis import validators
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     """Allowable bearing capacity for pad foundation on cohesionless
@@ -30,13 +31,24 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         super().__init__(corrected_spt_number, tol_settlement, foundation_size)
         self.ground_water_level = ground_water_level
 
+    @property
+    def ground_water_level(self) -> float:
+        return self._ground_water_level
+
+    @ground_water_level.setter
+    @validators.ge(0.0)
+    def ground_water_level(self, val: float) -> None:
+        self._ground_water_level = val
+
     def _fd(self) -> float:
+        """Calculate the depth factor."""
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.width
 
         return min(1 + 0.25 * f_d / f_w, 1.25)
 
     def _cw(self):
+        """Calculate the water correction factor."""
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.width
 

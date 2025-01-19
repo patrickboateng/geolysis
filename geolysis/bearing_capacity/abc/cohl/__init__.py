@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 
 from geolysis.foundation import FoundationSize
+from geolysis import validators
 
 class SettlementError(ValueError):
     pass
 
 
 class AllowableBearingCapacity(ABC):
-    #: Maximum tolerable foundation settlement (mm).
+    #: Maximum tolerable foundation settlement. (mm)
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(self, corrected_spt_number: float, 
@@ -18,28 +19,33 @@ class AllowableBearingCapacity(ABC):
         self.foundation_size = foundation_size
 
     @property
+    def corrected_spt_number(self) -> float:
+        return self._corrected_spt_number
+
+    @corrected_spt_number.setter
+    @validators.ge(0.0)
+    def corrected_spt_number(self, corrected_spt_number: float) -> None:
+        self._corrected_spt_number = corrected_spt_number
+
+    @property
     def tol_settlement(self) -> float:
         return self._tol_settlement
 
     @tol_settlement.setter
+    @validators.le(25.4, exc_type=SettlementError)
     def tol_settlement(self, tol_settlement: float) -> None:
-        self._chk_settlement(tol_settlement, self.MAX_TOL_SETTLEMENT)
         self._tol_settlement = tol_settlement
 
     def _sr(self) -> float:
+        """Calculate the settlement ratio."""
         return self.tol_settlement / self.MAX_TOL_SETTLEMENT
 
     def _fd(self) -> float:
+        """Calculate the depth factor."""
         f_d = self.foundation_size.depth
         f_w = self.foundation_size.width
 
         return min(1 + 0.33 * f_d / f_w, 1.33)
-
-    @staticmethod
-    def _chk_settlement(tol_settlement: float, max_tol_settlement: float):
-        if tol_settlement > max_tol_settlement:
-            err_msg = "tol_settlement should not be greater than 25.4mm"
-            raise SettlementError(err_msg)
 
     @abstractmethod
     def bearing_capacity(self): ...

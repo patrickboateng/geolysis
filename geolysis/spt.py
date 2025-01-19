@@ -3,6 +3,7 @@ from abc import abstractmethod
 from typing import Final, Sequence
 
 from geolysis.utils import isclose, log10, mean, round_, sqrt
+from geolysis import validators
 
 __all__ = ["weighted_spt_n_design", "average_spt_n_design",
            "minimum_spt_n_design", "EnergyCorrection", "GibbsHoltzOPC",
@@ -155,44 +156,39 @@ class EnergyCorrection:
         return self._recorded_spt_number
 
     @recorded_spt_number.setter
+    @validators.ge(100)
+    @validators.gt(0)
     def recorded_spt_number(self, val: int) -> None:
-        if 0 < val <= 100:
-            self._recorded_spt_number = val
-        else:
-            raise ValueError("Recorded SPT number must be between 0 and 100")
+        self._recorded_spt_number = val
 
     @property
     def energy_percentage(self) -> float:
         return self._energy_percentage
 
     @energy_percentage.setter
+    @validators.le(1.0)
+    @validators.gt(0.0)
     def energy_percentage(self, val: float) -> None:
-        if 0.0 < val <= 1.00:
-            self._energy_percentage = val
-        else:
-            raise ValueError("Energy percentage must be between 0.0 and 1.0")
+        self._energy_percentage = val
 
     @property
     def borehole_diameter(self) -> float:
         return self._borehole_diameter
 
     @borehole_diameter.setter
+    @validators.le(200.0)
+    @validators.ge(65.0)
     def borehole_diameter(self, val: float) -> None:
-        if 65.0 <= val <= 200.0:
-            self._borehole_diameter = val
-        else:
-            raise ValueError("Borehole diameter must be between 65 and 200")
+        self._borehole_diameter = val
 
     @property
     def rod_length(self) -> float:
         return self._rod_length
 
     @rod_length.setter
+    @validators.gt(0.0)
     def rod_length(self, val: float) -> None:
-        if val > 0.0:
-            self._rod_length = val
-        else:
-            raise ValueError("Rod length must be greater than 0.0")
+        self._rod_length = val
 
     @property
     def hammer_efficiency(self) -> float:
@@ -263,17 +259,15 @@ class OPC:
         return self._standardized_spt_value
 
     @standardized_spt_value.setter
+    @validators.gt(0.0)
     def standardized_spt_value(self, val: float) -> None:
-        if val > 0.0:
-            self._standardized_spt_value = val
-        else:
-            raise ValueError("Standard SPT number must be greater than 0.0")
+        self._standardized_spt_value = val
 
     @round_(ndigits=1)
     def corrected_spt_number(self) -> float:
         corrected_spt = self.correction() * self.standardized_spt_value
-        # Corrected SPT should not be more than 2 times
-        # the Standardized SPT
+        # Corrected SPT should not be more 
+        # than 2 times the Standardized SPT
         return min(corrected_spt, 2 * self.standardized_spt_value)
 
     @abstractmethod
@@ -299,12 +293,10 @@ class GibbsHoltzOPC(OPC):
         return self._eop
 
     @eop.setter
+    @validators.le(280.0)
+    @validators.gt(0.0)
     def eop(self, val: float) -> None:
-        if 0.0 < val <= 280.0:
-            self._eop = val
-        else:
-            msg = "Effective overburden pressure must be between 0.0 and 280.0"
-            raise ValueError(msg)
+        self._eop = val
 
     def correction(self) -> float:
         """SPT Correction."""
@@ -338,12 +330,9 @@ class BazaraaPeckOPC(OPC):
         return self._eop
 
     @eop.setter
+    @validators.ge(0.0)
     def eop(self, val: float) -> None:
-        if val >= 0.0:
-            self._eop = val
-        else:
-            raise ValueError("Effective overburden pressure must greater than"
-                             " or equal to 0.0")
+        self._eop = val
 
     def correction(self) -> float:
         """SPT Correction."""
@@ -369,13 +358,9 @@ class PeckOPC(OPC):
         return self._eop
 
     @eop.setter
+    @validators.ge(24.0)
     def eop(self, val: float) -> None:
-        if val >= 24.0:
-            self._eop = val
-        else:
-            msg = ("Effective overburden pressure must be greater than"
-                   " or equal to 24.0")
-            raise ValueError(msg)
+        self._eop = val
 
     def correction(self) -> float:
         """SPT Correction."""
@@ -395,12 +380,9 @@ class LiaoWhitmanOPC(OPC):
         return self._eop
 
     @eop.setter
+    @validators.gt(0.0)
     def eop(self, val: float) -> None:
-        if val > 0.0:
-            self._eop = val
-        else:
-            msg = "Effective overburden pressure must greater than 0.0"
-            raise ValueError(msg)
+        self._eop = val
 
     def correction(self) -> float:
         """SPT Correction."""
@@ -420,13 +402,9 @@ class SkemptonOPC(OPC):
         return self._eop
 
     @eop.setter
+    @validators.ge(0.0)
     def eop(self, val: float) -> None:
-        if val >= 0.0:
-            self._eop = val
-        else:
-            msg = ("Effective overburden pressure must greater than"
-                   " or equal to 0.0")
-            raise ValueError(msg)
+        self._eop = val
 
     def correction(self) -> float:
         """SPT Correction."""
@@ -464,11 +442,9 @@ class DilatancyCorrection:
         return self._standardized_spt_number
 
     @standardized_spt_value.setter
+    @validators.gt(0.0)
     def standardized_spt_value(self, val: float) -> None:
-        if val > 0.0:
-            self._standardized_spt_number = val
-        else:
-            raise ValueError("Standard SPT number must be greater than 0.0")
+        self._standardized_spt_number = val
 
     @round_(ndigits=1)
     def corrected_spt_number(self) -> float:
