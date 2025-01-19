@@ -42,8 +42,8 @@ class TerzaghiBearingCapacityFactor:
             N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
                   {2\cos^2(45 + \frac{\phi}{2})}
         """
-        return exp((3 * pi / 2 - deg2rad(friction_angle)) * tan(friction_angle)) \
-               / (2 * (cos(45 + friction_angle / 2)) ** 2)
+        return (exp((3 * pi / 2 - deg2rad(friction_angle)) * tan(friction_angle)) 
+               / (2 * (cos(45 + friction_angle / 2)) ** 2))
 
     @classmethod
     @round_
@@ -55,7 +55,7 @@ class TerzaghiBearingCapacityFactor:
 
         .. math:: N_{\gamma} =  (N_q - 1) \cdot \tan(1.4\phi)
         """
-        return (cls.n_q(friction_angle) - 1) * tan(1.4 * friction_angle)
+        return (cls.n_q(friction_angle) - 1.0) * tan(1.4 * friction_angle)
 
 
 class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
@@ -119,10 +119,10 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
             q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c + qN_q
                   + \left(1 - 0.2 \dfrac{B}{L} \right) 0.5 B \gamma N_{\gamma}
         """
-        f_w = self.foundation_size.width
-        f_l = self.foundation_size.length
-        coh_coef = 1 + 0.3 * (f_w / f_l)
-        emb_coef = (1 - 0.2 * (f_w / f_l)) / 2.0
+        width = self.foundation_size.width
+        length = self.foundation_size.length
+        coh_coef = 1.0 + 0.3 * (width / length)
+        emb_coef = (1.0 - 0.2 * (width / length)) / 2.0
 
         return self._cohesion_term(coh_coef) \
                + self._surcharge_term() \

@@ -39,13 +39,13 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33 
         """
         n_corr = self.corrected_spt_number
-        f_w = self.foundation_size.width
+        width = self.foundation_size.width
 
-        if f_w <= 1.2:
+        if width <= 1.2:
             return 12 * n_corr * self._fd() * self._sr()
 
-        return (8 * n_corr * ((3.28 * f_w + 1) / 
-               (3.28 * f_w)) ** 2 * self._fd() * self._sr())
+        return (8 * n_corr * ((3.28 * width + 1) / 
+               (3.28 * width)) ** 2 * self._fd() * self._sr())
 
 
 class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):

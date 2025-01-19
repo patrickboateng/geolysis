@@ -42,10 +42,10 @@ class AllowableBearingCapacity(ABC):
 
     def _fd(self) -> float:
         """Calculate the depth factor."""
-        f_d = self.foundation_size.depth
-        f_w = self.foundation_size.width
+        depth = self.foundation_size.depth
+        width = self.foundation_size.width
 
-        return min(1 + 0.33 * f_d / f_w, 1.33)
+        return min(1.0 + 0.33 * depth / width, 1.33)
 
     @abstractmethod
     def bearing_capacity(self): ...

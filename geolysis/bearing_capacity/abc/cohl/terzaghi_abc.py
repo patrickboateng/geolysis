@@ -42,22 +42,22 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
     def _fd(self) -> float:
         """Calculate the depth factor."""
-        f_d = self.foundation_size.depth
-        f_w = self.foundation_size.width
+        depth = self.foundation_size.depth
+        width = self.foundation_size.width
 
-        return min(1 + 0.25 * f_d / f_w, 1.25)
+        return min(1.0 + 0.25 * depth / width, 1.25)
 
     def _cw(self):
         """Calculate the water correction factor."""
-        f_d = self.foundation_size.depth
-        f_w = self.foundation_size.width
+        depth = self.foundation_size.depth
+        width = self.foundation_size.width
 
-        if self.ground_water_level <= f_d:
-            cw = 2 - f_d / (2 * f_w)
+        if self.ground_water_level <= depth:
+            cw = 2.0 - depth / (2.0 * width)
         else:
-            cw = 2 - self.ground_water_level / (2 * f_w)
+            cw = 2.0 - self.ground_water_level / (2.0 * width)
 
-        return min(cw, 2)
+        return min(cw, 2.0)
 
     @round_
     def bearing_capacity(self):
@@ -82,12 +82,12 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
         """
         n_corr = self.corrected_spt_number
-        f_w = self.foundation_size.width
+        width = self.foundation_size.width
 
-        if f_w <= 1.2:
+        if width <= 1.2:
             return 12 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
 
-        return 8 * n_corr * ((3.28 * f_w + 1) / (3.28 * f_w)) ** 2 \
+        return 8 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2 \
                * (1 / (self._cw() * self._fd())) * self._sr()
 
 
