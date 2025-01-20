@@ -26,16 +26,23 @@ __all__ = ["UltimateBearingCapacity",
 
 
 class UltimateBearingCapacity(ABC):
-    def __init__(self, soil_properties: SoilProperties | dict,
+    def __init__(self, friction_angle:float, 
+                 cohesion: float,
+                 moist_unit_wgt: float,
                  foundation_size: FoundationSize, 
                  load_angle = 0.0,
                  ground_water_level = inf,
                  apply_local_shear = False) -> None:
         r""" 
-        :param soil_properties: Dictionary-like object with the following 
-                                required keys: "friction_angle", "cohesion", 
-                                "moist_unit_wgt".
-        :type soil_properties: SoilProperties | dict
+        :param friction_angle: Internal angle of friction for general shear 
+                               failure. (degree)
+        :type friction_angle: float
+        
+        :param cohesion: Cohesion of soil. (kPa)
+        :type cohesion: float
+
+        :param moist_unit_wgt: Moist unit weight of soil. (:math:`kN/m^3`)
+        :type moist_unit_wgt: float
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
@@ -57,18 +64,9 @@ class UltimateBearingCapacity(ABC):
                             ``moist_unit_wgt`` is not provided in 
                             soil_properties.
         """
-        if "friction_angle" not in soil_properties:
-            raise ValueError("friction_angle is required.")
-        if "cohesion" not in soil_properties:
-            raise ValueError("cohesion is required.")
-        if "moist_unit_wgt" not in soil_properties:
-            raise ValueError("moist_unit_wgt is required.")
-
-        soil_attributes = SimpleNamespace(**soil_properties)
-
-        self.friction_angle = soil_attributes.friction_angle
-        self.cohesion = soil_attributes.cohesion
-        self.moist_unit_wgt = soil_attributes.moist_unit_wgt
+        self.friction_angle = friction_angle
+        self.cohesion = cohesion
+        self.moist_unit_wgt = moist_unit_wgt
         self.load_angle = load_angle
         self.ground_water_level = ground_water_level
         self.foundation_size = foundation_size
