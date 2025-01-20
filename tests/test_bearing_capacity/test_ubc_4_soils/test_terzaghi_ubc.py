@@ -34,18 +34,17 @@ class TestTerzaghiBCF:
 
 
 class TestTerzaghiUBC4StripFooting:
-    @pytest.mark.parametrize(("soil_prop", "fs", "water_level", "expected"),
-                             [(dict(friction_angle=35.0, cohesion=15.0,
-                                    moist_unit_wgt=18.0),
-                               dict(depth=1.0, width=1.2, shape="strip"), 
-                               inf, 2114.586),
-                              (dict(friction_angle=35.0, cohesion=15.0,
-                                    moist_unit_wgt=18.0),
-                               dict(depth=1.5, width=2.0, shape="strip"), 
-                               0.4, 1993.59)])
-    def test_bearing_capacity(self, soil_prop, fs, water_level, expected):
+    @pytest.mark.parametrize(("friction_angle", "cohesion", "moist_unit_wgt", "water_level", "fs","expected"),
+                             [(35.0,15.0,18.0, inf,
+                               dict(depth=1.0, width=1.2, shape="strip"), 2114.586),
+                              (35.0, 15.0,18.0,0.4,
+                               dict(depth=1.5, width=2.0, shape="strip"), 1993.59)])
+    def test_bearing_capacity(self, friction_angle, cohesion, moist_unit_wgt, 
+                              water_level, fs, expected):
         fs = create_foundation(**fs)
-        ubc = TerzaghiUBC4StripFooting(soil_properties=soil_prop,
+        ubc = TerzaghiUBC4StripFooting(friction_angle,
+                                       cohesion, 
+                                       moist_unit_wgt,
                                        foundation_size=fs,
                                        ground_water_level=water_level)
         actual = ubc.bearing_capacity()
@@ -60,7 +59,7 @@ class TestTerzaghiUBC4SquareFooting(unittest.TestCase):
                               moist_unit_wgt=18.0)
 
     def test_bearing_capacity(self):
-        ubc = TerzaghiUBC4SquareFooting(soil_properties=self.soil_prop,
+        ubc = TerzaghiUBC4SquareFooting(**self.soil_prop,
                                         foundation_size=self.fs,
                                         apply_local_shear=True)
         actual = ubc.bearing_capacity()
@@ -75,7 +74,7 @@ class TestTerzaghiUBC4CircFooting(unittest.TestCase):
                                "moist_unit_wgt": 18.0})
 
     def test_bearing_capacity(self):
-        ubc = TerzaghiUBC4CircularFooting(soil_properties=self.soil_prop,
+        ubc = TerzaghiUBC4CircularFooting(**self.soil_prop,
                                       foundation_size=self.fs,
                                       apply_local_shear=True)
         actual = ubc.bearing_capacity()
@@ -90,7 +89,7 @@ class TestTerzaghiUBC4RectFooting(unittest.TestCase):
                               moist_unit_wgt=18.0)
 
     def test_bearing_capacity(self):
-        ubc = TerzaghiUBC4RectangularFooting(soil_properties=self.soil_prop,
+        ubc = TerzaghiUBC4RectangularFooting(**self.soil_prop,
                                       foundation_size=self.fs,
                                       apply_local_shear=True)
         actual = ubc.bearing_capacity()
