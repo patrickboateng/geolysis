@@ -43,7 +43,7 @@ def arctan(x: float, /) -> float:
     return rad2deg(math.atan(x))
 
 
-def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable[..., float]:
+def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
     """A decorator that rounds the result of a callable to a specified number
     of decimal places.
 
