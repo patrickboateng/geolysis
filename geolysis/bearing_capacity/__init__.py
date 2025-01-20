@@ -4,8 +4,10 @@ from geolysis.utils import isclose
 
 FndParams: TypeAlias = tuple[float, float, Shape]
 
+
 def get_footing_params(foundation_size: FoundationSize) -> FndParams:
-    """Returns the width, length, and shape of the foundation footing.
+    """Returns the ``width``, ``length``, and ``shape`` of the
+    foundation footing.
 
     .. note:: "width" is the effective width of the foundation footing.
     """
@@ -17,4 +19,3 @@ def get_footing_params(foundation_size: FoundationSize) -> FndParams:
         shape = Shape.RECTANGLE
 
     return width, length, shape
- 

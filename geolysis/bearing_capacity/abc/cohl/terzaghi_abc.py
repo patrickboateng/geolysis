@@ -3,14 +3,15 @@ from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 from geolysis import validators
 
+
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     """Allowable bearing capacity for pad foundation on cohesionless
     soils according to ``Terzaghi & Peck (1948)``.
     """
 
-    def __init__(self, corrected_spt_n_value: float, 
+    def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
-                 ground_water_level: float, 
+                 ground_water_level: float,
                  foundation_size: FoundationSize) -> None:
         """
         :param corrected_spt_n_value: Lowest (or average) uncorrected SPT 
@@ -28,7 +29,9 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_n_value, tol_settlement, foundation_size)
+
+        super().__init__(corrected_spt_n_value,
+                         tol_settlement, foundation_size)
         self.ground_water_level = ground_water_level
 
     @property
@@ -87,8 +90,8 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         if width <= 1.2:
             return 12 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
 
-        return 8 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2 \
-               * (1 / (self._cw() * self._fd())) * self._sr()
+        return (8 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * (1 / (self._cw() * self._fd())) * self._sr())
 
 
 class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
@@ -116,4 +119,3 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
         """
         n_corr = self.corrected_spt_n_value
         return 8 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
-

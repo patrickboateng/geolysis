@@ -1,13 +1,13 @@
 from geolysis.bearing_capacity import get_footing_params
 from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import inf, pi, cos, cot, exp, isclose, round_, sin, tan
+from geolysis.utils import pi, cos, cot, exp, isclose, round_, sin, tan
 
-__all__ = ["HansenBearingCapacityFactor", 
+__all__ = ["HansenBearingCapacityFactor",
            "HansenShapeFactor",
-           "HansenDepthFactor", 
+           "HansenDepthFactor",
            "HansenInclinationFactor",
-           "HansenDepthFactor", 
+           "HansenDepthFactor",
            "HansenUltimateBearingCapacity"]
 
 
@@ -43,8 +43,8 @@ class HansenBearingCapacityFactor:
             N_q = \tan^2\left(45 + \frac{\phi}{2}\right) \cdot
                   e^{\pi \tan(\phi)}
         """
-        return tan(45.0 + friction_angle / 2.0) ** 2.0  \
-               * exp(pi * tan(friction_angle))
+        return tan(45.0 + friction_angle / 2.0) ** 2.0 \
+            * exp(pi * tan(friction_angle))
 
     @classmethod
     @round_
@@ -134,7 +134,8 @@ class HansenShapeFactor:
 
             s_{\gamma} &= 1.0 \rightarrow \text{Strip footing}
 
-            s_{\gamma} &= 1.0 - 0.4 \frac{B}{L} \rightarrow \text{Rectangular footing}
+            s_{\gamma} &= 1.0 - 0.4 \frac{B}{L} \rightarrow
+                          \text{Rectangular footing}
 
             s_{\gamma} &= 0.8 \rightarrow \text{Square footing}
 
@@ -183,8 +184,8 @@ class HansenDepthFactor:
     def d_q(cls, foundation_size: FoundationSize) -> float:
         r"""Depth factor :math:`D_q`.
 
-        :param f_angle: Angle of internal friction of the soil (degrees).
-        :type f_angle: float
+        :param foundation_size: Size of the foundation.
+        :type foundation_size: FoundationSize
 
         .. math::
 
@@ -208,10 +209,10 @@ class HansenInclinationFactor:
     """Inclination factors for ultimate bearing capacity according to
     ``Hansen (1961)``.
     """
+
     @classmethod
     @round_
-    def i_c(cls, cohesion: float, 
-            load_angle: float,
+    def i_c(cls, cohesion: float, load_angle: float,
             foundation_size: FoundationSize) -> float:
         r"""Inclination factor :math:`I_c`.
         
@@ -306,7 +307,7 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def i_c(self) -> float:
-        return HansenInclinationFactor.i_c(self.cohesion, 
+        return HansenInclinationFactor.i_c(self.cohesion,
                                            self.load_angle,
                                            self.foundation_size)
 

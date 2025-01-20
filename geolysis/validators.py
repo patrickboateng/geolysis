@@ -1,9 +1,10 @@
 import operator
 from typing import Callable, TypeAlias
 
+
 class _NumberValidator:
-    def __init__(self, bound: float, 
-                 compare_op: str, 
+    def __init__(self, bound: float,
+                 compare_op: str,
                  compare_fn: Callable,
                  exc_type=ValueError,
                  err_msg=None) -> None:
@@ -25,27 +26,29 @@ class _NumberValidator:
 
         return wrapper
 
+
 Number: TypeAlias = int | float
 
+
 def lt(val: Number, /, *, exc_type=ValueError, err_msg=None):
-    return _NumberValidator(val, "<", operator.lt, exc_type)
+    return _NumberValidator(val, "<", operator.lt, exc_type, err_msg)
 
 
 def le(val: Number, /, *, exc_type=ValueError, err_msg=None):
-    return _NumberValidator(val, "<=", operator.le, exc_type)
+    return _NumberValidator(val, "<=", operator.le, exc_type, err_msg)
 
 
 def eq(val: Number, /, *, exc_type=ValueError, err_msg=None):
-    return _NumberValidator(val, "==", operator.eq, exc_type)
+    return _NumberValidator(val, "==", operator.eq, exc_type, err_msg)
 
 
-def ne(val: Number, /, *, exc_type=ValueError):
-    return _NumberValidator(val, "!=", operator.ne, exc_type)
+def ne(val: Number, /, *, exc_type=ValueError, err_msg=None):
+    return _NumberValidator(val, "!=", operator.ne, exc_type, err_msg)
 
 
-def ge(val: Number, /, *, exc_type=ValueError):
-    return _NumberValidator(val, ">=", operator.ge, exc_type)
+def ge(val: Number, /, *, exc_type=ValueError, err_msg=None):
+    return _NumberValidator(val, ">=", operator.ge, exc_type, err_msg)
 
 
-def gt(val: Number, /, *, exc_type=ValueError):
-    return _NumberValidator(val, ">", operator.gt, exc_type)
+def gt(val: Number, /, *, exc_type=ValueError, err_msg=None):
+    return _NumberValidator(val, ">", operator.gt, exc_type, err_msg)

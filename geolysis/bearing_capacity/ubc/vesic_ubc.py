@@ -1,9 +1,9 @@
 from geolysis.bearing_capacity import get_footing_params
 from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
-from geolysis.bearing_capacity.ubc.hansen_ubc import (
-    HansenBearingCapacityFactor, HansenDepthFactor, HansenShapeFactor)
+from geolysis.bearing_capacity.ubc.hansen_ubc import \
+    HansenBearingCapacityFactor
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import inf, isclose, round_, sin, tan, exp, pi
+from geolysis.utils import isclose, round_, sin, tan
 
 __all__ = ["VesicBearingCapacityFactor", "VesicShapeFactor",
            "VesicDepthFactor", "VesicInclinationFactor",
@@ -76,9 +76,11 @@ class VesicShapeFactor:
 
             s_c &= 1.0 \rightarrow \text{Strip footing}
 
-            s_c &= 1 + \dfrac{B}{L} \cdot \dfrac{N_q}{N_c} \rightarrow \text{Rectangular footing}
+            s_c &= 1 + \dfrac{B}{L} \cdot \dfrac{N_q}{N_c} \rightarrow
+                    \text{Rectangular footing}
 
-            s_c &= 1 + \dfrac{N_q}{N_c} \rightarrow \text{Square or circular footing}
+            s_c &= 1 + \dfrac{N_q}{N_c} \rightarrow
+                   \text{Square or circular footing}
         """
         width, length, shape = get_footing_params(foundation_size)
 
@@ -142,7 +144,8 @@ class VesicShapeFactor:
 
             s_{\gamma} = 1.0 \rightarrow \text{Strip footing}
 
-            s_{\gamma} = 1.0 - 0.4 \dfrac{B}{L} \rightarrow \text{Rectangular footing}
+            s_{\gamma} = 1.0 - 0.4 \dfrac{B}{L} \rightarrow
+                         \text{Rectangular footing}
 
             s_{\gamma} = 0.6 \rightarrow \text{Square or circular footing}
         """
@@ -194,14 +197,15 @@ class VesicDepthFactor:
 
         .. math::
 
-            d_q = 1 + 2 \tan(\phi) \cdot (1 - \sin(\phi))^2 \cdot \dfrac{D_f}{B}
+            d_q = 1 + 2 \tan(\phi) \cdot (1 - \sin(\phi))^2
+                  \cdot \dfrac{D_f}{B}
         """
         depth = foundation_size.depth
         width = foundation_size.width
 
-        return 1.0 + 2.0 * tan(friction_angle) \
-               * (1.0 - sin(friction_angle)) ** 2.0 \
-               * (depth / width)
+        return (1.0 + 2.0 * tan(friction_angle)
+                * (1.0 - sin(friction_angle)) ** 2.0
+                * (depth / width))
 
     @classmethod
     @round_

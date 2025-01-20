@@ -2,12 +2,13 @@ from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 
+
 class BowlesABC4PadFoundation(AllowableBearingCapacity):
     """Allowable bearing capacity for pad foundation on cohesionless soils
     according to ``Bowles (1997)``.
     """
 
-    def __init__(self, corrected_spt_n_value: float, 
+    def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
                  foundation_size: FoundationSize) -> None:
         """
@@ -23,7 +24,8 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_n_value, tol_settlement, foundation_size)
+        super().__init__(corrected_spt_n_value, tol_settlement,
+                         foundation_size)
 
     @round_
     def bearing_capacity(self) -> float:
@@ -45,8 +47,8 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
         if width <= 1.2:
             return 19.16 * n_corr * self._fd() * self._sr()
 
-        return (11.98 * n_corr * ((3.28 * width + 1) / 
-               (3.28 * width)) ** 2 * self._fd() * self._sr())
+        return (11.98 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * self._fd() * self._sr())
 
 
 class BowlesABC4MatFoundation(BowlesABC4PadFoundation):
@@ -66,4 +68,3 @@ class BowlesABC4MatFoundation(BowlesABC4PadFoundation):
         """
         n_corr = self.corrected_spt_n_value
         return 11.98 * n_corr * self._fd() * self._sr()
-

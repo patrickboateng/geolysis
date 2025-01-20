@@ -5,19 +5,20 @@ from typing import Final, Sequence
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 from geolysis import validators
 
-__all__ = ["EnergyCorrection", "GibbsHoltzOPC","BazaraaPeckOPC", "PeckOPC", 
+__all__ = ["EnergyCorrection", "GibbsHoltzOPC", "BazaraaPeckOPC", "PeckOPC",
            "LiaoWhitmanOPC", "SkemptonOPC", "DilatancyCorrection"]
 
 
 class SPTDesign:
-    """
+    """ SPT Design Calculations.
+
     Due to uncertainty in field procedure in standard penetration test and also
     to consider all the N-value in the influence zone of a foundation, a method
     was suggested to calculate the design N-value which should be used in
-    calculating the allowable bearing capacity of shallow foundation rather than
-    using a particular N-value. All the N-value from the influence zone is taken
-    under consideration by giving the highest weightage to the closest N-value
-    from the base.
+    calculating the allowable bearing capacity of shallow foundation rather
+    than using a particular N-value. All the N-value from the influence zone is
+    taken under consideration by giving the highest weightage to the closest
+    N-value from the base.
     """
 
     def __init__(self, spt_n_values: Sequence[float]) -> None:
@@ -38,15 +39,15 @@ class SPTDesign:
 
     @round_(ndigits=1)
     def minimum_spt_n_design(self):
-        """The lowest N-value within the influence zone can be taken as the
+        """The lowest SPT N-value within the influence zone can be taken as the
         :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
         """
         return min(self.spt_n_values)
 
     @round_(ndigits=1)
     def weighted_spt_n_design(self):
-        r"""Calculates the weighted average of the corrected SPT N-values within 
-        the foundation influence zone.
+        r"""Calculates the weighted average of the corrected SPT N-values
+        within the foundation influence zone.
 
         Weighted average is given by the formula:
 
@@ -69,7 +70,6 @@ class SPTDesign:
 
 class HammerType(enum.StrEnum):
     """Enumeration of hammer types."""
-
     AUTOMATIC = enum.auto()
     DONUT_1 = enum.auto()
     DONUT_2 = enum.auto()
@@ -79,7 +79,6 @@ class HammerType(enum.StrEnum):
 
 class SamplerType(enum.StrEnum):
     """Enumeration of sampler types."""
-
     STANDARD = enum.auto()
     NON_STANDARD = enum.auto()
 
@@ -87,8 +86,8 @@ class SamplerType(enum.StrEnum):
 class EnergyCorrection:
     r"""SPT N-value standardized for field procedures.
 
-    On the basis of field observations, it appears reasonable to standardize the
-    field SPT N-value as a function of the input driving energy and its
+    On the basis of field observations, it appears reasonable to standardize
+    the field SPT N-value as a function of the input driving energy and its
     dissipation around the sampler around the surrounding soil. The variations
     in testing procedures may be at least partially compensated by converting
     the measured N-value to :math:`N_{60}` assuming 60% hammer energy being
@@ -221,11 +220,12 @@ class EnergyCorrection:
         return corr
 
     def correction(self) -> float:
-        """Energy correction factor.""" 
-        return (self.hammer_efficiency
-                * self.borehole_diameter_correction
-                * self.sampler_correction
-                * self.rod_length_correction) / self.energy_percentage
+        """Energy correction factor."""
+        numerator = (self.hammer_efficiency
+                     * self.borehole_diameter_correction
+                     * self.sampler_correction
+                     * self.rod_length_correction)
+        return numerator / self.energy_percentage
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
@@ -423,9 +423,9 @@ class DilatancyCorrection:
 
     def __init__(self, std_spt_n_value: float) -> None:
         """
-        :param std_spt_value: SPT N-value standardized for field procedures 
-                              and/or corrected for overburden pressure.
-        :type std_spt_value: float
+        :param std_spt_n_value: SPT N-value standardized for field procedures
+                                and/or corrected for overburden pressure.
+        :type std_spt_n_value: float
         """
         self.std_spt_n_value = std_spt_n_value
 

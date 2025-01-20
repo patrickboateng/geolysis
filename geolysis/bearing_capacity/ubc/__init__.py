@@ -1,39 +1,37 @@
 from abc import ABC, abstractmethod
-from types import SimpleNamespace
 
-from geolysis import SoilProperties
-from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import inf, arctan, tan, isclose
+from geolysis.foundation import FoundationSize
+from geolysis.utils import inf, arctan, tan
 from geolysis import validators
 
-__all__ = ["UltimateBearingCapacity", 
+__all__ = ["UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",
-           "TerzaghiUBC4CircularFooting", 
+           "TerzaghiUBC4CircularFooting",
            "TerzaghiUBC4RectangularFooting",
-           "TerzaghiBearingCapacityFactor", 
+           "TerzaghiBearingCapacityFactor",
            "TerzaghiUBC4SquareFooting",
-           "HansenUltimateBearingCapacity", 
+           "HansenUltimateBearingCapacity",
            "HansenBearingCapacityFactor",
-           "HansenShapeFactor", 
-           "HansenInclinationFactor", 
+           "HansenShapeFactor",
+           "HansenInclinationFactor",
            "HansenDepthFactor",
-           "VesicUltimateBearingCapacity", 
+           "VesicUltimateBearingCapacity",
            "VesicBearingCapacityFactor",
-           "VesicShapeFactor", 
-           "VesicInclinationFactor", 
+           "VesicShapeFactor",
+           "VesicInclinationFactor",
            "VesicDepthFactor",
            "VesicInclinationFactor"]
 
 
 class UltimateBearingCapacity(ABC):
-    def __init__(self, friction_angle:float, 
+    def __init__(self, friction_angle: float,
                  cohesion: float,
                  moist_unit_wgt: float,
-                 foundation_size: FoundationSize, 
-                 load_angle = 0.0,
-                 ground_water_level = inf,
-                 apply_local_shear = False) -> None:
-        r""" 
+                 foundation_size: FoundationSize,
+                 load_angle=0.0,
+                 ground_water_level=inf,
+                 apply_local_shear=False) -> None:
+        r"""
         :param friction_angle: Internal angle of friction for general shear 
                                failure. (degree)
         :type friction_angle: float
@@ -59,10 +57,6 @@ class UltimateBearingCapacity(ABC):
                                   general or local shear failure, defaults to 
                                   False.
         :type apply_local_shear: bool, optional
-
-        :raises ValueError: Raised when ``friction_angle``, ``cohesion``, or 
-                            ``moist_unit_wgt`` is not provided in 
-                            soil_properties.
         """
         self.friction_angle = friction_angle
         self.cohesion = cohesion
@@ -165,9 +159,9 @@ class UltimateBearingCapacity(ABC):
         return 1.0
 
     def bearing_capacity(self):
-        return self._cohesion_term(1.0) \
-               + self._surcharge_term() \
-               + self._embedment_term(0.5)
+        return (self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5))
 
     def _cohesion_term(self, coef: float = 1.0) -> float:
         return coef * self.cohesion * self.n_c * self.s_c * self.d_c * self.i_c
@@ -198,8 +192,9 @@ class UltimateBearingCapacity(ABC):
             b = max(self.ground_water_level - depth, 0)
             water_corr = min(0.5 + 0.5 * b / width, 1)
 
-        return coef * self.moist_unit_wgt * width * self.n_gamma \
-               * self.s_gamma * self.d_gamma * self.i_gamma * water_corr
+        return (coef * self.moist_unit_wgt * width * self.n_gamma
+                * self.s_gamma * self.d_gamma * self.i_gamma * water_corr)
+
     @property
     @abstractmethod
     def n_c(self) -> float:
@@ -215,21 +210,21 @@ class UltimateBearingCapacity(ABC):
     def n_gamma(self) -> float:
         ...
 
-    
-from .terzaghi_ubc import (TerzaghiUBC4StripFooting, 
+
+from .terzaghi_ubc import (TerzaghiUBC4StripFooting,
                            TerzaghiUBC4CircularFooting,
-                           TerzaghiUBC4SquareFooting, 
+                           TerzaghiUBC4SquareFooting,
                            TerzaghiUBC4RectangularFooting,
                            TerzaghiBearingCapacityFactor)
 
-from .hansen_ubc import (HansenUltimateBearingCapacity, 
+from .hansen_ubc import (HansenUltimateBearingCapacity,
                          HansenDepthFactor,
-                         HansenBearingCapacityFactor, 
+                         HansenBearingCapacityFactor,
                          HansenShapeFactor,
                          HansenInclinationFactor)
 
-from .vesic_ubc import (VesicUltimateBearingCapacity, 
+from .vesic_ubc import (VesicUltimateBearingCapacity,
                         VesicDepthFactor,
-                        VesicBearingCapacityFactor, 
+                        VesicBearingCapacityFactor,
                         VesicShapeFactor,
                         VesicInclinationFactor)

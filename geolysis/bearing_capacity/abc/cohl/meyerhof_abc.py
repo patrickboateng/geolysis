@@ -2,12 +2,13 @@ from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 
+
 class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     """Allowable bearing capacity for pad foundation on cohesionless soils
     according to ``Meyerhof (1956)``.
     """
 
-    def __init__(self, corrected_spt_n_value: float, 
+    def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
                  foundation_size: FoundationSize):
         """
@@ -24,7 +25,8 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_n_value, tol_settlement, foundation_size)
+        super().__init__(corrected_spt_n_value, tol_settlement,
+                         foundation_size)
 
     @round_
     def bearing_capacity(self):
@@ -45,8 +47,8 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         if width <= 1.2:
             return 12 * n_corr * self._fd() * self._sr()
 
-        return (8 * n_corr * ((3.28 * width + 1) / 
-               (3.28 * width)) ** 2 * self._fd() * self._sr())
+        return (8 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * self._fd() * self._sr())
 
 
 class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
@@ -66,4 +68,3 @@ class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
         """
         n_corr = self.corrected_spt_n_value
         return 8 * n_corr * self._fd() * self._sr()
-

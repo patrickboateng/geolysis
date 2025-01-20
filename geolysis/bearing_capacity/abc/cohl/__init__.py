@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from geolysis.foundation import FoundationSize
 from geolysis import validators
 
+
 class SettlementError(ValueError):
     pass
 
@@ -11,7 +12,7 @@ class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement. (mm)
     MAX_TOL_SETTLEMENT = 25.4
 
-    def __init__(self, corrected_spt_n_value: float, 
+    def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
                  foundation_size: FoundationSize) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
@@ -51,9 +52,9 @@ class AllowableBearingCapacity(ABC):
     def bearing_capacity(self): ...
 
 
-from geolysis.bearing_capacity.abc.cohl.bowles_abc import (BowlesABC4PadFoundation, 
-    BowlesABC4MatFoundation)
-from geolysis.bearing_capacity.abc.cohl.meyerhof_abc import (MeyerhofABC4PadFoundation,
-    MeyerhofABC4MatFoundation)
-from geolysis.bearing_capacity.abc.cohl.terzaghi_abc import (TerzaghiABC4PadFoundation,
-    TerzaghiABC4MatFoundation)
+from geolysis.bearing_capacity.abc.cohl.bowles_abc import \
+    BowlesABC4PadFoundation, BowlesABC4MatFoundation
+from geolysis.bearing_capacity.abc.cohl.meyerhof_abc import \
+    MeyerhofABC4PadFoundation, MeyerhofABC4MatFoundation
+from geolysis.bearing_capacity.abc.cohl.terzaghi_abc import \
+    TerzaghiABC4PadFoundation, TerzaghiABC4MatFoundation
