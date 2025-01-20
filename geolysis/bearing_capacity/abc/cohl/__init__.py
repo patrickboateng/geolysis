@@ -11,21 +11,21 @@ class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement. (mm)
     MAX_TOL_SETTLEMENT = 25.4
 
-    def __init__(self, corrected_spt_number: float, 
+    def __init__(self, corrected_spt_n_value: float, 
                  tol_settlement: float,
                  foundation_size: FoundationSize) -> None:
-        self.corrected_spt_number = corrected_spt_number
+        self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
         self.foundation_size = foundation_size
 
     @property
-    def corrected_spt_number(self) -> float:
-        return self._corrected_spt_number
+    def corrected_spt_n_value(self) -> float:
+        return self._corrected_spt_n_value
 
-    @corrected_spt_number.setter
+    @corrected_spt_n_value.setter
     @validators.ge(0.0)
-    def corrected_spt_number(self, corrected_spt_number: float) -> None:
-        self._corrected_spt_number = corrected_spt_number
+    def corrected_spt_n_value(self, val: float) -> None:
+        self._corrected_spt_n_value = val
 
     @property
     def tol_settlement(self) -> float:

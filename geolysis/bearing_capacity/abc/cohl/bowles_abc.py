@@ -7,26 +7,26 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     according to ``Bowles (1997)``.
     """
 
-    def __init__(self, corrected_spt_number: float, 
+    def __init__(self, corrected_spt_n_value: float, 
                  tol_settlement: float,
                  foundation_size: FoundationSize) -> None:
         """
-        :param corrected_spt_number: Statistical average of corrected SPT
-                                     N-value (55% energy with overburden 
-                                     pressure correction) within the foundation 
-                                     influence zone i.e ``0.5B`` to ``2B``.
-        :type corrected_spt_number: float
+        :param corrected_spt_n_value: Statistical average of corrected SPT
+                                      N-value (55% energy with overburden 
+                                      pressure correction) within the foundation 
+                                      influence zone i.e ``0.5B`` to ``2B``.
+        :type corrected_spt_n_value: float
 
-        :param tol_settlement: Tolerable settlement of foundation (mm).
+        :param tol_settlement: Tolerable settlement of foundation. (mm)
         :type tol_settlement: float
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
+        super().__init__(corrected_spt_n_value, tol_settlement, foundation_size)
 
     @round_
-    def bearing_capacity(self):
+    def bearing_capacity(self) -> float:
         r""" Calculate the allowable bearing capacity of the pad foundation.
 
         .. math::
@@ -39,7 +39,7 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
 
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
         """
-        n_corr = self.corrected_spt_number
+        n_corr = self.corrected_spt_n_value
         width = self.foundation_size.width
 
         if width <= 1.2:
@@ -64,6 +64,6 @@ class BowlesABC4MatFoundation(BowlesABC4PadFoundation):
 
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
         """
-        n_corr = self.corrected_spt_number
+        n_corr = self.corrected_spt_n_value
         return 11.98 * n_corr * self._fd() * self._sr()
 

@@ -5,43 +5,12 @@ from typing import Final, Sequence
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 from geolysis import validators
 
-__all__ = ["weighted_spt_n_design", "average_spt_n_design",
-           "minimum_spt_n_design", "EnergyCorrection", "GibbsHoltzOPC",
-           "BazaraaPeckOPC", "PeckOPC", "LiaoWhitmanOPC", "SkemptonOPC",
-           "DilatancyCorrection"]
+__all__ = ["EnergyCorrection", "GibbsHoltzOPC","BazaraaPeckOPC", "PeckOPC", 
+           "LiaoWhitmanOPC", "SkemptonOPC", "DilatancyCorrection"]
 
 
-
-@round_(ndigits=1)
-def average_spt_n_design(spt_n_values: Sequence[float]):
-    r"""Calculates the average of the corrected SPT N-values within the
-    foundation influence zone.
-
-    :param spt_n_values: SPT N-values within the foundation influence zone. 
-                       ``spt_values`` can either be **corrected** or 
-                       **uncorrected** SPT N-values.
-    :type spt_n_values: Sequence[float]
+class SPTDesign:
     """
-    return mean(spt_n_values)
-
-
-@round_(ndigits=1)
-def minimum_spt_n_design(spt_n_values: Sequence[float]):
-    """The lowest N-value within the influence zone can be taken as the
-    :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
-
-    :param spt_n_values: SPT N-values within the foundation influence zone. i.e. 
-                         ``spt_numbers`` can either be **corrected** or
-                         **uncorrected** SPT N-values.
-    """
-    return min(spt_n_values)
-
-
-@round_(ndigits=1)
-def weighted_spt_n_design(spt_n_values: Sequence[float]):
-    r"""Calculates the weighted average of the corrected SPT N-values within the
-    foundation influence zone.
-
     Due to uncertainty in field procedure in standard penetration test and also
     to consider all the N-value in the influence zone of a foundation, a method
     was suggested to calculate the design N-value which should be used in
@@ -49,28 +18,53 @@ def weighted_spt_n_design(spt_n_values: Sequence[float]):
     using a particular N-value. All the N-value from the influence zone is taken
     under consideration by giving the highest weightage to the closest N-value
     from the base.
-
-    :param spt_n_values: SPT N-values within the foundation influence zone. 
-                         ``spt_numbers`` can either be **corrected** or
-                         **uncorrected** SPT N-values.
-
-    Weighted average is given by the formula:
-
-    .. math::
-
-        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
-                      {\sum_{i=1}^{n}\frac{1}{i^2}}
     """
 
-    sum_total = 0.0
-    sum_wgts = 0.0
+    def __init__(self, spt_n_values: Sequence[float]) -> None:
+        """
+        :param spt_n_values: SPT N-values within the foundation influence zone. 
+                             ``spt_n_numbers`` can either be **corrected** or 
+                             **uncorrected** SPT N-values.
+        :type spt_n_values: Sequence[float]
+        """
+        self.spt_n_values = spt_n_values
 
-    for i, corrected_spt in enumerate(spt_n_values, start=1):
-        wgt = 1 / i ** 2
-        sum_total += wgt * corrected_spt
-        sum_wgts += wgt
+    @round_(ndigits=1)
+    def average_spt_n_design(self) -> float:
+        """Calculates the average of the corrected SPT N-values within the
+        foundation influence zone.
+        """
+        return mean(self.spt_n_values)
 
-    return sum_total / sum_wgts
+    @round_(ndigits=1)
+    def minimum_spt_n_design(self):
+        """The lowest N-value within the influence zone can be taken as the
+        :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
+        """
+        return min(self.spt_n_values)
+
+    @round_(ndigits=1)
+    def weighted_spt_n_design(self):
+        r"""Calculates the weighted average of the corrected SPT N-values within 
+        the foundation influence zone.
+
+        Weighted average is given by the formula:
+
+        .. math::
+
+            N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
+                        {\sum_{i=1}^{n}\frac{1}{i^2}}
+        """
+
+        sum_total = 0.0
+        sum_wgts = 0.0
+
+        for i, corrected_spt in enumerate(self.spt_n_values, start=1):
+            wgt = 1 / i ** 2
+            sum_total += wgt * corrected_spt
+            sum_wgts += wgt
+
+        return sum_total / sum_wgts
 
 
 class HammerType(enum.StrEnum):
@@ -119,13 +113,13 @@ class EnergyCorrection:
     SAMPLER_CORRECTION_FACTORS = {SamplerType.STANDARD: 1.00,
                                   SamplerType.NON_STANDARD: 1.20}
 
-    def __init__(self, recorded_spt_number: int, *, energy_percentage=0.6,
+    def __init__(self, recorded_spt_n_value: int, *, energy_percentage=0.6,
                  borehole_diameter=65.0, rod_length=3.0,
                  hammer_type=HammerType.DONUT_1,
                  sampler_type=SamplerType.STANDARD):
         """
-        :param recorded_spt_number: Recorded SPT N-value from field.
-        :type recorded_spt_number: int
+        :param recorded_spt_n_value: Recorded SPT N-value from field.
+        :type recorded_spt_n_value: int
 
         :param energy_percentage: Energy percentage reaching the tip of the 
                                   sampler, defaults to 0.6
@@ -144,7 +138,7 @@ class EnergyCorrection:
         :type sampler_type: SamplerType, optional
         """
 
-        self.recorded_spt_number = recorded_spt_number
+        self.recorded_spt_n_value = recorded_spt_n_value
         self.energy_percentage = energy_percentage
         self.borehole_diameter = borehole_diameter
         self.rod_length = rod_length
@@ -152,14 +146,14 @@ class EnergyCorrection:
         self.sampler_type = sampler_type
 
     @property
-    def recorded_spt_number(self) -> int:
-        return self._recorded_spt_number
+    def recorded_spt_n_value(self) -> int:
+        return self._recorded_spt_value
 
-    @recorded_spt_number.setter
+    @recorded_spt_n_value.setter
     @validators.ge(100)
     @validators.gt(0)
-    def recorded_spt_number(self, val: int) -> None:
-        self._recorded_spt_number = val
+    def recorded_spt_n_value(self, val: int) -> None:
+        self._recorded_spt_value = val
 
     @property
     def energy_percentage(self) -> float:
@@ -234,41 +228,40 @@ class EnergyCorrection:
                 * self.rod_length_correction) / self.energy_percentage
 
     @round_(ndigits=1)
-    def corrected_spt_number(self) -> float:
+    def corrected_spt_n_value(self) -> float:
         """Corrected SPT N-value."""
-        return self.correction() * self.recorded_spt_number
+        return self.correction() * self.recorded_spt_n_value
 
 
 class OPC:
     """Base class for Overburden Pressure Correction (OPC)."""
 
-    def __init__(self, standardized_spt_value: float, eop: float) -> None:
+    def __init__(self, std_spt_n_value: float, eop: float) -> None:
         """
-        :param standardized_spt_value: SPT N-value standardized for field
-                                       procedures.
-        :type standardized_spt_value: float
+        :param std_spt_n_value: SPT N-value standardized for field procedures.
+        :type std_spt_n_value: float
 
         :param eop: Effective overburden pressure (:math:`kN/m^2`)
         :type eop: float
         """
-        self.standardized_spt_value = standardized_spt_value
+        self.std_spt_n_value = std_spt_n_value
         self.eop = eop
 
     @property
-    def standardized_spt_value(self) -> float:
-        return self._standardized_spt_value
+    def std_spt_n_value(self) -> float:
+        return self._std_spt_n_value
 
-    @standardized_spt_value.setter
+    @std_spt_n_value.setter
     @validators.gt(0.0)
-    def standardized_spt_value(self, val: float) -> None:
-        self._standardized_spt_value = val
+    def std_spt_n_value(self, val: float) -> None:
+        self._std_spt_n_value = val
 
     @round_(ndigits=1)
-    def corrected_spt_number(self) -> float:
-        corrected_spt = self.correction() * self.standardized_spt_value
+    def corrected_spt_n_value(self) -> float:
+        corrected_spt = self.correction() * self.std_spt_n_value
         # Corrected SPT should not be more 
         # than 2 times the Standardized SPT
-        return min(corrected_spt, 2 * self.standardized_spt_value)
+        return min(corrected_spt, 2 * self.std_spt_n_value)
 
     @abstractmethod
     def correction(self) -> float:
@@ -316,8 +309,8 @@ class BazaraaPeckOPC(OPC):
 
         C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
 
-        C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o},
-            \, \sigma_o \gt 71.8kN/m^2
+        C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o}, 
+               \, \sigma_o \gt 71.8kN/m^2
 
         C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
     """
@@ -350,7 +343,7 @@ class PeckOPC(OPC):
 
     Overburden Pressure Correction is given by the formula:
 
-    .. math:: C_N = 0.77 \log \left( \dfrac{2000}{\sigma_o} \right)
+    .. math:: C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
     """
 
     @property
@@ -428,27 +421,25 @@ class DilatancyCorrection:
         (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
     """
 
-    def __init__(self, standardized_spt_value: float) -> None:
+    def __init__(self, std_spt_n_value: float) -> None:
         """
-        :param standardized_spt_value: SPT N-value standardized for field
-                                       procedures and/or corrected for 
-                                       overburden pressure.
-        :type standardized_spt_value: float
+        :param std_spt_value: SPT N-value standardized for field procedures 
+                              and/or corrected for overburden pressure.
+        :type std_spt_value: float
         """
-        self.standardized_spt_value = standardized_spt_value
+        self.std_spt_n_value = std_spt_n_value
 
     @property
-    def standardized_spt_value(self) -> float:
-        return self._standardized_spt_number
+    def std_spt_n_value(self) -> float:
+        return self._std_spt_n_value
 
-    @standardized_spt_value.setter
+    @std_spt_n_value.setter
     @validators.gt(0.0)
-    def standardized_spt_value(self, val: float) -> None:
-        self._standardized_spt_number = val
+    def std_spt_n_value(self, val: float) -> None:
+        self._std_spt_n_value = val
 
     @round_(ndigits=1)
-    def corrected_spt_number(self) -> float:
-        if self.standardized_spt_value <= 15.0:
-            return self.standardized_spt_value
-
-        return 15.0 + 0.5 * (self.standardized_spt_value - 15.0)
+    def corrected_spt_n_value(self) -> float:
+        if self.std_spt_n_value <= 15.0:
+            return self.std_spt_n_value
+        return 15.0 + 0.5 * (self.std_spt_n_value - 15.0)

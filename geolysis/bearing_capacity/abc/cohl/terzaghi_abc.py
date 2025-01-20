@@ -8,16 +8,16 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     soils according to ``Terzaghi & Peck (1948)``.
     """
 
-    def __init__(self, corrected_spt_number: float, 
+    def __init__(self, corrected_spt_n_value: float, 
                  tol_settlement: float,
                  ground_water_level: float, 
                  foundation_size: FoundationSize) -> None:
         """
-        :param corrected_spt_number: Lowest (or average) uncorrected SPT N-value 
-                                     (60% energy) within the foundation 
-                                     influence zone i.e :math:`D_f` to 
-                                     :math:`D_f + 2B`
-        :type corrected_spt_number: float
+        :param corrected_spt_n_value: Lowest (or average) uncorrected SPT 
+                                      N-value (60% energy) within the foundation 
+                                      influence zone i.e :math:`D_f` to 
+                                      :math:`D_f + 2B`
+        :type corrected_spt_n_value: float
 
         :param tol_settlement: Tolerable settlement of foundation (mm).
         :type tol_settlement: float
@@ -28,7 +28,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
+        super().__init__(corrected_spt_n_value, tol_settlement, foundation_size)
         self.ground_water_level = ground_water_level
 
     @property
@@ -81,7 +81,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
         .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
         """
-        n_corr = self.corrected_spt_number
+        n_corr = self.corrected_spt_n_value
         width = self.foundation_size.width
 
         if width <= 1.2:
@@ -114,6 +114,6 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
 
         .. math:: c_w = 2 - \frac{D_f}{2B} \le 2
         """
-        n_corr = self.corrected_spt_number
+        n_corr = self.corrected_spt_n_value
         return 8 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
 

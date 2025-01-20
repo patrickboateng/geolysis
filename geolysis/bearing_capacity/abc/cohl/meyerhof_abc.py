@@ -7,15 +7,16 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     according to ``Meyerhof (1956)``.
     """
 
-    def __init__(self, corrected_spt_number: float, 
+    def __init__(self, corrected_spt_n_value: float, 
                  tol_settlement: float,
                  foundation_size: FoundationSize):
         """
-        :param corrected_spt_number: Average uncorrected SPT N-value (60% energy 
-                                     with dilatancy (water) correction if 
-                                     applicable) within the foundation influence 
-                                     zone i.e :math:`D_f` to :math:`D_f + 2B`.
-        :type corrected_spt_number: float
+        :param corrected_spt_n_value: Average uncorrected SPT N-value (60% 
+                                      energy with dilatancy (water) correction 
+                                      if applicable) within the foundation 
+                                      influence  zone i.e 
+                                      :math:`D_f` to :math:`D_f + 2B`.
+        :type corrected_spt_n_value: float
 
         :param tol_settlement: Tolerable settlement of foundation (mm).
         :type tol_settlement: float
@@ -23,7 +24,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_number, tol_settlement, foundation_size)
+        super().__init__(corrected_spt_n_value, tol_settlement, foundation_size)
 
     @round_
     def bearing_capacity(self):
@@ -38,7 +39,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
 
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33 
         """
-        n_corr = self.corrected_spt_number
+        n_corr = self.corrected_spt_n_value
         width = self.foundation_size.width
 
         if width <= 1.2:
@@ -63,6 +64,6 @@ class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
 
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
         """
-        n_corr = self.corrected_spt_number
+        n_corr = self.corrected_spt_n_value
         return 8 * n_corr * self._fd() * self._sr()
 
