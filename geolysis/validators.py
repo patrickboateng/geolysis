@@ -17,7 +17,7 @@ class _NumberValidator:
     def __call__(self, fn):
         def wrapper(obj, val):
             if not self.compare_fn(val, self.bound):
-                if not self.err_msg:
+                if self.err_msg:
                     msg = self.err_msg
                 else:
                     msg = f"{fn.__name__} must be {self.compare_op} {self.bound}"
