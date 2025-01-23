@@ -1,19 +1,19 @@
 :html_theme.sidebar_secondary.remove:
 
-***************************
-geolysis.core documentation
-***************************
+**********************
+geolysis documentation
+**********************
 
 .. toctree::
    :hidden:
 
    Getting Started     <getting_started>
-   API Reference       <reference/geolysis/core/index>
+   API Reference       <reference/geolysis/index>
    Contributor's Guide <dev/index>
    Release notes       <release_notes/index>
    About Us            <about>
 
-``geolysis.core`` is an open-source software that provides features
+``geolysis`` is an open-source software that provides features
 for analyzing geotechnical results obtained from laboratory and field
 tests. Some of the features implemented include soil classification,
 standard penetration test analysis (such as SPT :math:`N_{design}` and

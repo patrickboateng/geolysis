@@ -36,7 +36,6 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
-    # "numpydoc",
     "autoapi.extension",
     "notfound.extension",
     "enum_tools.autoenum",
@@ -47,26 +46,33 @@ exclude_patterns = ["build"]
 
 
 # Sphinx AutoDoc
-autodoc_member_order = "bysource"
+# autodoc_member_order = "bysource"
+autoclass_content = "both"
 
 # adds this string to the start of every .rst file
 rst_prolog = """.. include:: <isonum.txt>"""
 
 # Sphinx AutoAPI
-autoapi_dirs = ["../../geolysis/core"]
+autoapi_dirs = ["../../geolysis"]
 autoapi_root = "reference"
-autoapi_add_toctree_entry = False
+autoapi_member_order = "groupwise"
+
+# Uses both the class and __init__ docstrings as the class docstring
+autoapi_python_class_content = "init"
+
+# autoapi_add_toctree_entry = False
 autoapi_template_dir = "_templates/_autoapi_templates"
 autoapi_options = [
     "members",
     "undoc-members",
+    "inherited-members",
     # "private-members",
     # "show-inheritance",
     # "show-module-summary",
-    # "special-members",
+    "special-members",
     # "imported-members",
 ]
-# autoapi_keep_files = True
+autoapi_keep_files = False
 # # autoapi_generate_api_docs = False
 
 # Sphinx Copybutton
@@ -78,10 +84,7 @@ copybutton_prompt_is_regexp = True
 # Myst
 myst_heading_anchors = 6
 
-# NumPyDoc
-numpydoc_attributes_as_param_list = True
-# numpydoc_show_class_members = False
-numpydoc_class_members_toctree = False
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 # logo_path = "_static/logo.png"
@@ -105,7 +108,7 @@ switcher_version = os.environ.get("READTHEDOCS_VERSION")
 switcher_version = "latest" if switcher_version == "latest" else f"v{version}"
 
 html_theme_options = {
-    "header_links_before_dropdown": 4,
+    "header_links_before_dropdown": 6,
     "icon_links": [
         {
             "name": "GitHub",
@@ -141,27 +144,5 @@ html_theme_options = {
 
 # Primary sidebar items
 html_sidebars = {"**": ["sidebar-nav-bs"]}
-
-#     "navbar_align": "left",
-#     "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
-#     # "switcher": {
-#     #     "json_url": (
-#     #         "https://scikit-image.org/docs/dev/_static/version_switcher.json"
-#     #     ),
-#     #     "version_match": "dev" if "dev" in release else release,
-#     # },
-#     # Footer
-#     "footer_start": ["copyright"],
-#     "footer_end": ["sphinx-version", "theme-version"],
-#     # Other
-#     "pygment_light_style": "default",
-#     "pygment_dark_style": "github-dark",
-#     # "analytics": {
-#     #     "plausible_analytics_domain": "scikit-image.org",
-#     #     "plausible_analytics_url": (
-#     #         "https://views.scientific-python.org/js/script.js"
-#     #     ),
-#     # },
-# }
 
 mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
