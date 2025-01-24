@@ -1,9 +1,12 @@
 import enum
-from typing import Iterable, Optional, NamedTuple
+from abc import abstractmethod
+from typing import Protocol
+from typing import Iterable, NamedTuple, Optional, Sequence
 
+from geolysis import validators
 from geolysis.utils import isclose, round_
 
-__all__ = ["ClfType", "AtterbergLimits", "PSD", "AASHTO", "USCS",
+__all__ = ["CLF_TYPE", "AtterbergLimits", "PSD", "AASHTO", "USCS",
            "SizeDistribution", "create_soil_classifier"]
 
 
@@ -12,13 +15,19 @@ class SizeDistError(ZeroDivisionError):
     pass
 
 
-class ClfType(enum.StrEnum):
+class SoilClassifier(Protocol):
+
+    @abstractmethod
+    def classify(self): ...
+
+
+class CLF_TYPE(enum.StrEnum):
     """Enumeration of soil classification types."""
     AASHTO = enum.auto()
     USCS = enum.auto()
 
 
-class _ClfSymbol(enum.Enum):
+class _Clf(enum.Enum):
     def __eq__(self, value: object) -> bool:
         if isinstance(value, str):
             return self.clf_symbol == value
@@ -34,7 +43,7 @@ class _ClfSymbol(enum.Enum):
 
 
 @enum.global_enum
-class USCSSymbol(_ClfSymbol):
+class USCSSymbol(_Clf):
     """Unified Soil Classification System (USCS) symbols and descriptions."""
     G = GRAVEL = ("G", "Gravel")
     S = SAND = ("S", "Sand")
@@ -74,7 +83,7 @@ class USCSSymbol(_ClfSymbol):
 
 
 @enum.global_enum
-class AASHTOSymbol(_ClfSymbol):
+class AASHTOSymbol(_Clf):
     """AASHTO soil classification symbols and descriptions."""
     A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
     A_1_b = ("A-1-b", "Stone fragments, gravel, and sand")
@@ -107,20 +116,38 @@ class AtterbergLimits:
     :type plastic_limit: float
     """
 
-    class __A_LINE:
+    class _A_LINE:
         """The ``A-line`` is used to determine if a soil is clayey or silty.
 
         .. math:: A = 0.73(LL - 20.0)
         """
 
-        def __get__(self, obj, objtype=None):
+        def __get__(self, obj, objtype=None) -> float:
             return 0.73 * (obj.liquid_limit - 20.0)
 
-    _A_LINE = __A_LINE()
+    _A_LINE = _A_LINE()
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
+
+    @property
+    def liquid_limit(self) -> float:
+        return self._liquid_limit
+
+    @liquid_limit.setter
+    @validators.ge(0.0)
+    def liquid_limit(self, val: float) -> None:
+        self._liquid_limit = val
+
+    @property
+    def plastic_limit(self) -> float:
+        return self._plastic_limit
+
+    @plastic_limit.setter
+    @validators.ge(0.0)
+    def plastic_limit(self, val: float) -> None:
+        self._plastic_limit = val
 
     @property
     @round_
@@ -190,17 +217,23 @@ class AtterbergLimits:
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
 
-class SizeDistribution(NamedTuple):
-    """Features obtained from the Particle Size Distribution graph.
+class SizeDistribution:
+    """Features obtained from the Particle Size Distribution graph."""
 
-    :param float d_10: Diameter at which 10% of the soil by weight is finer.
-    :param float d_30: Diameter at which 30% of the soil by weight is finer.
-    :param float d_60: Diameter at which 60% of the soil by weight is finer.
-    """
+    def __init__(self, d_10: Optional[float] = None,
+                 d_30: Optional[float] = None,
+                 d_60: Optional[float] = None):
+        """
+        :param float d_10: Diameter at which 10% of the soil by weight is finer.
+        :param float d_30: Diameter at which 30% of the soil by weight is finer.
+        :param float d_60: Diameter at which 60% of the soil by weight is finer.
+        """
+        self.d_10 = d_10
+        self.d_30 = d_30
+        self.d_60 = d_60
 
-    d_10: float
-    d_30: float
-    d_60: float
+    def __iter__(self):
+        return iter([self.d_10, self.d_30, self.d_60])
 
     @property
     def coeff_of_curvature(self) -> float:
@@ -217,7 +250,6 @@ class SizeDistribution(NamedTuple):
         :param coarse_soil: Coarse fraction of the soil sample. Valid arguments 
                             are ``USCSSymbol.GRAVEL`` and ``USCSSymbol.SAND``.
         """
-
         if coarse_soil is USCSSymbol.GRAVEL:
             if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4:
                 grade = USCSSymbol.WELL_GRADED
@@ -255,7 +287,7 @@ class PSD:
         self.fines = fines
         self.sand = sand
         self.gravel = 100.0 - (fines + sand)
-        self.size_dist = size_dist if size_dist else SizeDistribution(0, 0, 0)
+        self.size_dist = size_dist if size_dist else SizeDistribution()
 
     @property
     def coarse_material_type(self) -> USCSSymbol:
@@ -312,6 +344,11 @@ class PSD:
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
 
 
+class SoilClf(NamedTuple):
+    soil_symbol: str
+    soil_description: str
+
+
 class AASHTO:
     r"""American Association of State Highway and Transportation Officials
     (AASHTO) classification system.
@@ -338,8 +375,8 @@ class AASHTO:
         GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
     """
 
-    def __init__(self, atterberg_limits: AtterbergLimits, fines: float,
-                 add_group_idx=True):
+    def __init__(self, atterberg_limits: AtterbergLimits,
+                 fines: float, add_group_idx=True):
         """
         :param atterberg_limits: Atterberg limits of the soil.
         :type atterberg_limits: AtterbergLimits
@@ -349,13 +386,22 @@ class AASHTO:
         :type fines: float
 
         :param add_group_idx: Used to indicate whether the group index should
-                              be added to the classification or not, defaults to 
-                              True.
+                              be added to the classification or not, defaults
+                              to True.
         :type add_group_idx: bool, optional
         """
         self.atterberg_limits = atterberg_limits
         self.fines = fines
         self.add_group_idx = add_group_idx
+
+    @property
+    def fines(self) -> float:
+        return self._fines
+
+    @fines.setter
+    @validators.ge(0.0)
+    def fines(self, val: float) -> None:
+        self._fines = val
 
     @round_(ndigits=0)
     def group_index(self) -> float:
@@ -372,22 +418,16 @@ class AASHTO:
 
         return var_a * (0.2 + 0.005 * var_b) + 0.01 * var_c * var_d
 
-    def description(self) -> str:
-        """Return the AASHTO description of the soil."""
-        tmp_state = self.add_group_idx
-        self.add_group_idx = False
-        soil_clf = self._classify()
-        self.add_group_idx = tmp_state
-        return soil_clf.clf_description
-
-    def classify(self) -> str:
+    def classify(self):
         """Return the AASHTO classification of the soil."""
-        soil_clf = self._classify().clf_symbol
+        soil_clf = self._classify()
+
+        symbol, description = soil_clf.clf_symbol, soil_clf.clf_description
 
         if self.add_group_idx:
-            soil_clf = f"{soil_clf}({self.group_index():.0f})"
+            symbol = f"{symbol}({self.group_index():.0f})"
 
-        return soil_clf
+        return SoilClf(symbol, description)
 
     def _classify(self) -> AASHTOSymbol:
         # Silts A4-A7
@@ -439,7 +479,6 @@ class AASHTO:
                 soil_clf = AASHTOSymbol.A_2_4
             else:
                 soil_clf = AASHTOSymbol.A_2_6
-
         else:
             if plasticity_idx <= 10:
                 soil_clf = AASHTOSymbol.A_2_5
@@ -488,28 +527,26 @@ class USCS:
         self.psd = psd
         self.organic = organic
 
-    def description(self) -> str | Iterable[str]:
-        """Return the USCS description of the soil."""
-        soil_clf = self._classify()
-
-        if isinstance(soil_clf, USCSSymbol):
-            return soil_clf.clf_description
-        elif isinstance(soil_clf, str):
-            return USCSSymbol[soil_clf].clf_description
-        else:
-            return [clf.clf_description for clf in soil_clf]
-
-    def classify(self) -> str | Iterable[str]:
+    def classify(self):
         """Return the USCS classification of the soil."""
         soil_clf = self._classify()
-        if isinstance(soil_clf, USCSSymbol):
-            return soil_clf.clf_symbol
-        elif isinstance(soil_clf, str):
-            return soil_clf.replace("_", "-")
-        else:
-            return tuple(map(lambda v: v.replace("_", "-"), soil_clf))
 
-    def _classify(self) -> USCSSymbol | str | Iterable[str]:
+        # Ensure soil_clf is of type USCSSymbol
+        if isinstance(soil_clf, str):
+            soil_clf = USCSSymbol[soil_clf]
+
+        if isinstance(soil_clf, USCSSymbol):
+            return SoilClf(soil_clf.clf_symbol, soil_clf.clf_description)
+
+        # Handling tuple or list case for dual classification
+        first_clf, second_clf = map(lambda clf: USCSSymbol[clf], soil_clf)
+
+        comb_symbol = f"{first_clf.clf_symbol},{second_clf.clf_symbol}"
+        comb_desc = f"{first_clf.clf_description},{second_clf.clf_description}"
+
+        return SoilClf(comb_symbol, comb_desc)
+
+    def _classify(self) -> USCSSymbol | str | Sequence[str]:
         # Fine-grained, Run Atterberg
         if self.psd.fines > 50.0:
             return self._fine_soil_classifier()
@@ -547,7 +584,7 @@ class USCS:
 
         return soil_clf
 
-    def _coarse_soil_classifier(self) -> USCSSymbol | str | Iterable[str]:
+    def _coarse_soil_classifier(self) -> USCSSymbol | str | Sequence[str]:
         coarse_material_type = self.psd.coarse_material_type
 
         # More than 12% pass No. 200 sieve
@@ -606,7 +643,8 @@ def create_soil_classifier(liquid_limit: float, plastic_limit: float,
                            fines: float, sand: Optional[float] = None,
                            d_10: float = 0, d_30: float = 0, d_60: float = 0,
                            add_group_idx: bool = True, organic: bool = False,
-                           clf_type: ClfType | str | None = None) -> AASHTO | USCS:
+                           clf_type: CLF_TYPE | str | None = None
+                           ) -> SoilClassifier:
     """ A factory function that encapsulates the creation of a soil classifier.
 
     :param liquid_limit: Water content beyond which soils flows under their own
@@ -657,25 +695,24 @@ def create_soil_classifier(liquid_limit: float, plastic_limit: float,
         raise ValueError("clf_type must be specified")
 
     if isinstance(clf_type, str):
-        clf_type = ClfType(clf_type.casefold())
+        clf_type = CLF_TYPE(clf_type.casefold())
 
     al = AtterbergLimits(liquid_limit=liquid_limit,
                          plastic_limit=plastic_limit)
 
-    if clf_type == ClfType.AASHTO:
+    if clf_type == CLF_TYPE.AASHTO:
         clf = AASHTO(atterberg_limits=al,
                      fines=fines,
                      add_group_idx=add_group_idx)
 
-    elif clf_type == ClfType.USCS:
+    elif clf_type == CLF_TYPE.USCS:
         if sand is None:
             raise ValueError("sand must be specified")
 
         size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
         psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
         clf = USCS(atterberg_limits=al, psd=psd, organic=organic)
-
     else:
-        raise ValueError(f"clf_type {clf_type} not supported")
+        raise ValueError(f"clf_type {clf_type} is not supported")
 
     return clf
