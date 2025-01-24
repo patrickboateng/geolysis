@@ -1,8 +1,10 @@
+import enum
 from abc import ABC, abstractmethod
+from typing import Optional
 
-from geolysis.foundation import FoundationSize
-from geolysis.utils import inf, arctan, tan
 from geolysis import validators
+from geolysis.foundation import FoundationSize, Shape, create_foundation
+from geolysis.utils import arctan, inf, tan
 
 __all__ = ["UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",
@@ -20,7 +22,8 @@ __all__ = ["UltimateBearingCapacity",
            "VesicShapeFactor",
            "VesicInclinationFactor",
            "VesicDepthFactor",
-           "VesicInclinationFactor"]
+           "VesicInclinationFactor",
+           "create_ultimate_bearing_capacity"]
 
 
 class UltimateBearingCapacity(ABC):
@@ -29,7 +32,6 @@ class UltimateBearingCapacity(ABC):
                  moist_unit_wgt: float,
                  foundation_size: FoundationSize,
                  load_angle=0.0,
-                 ground_water_level=inf,
                  apply_local_shear=False) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general shear 
@@ -49,20 +51,15 @@ class UltimateBearingCapacity(ABC):
                            (:math:`\alpha^{\circ}`), defaults to 0.0.
         :type load_angle: float, optional
 
-        :param ground_water_level: Depth of the water below ground level (mm), 
-                                   defaults to inf.
-        :type ground_water_level: float, optional
-
-        :param apply_local_shear: Indicate whether bearing capacity failure is 
-                                  general or local shear failure, defaults to 
-                                  False.
+        :param apply_local_shear: Indicate whether bearing capacity failure is
+                                  general shear or local shear failure,
+                                  defaults to False.
         :type apply_local_shear: bool, optional
         """
         self.friction_angle = friction_angle
         self.cohesion = cohesion
         self.moist_unit_wgt = moist_unit_wgt
         self.load_angle = load_angle
-        self.ground_water_level = ground_water_level
         self.foundation_size = foundation_size
         self.apply_local_shear = apply_local_shear
 
@@ -102,15 +99,6 @@ class UltimateBearingCapacity(ABC):
     @validators.gt(0.0)
     def moist_unit_wgt(self, val: float):
         self._moist_unit_wgt = val
-
-    @property
-    def ground_water_level(self) -> float:
-        return self._ground_water_level
-
-    @ground_water_level.setter
-    @validators.ge(0.0)
-    def ground_water_level(self, val: float):
-        self._ground_water_level = val
 
     @property
     def load_angle(self) -> float:
@@ -168,12 +156,13 @@ class UltimateBearingCapacity(ABC):
 
     def _surcharge_term(self) -> float:
         depth = self.foundation_size.depth
+        water_level = self.foundation_size.ground_water_level
 
-        if self.ground_water_level == inf:
+        if water_level == inf:
             water_corr = 1.0  # water correction
         else:
             # water level above the base of the foundation
-            a = max(depth - self.ground_water_level, 0.0)
+            a = max(depth - water_level, 0.0)
             water_corr = min(1 - 0.5 * a / depth, 1)
 
         # effective overburden pressure (surcharge)
@@ -183,13 +172,14 @@ class UltimateBearingCapacity(ABC):
     def _embedment_term(self, coef: float = 0.5) -> float:
         depth = self.foundation_size.depth
         width = self.foundation_size.effective_width
+        water_level = self.foundation_size.ground_water_level
 
-        if self.ground_water_level == inf:
+        if water_level == inf:
             # water correction
             water_corr = 1.0
         else:
             #: b -> water level below the base of the foundation
-            b = max(self.ground_water_level - depth, 0)
+            b = max(water_level - depth, 0)
             water_corr = min(0.5 + 0.5 * b / width, 1)
 
         return (coef * self.moist_unit_wgt * width * self.n_gamma
@@ -211,20 +201,117 @@ class UltimateBearingCapacity(ABC):
         ...
 
 
-from .terzaghi_ubc import (TerzaghiUBC4StripFooting,
+from .hansen_ubc import (HansenBearingCapacityFactor, HansenDepthFactor,
+                         HansenInclinationFactor, HansenShapeFactor,
+                         HansenUltimateBearingCapacity)
+from .terzaghi_ubc import (TerzaghiBearingCapacityFactor,
                            TerzaghiUBC4CircularFooting,
-                           TerzaghiUBC4SquareFooting,
                            TerzaghiUBC4RectangularFooting,
-                           TerzaghiBearingCapacityFactor)
+                           TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting)
+from .vesic_ubc import (VesicBearingCapacityFactor, VesicDepthFactor,
+                        VesicInclinationFactor, VesicShapeFactor,
+                        VesicUltimateBearingCapacity)
 
-from .hansen_ubc import (HansenUltimateBearingCapacity,
-                         HansenDepthFactor,
-                         HansenBearingCapacityFactor,
-                         HansenShapeFactor,
-                         HansenInclinationFactor)
 
-from .vesic_ubc import (VesicUltimateBearingCapacity,
-                        VesicDepthFactor,
-                        VesicBearingCapacityFactor,
-                        VesicShapeFactor,
-                        VesicInclinationFactor)
+class UBC_TYPE(enum.StrEnum):
+    """Enumeration of available ultimate bearing capacity types."""
+    HANSEN = enum.auto()
+    TERZAGHI = enum.auto()
+    VESIC = enum.auto()
+
+
+def create_ultimate_bearing_capacity(friction_angle: float,
+                                     cohesion: float,
+                                     moist_unit_wgt: float,
+                                     depth: float,
+                                     width: float,
+                                     length: Optional[float] = None,
+                                     eccentricity=0.0,
+                                     ground_water_level=inf,
+                                     shape: Shape | str = Shape.SQUARE,
+                                     load_angle=0.0,
+                                     apply_local_shear=False,
+                                     ubc_type: UBC_TYPE | str = "HANSEN",
+                                     ) -> UltimateBearingCapacity:
+    r"""A factory function that encapsulate the creation of ultimate bearing
+    capacity.
+
+    :param friction_angle: Internal angle of friction for general shear
+                               failure. (degree)
+    :type friction_angle: float
+
+    :param cohesion: Cohesion of soil. (kPa)
+    :type cohesion: float
+
+    :param moist_unit_wgt: Moist unit weight of soil. (:math:`kN/m^3`)
+    :type moist_unit_wgt: float
+
+    :param depth: Depth of foundation. (m)
+    :type depth: float
+
+    :param width: Width of foundation footing. (m)
+    :type width: float
+
+    :param length: Length of foundation footing. (m)
+    :type length: float, optional
+
+    :param eccentricity: The deviation of the foundation load from the
+                         center of gravity of the foundation footing,
+                         defaults to 0.0. This means that the foundation
+                         load aligns with the center of gravity of the
+                         foundation footing. (m)
+    :type eccentricity: float, optional
+
+    :param ground_water_level: Depth of water below ground level. (m)
+    :type ground_water_level: float
+
+    :param shape: Shape of foundation footing, defaults to "SQUARE".
+    :type shape: str, optional
+
+    :param load_angle: Inclination of the applied load with the  vertical
+                       (:math:`\alpha^{\circ}`), defaults to 0.0.
+    :type load_angle: float, optional
+
+    :param apply_local_shear: Indicate whether bearing capacity failure is
+                              general or local shear failure, defaults to
+                              False.
+    :type apply_local_shear: bool, optional
+
+    :param ubc_type: Type of allowable bearing capacity calculation to apply.
+                     Available values are: "HANSEN", "TERZAGHI", "VESIC".
+                     defaults to "BOWLES".
+    :type ubc_type:  UBC_TYPE | str, optional
+    """
+    if isinstance(ubc_type, str):
+        ubc_type = UBC_TYPE(ubc_type.casefold())
+
+    fnd_size = create_foundation(depth=depth, width=width, length=length,
+                                 eccentricity=eccentricity,
+                                 ground_water_level=ground_water_level,
+                                 shape=shape)
+
+    ubc_classes = {
+        UBC_TYPE.HANSEN: HansenUltimateBearingCapacity,
+        UBC_TYPE.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
+                            Shape.CIRCLE: TerzaghiUBC4CircularFooting,
+                            Shape.SQUARE: TerzaghiUBC4SquareFooting,
+                            Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
+        UBC_TYPE.VESIC: VesicUltimateBearingCapacity,
+    }
+
+    if ubc_type not in ubc_classes:
+        raise ValueError(f"ubc_type {ubc_type} is not supported")
+
+    if ubc_type == UBC_TYPE.TERZAGHI:
+        ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]
+    else:
+        ubc_class = ubc_classes[ubc_type]
+
+    ubc = ubc_class(friction_angle=friction_angle,
+                    cohesion=cohesion,
+                    moist_unit_wgt=moist_unit_wgt,
+                    foundation_size=fnd_size,
+                    load_angle=load_angle,
+                    apply_local_shear=apply_local_shear)
+
+    return ubc
