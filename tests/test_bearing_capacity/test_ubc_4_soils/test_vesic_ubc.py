@@ -1,7 +1,7 @@
 import pytest
 
-from geolysis.foundation import create_foundation
 from geolysis.bearing_capacity.ubc import VesicUltimateBearingCapacity
+from geolysis.foundation import create_foundation
 
 
 class TestVesicUBC:

@@ -2,11 +2,12 @@ import unittest
 
 import pytest
 
-from geolysis.bearing_capacity.ubc import (
-    TerzaghiUBC4RectangularFooting, TerzaghiUBC4CircularFooting,
-    TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting,
-    TerzaghiBearingCapacityFactor)
-
+from geolysis.bearing_capacity.ubc import (TerzaghiBearingCapacityFactor,
+                                           TerzaghiUBC4CircularFooting,
+                                           TerzaghiUBC4RectangularFooting,
+                                           TerzaghiUBC4SquareFooting,
+                                           TerzaghiUBC4StripFooting,
+                                           create_ultimate_bearing_capacity)
 from geolysis.foundation import create_foundation
 from geolysis.utils import inf
 
@@ -51,12 +52,13 @@ class TestTerzaghiUBC4StripFooting:
                                1993.59)])
     def test_bearing_capacity(self, friction_angle, cohesion, moist_unit_wgt,
                               water_level, fs, expected):
-        fs = create_foundation(**fs)
-        ubc = TerzaghiUBC4StripFooting(friction_angle,
-                                       cohesion,
-                                       moist_unit_wgt,
-                                       foundation_size=fs,
-                                       ground_water_level=water_level)
+        ubc = create_ultimate_bearing_capacity(friction_angle=friction_angle,
+                                               cohesion=cohesion,
+                                               moist_unit_wgt=moist_unit_wgt,
+                                               **fs,
+                                               ground_water_level=water_level,
+                                               ubc_type="TERZAGHI")
+
         actual = ubc.bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)
 

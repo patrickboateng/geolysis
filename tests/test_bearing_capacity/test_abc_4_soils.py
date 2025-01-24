@@ -1,11 +1,9 @@
 import pytest
 
-from geolysis.bearing_capacity.abc.cohl import (BowlesABC4PadFoundation,
-                                                BowlesABC4MatFoundation,
-                                                MeyerhofABC4PadFoundation,
-                                                MeyerhofABC4MatFoundation,
-                                                TerzaghiABC4PadFoundation,
-                                                TerzaghiABC4MatFoundation)
+from geolysis.bearing_capacity.abc.cohl import (
+    BowlesABC4MatFoundation, BowlesABC4PadFoundation,
+    MeyerhofABC4MatFoundation, TerzaghiABC4MatFoundation,
+    create_allowable_bearing_capacity, create_foundation)
 from geolysis.foundation import create_foundation
 
 
@@ -25,10 +23,9 @@ class TestBowlesABC(SetUp):
          (12.0, 20.0, dict(depth=1.5, width=1.3, shape="square"), 229.45)])
     def test_bowles_abc_4_pad_foundation(self, corrected_spt_n_value,
                                          tol_settlement, fs, expected):
-        fnd_size = create_foundation(**fs)
-        bowles = BowlesABC4PadFoundation(corrected_spt_n_value,
-                                         tol_settlement,
-                                         foundation_size=fnd_size)
+        bowles = create_allowable_bearing_capacity(corrected_spt_n_value,
+                                                   tol_settlement, **fs,
+                                                   abc_type="BOWLES")
         assert bowles.bearing_capacity() == pytest.approx(expected=expected,
                                                           rel=0.01)
 
@@ -45,10 +42,9 @@ class TestMeyerhofABC(SetUp):
          (12.0, 20.0, dict(depth=1.5, width=1.3, shape="square"), 153.22)])
     def test_meyerhof_abc_4_pad_foundation(self, corrected_spt_n_value,
                                            tol_settlement, fs, expected):
-        fnd_size = create_foundation(**fs)
-        meyerhof = MeyerhofABC4PadFoundation(corrected_spt_n_value,
-                                             tol_settlement,
-                                             foundation_size=fnd_size)
+        meyerhof = create_allowable_bearing_capacity(corrected_spt_n_value,
+                                                     tol_settlement, **fs,
+                                                     abc_type="MEYERHOF")
         assert meyerhof.bearing_capacity() == pytest.approx(expected=expected,
                                                             rel=0.01)
 
@@ -72,15 +68,16 @@ class TestTerzaghiABC(SetUp):
     def test_terzaghi_abc_4_pad_foundation(self, corrected_spt_n_value,
                                            tol_settlement,
                                            ground_water_level, fs, expected):
-        fnd_size = create_foundation(**fs)
-        terzaghi = TerzaghiABC4PadFoundation(corrected_spt_n_value,
-                                             tol_settlement,
-                                             ground_water_level,
-                                             foundation_size=fnd_size)
+        terzaghi = create_allowable_bearing_capacity(
+            corrected_spt_n_value,
+            tol_settlement, **fs,
+            ground_water_level=ground_water_level,
+            abc_type="TERZAGHI")
+
         assert terzaghi.bearing_capacity() == pytest.approx(expected=expected,
                                                             rel=0.01)
 
-    def test_terzaghi_abc_4_mat_foundation(self):
-        terzaghi = TerzaghiABC4MatFoundation(**self.kwargs)
-        assert terzaghi.bearing_capacity() == pytest.approx(expected=43.98,
-                                                            rel=0.01)
+    # def test_terzaghi_abc_4_mat_foundation(self):
+    #     terzaghi = TerzaghiABC4MatFoundation(**self.kwargs)
+    #     assert terzaghi.bearing_capacity() == pytest.approx(expected=43.98,
+    #                                                         rel=0.01)

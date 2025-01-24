@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.utils import (pi, cos, cot, deg2rad, log10, rad2deg, sin, sqrt,
+from geolysis.utils import (cos, cot, deg2rad, log10, pi, rad2deg, sin, sqrt,
                             tan)
 
 
