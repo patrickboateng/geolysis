@@ -1,7 +1,6 @@
 from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
-from geolysis import validators
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
@@ -11,7 +10,6 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
     def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
-                 ground_water_level: float,
                  foundation_size: FoundationSize) -> None:
         """
         :param corrected_spt_n_value: Lowest (or average) uncorrected SPT 
@@ -23,25 +21,13 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :param tol_settlement: Tolerable settlement of foundation (mm).
         :type tol_settlement: float
 
-        :param ground_water_level: Depth of water below ground level (mm).
-        :type ground_water_level: float
-
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
 
-        super().__init__(corrected_spt_n_value,
-                         tol_settlement, foundation_size)
-        self.ground_water_level = ground_water_level
-
-    @property
-    def ground_water_level(self) -> float:
-        return self._ground_water_level
-
-    @ground_water_level.setter
-    @validators.ge(0.0)
-    def ground_water_level(self, val: float) -> None:
-        self._ground_water_level = val
+        super().__init__(corrected_spt_n_value=corrected_spt_n_value,
+                         tol_settlement=tol_settlement,
+                         foundation_size=foundation_size)
 
     def _fd(self) -> float:
         """Calculate the depth factor."""
@@ -54,11 +40,12 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         """Calculate the water correction factor."""
         depth = self.foundation_size.depth
         width = self.foundation_size.width
+        water_level = self.foundation_size.ground_water_level
 
-        if self.ground_water_level <= depth:
+        if water_level <= depth:
             cw = 2.0 - depth / (2.0 * width)
         else:
-            cw = 2.0 - self.ground_water_level / (2.0 * width)
+            cw = 2.0 - water_level / (2.0 * width)
 
         return min(cw, 2.0)
 

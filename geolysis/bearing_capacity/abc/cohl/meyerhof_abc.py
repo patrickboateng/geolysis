@@ -25,8 +25,9 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
         """
-        super().__init__(corrected_spt_n_value, tol_settlement,
-                         foundation_size)
+        super().__init__(corrected_spt_n_value=corrected_spt_n_value,
+                         tol_settlement=tol_settlement,
+                         foundation_size=foundation_size)
 
     @round_
     def bearing_capacity(self):
