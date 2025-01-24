@@ -1,8 +1,9 @@
 from typing import TypeAlias
-from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import isclose
+
 from geolysis.bearing_capacity.abc.cohl import \
     create_allowable_bearing_capacity
+from geolysis.foundation import FoundationSize, Shape
+from geolysis.utils import isclose
 
 FndParams: TypeAlias = tuple[float, float, Shape]
 
