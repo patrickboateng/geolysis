@@ -1,8 +1,8 @@
 import functools
 import math
-from typing import Callable, SupportsRound
-from math import exp, isclose, log10, sqrt, inf, pi
+from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
+from typing import Callable, SupportsRound
 
 __all__ = ["inf", "pi", "deg2rad", "rad2deg", "tan", "cot", "sin", "cos",
            "arctan", "round_", "mean", "exp", "isclose", "log10", "sqrt"]
