@@ -36,14 +36,13 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
-    "autoapi.extension",
+    # "autoapi.extension",
     "notfound.extension",
     "enum_tools.autoenum",
 ]
 
 templates_path = ["_templates"]
 exclude_patterns = ["build"]
-
 
 # Sphinx AutoDoc
 # autodoc_member_order = "bysource"
@@ -53,27 +52,27 @@ autoclass_content = "both"
 rst_prolog = """.. include:: <isonum.txt>"""
 
 # Sphinx AutoAPI
-autoapi_dirs = ["../../geolysis"]
-autoapi_root = "reference"
-autoapi_member_order = "groupwise"
-
-# Uses both the class and __init__ docstrings as the class docstring
-autoapi_python_class_content = "init"
-
-# autoapi_add_toctree_entry = False
-autoapi_template_dir = "_templates/_autoapi_templates"
-autoapi_options = [
-    "members",
-    "undoc-members",
-    "inherited-members",
-    # "private-members",
-    # "show-inheritance",
-    # "show-module-summary",
-    "special-members",
-    # "imported-members",
-]
-autoapi_keep_files = False
-# # autoapi_generate_api_docs = False
+# autoapi_dirs = ["../../geolysis"]
+# autoapi_root = "reference"
+# autoapi_member_order = "groupwise"
+#
+# # Uses both the class and __init__ docstrings as the class docstring
+# autoapi_python_class_content = "init"
+#
+# # autoapi_add_toctree_entry = False
+# autoapi_template_dir = "_templates/_autoapi_templates"
+# autoapi_options = [
+#     "members",
+#     "undoc-members",
+#     "inherited-members",
+#     # "private-members",
+#     # "show-inheritance",
+#     # "show-module-summary",
+#     "special-members",
+#     # "imported-members",
+# ]
+# autoapi_keep_files = False
+# # # autoapi_generate_api_docs = False
 
 # Sphinx Copybutton
 copybutton_prompt_text = (
@@ -83,7 +82,6 @@ copybutton_prompt_is_regexp = True
 
 # Myst
 myst_heading_anchors = 6
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
