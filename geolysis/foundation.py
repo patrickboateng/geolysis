@@ -1,8 +1,9 @@
 import enum
-from typing import Optional, TypeVar, Protocol
+from abc import abstractmethod
+from typing import Optional, Protocol, TypeVar
 
-from geolysis.utils import inf
 from geolysis import validators
+from geolysis.utils import inf
 
 __all__ = ["create_foundation", "FoundationSize", "Shape", "StripFooting",
            "CircularFooting", "SquareFooting", "RectangularFooting"]
@@ -45,9 +46,17 @@ class Shape(enum.StrEnum):
 
 
 class FootingSize(Protocol):
-    width: float
-    length: float
-    shape: Shape
+    @property
+    @abstractmethod
+    def width(self) -> float: ...
+
+    @property
+    @abstractmethod
+    def length(self) -> float: ...
+
+    @property
+    @abstractmethod
+    def shape(self) -> Shape: ...
 
 
 class StripFooting:
@@ -202,7 +211,8 @@ class FoundationSize:
                            doc="Refers to the shape of foundation footing.")
 
     def __init__(self, depth: float, footing_size: FootingSize,
-                 eccentricity: float = 0.0) -> None:
+                 eccentricity: float = 0.0,
+                 ground_water_level: float = inf) -> None:
         """
         :param depth: Depth of foundation. (m)
         :type depth: float
@@ -216,10 +226,15 @@ class FoundationSize:
                              load aligns with the center of gravity of the 
                              foundation footing. (m)
         :type eccentricity: float, optional
+
+        :param ground_water_level: Depth of the water below ground level (m),
+                                   defaults to inf.
+        :type ground_water_level: float, optional
         """
         self.depth = depth
         self.footing_size = footing_size
         self.eccentricity = eccentricity
+        self.ground_water_level = ground_water_level
 
     @property
     def depth(self) -> float:
@@ -240,6 +255,15 @@ class FoundationSize:
         self._eccentricity = val
 
     @property
+    def ground_water_level(self) -> float:
+        return self._ground_water_level
+
+    @ground_water_level.setter
+    @validators.ge(0.0)
+    def ground_water_level(self, val: float) -> None:
+        self._ground_water_level = val
+
+    @property
     def effective_width(self) -> float:
         """Returns the effective width of the foundation footing."""
         return self.width - 2.0 * self.eccentricity
@@ -248,24 +272,30 @@ class FoundationSize:
 def create_foundation(depth: float, width: float,
                       length: Optional[float] = None,
                       eccentricity: float = 0.0,
+                      ground_water_level: float = inf,
                       shape: Shape | str = Shape.SQUARE) -> FoundationSize:
     """A factory function that encapsulate the creation of a foundation.
 
     :param depth: Depth of foundation. (m)
     :type depth: float
 
-    :param width: Width of foundation footing. (m)
+    :param width: Width of foundation footing. In the case of a circular
+                  footing, it refers to the footing diameter. (m)
     :type width: float
 
     :param length: Length of foundation footing, defaults to None. (m)
     :type length: float, optional
 
     :param eccentricity: The deviation of the foundation load from the
-                             center of gravity of the foundation footing,
-                             defaults to 0.0. This means that the foundation
-                             load aligns with the center of gravity of the
-                             foundation footing. (m)
+                         center of gravity of the foundation footing,
+                         defaults to 0.0. This means that the foundation
+                         load aligns with the center of gravity of the
+                         foundation footing. (m)
     :type eccentricity: float, optional
+
+    :param ground_water_level: Depth of the water below ground level (m),
+                               defaults to inf.
+    :type ground_water_level: float, optional
 
     :param shape: Shape of foundation footing, defaults to :class:`Shape.SQUARE`
     :type shape: Shape | str
@@ -289,7 +319,8 @@ def create_foundation(depth: float, width: float,
             raise ValueError("Length of footing must be provided.")
         footing_size = RectangularFooting(width=width, length=length)
     else:
-        raise TypeError("Invalid footing shape.")
+        raise TypeError(f"shape {shape} is not supported.")
 
     return FoundationSize(depth=depth, eccentricity=eccentricity,
+                          ground_water_level=ground_water_level,
                           footing_size=footing_size)
