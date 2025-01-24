@@ -2,8 +2,8 @@ import enum
 from abc import abstractmethod
 from typing import Final, Sequence
 
-from geolysis.utils import isclose, log10, mean, round_, sqrt
 from geolysis import validators
+from geolysis.utils import isclose, log10, mean, round_, sqrt
 
 __all__ = ["EnergyCorrection", "GibbsHoltzOPC", "BazaraaPeckOPC", "PeckOPC",
            "LiaoWhitmanOPC", "SkemptonOPC", "DilatancyCorrection"]
@@ -24,7 +24,7 @@ class SPTDesign:
     def __init__(self, spt_n_values: Sequence[float]) -> None:
         """
         :param spt_n_values: SPT N-values within the foundation influence zone. 
-                             ``spt_n_numbers`` can either be **corrected** or 
+                             ``spt_n_values`` can either be **corrected** or
                              **uncorrected** SPT N-values.
         :type spt_n_values: Sequence[float]
         """
