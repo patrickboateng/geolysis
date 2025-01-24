@@ -72,6 +72,8 @@ class VesicShapeFactor:
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
 
+        :raises ValueError: if foundation has an invalid footing shape.
+
         .. math::
 
             s_c &= 1.0 \rightarrow \text{Strip footing}
@@ -110,11 +112,14 @@ class VesicShapeFactor:
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
 
+        :raises ValueError: if foundation has an invalid footing shape.
+
         .. math::
 
             s_q &= 1.0 \rightarrow \text{Strip footing}
 
-            s_q &= 1 + \dfrac{B}{L} \cdot \tan(\phi) \rightarrow \text{Rectangular footing}
+            s_q &= 1 + \dfrac{B}{L} \cdot \tan(\phi) \rightarrow
+                   \text{Rectangular footing}
 
             s_q &= 1 + \tan(\phi) \rightarrow \text{Square or circular footing}
 
@@ -139,6 +144,8 @@ class VesicShapeFactor:
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
+
+        :raises ValueError: if foundation has an invalid footing shape.
 
         .. math:: 
 

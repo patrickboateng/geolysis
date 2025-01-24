@@ -1,7 +1,7 @@
 from abc import ABC
 
 from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
-from geolysis.utils import pi, cos, cot, deg2rad, exp, isclose, round_, tan
+from geolysis.utils import cos, cot, deg2rad, exp, isclose, pi, round_, tan
 
 __all__ = ["TerzaghiBearingCapacityFactor",
            "TerzaghiUBC4StripFooting",

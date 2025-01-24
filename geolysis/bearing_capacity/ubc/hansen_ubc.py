@@ -1,7 +1,7 @@
 from geolysis.bearing_capacity import get_footing_params
 from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
 from geolysis.foundation import FoundationSize, Shape
-from geolysis.utils import pi, cos, cot, exp, isclose, round_, sin, tan
+from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan
 
 __all__ = ["HansenBearingCapacityFactor",
            "HansenShapeFactor",
@@ -43,8 +43,8 @@ class HansenBearingCapacityFactor:
             N_q = \tan^2\left(45 + \frac{\phi}{2}\right) \cdot
                   e^{\pi \tan(\phi)}
         """
-        return tan(45.0 + friction_angle / 2.0) ** 2.0 \
-            * exp(pi * tan(friction_angle))
+        return (tan(45.0 + friction_angle / 2.0) ** 2.0
+                * exp(pi * tan(friction_angle)))
 
     @classmethod
     @round_
@@ -72,6 +72,8 @@ class HansenShapeFactor:
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
 
+        :raises ValueError: If foundation has an invalid footing shape.
+
         .. math::
 
             s_c &= 1.o \rightarrow \text{Strip footing}
@@ -79,6 +81,7 @@ class HansenShapeFactor:
             s_c &= 1.0 + 0.2 \frac{B}{L} \rightarrow \text{Rectangular footing}
 
             s_c &= 1.3 \rightarrow \text{Square or circular footing}
+
         """
         width, length, shape = get_footing_params(foundation_size)
 
@@ -100,6 +103,8 @@ class HansenShapeFactor:
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
+
+        :raises ValueError: If foundation has an invalid footing shape.
 
         .. math::
 
@@ -129,6 +134,8 @@ class HansenShapeFactor:
         
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
+
+        :raises ValueError: If foundation has an invalid footing shape.
 
         .. math::
 
