@@ -130,10 +130,10 @@ class EnergyCorrection:
         :param rod_length: Rod length, defaults to 3.0. (m)
         :type rod_length: float, optional
 
-        :param hammer_type: Hammer type, defaults to HammerType.DONUT_1
+        :param hammer_type: Hammer type, defaults to :attr:`HammerType.DONUT_1`
         :type hammer_type: HammerType, optional
 
-        :param sampler_type: Sampler type, defaults to SamplerType.STANDARD
+        :param sampler_type: Sampler type, defaults to :attr:`SamplerType.STANDARD`
         :type sampler_type: SamplerType, optional
         """
 
