@@ -28,6 +28,10 @@ class CLF_TYPE(enum.StrEnum):
 
 
 class _Clf(enum.Enum):
+
+    def __str__(self) -> str:
+        return self.name
+
     def __eq__(self, value: object) -> bool:
         if isinstance(value, str):
             return self.clf_symbol == value
@@ -42,7 +46,6 @@ class _Clf(enum.Enum):
         return self.value[1]
 
 
-@enum.global_enum
 class USCSSymbol(_Clf):
     """Unified Soil Classification System (USCS) symbols and descriptions."""
     G = GRAVEL = ("G", "Gravel")
@@ -82,7 +85,6 @@ class USCSSymbol(_Clf):
     Pt = ("Pt", "Highly organic soils")
 
 
-@enum.global_enum
 class AASHTOSymbol(_Clf):
     """AASHTO soil classification symbols and descriptions."""
     A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
@@ -220,9 +222,7 @@ class AtterbergLimits:
 class SizeDistribution:
     """Features obtained from the Particle Size Distribution graph."""
 
-    def __init__(self, d_10: Optional[float] = None,
-                 d_30: Optional[float] = None,
-                 d_60: Optional[float] = None):
+    def __init__(self, d_10: float = 0, d_30: float = 0, d_60: float = 0):
         """
         :param float d_10: Diameter at which 10% of the soil by weight is finer.
         :param float d_30: Diameter at which 30% of the soil by weight is finer.
@@ -510,8 +510,8 @@ class USCS:
     termed as Peat. (:math:`P_t`)
     """
 
-    def __init__(self, atterberg_limits: AtterbergLimits, psd: PSD,
-                 organic=False):
+    def __init__(self, atterberg_limits: AtterbergLimits, 
+                 psd: PSD, organic=False):
         """
         :param atterberg_limits: Atterberg limits of the soil.
         :type atterberg_limits: AtterbergLimits
