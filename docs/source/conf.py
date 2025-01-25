@@ -51,29 +51,6 @@ autoclass_content = "both"
 # adds this string to the start of every .rst file
 rst_prolog = """.. include:: <isonum.txt>"""
 
-# Sphinx AutoAPI
-# autoapi_dirs = ["../../geolysis"]
-# autoapi_root = "reference"
-# autoapi_member_order = "groupwise"
-#
-# # Uses both the class and __init__ docstrings as the class docstring
-# autoapi_python_class_content = "init"
-#
-# # autoapi_add_toctree_entry = False
-# autoapi_template_dir = "_templates/_autoapi_templates"
-# autoapi_options = [
-#     "members",
-#     "undoc-members",
-#     "inherited-members",
-#     # "private-members",
-#     # "show-inheritance",
-#     # "show-module-summary",
-#     "special-members",
-#     # "imported-members",
-# ]
-# autoapi_keep_files = False
-# # # autoapi_generate_api_docs = False
-
 # Sphinx Copybutton
 copybutton_prompt_text = (
     r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |C:\\> "
