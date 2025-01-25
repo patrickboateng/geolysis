@@ -15,10 +15,15 @@ class SizeDistError(ZeroDivisionError):
     pass
 
 
+class SoilClf(NamedTuple):
+    soil_symbol: str
+    soil_description: str
+
+
 class SoilClassifier(Protocol):
 
     @abstractmethod
-    def classify(self): ...
+    def classify(self) -> SoilClf: ...
 
 
 class CLF_TYPE(enum.StrEnum):
@@ -118,7 +123,7 @@ class AtterbergLimits:
     :type plastic_limit: float
     """
 
-    class _A_LINE:
+    class __A_LINE:
         """The ``A-line`` is used to determine if a soil is clayey or silty.
 
         .. math:: A = 0.73(LL - 20.0)
@@ -127,7 +132,7 @@ class AtterbergLimits:
         def __get__(self, obj, objtype=None) -> float:
             return 0.73 * (obj.liquid_limit - 20.0)
 
-    _A_LINE = _A_LINE()
+    _A_LINE = __A_LINE()
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
         self.liquid_limit = liquid_limit
@@ -344,11 +349,6 @@ class PSD:
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
 
 
-class SoilClf(NamedTuple):
-    soil_symbol: str
-    soil_description: str
-
-
 class AASHTO:
     r"""American Association of State Highway and Transportation Officials
     (AASHTO) classification system.
@@ -418,7 +418,7 @@ class AASHTO:
 
         return var_a * (0.2 + 0.005 * var_b) + 0.01 * var_c * var_d
 
-    def classify(self):
+    def classify(self) -> SoilClf:
         """Return the AASHTO classification of the soil."""
         soil_clf = self._classify()
 
@@ -527,7 +527,7 @@ class USCS:
         self.psd = psd
         self.organic = organic
 
-    def classify(self):
+    def classify(self) -> SoilClf:
         """Return the USCS classification of the soil."""
         soil_clf = self._classify()
 
