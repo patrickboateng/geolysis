@@ -1,4 +1,7 @@
-# geolysis
+<h1 style="text-align:center;">
+<img src="./docs/source/_static/branding/geolysislogo.svg"
+ alt="geolysislogo" width="300">
+</h1><br>
 
 > [!NOTE]
 > Active development of `geolysis` occurs on the `dev` branch. For more
