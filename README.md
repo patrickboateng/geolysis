@@ -1,6 +1,6 @@
 <h1 align="center">
 <img src="./docs/source/_static/branding/geolysislogo.svg"
- alt="geolysislogo">
+ alt="geolysislogo" width="85%">
 </h1><br>
 
 > [!NOTE]
