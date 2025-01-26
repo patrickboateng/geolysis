@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="400mm"
+   height="100mm"
+   viewBox="0 0 400 100"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="735.39105"
+     inkscape:cy="228.39549"
+     inkscape:window-width="1920"
+     inkscape:window-height="974"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="0.26458333"
+       spacingy="0.26458333"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient3"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#4b4b4b;stop-opacity:1;"
+         offset="0"
+         id="stop3" />
+      <stop
+         style="stop-color:#4b4b4b;stop-opacity:0;"
+         offset="1"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3"
+       id="linearGradient4"
+       x1="128.97331"
+       y1="49.521454"
+       x2="251.81613"
+       y2="49.521454"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g289">
+      <path
+         style="fill:#c2b280;fill-opacity:1;stroke:#4b4b4b;stroke-width:1.98413;stroke-dasharray:none;stroke-opacity:1"
+         d="m 64.273953,23.781621 0.44177,36.291046 H 45.277884 L 45.057001,78.112076 H 22.747662 Z"
+         id="path1" />
+      <path
+         style="fill:#2e8b57;fill-opacity:1;stroke:#654321;stroke-width:1.98142;stroke-dasharray:none;stroke-opacity:1"
+         d="M 76.739236,23.953242 76.29565,59.996638 h 19.517859 l 0.221789,17.91631 h 22.401192 z"
+         id="path2" />
+    </g>
+    <g
+       id="g288">
+      <text
+         x="428.26797"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#2e8b57;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text10"><tspan
+           x="428.26797"
+           y="63.185905"
+           id="tspan10"
+           style="stroke-width:3.71059">S</tspan></text>
+      <text
+         x="406.62473"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#2e8b57;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text11"><tspan
+           x="406.62473"
+           y="63.185905"
+           id="tspan11"
+           style="stroke-width:3.71059">I</tspan></text>
+      <text
+         x="366.36465"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#4b4b4b;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text12"><tspan
+           x="366.36465"
+           y="63.185905"
+           id="tspan12"
+           style="fill:#4b4b4b;fill-opacity:1;stroke-width:3.71059">S</tspan></text>
+      <text
+         x="322.84653"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#4b4b4b;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text13"><tspan
+           x="322.84653"
+           y="63.185905"
+           id="tspan13"
+           style="fill:#4b4b4b;fill-opacity:1;stroke-width:3.71059">Y</tspan></text>
+      <text
+         x="288.17148"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#c2b280;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text14"><tspan
+           x="288.17148"
+           y="63.185905"
+           id="tspan14"
+           style="fill:#c2b280;fill-opacity:1;stroke-width:3.71059">L</tspan></text>
+      <text
+         x="234.41422"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#c2b280;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text15"><tspan
+           x="234.41422"
+           y="63.185905"
+           id="tspan15"
+           style="fill:#c2b280;fill-opacity:1;stroke-width:3.71059">O</tspan></text>
+      <text
+         x="190.43073"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#654321;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text16"><tspan
+           x="190.43073"
+           y="63.185905"
+           id="tspan16"
+           style="fill:#654321;fill-opacity:1;stroke-width:3.71059">E</tspan></text>
+      <text
+         x="139.46593"
+         y="63.185905"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64.6959px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#654321;fill-opacity:1;stroke:none;stroke-width:3.71059;stroke-dasharray:none;stroke-opacity:1"
+         transform="scale(0.81084653,1.233279)"
+         id="text17"><tspan
+           x="139.46593"
+           y="63.185905"
+           id="tspan17"
+           style="fill:#654321;fill-opacity:1;stroke-width:3.71059">G</tspan></text>
+    </g>
+  </g>
+</svg>
