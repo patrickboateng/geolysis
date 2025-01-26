@@ -1,6 +1,6 @@
 <h1 align="center">
 <img src="./docs/source/_static/branding/geolysislogo.svg"
- alt="geolysislogo" width="300">
+ alt="geolysislogo">
 </h1><br>
 
 > [!NOTE]
@@ -16,18 +16,18 @@ to advanced geotechnical designs.
 
 1. `geolyis.core (Python)`
 
-   `geolysis.core` is an open-source Python package that provides features for
+   `geolysis` is an open-source Python package that provides features for
    analyzing geotechnical results obtained from field and laboratory tests.
-   `geolysis.core` is designed specifically to assist developers in building
+   `geolysis` is designed specifically to assist developers in building
    applications that can solve complex geotechnical problems.
 
    Whether you're working on soil mechanics, rock mechanics, or any other
-   geotechnical field, `geolysis.core` provides a powerful set of tools that can
+   geotechnical field, `geolysis` provides a powerful set of tools that can
    help you design and develop robust solutions. With an intuitive API and a
    wide range of features, this software is an essential tool for anyone who
    needs to work with geotechnical data on a regular basis. Whether you're a
    seasoned geotechnical engineer or a new developer just getting started in the
-   field, `geolysis.core` is the ideal solution for all your software
+   field, `geolysis` is the ideal solution for all your software
    development needs.
 
    Some of the features implemented so far include soil classification, standard
@@ -36,8 +36,8 @@ to advanced geotechnical designs.
    Penetration Test N-values. There are more features underway, which include
    settlement analysis, ultimate bearing capacity analysis, etc.
 
-   `geolysis.core` is the foundation application on which other parts of the
-   application will depend. Developers can also use `geolysis.core` to power
+   `geolysis` is the foundation application on which other parts of the
+   application will depend. Developers can also use `geolysis` to power
    their applications.
 
 1. `geolysis.gui (Qt, PySide6)`
