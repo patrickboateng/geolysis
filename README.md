@@ -29,7 +29,8 @@ Here are brief descriptions of these projects:
 1. `geolysis.excel` is an add-in for Microsoft Excel that performs simple
    geotechnical analysis. It offers some features similar to `geolysis.gui`
    within Microsoft Excel.
-1. geolysis.ai offers machine learning models that are trained using
+
+1. `geolysis.ai` offers machine learning models that are trained using
    geotechnical data.
 
 ## Table of Contents
