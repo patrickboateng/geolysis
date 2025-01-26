@@ -92,15 +92,19 @@ will not function if installed._**
 
 ## Features
 
-- Soil Classification (`AASHTO` & `USCS` classification)
-- Standard Penetration Test (SPT) Analysis:
+- **Soil Classification**
+
+  - AASHTO Classification System
+  - Unified Soil Classification System
+
+- **Standard Penetration Test (SPT) Analysis**
 
   - SPT Energy Correction
   - SPT Overburden Pressure Correction
   - Dilatancy Correction
   - SPT N-Design Calculation
 
-- Bearing Capacity Estimation
+- **Bearing Capacity Estimation**
 
   - Allowable Bearing Capacity Estimation
   - Ultimate Bearing Capacity Estimation
