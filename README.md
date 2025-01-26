@@ -1,9 +1,11 @@
 <h1 align="center">
-<img src="./docs/source/_static/branding/geolysislogo.svg"
- alt="geolysislogo" width="85%">
+<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/dev/branding/geolysislogo.svg"
+ alt="geolysislogo" width="85%" />
 </h1><br>
 
-geolysis is an open-source library for geotechnical analysis and modeling.
+geolysis is an open-source library for geotechnical analysis and modeling. It
+offers tools for soil classification, Standard Penetration Test (SPT) analysis,
+and bearing capacity estimation, among others.
 
 The geolysis library is among four main projects: `geolysis.gui`,
 `geolysis.excel`, and `geolysis.ai`. The geolysis library powers all of these
@@ -30,25 +32,93 @@ Here are brief descriptions of these projects:
 1. geolysis.ai offers machine learning models that are trained using
    geotechnical data.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage Example](#usage-example)
+- [Features](#features)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
 ## Installation
 
 ```shell
    pip install geolysis
 ```
 
-<!--
-## Motivation
+**_Work on the latest update is still in progress, so the usage example below
+will not function if installed._**
 
-`geolysis` is a software solution that aims to support geotechnical engineers in
-their daily work by providing a set of tools that makes them perform their tasks
-in a more efficient and effective manner.
+## Usage Example
 
-Moreover, the platform is designed to educate civil engineering students,
-especially those who specialize in geotechnical engineering, by exposing them to
-industry-relevant tools and techniques that will help them become industry-ready
-professionals as soon as they graduate.
+```python
 
-With `geolysis`, users will be better equipped to handle geotechnical
-challenges, make informed decisions, and improve their overall productivity.
+   >>> from geolysis.soil_classifier import create_soil_classifier
+   >>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
+   ...                                   plastic_limit=21.1,
+   ...                                   fines=47.88,
+   ...                                   sand=37.84,
+   ...                                   clf_type="USCS")
+   >>> clf = uscs_clf.classify()
+   >>> clf
+   SoilClf(soil_symbol='SC', soil_description='Clayey sands')
+   >>> clf.soil_symbol
+   'SC'
+   >>> clf.soil_description
+   'Clayey sands'
 
-See the [Quick start section] of the docs for more examples. -->
+```
+
+```python
+
+   >>> from geolysis.soil_classifier import create_soil_classifier
+   >>> aashto_clf = create_soil_classifier(liquid_limit=34.1,
+   ...                                     plastic_limit=21.1,
+   ...                                     fines=47.88,
+   ...                                     sand=37.84,  # Sand is optional for AASHTO classification
+   ...                                     clf_type="AASHTO")
+   >>> clf = aashto_clf.classify()
+   >>> clf
+   SoilClf(soil_symbol='A-6(4)', soil_description='Clayey soils')
+   >>> clf.soil_symbol
+   'A-6(4)'
+   >>> clf.soil_description
+   'Clayey soils'
+
+```
+
+## Features
+
+- Soil Classification (`AASHTO` & `USCS` classification)
+- Standard Penetration Test (SPT) Analysis:
+
+  - SPT Energy Correction
+  - SPT Overburden Pressure Correction
+  - Dilatancy Correction
+  - SPT N-Design Calculation
+
+- Bearing Capacity Estimation
+
+  - Allowable Bearing Capacity Estimation
+  - Ultimate Bearing Capacity Estimation
+
+## Documentation
+
+Full documentation is available [here](https://www.geolysis.readthedocs.io)
+
+**_Work on the latest documentation is still ongoing._**
+
+## Contributing
+
+## License
+
+This project is licensed under the MIT License - see the
+[LICENSE](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt)
+file details.
+
+## Contact
+
+For questions or feedback, please contact us at
+[boatengpato.pb@gmail.com](mailto:boatengpato.pb@gmail.com)
