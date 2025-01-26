@@ -1,4 +1,4 @@
-<h1 style="text-align:center;">
+<h1 align="center">
 <img src="./docs/source/_static/branding/geolysislogo.svg"
  alt="geolysislogo" width="300">
 </h1><br>
