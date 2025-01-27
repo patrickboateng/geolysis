@@ -5,5 +5,5 @@
 .. toctree::
     :maxdepth: 1
     
-    abc/cohl/index
+    abc/index
     ubc/index
