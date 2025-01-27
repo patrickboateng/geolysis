@@ -62,11 +62,11 @@ myst_heading_anchors = 6
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-# logo_path = "_static/logo.png"
+logo_path = "../../branding/"
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
-# html_logo = logo_path
-# html_favicon = logo_path
+html_logo = logo_path + "geolysislogo.svg" 
+html_favicon = logo_path + "geolysislogoicon.svg" 
 html_title = project
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
