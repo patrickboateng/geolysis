@@ -11,27 +11,28 @@ The geolysis library is among four main projects: `geolysis.gui`,
 `geolysis.excel`, and `geolysis.ai`. The geolysis library powers all of these
 projects.
 
-**_All three projects are currently in their early stages and are not available
-to the public_**.
+**_The `geolysis` projects are currently under developement and not yet
+publicly available_**.
 
 **_Active development of `geolysis` occurs on the `dev` branch. For more
-information on the lastest features of `geolysis`, switch to the
+information on the latest features of `geolysis`, switch to the
 `dev` branch_**.
 
 Here are brief descriptions of these projects:
 
-1. `geolysis.gui` is a graphical user interface that allows users to interact
-   with the geolysis library. Through this interface, users can view generated
-   reports and visualizations, such as Particle Size Distribution (PSD) curves,
-   Atterberg Limits plots, and Compaction curves, etc. Additionally, it enables
-   users to conduct foundation analysis and design, among other functionalities.
+- `geolysis.gui` is a graphical user interface that allows users to interact
+  with the geolysis library. Through this interface, users can view generated
+  reports and visualizations, such as Particle Size Distribution (PSD) curves,
+  Atterberg Limits plots, and Compaction curves, among others. Additionally,
+  it enables users to conduct foundation analysis and design, among other
+  functionalities.
 
-1. `geolysis.excel` is an add-in for Microsoft Excel that performs simple
-   geotechnical analysis. It offers some features similar to `geolysis.gui`
-   within Microsoft Excel.
+- `geolysis.excel` is an add-in for Microsoft Excel that performs simple
+  geotechnical analysis. It offers some features similar to `geolysis.gui`
+  within Microsoft Excel.
 
-1. `geolysis.ai` offers machine learning models that are trained using
-   geotechnical data.
+- `geolysis.ai` offers machine learning models that are trained using
+  geotechnical data.
 
 ## Table of Contents
 
@@ -45,12 +46,12 @@ Here are brief descriptions of these projects:
 
 ## Installation
 
+**_Note: Work on the latest update is still in progress, so the usage example below
+will not function if installed._**
+
 ```shell
    pip install geolysis
 ```
-
-**_Work on the latest update is still in progress, so the usage example below
-will not function if installed._**
 
 ## Usage Example
 
@@ -113,7 +114,7 @@ will not function if installed._**
 
 Full documentation is available [here](https://www.geolysis.readthedocs.io)
 
-**_Work on the latest documentation is still ongoing._**
+**_Note: Work on the latest documentation is still ongoing._**
 
 ## Contributing
 
@@ -121,7 +122,7 @@ Full documentation is available [here](https://www.geolysis.readthedocs.io)
 
 This project is licensed under the MIT License - see the
 [LICENSE](https://github.com/patrickboateng/geolysis/blob/main/LICENSE.txt)
-file details.
+file for more details.
 
 ## Contact
 
