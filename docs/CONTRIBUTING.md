@@ -1,13 +1,13 @@
 # Contribution Guidelines
 
-Thank you for your interest in contributing to `geolysis.core`!
+Thank you for your interest in contributing to `geolysis`!
 We welcome contributions from the community to help make this
 project better. Before you get started, please take a moment
 to read and understand these contribution guidelines.
 Following these guidelines helps maintain a productive and a
 welcoming community for everyone involved.
 
-Not a coder? Not a problem! `geolysis.core` is multi-faceted, and
+Not a coder? Not a problem! `geolysis` is multi-faceted, and
 we can use a lot of help. These are all activities we would
 like to get help with:
 
@@ -213,5 +213,5 @@ will be licensed under the project's
 
 ## Thank You
 
-Thank you for your interest in contributing to `geolysis.core`! We appreciate
+Thank you for your interest in contributing to `geolysis`! We appreciate
 your help in making this project a success.
