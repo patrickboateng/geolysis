@@ -5,6 +5,9 @@ from geolysis.bearing_capacity.abc.cohl import \
 from geolysis.foundation import FoundationSize, Shape
 from geolysis.utils import isclose
 
+from .abc.cohl import bowles_abc, meyerhof_abc, terzaghi_abc
+
+
 FndParams: TypeAlias = tuple[float, float, Shape]
 
 
@@ -22,3 +25,5 @@ def get_footing_params(foundation_size: FoundationSize) -> FndParams:
         shape = Shape.RECTANGLE
 
     return width, length, shape
+
+from .ubc import hansen_ubc, terzaghi_ubc, vesic_ubc
