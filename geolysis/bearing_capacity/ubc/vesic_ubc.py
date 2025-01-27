@@ -149,12 +149,12 @@ class VesicShapeFactor:
 
         .. math:: 
 
-            s_{\gamma} = 1.0 \rightarrow \text{Strip footing}
+            s_{\gamma} &= 1.0 \rightarrow \text{Strip footing}
 
-            s_{\gamma} = 1.0 - 0.4 \dfrac{B}{L} \rightarrow
+            s_{\gamma} &= 1.0 - 0.4 \dfrac{B}{L} \rightarrow
                          \text{Rectangular footing}
 
-            s_{\gamma} = 0.6 \rightarrow \text{Square or circular footing}
+            s_{\gamma} &= 0.6 \rightarrow \text{Square or circular footing}
         """
         width, length, shape = get_footing_params(foundation_size)
 
