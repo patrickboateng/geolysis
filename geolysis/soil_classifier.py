@@ -132,7 +132,7 @@ class AtterbergLimits:
         def __get__(self, obj, objtype=None) -> float:
             return 0.73 * (obj.liquid_limit - 20.0)
 
-    _A_LINE = __A_LINE()
+    A_LINE = __A_LINE()
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
         self.liquid_limit = liquid_limit
@@ -178,7 +178,7 @@ class AtterbergLimits:
 
     def above_A_LINE(self) -> bool:
         """Checks if the soil sample is above A-Line."""
-        return self.plasticity_index > self._A_LINE
+        return self.plasticity_index > self.A_LINE
 
     def limit_plot_in_hatched_zone(self) -> bool:
         """Checks if soil sample plot in the hatched zone on the atterberg
