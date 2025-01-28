@@ -77,17 +77,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <g
-       id="g1"
-       transform="matrix(1.0223733,0,0,0.99928812,-1.2311359,0.02825268)">
-      <path
-         style="fill:#c2b280;fill-opacity:1;stroke:#4b4b4b;stroke-width:2.29962;stroke-dasharray:none;stroke-opacity:1"
-         d="m 51.509348,6.5478678 0.46715,46.1010192 H 31.421919 L 31.188346,75.564599 H 7.5972939 Z"
-         id="path1" />
-      <path
-         style="fill:#2e8b57;fill-opacity:1;stroke:#654321;stroke-width:2.2996;stroke-dasharray:none;stroke-opacity:1"
-         d="M 56.485121,6.5498231 56.017957,52.648006 h 20.555276 l 0.233578,22.914302 h 23.591849 z"
-         id="path2" />
-    </g>
+    <path
+       style="fill:#c2b280;fill-opacity:1;stroke:#36342c;stroke-width:2.32437;stroke-dasharray:none;stroke-opacity:1"
+       d="M 51.430646,6.5714592 51.908248,52.63966 H 30.893795 L 30.654996,75.539059 H 6.5361345 Z"
+       id="path1" />
+    <path
+       style="fill:#36342c;fill-opacity:1;stroke:#36342c;stroke-width:2.32435;stroke-dasharray:none;stroke-opacity:1"
+       d="M 56.517744,6.5734131 56.040128,52.63878 h 21.015165 l 0.238804,22.897989 h 24.119673 z"
+       id="path2" />
   </g>
 </svg>

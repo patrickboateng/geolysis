@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="385mm"
-   height="90mm"
-   viewBox="0 0 385 90"
+   width="335mm"
+   height="75mm"
+   viewBox="0 0 335 75"
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
@@ -77,97 +77,28 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <path
-       style="fill:#c2b280;fill-opacity:1;stroke:#36342c;stroke-width:2.18819;stroke-dasharray:none;stroke-opacity:1"
-       d="m 68.003652,13.384388 0.488821,39.891216 H 46.984371 L 46.739964,73.104571 H 22.054527 Z"
-       id="path1" />
-    <path
-       style="fill:#36342c;fill-opacity:1;stroke:#36342c;stroke-width:2.18851;stroke-dasharray:none;stroke-opacity:1"
-       d="m 74.41737,13.155466 -0.4885,39.927999 h 21.494081 l 0.244245,19.847252 h 24.669354 z"
-       id="path2" />
     <g
        id="g1"
-       transform="translate(0,0.41969219)">
+       transform="translate(-11.733564,-0.5000001)">
+      <path
+         style="fill:#c2b280;fill-opacity:1;stroke:#36342c;stroke-width:2.18819;stroke-dasharray:none;stroke-opacity:1"
+         d="M 68.003652,9.1757987 68.492473,49.067014 H 46.984371 L 46.739964,68.895981 H 22.054527 Z"
+         id="path1" />
+      <path
+         style="fill:#36342c;fill-opacity:1;stroke:#36342c;stroke-width:2.18851;stroke-dasharray:none;stroke-opacity:1"
+         d="m 74.41737,9.1503923 -0.4885,39.9279987 h 21.494081 l 0.244245,19.847252 h 24.669354 z"
+         id="path2" />
       <text
-         x="287.94394"
-         y="54.924652"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text10"><tspan
-           x="287.94394"
-           y="54.924652"
-           id="tspan10"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">s</tspan></text>
-      <text
-         x="319.74835"
-         y="55.207363"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text11"><tspan
-           x="319.74835"
-           y="55.207363"
-           id="tspan11"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">i</tspan></text>
-      <text
-         x="336.4599"
-         y="55.466278"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text12"><tspan
-           x="336.4599"
-           y="55.466278"
-           id="tspan12"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">s</tspan></text>
-      <text
-         x="250.30029"
-         y="55.290817"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text13"><tspan
-           x="250.30029"
-           y="55.290817"
-           id="tspan13"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">y</tspan></text>
-      <text
-         x="227.87799"
-         y="56.938568"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text14"><tspan
-           x="227.87799"
-           y="56.938568"
-           id="tspan14"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">l</tspan></text>
-      <text
-         x="190.98264"
-         y="52.910744"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text15"><tspan
-           x="190.98264"
-           y="52.910744"
-           id="tspan15"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-opacity:1">o</tspan></text>
-      <text
-         x="157.33266"
-         y="52.910748"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text16"><tspan
-           x="157.33266"
-           y="52.910748"
-           id="tspan16"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">e</tspan></text>
-      <text
-         x="120.91286"
-         y="53.459995"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#36342c;fill-opacity:1;stroke:none;stroke-width:3.07454;stroke-dasharray:none;stroke-opacity:1"
-         transform="scale(0.97858858,1.0218799)"
-         id="text17"><tspan
-           x="120.91286"
-           y="53.459995"
-           id="tspan17"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.6063px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#36342c;fill-opacity:1;stroke-width:3.07454">g</tspan></text>
+         xml:space="preserve"
+         style="font-size:53.6062px;font-family:Parkinsans;-inkscape-font-specification:'Parkinsans, Normal';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#36342c;stroke:#36342c;stroke-width:0.264583"
+         x="120.11092"
+         y="51.48196"
+         id="text1"><tspan
+           sodipodi:role="line"
+           id="tspan1"
+           style="stroke-width:0.264583"
+           x="120.11092"
+           y="51.48196">geolysis</tspan></text>
     </g>
   </g>
 </svg>
