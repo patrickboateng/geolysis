@@ -1,6 +1,6 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/dev/branding/geolysislogo.svg"
- alt="geolysislogo" width="85%" />
+<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/dev/branding/geolysislogo.svg" 
+alt="geolysislogo" width="85%" />
 </h1><br>
 
 geolysis is an open-source library for geotechnical analysis and modeling. It
