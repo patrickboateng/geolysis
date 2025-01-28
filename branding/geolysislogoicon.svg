@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   sodipodi:docname="logo.svg"
+   sodipodi:docname="geolysislogoicon.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -78,15 +78,15 @@
      inkscape:groupmode="layer"
      id="layer1">
     <g
-       id="g289"
-       transform="matrix(0.9318506,0,0,1.1294936,-12.869581,-16.787179)">
+       id="g1"
+       transform="matrix(1.0223733,0,0,0.99928812,-1.2311359,0.02825268)">
       <path
-         style="fill:#c2b280;fill-opacity:1;stroke:#4b4b4b;stroke-width:1.98413;stroke-dasharray:none;stroke-opacity:1"
-         d="m 64.273953,23.781621 0.44177,36.291046 H 45.277884 L 45.057001,78.112076 H 22.747662 Z"
+         style="fill:#c2b280;fill-opacity:1;stroke:#4b4b4b;stroke-width:2.29962;stroke-dasharray:none;stroke-opacity:1"
+         d="m 51.509348,6.5478678 0.46715,46.1010192 H 31.421919 L 31.188346,75.564599 H 7.5972939 Z"
          id="path1" />
       <path
-         style="fill:#2e8b57;fill-opacity:1;stroke:#654321;stroke-width:1.98142;stroke-dasharray:none;stroke-opacity:1"
-         d="M 76.739236,23.953242 76.29565,59.996638 h 19.517859 l 0.221789,17.91631 h 22.401192 z"
+         style="fill:#2e8b57;fill-opacity:1;stroke:#654321;stroke-width:2.2996;stroke-dasharray:none;stroke-opacity:1"
+         d="M 56.485121,6.5498231 56.017957,52.648006 h 20.555276 l 0.233578,22.914302 h 23.591849 z"
          id="path2" />
     </g>
   </g>
