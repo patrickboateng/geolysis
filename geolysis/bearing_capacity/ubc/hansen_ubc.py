@@ -76,7 +76,7 @@ class HansenShapeFactor:
 
         .. math::
 
-            s_c &= 1.o \rightarrow \text{Strip footing}
+            s_c &= 1.0 \rightarrow \text{Strip footing}
 
             s_c &= 1.0 + 0.2 \frac{B}{L} \rightarrow \text{Rectangular footing}
 
@@ -179,7 +179,7 @@ class HansenDepthFactor:
 
         .. math::
 
-            d_c = 1.0 + 0.35 \frac{D_f}{B}
+            d_c = 1.0 + 0.35 \cdot \frac{D_f}{B}
         """
         depth = foundation_size.depth
         width = foundation_size.width
@@ -196,7 +196,7 @@ class HansenDepthFactor:
 
         .. math::
 
-            d_q = 1.0 + 0.35 \frac{D_f}{B}
+            d_q = 1.0 + 0.35 \cdot \frac{D_f}{B}
         """
         return cls.d_c(foundation_size)
 
