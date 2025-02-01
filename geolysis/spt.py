@@ -149,7 +149,7 @@ class EnergyCorrection:
         return self._recorded_spt_value
 
     @recorded_spt_n_value.setter
-    @validators.ge(100)
+    @validators.le(100)
     @validators.gt(0)
     def recorded_spt_n_value(self, val: int) -> None:
         self._recorded_spt_value = val
