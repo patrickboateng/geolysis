@@ -100,11 +100,10 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :param length: Length of foundation footing. (m)
     :type length: float, optional
 
-    :param eccentricity: The deviation of the foundation load from the
-                             center of gravity of the foundation footing,
-                             defaults to 0.0. This means that the foundation
-                             load aligns with the center of gravity of the
-                             foundation footing. (m)
+    :param eccentricity: The deviation of the foundation load from the center 
+                         of gravity of the foundation footing, defaults to 0.0.
+                         This means that the foundation load aligns with the
+                         center of gravity of the foundation footing. (m)
     :type eccentricity: float, optional
 
     :param ground_water_level: Depth of water below ground level. (m)
