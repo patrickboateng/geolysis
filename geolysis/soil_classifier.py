@@ -109,18 +109,6 @@ class AASHTOSymbol(_Clf):
 class AtterbergLimits:
     """Represents the water contents at which soil changes from one state to 
     the other.
-
-    :param liquid_limit: Water content beyond which soils flows under their own 
-                         weight. It can also be defined as the minimum moisture
-                         content at which a soil flows upon application of a 
-                         very small shear force. (%)
-    :type liquid_limit: float
-
-    :param plastic_limit: Water content at which plastic deformation can be 
-                          initiated. It is also the minimum water content at 
-                          which soil can be rolled into a thread 3mm thick. 
-                          (molded without breaking) (%)
-    :type plastic_limit: float
     """
 
     class __A_LINE:
@@ -135,6 +123,19 @@ class AtterbergLimits:
     A_LINE = __A_LINE()
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
+        """
+        :param liquid_limit: Water content beyond which soils flows under their 
+                             own weight. It can also be defined as the minimum 
+                             moisture content at which a soil flows upon 
+                             application of a very small shear force. (%)
+        :type liquid_limit: float
+
+        :param plastic_limit: Water content at which plastic deformation can be 
+                              initiated. It is also the minimum water content at 
+                              which soil can be rolled into a thread 3mm thick. 
+                              (molded without breaking) (%)
+        :type plastic_limit: float
+        """
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
 
@@ -255,24 +256,26 @@ class SizeDistribution:
         :param coarse_soil: Coarse fraction of the soil sample. Valid arguments 
                             are ``USCSSymbol.GRAVEL`` and ``USCSSymbol.SAND``.
         """
+        if not (coarse_soil in (USCSSymbol.GRAVEL, USCSSymbol.SAND)):
+            raise NotImplementedError
+
         if coarse_soil is USCSSymbol.GRAVEL:
             if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4:
                 grade = USCSSymbol.WELL_GRADED
             else:
                 grade = USCSSymbol.POORLY_GRADED
-        elif coarse_soil is USCSSymbol.SAND:
-            if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 6:
-                grade = USCSSymbol.WELL_GRADED
-            else:
-                grade = USCSSymbol.POORLY_GRADED
-        else:
-            raise NotImplementedError
+            return grade
 
+        # coarse soil is sand
+        if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 6:
+            grade = USCSSymbol.WELL_GRADED
+        else:
+            grade = USCSSymbol.POORLY_GRADED
         return grade
 
 
 class PSD:
-    r"""Quantitative proportions by mass of various sizes of particles present
+    """Quantitative proportions by mass of various sizes of particles present
     in a soil.
     """
 
@@ -694,25 +697,23 @@ def create_soil_classifier(liquid_limit: float, plastic_limit: float,
     if clf_type is None:
         raise ValueError("clf_type must be specified")
 
+    # raises ValueError if clf_type is not supported
     if isinstance(clf_type, str):
         clf_type = CLF_TYPE(clf_type.casefold())
 
-    al = AtterbergLimits(liquid_limit=liquid_limit,
-                         plastic_limit=plastic_limit)
+    al = AtterbergLimits(liquid_limit=liquid_limit, plastic_limit=plastic_limit)
 
     if clf_type == CLF_TYPE.AASHTO:
-        clf = AASHTO(atterberg_limits=al,
-                     fines=fines,
+        clf = AASHTO(atterberg_limits=al, fines=fines, 
                      add_group_idx=add_group_idx)
+        return clf
 
-    elif clf_type == CLF_TYPE.USCS:
-        if sand is None:
-            raise ValueError("sand must be specified")
+    # USCS classification
+    if sand is None:
+        raise ValueError("sand must be specified for USCS classification")
 
-        size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
-        psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
-        clf = USCS(atterberg_limits=al, psd=psd, organic=organic)
-    else:
-        raise ValueError(f"clf_type {clf_type} is not supported")
+    size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
+    psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
+    clf = USCS(atterberg_limits=al, psd=psd, organic=organic)
 
     return clf
