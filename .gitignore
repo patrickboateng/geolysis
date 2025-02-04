@@ -74,8 +74,6 @@ venv-*/
 .markdownlint.json
 *resources_rc.py
 
-# Node
-
 # Logs
 logs
 *.log
@@ -206,3 +204,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# docs build generated files
+
+docs/source/**/generated/
