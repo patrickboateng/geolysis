@@ -54,7 +54,7 @@ class SPTDesign:
         .. math::
 
             N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
-                        {\sum_{i=1}^{n}\frac{1}{i^2}}
+                         {\sum_{i=1}^{n}\frac{1}{i^2}}
         """
 
         sum_total = 0.0
