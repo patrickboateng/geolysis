@@ -23,6 +23,7 @@ enum-tools = {extras = ["sphinx"], version = "*"}
 sphinx-autoapi = "*"
 isort = {extras = ["pipfile_deprecated_finder"], version = "*"}
 blackdoc = "*"
+sphinxawesome-theme = "*"
 
 [requires]
 python_version = "3.11"
