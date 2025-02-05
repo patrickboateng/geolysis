@@ -33,7 +33,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     # Third Party Libraries
-    "sphinx_copybutton",
+    # "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
     # "autoapi.extension",
@@ -51,11 +51,15 @@ autoclass_content = "both"
 # adds this string to the start of every .rst file
 rst_prolog = """.. include:: <isonum.txt>"""
 
-# Sphinx Copybutton
-copybutton_prompt_text = (
-    r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |C:\\> "
-)
-copybutton_prompt_is_regexp = True
+# # Sphinx Copybutton
+# copybutton_prompt_text = (
+#     r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |C:\\> "
+# )
+# copybutton_prompt_is_regexp = True
+
+pigments_style = "tango"
+
+html_permalinks_icon = "<span>¶</span>"
 
 # Myst
 myst_heading_anchors = 6
@@ -63,9 +67,9 @@ myst_heading_anchors = 6
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 logo_path = "../../branding/"
-html_theme = "pydata_sphinx_theme"
+html_theme = "sphinxawesome_theme"
 html_static_path = ["_static"]
-html_logo = logo_path + "geolysislogo.svg" 
+html_logo = logo_path + "geolysislogoicon.svg" 
 html_favicon = logo_path + "geolysislogoicon.svg" 
 html_title = project
 html_css_files = [
@@ -73,51 +77,5 @@ html_css_files = [
     "custom.css",
 ]
 html_js_files = ["pypi-icon.js"]
-html_context = {"default_mode": "light"}
-
-# Define the json_url for our version switcher
-json_url = "https://geolysis.readthedocs.io/en/latest/_static/switcher.json"
-switcher_version = os.environ.get("READTHEDOCS_VERSION")
-
-# latest == main
-switcher_version = "latest" if switcher_version == "latest" else f"v{version}"
-
-html_theme_options = {
-    "header_links_before_dropdown": 6,
-    "icon_links": [
-        {
-            "name": "GitHub",
-            "url": f"https://github.com/patrickboateng/{project}",
-            "icon": "fa-brands fa-github",
-            "type": "fontawesome",
-        },
-        {
-            "name": "PyPI",
-            "url": f"https://pypi.org/project/{project}",
-            "icon": "fa-custom fa-pypi",
-            "type": "fontawesome",
-        },
-    ],
-    # "navbar_start": ["navbar-logo"],
-    "navbar_align": "content",
-    "navbar_end": [
-        "search-button",
-        "version-switcher",
-        "theme-switcher",
-        "navbar-icon-links",
-    ],
-    "navbar_persistent": [],
-    "secondary_sidebar_items": ["page-toc", "edit-this-page", "sourcelink"],
-    "show_prev_next": False,
-    "show_version_warning_banner": True,
-    "article_footer_items": ["prev-next"],
-    "footer_start": ["copyright"],
-    "footer_center": ["sphinx-version"],
-    "footer_end": ["theme-version"],
-    "switcher": {"json_url": json_url, "version_match": switcher_version},
-}
-
-# Primary sidebar items
-html_sidebars = {"**": ["sidebar-nav-bs"]}
 
 mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
