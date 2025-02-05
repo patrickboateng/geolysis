@@ -1,7 +1,8 @@
 .. currentmodule:: geolysis
 
+******************
 Geolysis reference
-==================
+******************
 
 :Release: |version|
 

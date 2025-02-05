@@ -10,7 +10,7 @@ February 2024 [0.2.0]
     for use in any project.
 
 Welcome to the February 2024 and the first release of
-``geolysis``. ``geolysis`` 0.2.0 is a **pre-release**
+``geolysis``. ``geolysis`` **0.2.0** is a **pre-release**
 version.
 
 Python Versions Supported
@@ -42,5 +42,5 @@ Contributors
 Thank You
 =========
 
-Last but certainly not least, a big *Thank You* to all the
-contributors of ``geolysis``.
+Last but certainly not least, a big *Thank You* to all the contributors of 
+``geolysis``.

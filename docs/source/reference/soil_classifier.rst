@@ -1,24 +1,47 @@
 .. currentmodule:: geolysis.soil_classifier
 
+****************************
 ``geolysis.soil_classifier``
-============================
+****************************
 
-.. autoexception:: SizeDistError
+Exceptions
+==========
 
-.. autoenum:: CLF_TYPE
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures:
 
-.. autoenum:: USCSSymbol
+    SizeDistError
 
-.. autoenum:: AASHTOSymbol
+Enums
+=====
 
-.. autoclass:: AtterbergLimits
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures:
 
-.. autoclass:: SizeDistribution
+    CLF_TYPE
+    USCSSymbol
+    AASHTOSymbol
 
-.. autoclass:: PSD
+Classes
+=======
 
-.. autoclass:: AASHTO
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures:
 
-.. autoclass:: USCS
+    AtterbergLimits
+    SizeDistribution
+    PSD
+    AASHTO
+    USCS
 
-.. autofunction:: create_soil_classifier
+Functions
+=========
+
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures:
+
+    create_soil_classifier

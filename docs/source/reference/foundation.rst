@@ -1,18 +1,37 @@
 .. currentmodule:: geolysis.foundation
 
+***********************
 ``geolysis.foundation``
-=======================
+***********************
 
-.. autoenum:: Shape
+Enums
+=====
 
-.. autoclass:: StripFooting
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures: 
 
-.. autoclass:: CircularFooting
+    Shape
 
-.. autoclass:: SquareFooting
+Classes
+=======
 
-.. autoclass:: RectangularFooting
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures: 
 
-.. autoclass:: FoundationSize
+    StripFooting
+    CircularFooting
+    SquareFooting
+    RectangularFooting
+    FoundationSize
 
-.. autofunction:: create_foundation
+Functions
+=========
+
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures: 
+
+    create_foundation
+

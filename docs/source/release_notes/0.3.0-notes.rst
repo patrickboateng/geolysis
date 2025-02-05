@@ -4,8 +4,8 @@ May 2024 [0.3.0]
 
 :Editor: Patrick Boateng
 
-Welcome to the May 2024 release of ``geolysis``. ``geolysis``
-0.3.0 is an alpha release version.
+Welcome to the May 2024 release of ``geolysis``. ``geolysis`` **0.3.0** is an alpha 
+release version.
 
 Python Versions Supported
 =========================
@@ -19,16 +19,15 @@ The Python versions supported are:
 Summary - Release Highlights
 ============================
 
-- The overall API has changed from version 0.2.0 to 0.3.0.
-  Check out the `API docs <https://geolysis.rtfd.io/en/latest>`_
-  if you are upgrading from 0.2.0 or new to ``geolysis``.
+- The overall API has changed from version 0.2.0 to 0.3.0. Check out the 
+  `API docs <https://geolysis.rtfd.io/en/latest>`_ if you are upgrading from 
+  ``0.2.0`` or new to ``geolysis``.
 
-- All the features available in 0.2.0 are still available
-  in the 0.3.0 release, but the API for accessing them has
-  changed.
+- All the features available in 0.2.0 are still available in the 0.3.0 release, 
+  but the API for accessing them has changed.
 
-- A unit property has been added to classes that return the
-  unit of the value been returned from the class method.
+- A unit property has been added to classes that return the unit of the value
+  been returned from the class method.
 
 New Features
 ============
@@ -40,13 +39,8 @@ New Features
   Check out the `API docs <https://geolysis.rtfd.io/en/latest>`_
   if you are upgrading from 0.2.0 or new to ``geolysis``.
 
-Upcoming Features
-=================
-
-- Settlement Analysis
-
 Thank You
 =========
 
-Last but certainly not least, a big *Thank You* to all the
-contributors of ``geolysis``.
+Last but certainly not least, a big *Thank You* to all the contributors of 
+``geolysis``.

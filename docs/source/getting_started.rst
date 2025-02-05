@@ -1,4 +1,6 @@
-:html_theme.sidebar_secondary.remove:
+.. :html_theme.sidebar_secondary.remove:
+
+.. currentmodule:: geolysis
 
 ***************
 Getting Started
@@ -15,51 +17,28 @@ the system.
 ``geolysis`` can be installed via `pip <https://pypi.org/project/geolysis>`_
 as follows for the supported operating systems.
 
-.. tab-set::
+.. code:: shell
 
-    .. tab-item:: Windows
-        :sync: win
-
-        .. code::
-
-            C:\> pip install geolysis
-
-    .. tab-item:: Unix
-        :sync: unix
-
-        .. code::
-
-            $ pip3 install geolysis
+    pip install geolysis # "pip3 install geolysis" for unix systems
 
 Version Check
 =============
 
-To see whether ``geolysis`` is already installed or to check if an
-install has worked, run the following in a Python shell::
+To see whether ``geolysis`` is already installed or to check if an install has 
+worked, run the following in a Python shell::
 
     >>> import geolysis as gl
     >>> print(gl.__version__) # doctest: +SKIP
 
 or from the command line:
 
-.. tab-set::
+.. code:: shell
 
-    .. tab-item:: Windows
-        :sync: win
+    python -c "import geolysis; print(geolysis.__version__)"
+    # python3 -c "import geolysis; print(geolysis.__version__)" for unix systems
 
-        .. code:: shell
-
-            C:\> py -c "import geolysis; print(geolysis.__version__)"
-
-    .. tab-item:: Unix
-        :sync: unix
-
-        .. code:: shell
-
-            $ python3 -c "import geolysis; print(geolysis.__version__)"
-
-You'll see the version number if ``geolysis`` is installed and an
-error message otherwise.
+You'll see the version number if ``geolysis`` is installed and an error message 
+otherwise.
 
 Quick Start
 ===========
@@ -68,7 +47,7 @@ Prerequisites
 -------------
 
 You need to know `Python <https://docs.python.org/3/tutorial/>`_ and
-a little bit of soil mechanics in order to work through the examples.
+a little bit of soil mechanics in order to understand the following examples. 
 
 Learning Objective
 ------------------
@@ -83,120 +62,159 @@ Soil Classification
 
 **AASHTO** classification example with **Group Index (GI)**:
 
->>> from geolysis.core.soil_classifier import AASHTO
+.. code:: python
 
->>> aashto_clf = AASHTO(liquid_limit=30.2, plasticity_index=6.3,
-...                     fines=11.18)
->>> aashto_clf.group_index()
-0.0
->>> aashto_clf.soil_class
-'A-2-4(0)'
->>> aashto_clf.soil_desc
-'Silty or clayey gravel and sand'
+    >>> from geolysis.soil_classifier import create_soil_classifier
+
+    >>> aashto_clf = create_soil_classifier(liquid_limit=30.2,
+    ...                                     plastic_limit=23.9,
+    ...                                     fines=11.18, clf_type="AASHTO")
+    >>> clf = aashto_clf.classify()
+    >>> clf.soil_symbol
+    'A-2-4(0)'
+    >>> clf.soil_description
+    'Silty or clayey gravel and sand'
 
 **AASHTO** classification example without **Group Index (GI)**:
 
->>> aashto_cls = AASHTO(liquid_limit=45, plasticity_index=29,
-...                     fines=60, add_group_idx=False)
->>> aashto_cls.group_index()
-13.0
->>> aashto_cls.soil_class
-'A-7-6'
->>> aashto_cls.soil_desc
-'Clayey soils'
+.. code:: python
+
+    >>> aashto_clf = create_soil_classifier(liquid_limit=45.0,
+    ...                                     plastic_limit=16.0,
+    ...                                     fines=60.0, 
+    ...                                     add_group_idx=False,
+    ...                                     clf_type="AASHTO")
+    >>> clf = aashto_clf.classify()
+    >>> clf.soil_symbol
+    'A-7-6'
+    >>> clf.soil_description
+    'Clayey soils'
 
 **USCS** classification example with soil grading:
 
->>> from geolysis.core.soil_classifier import USCS
->>> uscs_cls = USCS(liquid_limit=30.8, plastic_limit=20.7, fines=10.29,
-...                 sand=81.89, gravel=7.83, d_10=0.07, d_30=0.3, d_60=0.8)
->>> uscs_cls.soil_class
-'SW-SC'
->>> uscs_cls.soil_desc
-'Well graded sand with clay'
+.. code:: python
+
+    >>> from geolysis.soil_classifier import create_soil_classifier
+    >>> uscs_clf = create_soil_classifier(liquid_limit=30.8, 
+    ...                                   plastic_limit=20.7, 
+    ...                                   fines=10.29, sand=81.89, 
+    ...                                   d_10=0.07, d_30=0.3, d_60=0.8,
+    ...                                   clf_type="USCS")
+    >>> clf = uscs_clf.classify()
+    >>> clf.soil_symbol
+    'SW-SC'
+    >>> clf.soil_description
+    'Well graded sand with clay'
 
 **USCS** classification example without soil grading:
 
->>> uscs_cls = USCS(liquid_limit=34.1, plastic_limit=21.1,
-...                 fines=47.88, sand=37.84, gravel=14.8)
->>> uscs_cls.soil_class
-'SC'
->>> uscs_cls.soil_desc
-'Clayey sands'
+.. code:: python
 
-Allowable Bearing Capacity Analysis
------------------------------------
+    >>> uscs_clf = create_soil_classifier(liquid_limit=34.1, 
+    ...                                   plastic_limit=21.1,
+    ...                                   fines=47.88, sand=37.84, 
+    ...                                   clf_type="USCS")
+    >>> clf = uscs_clf.classify()
+    >>> clf.soil_symbol
+    'SC'
+    >>> clf.soil_description
+    'Clayey sands'
 
-.. currentmodule:: geolysis
+Ultimate Bearing Capacity Estimation
+------------------------------------
 
-Calculating the allowable bearing capacity of soil for pad
-foundations using ``Bowles`` correlations:
+Calculating the ultimate bearing capacity of soil using ``Hansen's``
+correlation:
 
->>> from geolysis.core.abc_4_cohl_soils import BowlesABC4PadFoundation
->>> from geolysis.core.foundation import create_foundation, Shape
+.. code:: python
 
->>> foundation_size = create_foundation(depth=1.5, thickness=0.3,
-...                                     width=1.2, footing_shape=Shape.SQUARE)
->>> bowles_abc = BowlesABC4PadFoundation(corrected_spt_number=17.0,
-...                                      tol_settlement=20.0,
-...                                      foundation_size=foundation_size)
->>> bowles_abc.bearing_capacity()
-341.1083
+    >>> from geolysis.bearing_capacity.ubc import ( 
+    ...                    create_ultimate_bearing_capacity)
+    >>> hansen_ubc = create_ultimate_bearing_capacity(
+    ...                friction_angle=20.0,
+    ...                cohesion=20.0,
+    ...                moist_unit_wgt=18.0,
+    ...                depth=1.5, width=2.0, shape="square", 
+    ...                ubc_type="HANSEN",
+    ...            )
+    >>> hansen_ubc.bearing_capacity()
+    798.41
 
-Other correlations for calculating bearing capacities are:
+Other available ultimate bearing capacity types are ``TERZAGHI`` and ``VESIC``
 
-- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.BowlesABC4MatFoundation`
-- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.MeyerhofABC4PadFoundation`
-- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.MeyerhofABC4MatFoundation`
-- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.TerzaghiABC4PadFoundation`
-- :class:`~geolysis.core.bearing_capacity.abc_4_cohl_soils.TerzaghiABC4MatFoundation`
+Allowable Bearing Capacity Estimation
+-------------------------------------
+
+Calculating the allowable bearing capacity of soil for pad foundations using 
+``Bowles`` correlations:
+
+.. code:: python
+
+    >>> from geolysis.bearing_capacity.abc.cohl import \
+    ...                       create_allowable_bearing_capacity
+    >>> bowles_abc = create_allowable_bearing_capacity(
+    ...                  corrected_spt_n_value=17.0,
+    ...                  tol_settlement=20.0,
+    ...                  depth=1.5, width=1.2, shape="SQUARE",
+    ...                  foundation_type="pad",
+    ...                  abc_type="BOWLES"
+    ...                  )
+    >>> bowles_abc.bearing_capacity()
+    341.11
+
+Other available allowable bearing capacity types are ``MEYERHOF`` and
+``TERZAGHI``.
 
 Standard Penetration Tests Analysis
 -----------------------------------
 
 Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 
->>> from geolysis.core.spt import WeightedSPT
->>> spt_numbers = [7.0, 15.0, 18.0]
->>> spt_avg = WeightedSPT(spt_numbers=spt_numbers)
->>> spt_avg.spt_n_design()
-9.3673
+.. code:: python
 
-Other correlations for calculating SPT :math:`N_{design}` are:
-
-- :class:`~geolysis.core.spt.AverageSPT`
-- :class:`~geolysis.core.spt.MinSPT`
+    >>> from geolysis.spt import SPTDesign
+    >>> spt_design = SPTDesign(spt_n_values=[7.0, 15.0, 18.0])
+    >>> spt_design.average_spt_n_design()
+    13.3
+    >>> spt_design.minimum_spt_n_design()
+    7.0
+    >>> spt_design.weighted_spt_n_design()
+    9.4
 
 Standardizing SPT N-values depending on the field procedure used:
 
->>> from geolysis.core.spt import EnergyCorrection
->>> energy_cor = EnergyCorrection(recorded_spt_number=30, energy_percentage=0.6,
-...                               hammer_efficiency=0.6, borehole_diameter_correction=1.0,
-...                               sampler_correction=1.0, rod_length_correction=0.75)
->>> energy_cor.correction
-0.75
->>> energy_cor.corrected_spt_number
-22.5
+.. code:: python
 
-Correcting SPT N-values for overburden pressure influence:
+    >>> from geolysis.spt import EnergyCorrection
+    >>> energy_corr = EnergyCorrection(recorded_spt_n_value=30,
+    ...                                energy_percentage=0.6,
+    ...                                borehole_diameter=65.0,
+    ...                                rod_length=3.0)
+    >>> energy_corr.corrected_spt_n_value()
+    22.5
 
->>> from geolysis.core.spt import GibbsHoltzOPC
->>> opc_cor = GibbsHoltzOPC(std_spt_number=22.5, eop=100.0)
->>> opc_cor.correction
-2.0588
->>> opc_cor.corrected_spt_number
-23.1615
+Correcting SPT N-values for overburden pressure influence using 
+``Gibbs & Holtz (1957)`` correlation:
+
+.. code:: python
+
+    >>> from geolysis.spt import GibbsHoltzOPC
+    >>> opc_corr = GibbsHoltzOPC(std_spt_n_value=22.5, eop=100.0)
+    >>> opc_corr.corrected_spt_n_value()
+    23.2
 
 Other correlations for calculating Overburden Pressure Corrections are:
 
-- :class:`~geolysis.core.spt.BazaraaPeckOPC`
-- :class:`~geolysis.core.spt.PeckOPC`
-- :class:`~geolysis.core.spt.LiaoWhitmanOPC`
-- :class:`~geolysis.core.spt.SkemptonOPC`
+- :class:`~geolysis.spt.BazaraaPeckOPC`
+- :class:`~geolysis.spt.PeckOPC`
+- :class:`~geolysis.spt.LiaoWhitmanOPC`
+- :class:`~geolysis.spt.SkemptonOPC`
 
 Correcting SPT N-values for water (dilatancy) influence:
 
->>> from geolysis.core.spt import DilatancyCorrection
->>> dil_cor = DilatancyCorrection(spt_number=22.5)
->>> dil_cor.corrected_spt_number
-18.75
+.. code::
+
+    >>> from geolysis.spt import DilatancyCorrection
+    >>> dil_corr = DilatancyCorrection(std_spt_n_value=22.5)
+    >>> dil_corr.corrected_spt_n_value()
+    18.8

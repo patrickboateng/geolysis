@@ -26,5 +26,5 @@ Summary - Release Highlights
 Thank You
 =========
 
-Last but certainly not least, a big *Thank You* to all the
-contributors of ``geolysis``.
+Last but certainly not least, a big *Thank You* to all the contributors of 
+``geolysis``.

@@ -1,107 +1,101 @@
-:html_theme.sidebar_secondary.remove:
+.. :html_theme.sidebar_secondary.remove:
+.. currentmodule:: geolysis
 
 **********************
 geolysis documentation
 **********************
 
-.. toctree::
-   :hidden:
-
-   Getting Started     <getting_started>
-   API Reference       <reference/geolysis/index>
-   Contributor's Guide <dev/index>
-   Release notes       <release_notes/index>
-   About Us            <about>
-
-``geolysis`` is an open-source software that provides features
-for analyzing geotechnical results obtained from laboratory and field
-tests. Some of the features implemented include soil classification,
-standard penetration test analysis (such as SPT :math:`N_{design}` and
-SPT N-value corrections), and calculating the allowable bearing capacity
-of soils from Standard Penetration Test N-values. There are more
-features underway, which include settlement analysis, ultimate bearing
-capacity analysis, etc.
-
-``geolysis.core`` is the foundation application on which other parts
-of the application will depend. Developers can also use  the
-``geolysis.core`` package to power their applications.
-
-
-As of the |release| release, ``geolysis`` only provides the ``core``
-package which includes tools for geotechnical engineers to perform
-analysis on results obtained from laboratory and field tests.
-
-Check out the `about page <about.html>`_ for a more comprehensive
-overview of the vision and mission of ``geolysis``.
-
 .. note::
 
-   We would like to inform you that our project is currently in the
-   early stages and we are actively developing the core features and
-   functionalities of the software, so kindly be patient if things
-   change or features iterate and change quickly.
+   We would like to inform you that our project is currently in the early stages 
+   and we are actively developing the core features and functionalities of the 
+   software, so kindly be patient if things change or features iterate and 
+   change quickly.
 
-   Once ``geolysis.core`` hits ``1.0.0``, it will slow down considerably.
+   Once ``geolysis`` hits ``1.0.0``, it will slow down considerably.
 
-.. grid:: 3
-   :gutter: 2
 
-   .. grid-item-card::
-      :link: getting_started
-      :link-type: doc
+``geolysis`` is an open-source library for geotechnical analysis and modeling.
+It offers tools for soil classification, Standard Penetration Test (SPT)
+analysis, and bearing capacity estimation, among others.
 
-      :fas:`person-running;1em;sd-text-info` Getting Started
-      ^^^
+Features
+========
 
-      New to ``geolysis``? Check out the absolute beginner's guide.
+.. list-table::
+   :header-rows: 0
 
-   .. grid-item-card::
-      :link: reference/geolysis/core/index
-      :link-type: doc
+   * - **Soil Classification**
+     - AASHTO Classification System
+   * - 
+     - Unified Soil Classification System
+   * - **Standard Penetration Test (SPT) Analysis**
+     - SPT Energy Correction
+   * - 
+     - SPT Overburden Pressure Correction
+   * - 
+     - Dilatancy Correction
+   * - 
+     - SPT N-Design Calculation
+   * - **Bearing Capacity Estimation**
+     - Allowable Bearing Capacity Estimation
+   * - 
+     - Ultimate Bearing Capacity Estimation
 
-      :fas:`code;1em;sd-text-info` API Reference
-      ^^^
+Quick Example
+=============
 
-      This is a description of all packages, modules, classes, and
-      functions that ``geolysis.core`` offers.
+.. code:: python
 
-   .. grid-item-card::
-      :link: dev/index
-      :link-type: doc
+   >>> from geolysis.soil_classifier import create_soil_classifier
+   >>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
+   ...                                   plastic_limit=21.1,
+   ...                                   fines=47.88,
+   ...                                   sand=37.84,
+   ...                                   clf_type="USCS")
+   >>> clf = uscs_clf.classify()
+   >>> clf
+   SoilClf(soil_symbol='SC', soil_description='Clayey sands')
+   >>> clf.soil_symbol
+   'SC'
+   >>> clf.soil_description
+   'Clayey sands'
 
-      :fas:`terminal;1em;sd-text-info` Contributor's Guide
-      ^^^
+.. code:: python
 
-      Want to add to the codebase? Check out the contribution guidelines.
+   >>> from geolysis.soil_classifier import create_soil_classifier
+   >>> aashto_clf = create_soil_classifier(liquid_limit=34.1, 
+   ...                                     plastic_limit=21.1,
+   ...                                     fines=47.88,
+   ...                                     sand=37.84,  # Sand is optional for AASHTO classification
+   ...                                     clf_type="AASHTO")
+   >>> clf = aashto_clf.classify()
+   >>> clf
+   SoilClf(soil_symbol='A-6(4)', soil_description='Clayey soils')
+   >>> clf.soil_symbol
+   'A-6(4)'
+   >>> clf.soil_description
+   'Clayey soils'
 
-   .. grid-item-card::
-      :link: release_notes/index
-      :link-type: doc
+.. toctree::
+   :maxdepth: 2
 
-      :fas:`history;1em;sd-text-info` Release notes
-      ^^^
+   Getting Started <getting_started>
 
-      Want to know how ``geolysis`` has evolved? Check out the release
-      notes.
+.. toctree::
+   :maxdepth: 2
 
-   .. grid-item-card::
-      :link: about
-      :link-type: doc
+   Contributor's Guide <dev_guide/index>
 
-      :fas:`users;1em;sd-text-info` About Us
-      ^^^
+.. toctree::
+   :maxdepth: 2
 
-      Want to know more about the ``geolysis`` project? Checkout the about
-      page for a comprehensive look at ``geolysis``.
+   Release notes <release_notes/index>
 
-   .. grid-item-card::
-      :link: dev/style_guide
-      :link-type: doc
+.. toctree::
+   :maxdepth: 2
 
-      :fas:`pen-to-square;1em;sd-text-info` Style Guide
-      ^^^
-
-      Style guides for developing ``geolysis.core``.
+   API Reference <reference/index>
 
 Indices and tables
 ==================

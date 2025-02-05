@@ -1,24 +1,31 @@
 .. currentmodule:: geolysis.spt
 
+****************
 ``geolysis.spt``
-================
+****************
 
-.. autoenum:: HammerType
+Enums
+=====
 
-.. autoenum:: SamplerType
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures:
 
-.. autoclass:: SPTDesign
+    HammerType
+    SamplerType
 
-.. autoclass:: EnergyCorrection
+Classes 
+=======
 
-.. autoclass:: GibbsHoltzOPC
+.. autosummary:: 
+    :toctree: generated
+    :nosignatures:
 
-.. autoclass:: BazaraaPeckOPC
-
-.. autoclass:: PeckOPC
-
-.. autoclass:: LiaoWhitmanOPC
-
-.. autoclass:: SkemptonOPC
-
-.. autoclass:: DilatancyCorrection
+    SPTDesign
+    EnergyCorrection
+    GibbsHoltzOPC
+    BazaraaPeckOPC
+    PeckOPC
+    LiaoWhitmanOPC
+    SkemptonOPC
+    DilatancyCorrection
