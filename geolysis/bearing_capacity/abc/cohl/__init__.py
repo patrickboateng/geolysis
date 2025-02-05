@@ -8,6 +8,9 @@ from geolysis.utils import inf
 
 
 class SettlementError(ValueError):
+    """Raised when tolerable settlement is greater than the maximum 
+    allowable settlement.
+    """
     pass
 
 
