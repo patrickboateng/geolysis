@@ -22,7 +22,9 @@ Here are brief descriptions of these projects:
 
 <table>
   <tr>
-    <td><strong>geolysis.gui</strong></td>
+    <td style="vertical-align: top; text-align: left;">
+    <strong>geolysis.gui</strong>
+    </td>
     <td>A graphical user interface that allows users to interact with the
      geolysis library. Through this interface, users can view generated reports
      and visualizations, such as Particle Size Distribution (PSD) curves,
@@ -32,14 +34,18 @@ Here are brief descriptions of these projects:
     </td>
   </tr>
   <tr>
-    <td><strong>geolysis.excel</strong></td>
+    <td style="vertical-align: top; text-align: left;">
+    <strong>geolysis.excel</strong>
+    </td>
     <td>An add-in for Microsoft Excel that performs simple geotechnical
      analysis. It offers some features similar to <code>geolysis.gui</code>
      within Microsoft Excel.
     </td>
   </tr>
   <tr>
-    <td><strong>geolysis.ai</strong></td>
+    <td style="vertical-align: top; text-align: left;">
+    <strong>geolysis.ai</strong>
+    </td>
     <td>Offers machine learning models that are trained using geotechnical data.
     </td>
   </tr>
@@ -115,14 +121,18 @@ will not function if installed._**
 
 <table>
   <tr>
-    <td rowspan="2"><strong>Soil Classification</strong></td>
+    <td rowspan="2" style="vertical-align: top; text-align: left;">
+    <strong>Soil Classification</strong>
+    </td>
     <td>AASHTO Classification System</td>
   </tr>
   <tr>
     <td>Unified Soil Classification System</td>
   </tr>
   <tr>
-    <td rowspan="4"><strong>Standard Penetration Test (SPT) Analysis</strong></td>
+    <td rowspan="4" style="vertical-align: top; text-align: left;">
+    <strong>Standard Penetration Test (SPT) Analysis</strong>
+    </td>
     <td>SPT Energy Correction</td>
   </tr>
   <tr>
@@ -135,7 +145,9 @@ will not function if installed._**
     <td>SPT N-Design Calculation</td>
   </tr>
   <tr>
-    <td rowspan="2"><strong>Bearing Capacity Estimation</strong></td>
+    <td rowspan="2" style="vertical-align: top; text-align: left;">
+    <strong>Bearing Capacity Estimation</strong>
+    </td>
     <td>Allowable Bearing Capacity Estimation</td>
   </tr>
   <tr>
