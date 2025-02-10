@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+sphinx-rtd-theme = "*"
+furo = "*"
 
 [dev-packages]
 pytest = "*"
