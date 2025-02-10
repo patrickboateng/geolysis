@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/dev/branding/geolysislogo.svg" 
+<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/dev/docs/source/_static/branding/geolysislogo.svg" 
 alt="geolysislogo" width="75%" />
 </h1><br>
 
@@ -49,7 +49,6 @@ Here are brief descriptions of these projects:
 
     .
     ├── .github        # GitHub Actions
-    ├── branding       # Project logos
     ├── docs           # Documentation files
     ├── geolysis       # Source files
     ├── tests          # Automated tests
