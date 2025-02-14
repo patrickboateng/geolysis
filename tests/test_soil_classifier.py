@@ -50,7 +50,7 @@ class TestAASHTO:
     def test_aashto_with_grp_idx(self, al, fines, expected: str):
         asshto_clf = create_soil_classifier(*al, fines=fines,
                                             clf_type="AASHTO")
-        assert asshto_clf.classify().soil_symbol == expected
+        assert asshto_clf.classify().symbol == expected
 
     @pytest.mark.parametrize("al,fines,expected",
                              [((0.0, 0.0), 9.5, "A-3"),
@@ -61,7 +61,7 @@ class TestAASHTO:
         asshto_clf = create_soil_classifier(*al, fines=fines,
                                             add_group_idx=False,
                                             clf_type="AASHTO")
-        assert asshto_clf.classify().soil_symbol == expected
+        assert asshto_clf.classify().symbol == expected
 
 
 class TestUSCS:
@@ -85,7 +85,7 @@ class TestUSCS:
     def test_dual_classification(self, al: Sequence, psd,
                                  dist: Sequence, expected):
         uscs_clf = create_soil_classifier(*al, *psd, *dist, clf_type="uscs")
-        assert uscs_clf.classify().soil_symbol == expected
+        assert uscs_clf.classify().symbol == expected
 
     @pytest.mark.parametrize(
         "al,psd,expected",
@@ -99,7 +99,7 @@ class TestUSCS:
     def test_dual_classification_no_psd_coeff(self, al: Sequence,
                                               psd: Sequence, expected):
         uscs_clf = create_soil_classifier(*al, *psd, clf_type="uscs")
-        assert uscs_clf.classify().soil_symbol == expected
+        assert uscs_clf.classify().symbol == expected
 
     @pytest.mark.parametrize("al,psd,expected",
                              [((34.1, 21.1), (47.88, 37.84), "SC"),
@@ -119,18 +119,18 @@ class TestUSCS:
     def test_single_classification(self, al: Sequence, psd: Sequence,
                                    expected):
         uscs_clf = create_soil_classifier(*al, *psd, clf_type="uscs")
-        assert uscs_clf.classify().soil_symbol == expected
+        assert uscs_clf.classify().symbol == expected
 
     def test_organic_soils_low_plasticity(self):
         uscs_clf = create_soil_classifier(liquid_limit=35.83,
                                           plastic_limit=25.16, fines=68.94,
                                           sand=28.88, organic=True,
                                           clf_type="uscs")
-        assert uscs_clf.classify().soil_symbol == "OL"
+        assert uscs_clf.classify().symbol == "OL"
 
     def test_organic_soils_high_plasticity(self):
         uscs_clf = create_soil_classifier(liquid_limit=55.0,
                                           plastic_limit=40.0, fines=85.0,
                                           sand=15.0, organic=True,
                                           clf_type="uscs")
-        assert uscs_clf.classify().soil_symbol == "OH"
+        assert uscs_clf.classify().symbol == "OH"

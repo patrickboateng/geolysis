@@ -91,10 +91,10 @@ will not function if installed._**
    ...                                   clf_type="USCS")
    >>> clf = uscs_clf.classify()
    >>> clf
-   SoilClf(soil_symbol='SC', soil_description='Clayey sands')
-   >>> clf.soil_symbol
+   SoilClf(symbol='SC', description='Clayey sands')
+   >>> clf.symbol
    'SC'
-   >>> clf.soil_description
+   >>> clf.description
    'Clayey sands'
 
 ```
@@ -109,10 +109,10 @@ will not function if installed._**
    ...                                     clf_type="AASHTO")
    >>> clf = aashto_clf.classify()
    >>> clf
-   SoilClf(soil_symbol='A-6(4)', soil_description='Clayey soils')
-   >>> clf.soil_symbol
+   SoilClf(symbol='A-6(4)', description='Clayey soils')
+   >>> clf.symbol
    'A-6(4)'
-   >>> clf.soil_description
+   >>> clf.description
    'Clayey soils'
 
 ```

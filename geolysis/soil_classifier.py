@@ -1,7 +1,7 @@
 import enum
 from abc import abstractmethod
 from typing import Protocol
-from typing import Iterable, NamedTuple, Optional, Sequence
+from typing import NamedTuple, Optional, Sequence
 
 from geolysis import validators
 from geolysis.utils import isclose, round_
@@ -16,8 +16,8 @@ class SizeDistError(ZeroDivisionError):
 
 
 class SoilClf(NamedTuple):
-    soil_symbol: str
-    soil_description: str
+    symbol: str
+    description: str
 
 
 class SoilClassifier(Protocol):
