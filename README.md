@@ -22,7 +22,7 @@ Here are brief descriptions of these projects:
 
 <table>
   <tr>
-    <td style="vertical-align: top; text-align: left;">
+    <td>
     <strong>geolysis.gui</strong>
     </td>
     <td>A graphical user interface that allows users to interact with the
@@ -34,7 +34,7 @@ Here are brief descriptions of these projects:
     </td>
   </tr>
   <tr>
-    <td style="vertical-align: top; text-align: left;">
+    <td>
     <strong>geolysis.excel</strong>
     </td>
     <td>An add-in for Microsoft Excel that performs simple geotechnical
@@ -43,7 +43,7 @@ Here are brief descriptions of these projects:
     </td>
   </tr>
   <tr>
-    <td style="vertical-align: top; text-align: left;">
+    <td>
     <strong>geolysis.ai</strong>
     </td>
     <td>Offers machine learning models that are trained using geotechnical data.
@@ -121,7 +121,7 @@ will not function if installed._**
 
 <table>
   <tr>
-    <td rowspan="2" style="vertical-align: top; text-align: left;">
+    <td rowspan="2">
     <strong>Soil Classification</strong>
     </td>
     <td>AASHTO Classification System</td>
@@ -130,7 +130,7 @@ will not function if installed._**
     <td>Unified Soil Classification System</td>
   </tr>
   <tr>
-    <td rowspan="4" style="vertical-align: top; text-align: left;">
+    <td rowspan="4">
     <strong>Standard Penetration Test (SPT) Analysis</strong>
     </td>
     <td>SPT Energy Correction</td>
@@ -145,7 +145,7 @@ will not function if installed._**
     <td>SPT N-Design Calculation</td>
   </tr>
   <tr>
-    <td rowspan="2" style="vertical-align: top; text-align: left;">
+    <td rowspan="2">
     <strong>Bearing Capacity Estimation</strong>
     </td>
     <td>Allowable Bearing Capacity Estimation</td>
