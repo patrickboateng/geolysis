@@ -8,6 +8,7 @@ upload:
 
 test:
 	pipenv run pytest
+	cd docs && make doctest
 
 testcov:
 	coverage run -m --rcfile=pyproject.toml pytest
