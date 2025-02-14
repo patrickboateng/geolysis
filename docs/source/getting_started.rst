@@ -35,7 +35,7 @@ or from the command line:
 .. code:: shell
 
     python -c "import geolysis; print(geolysis.__version__)"
-    # python3 -c "import geolysis; print(geolysis.__version__)" for unix systems
+    # python3 for unix systems
 
 You'll see the version number if ``geolysis`` is installed and an error message 
 otherwise.
@@ -62,7 +62,7 @@ Soil Classification
 
 **AASHTO** classification example with **Group Index (GI)**:
 
-.. code:: python
+.. doctest::
 
     >>> from geolysis.soil_classifier import create_soil_classifier
 
@@ -70,14 +70,14 @@ Soil Classification
     ...                                     plastic_limit=23.9,
     ...                                     fines=11.18, clf_type="AASHTO")
     >>> clf = aashto_clf.classify()
-    >>> clf.soil_symbol
+    >>> clf.symbol
     'A-2-4(0)'
-    >>> clf.soil_description
+    >>> clf.description
     'Silty or clayey gravel and sand'
 
 **AASHTO** classification example without **Group Index (GI)**:
 
-.. code:: python
+.. doctest:: 
 
     >>> aashto_clf = create_soil_classifier(liquid_limit=45.0,
     ...                                     plastic_limit=16.0,
@@ -85,14 +85,14 @@ Soil Classification
     ...                                     add_group_idx=False,
     ...                                     clf_type="AASHTO")
     >>> clf = aashto_clf.classify()
-    >>> clf.soil_symbol
+    >>> clf.symbol
     'A-7-6'
-    >>> clf.soil_description
+    >>> clf.description
     'Clayey soils'
 
 **USCS** classification example with soil grading:
 
-.. code:: python
+.. doctest:: 
 
     >>> from geolysis.soil_classifier import create_soil_classifier
     >>> uscs_clf = create_soil_classifier(liquid_limit=30.8, 
@@ -101,23 +101,23 @@ Soil Classification
     ...                                   d_10=0.07, d_30=0.3, d_60=0.8,
     ...                                   clf_type="USCS")
     >>> clf = uscs_clf.classify()
-    >>> clf.soil_symbol
+    >>> clf.symbol
     'SW-SC'
-    >>> clf.soil_description
+    >>> clf.description
     'Well graded sand with clay'
 
 **USCS** classification example without soil grading:
 
-.. code:: python
+.. doctest::
 
     >>> uscs_clf = create_soil_classifier(liquid_limit=34.1, 
     ...                                   plastic_limit=21.1,
     ...                                   fines=47.88, sand=37.84, 
     ...                                   clf_type="USCS")
     >>> clf = uscs_clf.classify()
-    >>> clf.soil_symbol
+    >>> clf.symbol
     'SC'
-    >>> clf.soil_description
+    >>> clf.description
     'Clayey sands'
 
 Ultimate Bearing Capacity Estimation
@@ -126,10 +126,9 @@ Ultimate Bearing Capacity Estimation
 Calculating the ultimate bearing capacity of soil using ``Hansen's``
 correlation:
 
-.. code:: python
+.. doctest::
 
-    >>> from geolysis.bearing_capacity.ubc import ( 
-    ...                    create_ultimate_bearing_capacity)
+    >>> from geolysis.bearing_capacity.ubc import create_ultimate_bearing_capacity
     >>> hansen_ubc = create_ultimate_bearing_capacity(
     ...                friction_angle=20.0,
     ...                cohesion=20.0,
@@ -148,10 +147,9 @@ Allowable Bearing Capacity Estimation
 Calculating the allowable bearing capacity of soil for pad foundations using 
 ``Bowles`` correlations:
 
-.. code:: python
+.. doctest::
 
-    >>> from geolysis.bearing_capacity.abc.cohl import \
-    ...                       create_allowable_bearing_capacity
+    >>> from geolysis.bearing_capacity.abc.cohl import create_allowable_bearing_capacity
     >>> bowles_abc = create_allowable_bearing_capacity(
     ...                  corrected_spt_n_value=17.0,
     ...                  tol_settlement=20.0,
@@ -170,7 +168,7 @@ Standard Penetration Tests Analysis
 
 Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 
-.. code:: python
+.. doctest::
 
     >>> from geolysis.spt import SPTDesign
     >>> spt_design = SPTDesign(spt_n_values=[7.0, 15.0, 18.0])
@@ -183,7 +181,7 @@ Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 
 Standardizing SPT N-values depending on the field procedure used:
 
-.. code:: python
+.. doctest::
 
     >>> from geolysis.spt import EnergyCorrection
     >>> energy_corr = EnergyCorrection(recorded_spt_n_value=30,
@@ -196,7 +194,7 @@ Standardizing SPT N-values depending on the field procedure used:
 Correcting SPT N-values for overburden pressure influence using 
 ``Gibbs & Holtz (1957)`` correlation:
 
-.. code:: python
+.. doctest::
 
     >>> from geolysis.spt import GibbsHoltzOPC
     >>> opc_corr = GibbsHoltzOPC(std_spt_n_value=22.5, eop=100.0)
@@ -212,7 +210,7 @@ Other correlations for calculating Overburden Pressure Corrections are:
 
 Correcting SPT N-values for water (dilatancy) influence:
 
-.. code::
+.. doctest::
 
     >>> from geolysis.spt import DilatancyCorrection
     >>> dil_corr = DilatancyCorrection(std_spt_n_value=22.5)
