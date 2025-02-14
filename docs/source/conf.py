@@ -33,10 +33,9 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     # Third Party Libraries
-    # "sphinx_copybutton",
+    "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
-    # "autoapi.extension",
     "notfound.extension",
     "enum_tools.autoenum",
 ]
@@ -57,17 +56,13 @@ rst_prolog = """.. include:: <isonum.txt>"""
 # )
 # copybutton_prompt_is_regexp = True
 
-pigments_style = "tango"
-
-html_permalinks_icon = "<span>¶</span>"
-
 # Myst
 myst_heading_anchors = 6
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-logo_path = "../../branding/"
-html_theme = "sphinxawesome_theme"
+logo_path = "./_static/branding/"
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_logo = logo_path + "geolysislogoicon.svg" 
 html_favicon = logo_path + "geolysislogoicon.svg" 
