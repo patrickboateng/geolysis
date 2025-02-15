@@ -6,5 +6,5 @@
     :caption: Dev Guide
     :hidden:
 
-    Code of Conduct         <code_of_conduct>
-    Style Guide             <style_guide>
+    Code of Conduct  <code_of_conduct>
+    Style Guide      <style_guide>
