@@ -209,3 +209,4 @@ dist
 # docs build generated files
 
 docs/source/**/generated/
+docs/source/**/_autosummary/
