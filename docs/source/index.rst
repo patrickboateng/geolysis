@@ -12,7 +12,8 @@ geolysis documentation
    software, so kindly be patient if things change or features iterate and 
    change quickly.
 
-   Once ``geolysis`` hits ``1.0.0``, it will slow down considerably.
+   Once ``geolysis`` hits ``1.0.0``, it will slow down considerably in terms of
+   breaking changes (i.e it will be backward compatible).
 
 
 ``geolysis`` is an open-source library for geotechnical analysis and modeling.
@@ -22,25 +23,46 @@ analysis, and bearing capacity estimation, among others.
 Features
 ========
 
-.. list-table::
-   :header-rows: 0
+.. raw:: html
+    :class: html-table-custom-style
 
-   * - **Soil Classification**
-     - AASHTO Classification System
-   * - 
-     - Unified Soil Classification System
-   * - **Standard Penetration Test (SPT) Analysis**
-     - SPT Energy Correction
-   * - 
-     - SPT Overburden Pressure Correction
-   * - 
-     - Dilatancy Correction
-   * - 
-     - SPT N-Design Calculation
-   * - **Bearing Capacity Estimation**
-     - Allowable Bearing Capacity Estimation
-   * - 
-     - Ultimate Bearing Capacity Estimation
+    <table>
+      <tr>
+        <td rowspan="2" style="vertical-align: top;">
+        <strong>Soil Classification</strong>
+        </td>
+        <td>AASHTO Classification System</td>
+      </tr>
+      <tr>
+        <td>Unified Soil Classification System</td>
+      </tr>
+      <tr>
+        <td rowspan="4" style="vertical-align: top;">
+        <strong>Standard Penetration Test (SPT) Analysis</strong>
+        </td>
+        <td>SPT Energy Correction</td>
+      </tr>
+      <tr>
+        <td>SPT Overburden Pressure Correction</td>
+      </tr>
+      <tr>
+        <td>Dilatancy Correction</td>
+      </tr>
+      <tr>
+        <td>SPT N-Design Calculation</td>
+      </tr>
+      <tr>
+        <td rowspan="2" style="vertical-align: top;">
+        <strong>Bearing Capacity Estimation</strong>
+        </td>
+        <td>Allowable Bearing Capacity Estimation</td>
+      </tr>
+      <tr>
+        <td>Ultimate Bearing Capacity Estimation</td>
+      </tr>
+    </table>
+
+
 
 Quick Example
 =============
