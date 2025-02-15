@@ -43,18 +43,12 @@ extensions = [
 templates_path = ["_templates"]
 exclude_patterns = ["build"]
 
-# Sphinx AutoDoc
-# autodoc_member_order = "bysource"
-autoclass_content = "both"
+# Sphinx AutoDoc Ext
+autodoc_default_options = {"exclude-members": "__init__",
+                           "class-doc-from": "both"}
 
 # adds this string to the start of every .rst file
 rst_prolog = """.. include:: <isonum.txt>"""
-
-# # Sphinx Copybutton
-# copybutton_prompt_text = (
-#     r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: |C:\\> "
-# )
-# copybutton_prompt_is_regexp = True
 
 # Myst
 myst_heading_anchors = 6
@@ -64,8 +58,8 @@ myst_heading_anchors = 6
 logo_path = "./_static/branding/"
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
-html_logo = logo_path + "geolysislogoicon.svg" 
-html_favicon = logo_path + "geolysislogoicon.svg" 
+html_logo = logo_path + "geolysislogoicon.svg"
+html_favicon = logo_path + "geolysislogoicon.svg"
 html_title = project
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
