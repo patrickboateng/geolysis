@@ -8,7 +8,7 @@ Enums
 =====
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     HammerType
@@ -18,7 +18,7 @@ Classes
 =======
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     SPTDesign

@@ -8,7 +8,7 @@ Exceptions
 ==========
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     SettlementError
@@ -17,7 +17,7 @@ Enums
 =====
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     ABC_TYPE
@@ -26,7 +26,7 @@ Classes
 =======
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     BowlesABC4MatFoundation
@@ -40,7 +40,7 @@ Functions
 =========
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:  
 
     create_allowable_bearing_capacity

@@ -8,7 +8,7 @@ Enums
 =====
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     UBC_TYPE
@@ -17,7 +17,7 @@ Classes
 =======
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
     :caption: Hansen Bearing Capacity
 
@@ -28,7 +28,7 @@ Classes
     HansenUltimateBearingCapacity
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     TerzaghiBearingCapacityFactor
@@ -38,7 +38,7 @@ Classes
     TerzaghiUBC4RectangularFooting
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     VesicBearingCapacityFactor
@@ -51,7 +51,7 @@ Functions
 =========
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     create_ultimate_bearing_capacity

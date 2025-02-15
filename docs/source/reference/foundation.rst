@@ -8,7 +8,7 @@ Enums
 =====
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures: 
 
     Shape
@@ -17,7 +17,7 @@ Classes
 =======
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures: 
 
     StripFooting
@@ -30,7 +30,7 @@ Functions
 =========
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures: 
 
     create_foundation

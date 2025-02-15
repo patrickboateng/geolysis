@@ -8,7 +8,7 @@ Exceptions
 ==========
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     SizeDistError
@@ -17,7 +17,7 @@ Enums
 =====
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     CLF_TYPE
@@ -28,7 +28,7 @@ Classes
 =======
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     AtterbergLimits
@@ -41,7 +41,7 @@ Functions
 =========
 
 .. autosummary:: 
-    :toctree: generated
+    :toctree: _autosummary
     :nosignatures:
 
     create_soil_classifier
