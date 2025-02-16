@@ -33,10 +33,9 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     # Third Party Libraries
-    "sphinx_copybutton",
     "sphinx_design",
     "myst_parser",
-    "notfound.extension",
+    # "notfound.extension",
     "enum_tools.autoenum",
 ]
 
