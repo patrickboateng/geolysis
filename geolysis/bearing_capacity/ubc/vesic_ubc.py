@@ -37,7 +37,7 @@ class VesicBearingCapacityFactor:
     @classmethod
     @round_
     def n_q(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_q`.
+        """Bearing capacity factor :math:`N_q`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
@@ -47,7 +47,7 @@ class VesicBearingCapacityFactor:
     @classmethod
     @round_
     def n_gamma(cls, friction_angle: float) -> float:
-        """Bearing capacity factor :math:`N_{\gamma}`.
+        r"""Bearing capacity factor :math:`N_{\gamma}`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
@@ -219,7 +219,7 @@ class VesicDepthFactor:
     @classmethod
     @round_
     def d_gamma(cls) -> float:
-        """Depth factor :math:`D_{\gamma}`."""
+        r"""Depth factor :math:`D_{\gamma}`."""
         return 1.0
 
 
@@ -261,7 +261,7 @@ class VesicInclinationFactor:
     @classmethod
     @round_
     def i_gamma(cls, friction_angle: float, load_angle: float) -> float:
-        """Inclination factor :math:`I_{\gamma}`.
+        r"""Inclination factor :math:`I_{\gamma}`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float

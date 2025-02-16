@@ -140,7 +140,7 @@ class HansenShapeFactor:
     @classmethod
     @round_
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
-        """Shape factor :math:`S_{\gamma}`.
+        r"""Shape factor :math:`S_{\gamma}`.
         
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
@@ -202,7 +202,7 @@ class HansenDepthFactor:
     @classmethod
     @round_
     def d_gamma(cls) -> float:
-        """Depth factor :math:`D_{\gamma}`."""
+        r"""Depth factor :math:`D_{\gamma}`."""
         return 1.0
 
 
@@ -254,7 +254,7 @@ class HansenInclinationFactor:
     @classmethod
     @round_
     def i_gamma(cls, load_angle: float) -> float:
-        """Inclination factor :math:`I_{\gamma}`.
+        r"""Inclination factor :math:`I_{\gamma}`.
 
         :param load_angle: Inclination of the applied load with the vertical
                            (degrees).
@@ -264,7 +264,7 @@ class HansenInclinationFactor:
 
 
 class HansenUltimateBearingCapacity(UltimateBearingCapacity):
-    """Ultimate bearing capacity for soils according to ``Hansen (1961)``.
+    r"""Ultimate bearing capacity for soils according to ``Hansen (1961)``.
 
     .. math::
 
@@ -324,8 +324,5 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        r"""Calculates ultimate bearing capacity.
-
-
-        """
+        """Calculates ultimate bearing capacity."""
         return super().bearing_capacity()

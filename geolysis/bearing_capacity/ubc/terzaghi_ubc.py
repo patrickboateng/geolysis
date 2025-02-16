@@ -52,7 +52,7 @@ class TerzaghiBearingCapacityFactor:
     @classmethod
     @round_
     def n_gamma(cls, friction_angle: float) -> float:
-        """Bearing capacity factor :math:`N_{\gamma}`.
+        r"""Bearing capacity factor :math:`N_{\gamma}`.
         
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
@@ -79,7 +79,6 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     r"""Ultimate bearing capacity for strip footing according to
     ``Terzaghi 1943``.
 
-
     .. math:: q_u = cN_c + qN_q + 0.5 \gamma BN_{\gamma}
     """
 
@@ -92,7 +91,7 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
 
 
 class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
-    """Ultimate bearing capacity for circular footing according to 
+    r"""Ultimate bearing capacity for circular footing according to
     ``Terzaghi 1943``.
 
     .. math:: q_u = 1.3cN_c + qN_q + 0.3 \gamma BN_{\gamma}
