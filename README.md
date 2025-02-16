@@ -85,10 +85,6 @@ Here are brief descriptions of these projects:
 
 ## Installation
 
-**_Note: Work on the latest update is still in progress, so the usage example
-below
-will not function if installed._**
-
 ```shell
    pip install geolysis
 ```
@@ -97,44 +93,36 @@ will not function if installed._**
 
 ```python
 
->> > from geolysis.soil_classifier import create_soil_classifier
->> > uscs_clf = create_soil_classifier(liquid_limit=34.1,
-                                       ...
-plastic_limit = 21.1,
-...
-fines = 47.88,
-...
-sand = 37.84,
-...
-clf_type = "USCS")
->> > clf = uscs_clf.classify()
->> > clf
+>>> from geolysis.soil_classifier import create_soil_classifier
+>>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
+...                                   plastic_limit = 21.1,
+...                                   fines = 47.88,
+...                                   sand = 37.84,
+...                                   clf_type = "USCS")
+>>> clf = uscs_clf.classify()
+>>> clf
 SoilClf(symbol='SC', description='Clayey sands')
->> > clf.symbol
+>>> clf.symbol
 'SC'
->> > clf.description
+>>> clf.description
 'Clayey sands'
 
 ```
 
 ```python
 
->> > from geolysis.soil_classifier import create_soil_classifier
->> > aashto_clf = create_soil_classifier(liquid_limit=34.1,
-                                         ...
-plastic_limit = 21.1,
-...
-fines = 47.88,
-...
-sand = 37.84,  # Sand is optional for AASHTO classification
-...
-clf_type = "AASHTO")
->> > clf = aashto_clf.classify()
->> > clf
+>>> from geolysis.soil_classifier import create_soil_classifier
+>>> aashto_clf = create_soil_classifier(liquid_limit=34.1,
+...                                     plastic_limit = 21.1,
+...                                     fines = 47.88,
+...                                     sand = 37.84,  # Sand is optional for AASHTO classification
+...                                     clf_type = "AASHTO")
+>>> clf = aashto_clf.classify()
+>>> clf
 SoilClf(symbol='A-6(4)', description='Clayey soils')
->> > clf.symbol
+>>> clf.symbol
 'A-6(4)'
->> > clf.description
+>>> clf.description
 'Clayey soils'
 
 ```
@@ -179,9 +167,7 @@ SoilClf(symbol='A-6(4)', description='Clayey soils')
 
 ## Documentation
 
-Full documentation is available [here](https://www.geolysis.readthedocs.io)
-
-**_Note: Work on the latest documentation is still ongoing._**
+Full documentation is available [here](https://www.docs.geolysis.io)
 
 ## Contributing
 
