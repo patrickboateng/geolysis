@@ -11,8 +11,8 @@ requires-python = ">=3.11"
 keywords = [
     "geotechnical-engineering",
     "soil-classification",
-    "settlement-analysis",
     "bearing-capacity-analysis",
+    "standard-penetration-test-analysis",
 ]
 authors = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
 dependencies = []
@@ -35,8 +35,8 @@ dynamic = ["version"]
 version = { attr = "geolysis.__version__" }
 
 [project.urls]
-Homepage = "https://github.com/patrickboateng/geolysis"
-Documentation = "https://geolysis.readthedocs.org"
+Homepage = "https://docs.geolysis.io"
+Documentation = "https://docs.geolysis.io"
 Repository = "https://github.com/patrickboateng/geolysis"
 Discussions = "https://github.com/patrickboateng/geolysis/discussions"
 "Issue Tracker" = "https://github.com/patrickboateng/geolysis/issues"
