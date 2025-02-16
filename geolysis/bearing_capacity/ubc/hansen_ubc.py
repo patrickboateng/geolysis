@@ -51,7 +51,7 @@ class HansenBearingCapacityFactor:
     @classmethod
     @round_
     def n_gamma(cls, friction_angle: float) -> float:
-        """Bearing capacity factor :math:`N_{\gamma}`.
+        r"""Bearing capacity factor :math:`N_{\gamma}`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees). 
         :type friction_angle: float
