@@ -15,7 +15,7 @@ class SettlementError(ValueError):
 
 
 class AllowableBearingCapacity(ABC):
-    #: Maximum tolerable foundation settlement. (mm)
+    #: Maximum tolerable foundation settlement (mm).
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(self, corrected_spt_n_value: float,

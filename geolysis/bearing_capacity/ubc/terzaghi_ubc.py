@@ -11,19 +11,27 @@ __all__ = ["TerzaghiBearingCapacityFactor",
 
 
 class TerzaghiBearingCapacityFactor:
-    """ Bearing capacity factors for ultimate bearing capacity according to
+    r""" Bearing capacity factors for ultimate bearing capacity according to
     ``Terzaghi (1943)``.
+
+
+    .. math::
+
+        N_c &= \cot(\phi) \cdot (N_q - 1)
+
+        N_q &= \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
+                  {2\cos^2(45 + \frac{\phi}{2})}
+
+        N_{\gamma} &=  (N_q - 1) \cdot \tan(1.4\phi)
     """
 
     @classmethod
     @round_
     def n_c(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_c`.
+        """Bearing capacity factor :math:`N_c`.
 
         :param friction_angle: Angle of internal friction of the soil. (degrees)
         :type friction_angle: float
-
-        .. math:: N_c = \cot(\phi) \cdot (N_q - 1)
         """
         if isclose(friction_angle, 0.0):
             return 5.7
@@ -32,15 +40,10 @@ class TerzaghiBearingCapacityFactor:
     @classmethod
     @round_
     def n_q(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_q`.
+        """Bearing capacity factor :math:`N_q`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
-
-        .. math::
-
-            N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
-                  {2\cos^2(45 + \frac{\phi}{2})}
         """
         return (exp((3 * pi / 2 - deg2rad(friction_angle))
                     * tan(friction_angle))
@@ -49,12 +52,10 @@ class TerzaghiBearingCapacityFactor:
     @classmethod
     @round_
     def n_gamma(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_{\gamma}`.
+        """Bearing capacity factor :math:`N_{\gamma}`.
         
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
-
-        .. math:: N_{\gamma} =  (N_q - 1) \cdot \tan(1.4\phi)
         """
         return (cls.n_q(friction_angle) - 1.0) * tan(1.4 * friction_angle)
 
@@ -75,16 +76,16 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
 
 
 class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
-    """Ultimate bearing capacity for strip footing according to 
+    r"""Ultimate bearing capacity for strip footing according to
     ``Terzaghi 1943``.
+
+
+    .. math:: q_u = cN_c + qN_q + 0.5 \gamma BN_{\gamma}
     """
 
     @round_
     def bearing_capacity(self) -> float:
-        r"""Calculates ultimate bearing capacity for strip footing.
-
-        .. math:: q_u = cN_c + qN_q + 0.5 \gamma BN_{\gamma}
-        """
+        """Calculates ultimate bearing capacity for strip footing."""
         return (self._cohesion_term(1.0)
                 + self._surcharge_term()
                 + self._embedment_term(0.5))
@@ -93,33 +94,31 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
 class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
     """Ultimate bearing capacity for circular footing according to 
     ``Terzaghi 1943``.
+
+    .. math:: q_u = 1.3cN_c + qN_q + 0.3 \gamma BN_{\gamma}
     """
 
     @round_
     def bearing_capacity(self) -> float:
-        r"""Calculates ultimate bearing capacity for circular footing.
-
-        .. math:: q_u = 1.3cN_c + qN_q + 0.3 \gamma BN_{\gamma}
-        """
+        """Calculates ultimate bearing capacity for circular footing."""
         return (self._cohesion_term(1.3)
                 + self._surcharge_term()
                 + self._embedment_term(0.3))
 
 
 class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
-    """Ultimate bearing capacity for rectangular footing according to 
+    r"""Ultimate bearing capacity for rectangular footing according to
     ``Terzaghi 1943``.
+
+    .. math::
+
+            q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c + qN_q
+                  + \left(1 - 0.2 \dfrac{B}{L} \right) 0.5 B \gamma N_{\gamma}
     """
 
     @round_
     def bearing_capacity(self) -> float:
-        r"""Calculates ultimate bearing capacity for rectangular footing.
-
-        .. math::
-
-            q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c + qN_q
-                  + \left(1 - 0.2 \dfrac{B}{L} \right) 0.5 B \gamma N_{\gamma}
-        """
+        """Calculates ultimate bearing capacity for rectangular footing."""
         width = self.foundation_size.width
         length = self.foundation_size.length
         coh_coef = 1.0 + 0.3 * (width / length)
@@ -133,11 +132,12 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
 class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectangularFooting):
     r"""Ultimate bearing capacity for square footing according to 
     ``Terzaghi 1943``.
+
+
+    .. math:: q_u = 1.3cN_c + qN_q + 0.4 \gamma BN_{\gamma}
     """
 
     def bearing_capacity(self):
-        r"""Calcalates ultimate bearing capacity for square footing.
-        
-        .. math:: q_u = 1.3cN_c + qN_q + 0.4 \gamma BN_{\gamma}
+        """Calcalates ultimate bearing capacity for square footing.
         """
         return super().bearing_capacity()

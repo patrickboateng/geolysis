@@ -4,8 +4,18 @@ from geolysis.utils import round_
 
 
 class BowlesABC4PadFoundation(AllowableBearingCapacity):
-    """Allowable bearing capacity for pad foundation on cohesionless soils
+    r"""Allowable bearing capacity for pad foundation on cohesionless soils
     according to ``Bowles (1997)``.
+
+    .. math::
+
+            q_a(kPa) &= 19.16(N_1)_{55} f_d\left(\dfrac{S}{25.4}\right),
+                        \ B \ \le \ 1.2m
+
+            q_a(kPa) &= 11.98(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2
+                        f_d \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
+
+            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
     """
 
     def __init__(self, corrected_spt_n_value: float,
@@ -30,18 +40,7 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
 
     @round_
     def bearing_capacity(self) -> float:
-        r""" Calculate the allowable bearing capacity of the pad foundation.
-
-        .. math::
-
-            q_a(kPa) &= 19.16(N_1)_{55} f_d\left(\dfrac{S}{25.4}\right),
-                        \ B \ \le \ 1.2m
-
-            q_a(kPa) &= 11.98(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2
-                        f_d \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-
-            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-        """
+        """ Calculate the allowable bearing capacity of the pad foundation."""
         n_corr = self.corrected_spt_n_value
         width = self.foundation_size.width
 
@@ -53,19 +52,18 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
 
 
 class BowlesABC4MatFoundation(BowlesABC4PadFoundation):
-    """Allowable bearing capacity for mat foundation on cohesionless soils
+    r"""Allowable bearing capacity for mat foundation on cohesionless soils
     according to ``Bowles (1997)``.
-    """
 
-    @round_
-    def bearing_capacity(self) -> float:
-        r""" Calculate the allowable bearing capacity of the mat foundation.
-
-        .. math:: 
+    .. math::
 
             q_a(kPa) &= 11.98(N_1)_{55}f_d\left(\dfrac{S}{25.4}\right)
 
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-        """
+    """
+
+    @round_
+    def bearing_capacity(self) -> float:
+        """ Calculate the allowable bearing capacity of the mat foundation."""
         n_corr = self.corrected_spt_n_value
         return 11.98 * n_corr * self._fd() * self._sr()

@@ -4,8 +4,17 @@ from geolysis.utils import round_
 
 
 class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
-    """Allowable bearing capacity for pad foundation on cohesionless soils
+    r"""Allowable bearing capacity for pad foundation on cohesionless soils
     according to ``Meyerhof (1956)``.
+
+    .. math::
+
+            q_a(kPa) &= 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
+
+            q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(
+                    \dfrac{S}{25.4}\right), \ B \ \gt 1.2m
+
+            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
     """
 
     def __init__(self, corrected_spt_n_value: float,
@@ -31,17 +40,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
 
     @round_
     def bearing_capacity(self):
-        r"""Calculates the allowable bearing capacity of the pad foundation.
-
-        .. math::
-
-            q_a(kPa) &= 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
-
-            q_a(kPa) &= 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(
-                    \dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-
-            f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33 
-        """
+        """Calculates the allowable bearing capacity of the pad foundation."""
         n_corr = self.corrected_spt_n_value
         width = self.foundation_size.width
 
@@ -53,19 +52,18 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
 
 
 class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
-    """Allowable bearing capacity for mat foundation on cohesionless
+    r"""Allowable bearing capacity for mat foundation on cohesionless
     soils according to ``Meyerhof (1956)``.
-    """
 
-    @round_
-    def bearing_capacity(self):
-        r""" Calculate the allowable bearing capacity of the mat foundation.
-
-        .. math:: 
+    .. math::
 
             q_a(kPa) &= 8 N f_d\left(\dfrac{S}{25.4}\right)
 
             f_d &= 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-        """
+    """
+
+    @round_
+    def bearing_capacity(self):
+        """ Calculate the allowable bearing capacity of the mat foundation."""
         n_corr = self.corrected_spt_n_value
         return 8 * n_corr * self._fd() * self._sr()

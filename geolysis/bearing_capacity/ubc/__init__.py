@@ -35,7 +35,7 @@ class UltimateBearingCapacity(ABC):
                  apply_local_shear=False) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general shear 
-                               failure. (degree)
+                               failure. (degrees)
         :type friction_angle: float
         
         :param cohesion: Cohesion of soil. (kPa)
@@ -65,7 +65,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def friction_angle(self) -> float:
-        """Return friction angle for local shear in the case of local shear 
+        """Return friction angle for local shear in the case of local shear
         failure or general shear in the case of general shear failure.
         """
         if self.apply_local_shear:

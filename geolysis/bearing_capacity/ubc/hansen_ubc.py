@@ -12,19 +12,26 @@ __all__ = ["HansenBearingCapacityFactor",
 
 
 class HansenBearingCapacityFactor:
-    """Bearing capacity factors for ultimate bearing capacity according to
+    r"""Bearing capacity factors for ultimate bearing capacity according to
     ``Hansen (1961)``.
+
+    .. math::
+
+           N_c &= \cot(\phi) \left(N_q - 1\right)
+
+           N_q &= \tan^2\left(45 + \frac{\phi}{2}\right) \cdot
+                  e^{\pi \tan(\phi)}
+
+           N_{\gamma} &= 1.8 \left(N_q - 1\right) \tan(\phi)
     """
 
     @classmethod
     @round_
     def n_c(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_c`.
+        """Bearing capacity factor :math:`N_c`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
-
-        .. math:: N_c = \cot(\phi) \left(N_q - 1\right)
         """
         if isclose(friction_angle, 0.0):
             return 5.14
@@ -33,15 +40,10 @@ class HansenBearingCapacityFactor:
     @classmethod
     @round_
     def n_q(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_q`.
+        """Bearing capacity factor :math:`N_q`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees).
         :type friction_angle: float
-
-        .. math::
-
-            N_q = \tan^2\left(45 + \frac{\phi}{2}\right) \cdot
-                  e^{\pi \tan(\phi)}
         """
         return (tan(45.0 + friction_angle / 2.0) ** 2.0
                 * exp(pi * tan(friction_angle)))
@@ -49,32 +51,19 @@ class HansenBearingCapacityFactor:
     @classmethod
     @round_
     def n_gamma(cls, friction_angle: float) -> float:
-        r"""Bearing capacity factor :math:`N_{\gamma}`.
+        """Bearing capacity factor :math:`N_{\gamma}`.
 
         :param friction_angle: Angle of internal friction of the soil (degrees). 
         :type friction_angle: float
-
-        .. math:: N_{\gamma} = 1.8 \left(N_q - 1\right) \tan(\phi)
         """
         return 1.8 * (cls.n_q(friction_angle) - 1.0) * tan(friction_angle)
 
 
 class HansenShapeFactor:
-    """Shape factors for ultimate bearing capacity according to 
-    ``Hansen (1961)``. 
-    """
+    r"""Shape factors for ultimate bearing capacity according to
+    ``Hansen (1961)``.
 
-    @classmethod
-    @round_
-    def s_c(cls, foundation_size: FoundationSize) -> float:
-        r"""Shape factor :math:`S_c`.
-        
-        :param foundation_size: Size of the foundation.
-        :type foundation_size: FoundationSize
-
-        :raises ValueError: If foundation has an invalid footing shape.
-
-        .. math::
+    .. math::
 
             s_c &= 1.0 \rightarrow \text{Strip footing}
 
@@ -82,6 +71,35 @@ class HansenShapeFactor:
 
             s_c &= 1.3 \rightarrow \text{Square or circular footing}
 
+    .. math::
+
+            s_q &= 1.0 \rightarrow \text{Strip footing}
+
+            s_q &= 1.0 + 0.2 \frac{B}{L} \rightarrow \text{Rectangular footing}
+
+            s_q &= 1.2 \rightarrow \text{Square or circular footing}
+
+    .. math::
+
+            s_{\gamma} &= 1.0 \rightarrow \text{Strip footing}
+
+            s_{\gamma} &= 1.0 - 0.4 \frac{B}{L} \rightarrow
+                          \text{Rectangular footing}
+
+            s_{\gamma} &= 0.8 \rightarrow \text{Square footing}
+
+            s_{\gamma} &= 0.6 \rightarrow \text{Circular footing}
+    """
+
+    @classmethod
+    @round_
+    def s_c(cls, foundation_size: FoundationSize) -> float:
+        """Shape factor :math:`S_c`.
+        
+        :param foundation_size: Size of the foundation.
+        :type foundation_size: FoundationSize
+
+        :raises ValueError: If foundation has an invalid footing shape.
         """
         width, length, shape = get_footing_params(foundation_size)
 
@@ -99,20 +117,12 @@ class HansenShapeFactor:
     @classmethod
     @round_
     def s_q(cls, foundation_size: FoundationSize) -> float:
-        r"""Shape factor :math:`S_q`. 
+        """Shape factor :math:`S_q`.
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
 
         :raises ValueError: If foundation has an invalid footing shape.
-
-        .. math::
-
-            s_q &= 1.0 \rightarrow \text{Strip footing}
-
-            s_q &= 1.0 + 0.2 \frac{B}{L} \rightarrow \text{Rectangular footing}
-
-            s_q &= 1.2 \rightarrow \text{Square or circular footing}
         """
         width, length, shape = get_footing_params(foundation_size)
 
@@ -130,23 +140,12 @@ class HansenShapeFactor:
     @classmethod
     @round_
     def s_gamma(cls, foundation_size: FoundationSize) -> float:
-        r"""Shape factor :math:`S_{\gamma}`.
+        """Shape factor :math:`S_{\gamma}`.
         
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
 
         :raises ValueError: If foundation has an invalid footing shape.
-
-        .. math::
-
-            s_{\gamma} &= 1.0 \rightarrow \text{Strip footing}
-
-            s_{\gamma} &= 1.0 - 0.4 \frac{B}{L} \rightarrow
-                          \text{Rectangular footing}
-
-            s_{\gamma} &= 0.8 \rightarrow \text{Square footing}
-
-            s_{\gamma} &= 0.6 \rightarrow \text{Circular footing} 
         """
         width, length, shape = get_footing_params(foundation_size)
 
@@ -165,21 +164,25 @@ class HansenShapeFactor:
 
 
 class HansenDepthFactor:
-    """Depth factors for ultimate bearing capacity according to  
+    r"""Depth factors for ultimate bearing capacity according to
     ``Hansen (1961)``.
+
+    .. math::
+
+            d_c &= 1.0 + 0.35 \cdot \frac{D_f}{B}
+
+            d_q &= 1.0 + 0.35 \cdot \frac{D_f}{B}
+
+            d_{\gamma} &= 1.0
     """
 
     @classmethod
     @round_
     def d_c(cls, foundation_size: FoundationSize) -> float:
-        r"""Depth factor :math:`D_c`.
+        """Depth factor :math:`D_c`.
         
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
-
-        .. math::
-
-            d_c = 1.0 + 0.35 \cdot \frac{D_f}{B}
         """
         depth = foundation_size.depth
         width = foundation_size.width
@@ -189,39 +192,38 @@ class HansenDepthFactor:
     @classmethod
     @round_
     def d_q(cls, foundation_size: FoundationSize) -> float:
-        r"""Depth factor :math:`D_q`.
+        """Depth factor :math:`D_q`.
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
-
-        .. math::
-
-            d_q = 1.0 + 0.35 \cdot \frac{D_f}{B}
         """
         return cls.d_c(foundation_size)
 
     @classmethod
     @round_
     def d_gamma(cls) -> float:
-        r"""Depth factor :math:`D_{\gamma}`.
-        
-        .. math::
-        
-            d_{\gamma} = 1.0
-        """
+        """Depth factor :math:`D_{\gamma}`."""
         return 1.0
 
 
 class HansenInclinationFactor:
-    """Inclination factors for ultimate bearing capacity according to
+    r"""Inclination factors for ultimate bearing capacity according to
     ``Hansen (1961)``.
+
+    .. math::
+
+            I_c &= 1 - \frac{\sin(\alpha)}{2cBL}
+
+            I_q &= 1 - \frac{1.5 \sin(\alpha)}{\cos(\alpha)}
+
+            I_{\gamma} &= I_q^2
     """
 
     @classmethod
     @round_
     def i_c(cls, cohesion: float, load_angle: float,
             foundation_size: FoundationSize) -> float:
-        r"""Inclination factor :math:`I_c`.
+        """Inclination factor :math:`I_c`.
         
         :param cohesion: Cohesion of the soil between footing and soil (kPa).
         :type cohesion: float
@@ -232,10 +234,6 @@ class HansenInclinationFactor:
 
         :param foundation_size: Size of the foundation.
         :type foundation_size: FoundationSize
-
-        .. math::
-
-            I_c = 1 - \frac{\sin(\alpha)}{2cBL}
         """
         width = foundation_size.width
         length = foundation_size.length
@@ -245,36 +243,34 @@ class HansenInclinationFactor:
     @classmethod
     @round_
     def i_q(cls, load_angle: float) -> float:
-        r"""Inclination factor :math:`I_q`.
+        """Inclination factor :math:`I_q`.
 
         :param load_angle: Inclination of the applied load with the vertical
                            (degrees).
         :type load_angle: float
-
-        .. math::
-
-            I_q = 1 - \frac{1.5 \sin(\alpha)}{\cos(\alpha)}
         """
         return 1.0 - (1.5 * sin(load_angle)) / cos(load_angle)
 
     @classmethod
     @round_
     def i_gamma(cls, load_angle: float) -> float:
-        r"""Inclination factor :math:`I_{\gamma}`.
+        """Inclination factor :math:`I_{\gamma}`.
 
         :param load_angle: Inclination of the applied load with the vertical
                            (degrees).
         :type load_angle: float
-
-        .. math::
-
-            I_{\gamma} = I_q^2
         """
         return cls.i_q(load_angle) ** 2.0
 
 
 class HansenUltimateBearingCapacity(UltimateBearingCapacity):
-    """Ultimate bearing capacity for soils according to ``Hansen (1961)``."""
+    """Ultimate bearing capacity for soils according to ``Hansen (1961)``.
+
+    .. math::
+
+            q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
+                  + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma}
+    """
 
     @property
     def n_c(self) -> float:
@@ -330,9 +326,6 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     def bearing_capacity(self) -> float:
         r"""Calculates ultimate bearing capacity.
 
-        .. math::
 
-            q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
-                  + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma}
         """
         return super().bearing_capacity()

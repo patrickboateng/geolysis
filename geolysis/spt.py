@@ -258,6 +258,7 @@ class OPC:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
+        """Corrected SPT N-value."""
         corrected_spt = self.correction() * self.std_spt_n_value
         # Corrected SPT should not be more 
         # than 2 times the Standardized SPT
@@ -440,6 +441,7 @@ class DilatancyCorrection:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
+        """Corrected SPT N-value."""
         if self.std_spt_n_value <= 15.0:
             return self.std_spt_n_value
         return 15.0 + 0.5 * (self.std_spt_n_value - 15.0)
