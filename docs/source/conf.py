@@ -66,4 +66,25 @@ html_css_files = [
 ]
 html_js_files = ["pypi-icon.js"]
 
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": f"https://github.com/patrickboateng/{project}",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": f"https://pypi.org/project/{project}",
+            "icon": "fa-custom fa-pypi",
+            "type": "fontawesome",
+        },
+    ],
+    "secondary_sidebar_items": ["page-toc", "edit-this-page"],
+    "footer_start": ["copyright"],
+    "footer_center": ["sphinx-version"],
+    "footer_end": ["theme-version"],
+}
+
 mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
