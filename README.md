@@ -146,7 +146,7 @@ Full documentation is available [here](https://docs.geolysis.io/en/latest/)
 
 ## Contributing
 
-Contributing guidelines can be found [here](https://docs.geolysis.io/en/latest/dev_guide/index.html)
+Contribution guidelines can be found [here](https://docs.geolysis.io/en/latest/dev_guide/index.html)
 
 ## License
 
