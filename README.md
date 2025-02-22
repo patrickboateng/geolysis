@@ -142,9 +142,11 @@ SoilClf(symbol='A-6(4)', description='Clayey soils')
 
 ## Documentation
 
-Full documentation is available [here](https://www.docs.geolysis.io)
+Full documentation is available [here](https://docs.geolysis.io/en/latest/)
 
 ## Contributing
+
+Contributing guidelines can be found [here](https://docs.geolysis.io/en/latest/dev_guide/index.html)
 
 ## License
 
