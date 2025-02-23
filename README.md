@@ -1,7 +1,7 @@
-<h1 align="center">
+<div align="center">
 <img src="https://raw.githubusercontent.com/patrickboateng/geolysis/dev/docs/source/_static/branding/geolysislogo.svg" 
 alt="geolysislogo" width="75%" />
-</h1><br>
+</div><br>
 
 <div align="center">
 
@@ -86,7 +86,7 @@ Here are brief descriptions of these projects:
 ## Installation
 
 ```shell
-   pip install geolysis
+$ pip install geolysis
 ```
 
 ## Usage Example
