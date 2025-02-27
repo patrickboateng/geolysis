@@ -32,7 +32,7 @@ class CLF_TYPE(enum.StrEnum):
     USCS = enum.auto()
 
 
-class _Clf(enum.Enum):
+class _Clf(tuple, enum.Enum):
 
     def __str__(self) -> str:
         return self.name
