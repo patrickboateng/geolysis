@@ -136,6 +136,9 @@ class AtterbergLimits:
                               (molded without breaking) (%)
         :type plastic_limit: float
         """
+        if liquid_limit < plastic_limit:
+            raise ValueError("liquid_limit cannot be less than plastic_limit")
+
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
 
