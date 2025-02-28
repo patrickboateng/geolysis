@@ -95,10 +95,10 @@ $ pip install geolysis
 
 >>> from geolysis.soil_classifier import create_soil_classifier
 >>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
-...                                   plastic_limit = 21.1,
-...                                   fines = 47.88,
-...                                   sand = 37.84,
-...                                   clf_type = "USCS")
+...                                   plastic_limit=21.1,
+...                                   fines=47.88,
+...                                   sand=37.84,
+...                                   clf_type="USCS")
 >>> clf = uscs_clf.classify()
 >>> clf
 SoilClf(symbol='SC', description='Clayey sands')
@@ -113,10 +113,10 @@ SoilClf(symbol='SC', description='Clayey sands')
 
 >>> from geolysis.soil_classifier import create_soil_classifier
 >>> aashto_clf = create_soil_classifier(liquid_limit=34.1,
-...                                     plastic_limit = 21.1,
-...                                     fines = 47.88,
-...                                     sand = 37.84,  # Sand is optional for AASHTO classification
-...                                     clf_type = "AASHTO")
+...                                     plastic_limit=21.1,
+...                                     fines=47.88,
+...                                     sand=37.84,  # Sand is optional for AASHTO classification
+...                                     clf_type="AASHTO")
 >>> clf = aashto_clf.classify()
 >>> clf
 SoilClf(symbol='A-6(4)', description='Clayey soils')
