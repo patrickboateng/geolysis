@@ -1,17 +1,20 @@
 import enum
 from abc import ABC, abstractmethod
-from typing import Literal, Optional
+from typing import Optional
 
 from geolysis import validators
-from geolysis.foundation import FoundationSize, create_foundation
-from geolysis.utils import inf
+from geolysis.foundation import (FoundationSize,
+                                 Shape,
+                                 FoundationType,
+                                 create_foundation)
+
+from geolysis.utils import inf, enum_repr
 
 
 class SettlementError(ValueError):
     """Raised when tolerable settlement is greater than the maximum 
     allowable settlement.
     """
-    pass
 
 
 class AllowableBearingCapacity(ABC):
@@ -66,6 +69,7 @@ from geolysis.bearing_capacity.abc.cohl.terzaghi_abc import (
     TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation)
 
 
+@enum_repr
 class ABC_TYPE(enum.StrEnum):
     """Enumeration of available allowable bearing capacity types."""
     BOWLES = enum.auto()
@@ -78,12 +82,13 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                       depth: float,
                                       width: float,
                                       length: Optional[float] = None,
-                                      eccentricity=0.0,
-                                      ground_water_level=inf,
-                                      shape="SQUARE",
-                                      foundation_type: Literal[
-                                          "pad", "mat"] = "pad",
-                                      abc_type: ABC_TYPE | str = "BOWLES",
+                                      eccentricity: float = 0.0,
+                                      ground_water_level: float = inf,
+                                      shape: Shape | str = Shape.SQUARE,
+                                      foundation_type: FoundationType | str = \
+                                              FoundationType.PAD,
+                                      abc_type: ABC_TYPE | str = \
+                                              ABC_TYPE.BOWLES,
                                       ) -> AllowableBearingCapacity:
     """ A factory function that encapsulate the creation of  allowable bearing
     capacities.
@@ -116,45 +121,61 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :type shape: str, optional
 
     :param foundation_type: Type of foundation, defaults to "pad".
-    :type foundation_type: Literal["pad", "mat"], optional
+    :type foundation_type: FoundationType | str, optional
 
     :param abc_type: Type of allowable bearing capacity calculation to apply.
                      Available values are: "BOWLES", "MEYERHOF", "TERZAGHI".
                      defaults to "BOWLES".
     :type abc_type:  ABC_TYPE | str, optional
-    """
-    if isinstance(abc_type, str):
-        abc_type = ABC_TYPE(abc_type.casefold())
 
-    fnd_size = create_foundation(depth=depth, width=width, length=length,
+    :raises ValueError: Raised if abc_type or foundation_type is not supported.
+    :raises ValueError: Raised when length is not provided for a rectangular
+                        footing.
+    :raises TypeError: Raised if an invalid footing shape is provided.
+    """
+
+    if isinstance(abc_type, str):
+        try:
+            abc_type = ABC_TYPE(abc_type.casefold())
+        except ValueError as e:
+            msg = "abc_type: {0} is not supported, Supported types: {1}"
+            supported_types = list(ABC_TYPE)
+            raise ValueError(msg.format(abc_type, supported_types)) from e
+
+    if isinstance(foundation_type, str):
+        try:
+            foundation_type = FoundationType(foundation_type.casefold())
+        except ValueError as e:
+            msg = "foundation_type: {0} is not support, Supported types: {1}"
+            supported_types = list(FoundationType)
+            raise ValueError(
+                msg.format(foundation_type, supported_types)) from e
+
+    # exception from create_foundation will automaatically propagate, no
+    # need to catch and handle it.
+    fnd_size = create_foundation(depth=depth,
+                                 width=width,
+                                 length=length,
                                  eccentricity=eccentricity,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
     abc_classes = {
         ABC_TYPE.BOWLES: {
-            "pad": BowlesABC4PadFoundation,
-            "mat": BowlesABC4MatFoundation
+            FoundationType.PAD: BowlesABC4PadFoundation,
+            FoundationType.MAT: BowlesABC4MatFoundation,
         },
         ABC_TYPE.MEYERHOF: {
-            "pad": MeyerhofABC4PadFoundation,
-            "mat": MeyerhofABC4MatFoundation
+            FoundationType.PAD: MeyerhofABC4PadFoundation,
+            FoundationType.MAT: MeyerhofABC4MatFoundation,
         },
         ABC_TYPE.TERZAGHI: {
-            "pad": TerzaghiABC4PadFoundation,
-            "mat": TerzaghiABC4MatFoundation,
+            FoundationType.PAD: TerzaghiABC4PadFoundation,
+            FoundationType.MAT: TerzaghiABC4MatFoundation,
         }
     }
 
-    if abc_type not in abc_classes:
-        raise ValueError(f"abc_type {abc_type} is not supported")
-
-    if foundation_type not in abc_classes[abc_type]:
-        msg = "Unknown foundation type: {1}. Supported types: {2}"
-        supported_types = list(abc_classes[abc_type].keys())
-        raise ValueError(msg.format(abc_type, supported_types))
-
     abc_class = abc_classes[abc_type][foundation_type]
     abc = abc_class(corrected_spt_n_value=corrected_spt_n_value,
-                    tol_settlement=tol_settlement, foundation_size=fnd_size)
-
+                    tol_settlement=tol_settlement,
+                    foundation_size=fnd_size)
     return abc
