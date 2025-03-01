@@ -1,83 +1,170 @@
 import pytest
 
-from geolysis.bearing_capacity.abc.cohl import (
-    BowlesABC4MatFoundation, BowlesABC4PadFoundation,
-    MeyerhofABC4MatFoundation, TerzaghiABC4MatFoundation,
-    create_allowable_bearing_capacity, create_foundation)
-from geolysis.foundation import create_foundation
+from geolysis.bearing_capacity.abc.cohl import \
+    create_allowable_bearing_capacity
+from geolysis.utils import inf
 
 
-class SetUp:
-    @classmethod
-    def setup_class(cls):
-        fs = create_foundation(depth=1.5, width=1.2, shape="square")
-        cls.kwargs = {"corrected_spt_n_value": 12.0,
-                      "tol_settlement": 20.0,
-                      "foundation_size": fs}
+def test_create_allowable_bearing_capacity_errors():
+    with pytest.raises(ValueError):
+        create_allowable_bearing_capacity(corrected_spt_n_value=12,
+                                          tol_settlement=20,
+                                          depth=1.5,
+                                          width=1.2,
+                                          abc_type="HANSEN")
+
+    with pytest.raises(ValueError):
+        create_allowable_bearing_capacity(corrected_spt_n_value=12,
+                                          tol_settlement=20,
+                                          depth=1.5,
+                                          width=1.2,
+                                          foundation_type="COMBINED")
 
 
-class TestBowlesABC(SetUp):
+class TestBowlesABC:
     @pytest.mark.parametrize(
-        "corrected_spt_n_value,tol_settlement,fs,expected",
-        [(12.0, 20.0, dict(depth=1.5, width=1.2, shape="square"), 240.78),
-         (12.0, 20.0, dict(depth=1.5, width=1.3, shape="square"), 229.45)])
+        ["corrected_spt_n_value", "tol_settlement", "depth",
+         "width", "footing_shape", "foundation_type", "expected"],
+        [(12.0, 20.0, 1.5, 1.2, "square", "pad", 240.78),
+         (12.0, 20.0, 1.5, 1.3, "square", "pad", 229.45)])
     def test_bowles_abc_4_pad_foundation(self, corrected_spt_n_value,
-                                         tol_settlement, fs, expected):
-        bowles = create_allowable_bearing_capacity(corrected_spt_n_value,
-                                                   tol_settlement, **fs,
-                                                   abc_type="BOWLES")
+                                         tol_settlement,
+                                         depth,
+                                         width,
+                                         footing_shape,
+                                         foundation_type,
+                                         expected):
+        bowles = create_allowable_bearing_capacity(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            depth=depth,
+            width=width,
+            shape=footing_shape,
+            foundation_type=foundation_type,
+            abc_type="BOWLES")
         assert bowles.bearing_capacity() == pytest.approx(expected=expected,
                                                           rel=0.01)
 
-    def test_bowles_abc_4_mat_foundation(self):
-        bowles = BowlesABC4MatFoundation(**self.kwargs)
+    @pytest.mark.parametrize(
+        ["corrected_spt_n_value", "tol_settlement", "depth",
+         "width", "footing_shape", "foundation_type", "expected"],
+        [(12.0, 20.0, 1.5, 1.2, "square", "mat", 150.55)])
+    def test_bowles_abc_4_mat_foundation(self, corrected_spt_n_value,
+                                         tol_settlement,
+                                         depth,
+                                         width,
+                                         footing_shape,
+                                         foundation_type,
+                                         expected):
+        bowles = create_allowable_bearing_capacity(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            depth=depth,
+            width=width,
+            shape=footing_shape,
+            foundation_type=foundation_type,
+            abc_type="BOWLES")
         assert bowles.bearing_capacity() == pytest.approx(expected=150.55,
                                                           rel=0.01)
 
 
-class TestMeyerhofABC(SetUp):
+class TestMeyerhofABC:
     @pytest.mark.parametrize(
-        "corrected_spt_n_value,tol_settlement,fs,expected",
-        [(12.0, 20.0, dict(depth=1.5, width=1.2, shape="square"), 150.8),
-         (12.0, 20.0, dict(depth=1.5, width=1.3, shape="square"), 153.22)])
+        ["corrected_spt_n_value", "tol_settlement", "depth",
+         "width", "footing_shape", "foundation_type", "expected"],
+        [(12.0, 20.0, 1.5, 1.2, "square", "pad", 150.8),
+         (12.0, 20.0, 1.5, 1.3, "square", "pad", 153.22)])
     def test_meyerhof_abc_4_pad_foundation(self, corrected_spt_n_value,
-                                           tol_settlement, fs, expected):
-        meyerhof = create_allowable_bearing_capacity(corrected_spt_n_value,
-                                                     tol_settlement, **fs,
-                                                     abc_type="MEYERHOF")
+                                           tol_settlement,
+                                           depth,
+                                           width,
+                                           footing_shape,
+                                           foundation_type,
+                                           expected):
+        meyerhof = create_allowable_bearing_capacity(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            depth=depth,
+            width=width,
+            shape=footing_shape,
+            foundation_type=foundation_type,
+            abc_type="MEYERHOF")
         assert meyerhof.bearing_capacity() == pytest.approx(expected=expected,
                                                             rel=0.01)
 
-    def test_meyerhof_abc_4_mat_foundation(self):
-        meyerhof = MeyerhofABC4MatFoundation(**self.kwargs)
+    @pytest.mark.parametrize(
+        ["corrected_spt_n_value", "tol_settlement", "depth",
+         "width", "footing_shape", "foundation_type", "expected"],
+        [(12.0, 20.0, 1.5, 1.2, "square", "mat", 100.54)])
+    def test_meyerhof_abc_4_mat_foundation(self, corrected_spt_n_value,
+                                           tol_settlement,
+                                           depth,
+                                           width,
+                                           footing_shape,
+                                           foundation_type,
+                                           expected):
+        meyerhof = create_allowable_bearing_capacity(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            depth=depth,
+            width=width,
+            shape=footing_shape,
+            foundation_type=foundation_type,
+            abc_type="MEYERHOF")
         assert meyerhof.bearing_capacity() == pytest.approx(expected=100.54,
                                                             rel=0.01)
 
 
-class TestTerzaghiABC(SetUp):
-
-    @classmethod
-    def setup_class(cls):
-        super().setup_class()
-        cls.kwargs["ground_water_level"] = 1.2
+class TestTerzaghiABC:
 
     @pytest.mark.parametrize(
-        "corrected_spt_n_value,tol_settlement,ground_water_level,fs,expected",
-        ((12.0, 20.0, 1.2, dict(depth=1.5, width=1.2, shape="square"), 65.97),
-         (12.0, 20.0, 1.8, dict(depth=1.5, width=1.3, shape="square"), 70.35)))
+        ["corrected_spt_n_value", "tol_settlement", "depth", "width",
+         "ground_water_level", "footing_shape", "foundation_type", "expected"],
+        [(12.0, 20.0, 1.5, 1.2, 1.2, "square", "pad", 65.97),
+         (12.0, 20.0, 1.5, 1.2, inf, "square", "pad", 45.35),
+         (12.0, 20.0, 1.5, 1.3, 1.8, "square", "pad", 70.35)])
     def test_terzaghi_abc_4_pad_foundation(self, corrected_spt_n_value,
                                            tol_settlement,
-                                           ground_water_level, fs, expected):
+                                           depth,
+                                           width,
+                                           ground_water_level,
+                                           footing_shape,
+                                           foundation_type,
+                                           expected):
         terzaghi = create_allowable_bearing_capacity(
-            corrected_spt_n_value,
-            tol_settlement, **fs,
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            depth=depth,
+            width=width,
             ground_water_level=ground_water_level,
+            shape=footing_shape,
+            foundation_type=foundation_type,
             abc_type="TERZAGHI")
 
         assert terzaghi.bearing_capacity() == pytest.approx(expected=expected,
                                                             rel=0.01)
 
-    # def test_terzaghi_abc_4_mat_foundation(self):
-    #     terzaghi = TerzaghiABC4MatFoundation(**self.kwargs)
-    #     assert terzaghi.bearing_capacity() == pytest.approx(expected=43.98,
-    #                                                         rel=0.01)
+    @pytest.mark.parametrize(
+        ["corrected_spt_n_value", "tol_settlement", "depth", "width",
+         "ground_water_level", "footing_shape", "foundation_type", "expected"],
+        [(12.0, 20.0, 1.5, 1.2, 1.2, "square", "mat", 43.98)])
+    def test_terzaghi_abc_4_mat_foundation(self, corrected_spt_n_value,
+                                           tol_settlement,
+                                           depth,
+                                           width,
+                                           ground_water_level,
+                                           footing_shape,
+                                           foundation_type,
+                                           expected):
+        terzaghi = create_allowable_bearing_capacity(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            depth=depth,
+            width=width,
+            ground_water_level=ground_water_level,
+            shape=footing_shape,
+            foundation_type=foundation_type,
+            abc_type="TERZAGHI")
+
+        assert terzaghi.bearing_capacity() == pytest.approx(expected=expected,
+                                                            rel=0.01)
