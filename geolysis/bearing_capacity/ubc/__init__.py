@@ -4,7 +4,7 @@ from typing import Optional
 
 from geolysis import validators
 from geolysis.foundation import FoundationSize, Shape, create_foundation
-from geolysis.utils import arctan, inf, tan
+from geolysis.utils import arctan, enum_repr, inf, tan
 
 __all__ = ["UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",
@@ -83,7 +83,7 @@ class UltimateBearingCapacity(ABC):
         or general shear in the case of general shear failure.
         """
         if self.apply_local_shear:
-            return (2 / 3) * self._cohesion
+            return (2.0 / 3.0) * self._cohesion
         return self._cohesion
 
     @cohesion.setter
@@ -213,6 +213,7 @@ from .vesic_ubc import (VesicBearingCapacityFactor, VesicDepthFactor,
                         VesicUltimateBearingCapacity)
 
 
+@enum_repr
 class UBC_TYPE(enum.StrEnum):
     """Enumeration of available ultimate bearing capacity types."""
     HANSEN = enum.auto()
@@ -231,13 +232,14 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                      shape: Shape | str = Shape.SQUARE,
                                      load_angle=0.0,
                                      apply_local_shear=False,
-                                     ubc_type: UBC_TYPE | str = "HANSEN",
+                                     ubc_type: UBC_TYPE | str = \
+                                             UBC_TYPE.HANSEN,
                                      ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate bearing
     capacity.
 
     :param friction_angle: Internal angle of friction for general shear
-                               failure. (degree)
+                           failure. (degree)
     :type friction_angle: float
 
     :param cohesion: Cohesion of soil. (kPa)
@@ -266,7 +268,7 @@ def create_ultimate_bearing_capacity(friction_angle: float,
     :type ground_water_level: float
 
     :param shape: Shape of foundation footing, defaults to "SQUARE".
-    :type shape: str, optional
+    :type shape: Shape | str, optional
 
     :param load_angle: Inclination of the applied load with the  vertical
                        (:math:`\alpha^{\circ}`), defaults to 0.0.
@@ -281,11 +283,25 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                      Available values are: "HANSEN", "TERZAGHI", "VESIC".
                      defaults to "BOWLES".
     :type ubc_type:  UBC_TYPE | str, optional
+
+    :raises ValueError: Raised if ubc_type is not supported.
+    :raises ValueError: Raised when length is not provided for a rectangular
+                        footing.
+    :raises TypeError: Raised if an invalid footing shape is provided.
     """
     if isinstance(ubc_type, str):
-        ubc_type = UBC_TYPE(ubc_type.casefold())
+        try:
+            ubc_type = UBC_TYPE(ubc_type.casefold())
+        except ValueError as e:
+            msg = "ubc_type: {0} is not supported, Supported types: {1}"
+            supported_types = list(UBC_TYPE)
+            raise ValueError(msg.format(ubc_type, supported_types)) from e
 
-    fnd_size = create_foundation(depth=depth, width=width, length=length,
+    # exception from create_foundation will automaatically propagate
+    # no need to catch and handle it.
+    fnd_size = create_foundation(depth=depth,
+                                 width=width,
+                                 length=length,
                                  eccentricity=eccentricity,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
@@ -299,9 +315,6 @@ def create_ultimate_bearing_capacity(friction_angle: float,
         UBC_TYPE.VESIC: VesicUltimateBearingCapacity,
     }
 
-    if ubc_type not in ubc_classes:
-        raise ValueError(f"ubc_type {ubc_type} is not supported")
-
     if ubc_type == UBC_TYPE.TERZAGHI:
         ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]
     else:
@@ -313,5 +326,4 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                     foundation_size=fnd_size,
                     load_angle=load_angle,
                     apply_local_shear=apply_local_shear)
-
     return ubc
