@@ -1,6 +1,6 @@
 from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
-from geolysis.utils import round_
+from geolysis.utils import round_, inf
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
@@ -58,6 +58,9 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         depth = self.foundation_size.depth
         width = self.foundation_size.width
         water_level = self.foundation_size.ground_water_level
+
+        if water_level == inf:
+            return 2.0
 
         if water_level <= depth:
             cw = 2.0 - depth / (2.0 * width)
