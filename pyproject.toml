@@ -50,12 +50,11 @@ dev = ["pytest", "pytest-cov", "coverage"]
 [tool.pytest.ini_options]
 addopts = "-ra --verbose --strict-markers --doctest-modules"
 minversion = "6.0"
-testpaths = ["tests", "src"]
+testpaths = ["tests", "geolysis"]
 doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NUMBER"]
 
 [tool.docformatter]
 style = "sphinx"
-black = true
 wrap-summaries = 79
 wrap-descriptions = 79
 pre-summary-newline = false
