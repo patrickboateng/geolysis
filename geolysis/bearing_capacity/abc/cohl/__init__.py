@@ -151,8 +151,8 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
             raise ValueError(
                 msg.format(foundation_type, supported_types)) from e
 
-    # exception from create_foundation will automaatically propagate, no
-    # need to catch and handle it.
+    # exception from create_foundation will automaatically propagate
+    # no need to catch and handle it.
     fnd_size = create_foundation(depth=depth,
                                  width=width,
                                  length=length,
