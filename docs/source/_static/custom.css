@@ -1,9 +1,0 @@
-table {
-    width: 100%;
-}
-
-th, td {
-    border: 1px solid black; /* Adds borders to rows and columns */
-    padding: 0.5rem;
-    text-align: left;
-}
