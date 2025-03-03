@@ -3,6 +3,8 @@
 .. currentmodule:: {{ module }}
 
 .. autoclass:: {{ objname }}
+   :members:
+   :no-undoc-members:
 
    {% block methods %}
 
@@ -28,3 +30,4 @@
    {%- endfor %}
    {% endif %}
    {% endblock %}
+
