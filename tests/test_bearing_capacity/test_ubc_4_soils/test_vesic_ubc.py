@@ -1,16 +1,30 @@
 import pytest
 
-from geolysis.bearing_capacity.ubc import VesicUltimateBearingCapacity
-from geolysis.foundation import create_foundation
+from geolysis.bearing_capacity.ubc import create_ultimate_bearing_capacity
 
 
 class TestVesicUBC:
-    def test_bearing_capacity(self):
-        fs = create_foundation(depth=1.0, width=1.5, eccentricity=0.2,
-                               shape="square")
-        ubc = VesicUltimateBearingCapacity(friction_angle=0.0,
-                                           cohesion=100.0,
-                                           moist_unit_wgt=21.0,
-                                           foundation_size=fs)
+    @pytest.mark.parametrize(
+        ["friction_angle", "cohesion", "moist_unit_wgt", "depth",
+         "width", "length", "eccentricity", "shape", "expected"],
+        [(0.0, 100.0, 21.0, 1.0, 1.5, None, 0.2, "square", 765.2)])
+    def test_bearing_capacity(self, friction_angle,
+                              cohesion,
+                              moist_unit_wgt,
+                              depth,
+                              width,
+                              length,
+                              eccentricity,
+                              shape,
+                              expected):
+        ubc = create_ultimate_bearing_capacity(friction_angle=friction_angle,
+                                               cohesion=cohesion,
+                                               moist_unit_wgt=moist_unit_wgt,
+                                               depth=depth,
+                                               width=width,
+                                               length=length,
+                                               eccentricity=eccentricity,
+                                               shape=shape,
+                                               ubc_type="VESIC")
         actual = ubc.bearing_capacity()
-        assert actual == pytest.approx(765.2, 0.01)
+        assert actual == pytest.approx(expected, 0.01)
