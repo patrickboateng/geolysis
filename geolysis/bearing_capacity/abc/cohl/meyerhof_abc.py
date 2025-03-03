@@ -1,3 +1,14 @@
+""" Meyerhof allowable bearing capacity.
+
+Classes
+=======
+
+.. autosummary::
+    :toctree: _autosummary
+
+    MeyerhofABC4PadFoundation
+    MeyerhofABC4MatFoundation
+"""
 from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_

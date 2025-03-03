@@ -1,6 +1,17 @@
+"""Terzaghi allowable bearing capacity.
+
+Classes
+=======
+
+.. autosummary::
+    :toctree: _autosummary
+
+    TerzaghiABC4PadFoundation
+    TerzaghiABC4MatFoundation
+"""
 from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
-from geolysis.utils import round_, inf
+from geolysis.utils import round_
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
@@ -59,7 +70,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         width = self.foundation_size.width
         water_level = self.foundation_size.ground_water_level
 
-        if water_level == inf:
+        if water_level is None:
             return 2.0
 
         if water_level <= depth:

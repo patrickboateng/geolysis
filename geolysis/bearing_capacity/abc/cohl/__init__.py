@@ -1,13 +1,49 @@
+""" Allowable bearing capacity package for cohesionless soils.
+
+Exceptions
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    SettlementError
+
+Enums
+=====
+
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    ABC_TYPE
+
+Modules
+=======
+
+.. autosummary::
+    :toctree: _autosummary
+
+    bowles_abc
+    meyerhof_abc
+    terzaghi_abc
+
+Functions
+=========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    create_allowable_bearing_capacity
+"""
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from geolysis import validators
+from geolysis import validators, error_msg_tmpl
 from geolysis.foundation import (FoundationSize,
                                  Shape,
                                  FoundationType,
                                  create_foundation)
-
 from geolysis.utils import inf, enum_repr
 
 
@@ -87,8 +123,8 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                       shape: Shape | str = Shape.SQUARE,
                                       foundation_type: FoundationType | str = \
                                               FoundationType.PAD,
-                                      abc_type: ABC_TYPE | str = \
-                                              ABC_TYPE.BOWLES,
+                                      abc_type: Optional[
+                                          ABC_TYPE | str] = None,
                                       ) -> AllowableBearingCapacity:
     """ A factory function that encapsulate the creation of  allowable bearing
     capacities.
@@ -125,31 +161,33 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
 
     :param abc_type: Type of allowable bearing capacity calculation to apply.
                      Available values are: "BOWLES", "MEYERHOF", "TERZAGHI".
-                     defaults to "BOWLES".
-    :type abc_type:  ABC_TYPE | str, optional
+                     defaults to None.
+    :type abc_type:  ABC_TYPE | str
 
     :raises ValueError: Raised if abc_type or foundation_type is not supported.
     :raises ValueError: Raised when length is not provided for a rectangular
                         footing.
-    :raises TypeError: Raised if an invalid footing shape is provided.
+    :raises ValueError: Raised if an invalid footing shape is provided.
     """
+    if abc_type is None:
+        msg = error_msg_tmpl(abc_type, ABC_TYPE)
+        raise ValueError(msg)
 
-    if isinstance(abc_type, str):
-        try:
-            abc_type = ABC_TYPE(abc_type.casefold())
-        except ValueError as e:
-            msg = "abc_type: {0} is not supported, Supported types: {1}"
-            supported_types = list(ABC_TYPE)
-            raise ValueError(msg.format(abc_type, supported_types)) from e
+    abc_type = str(abc_type).casefold()
 
-    if isinstance(foundation_type, str):
-        try:
-            foundation_type = FoundationType(foundation_type.casefold())
-        except ValueError as e:
-            msg = "foundation_type: {0} is not support, Supported types: {1}"
-            supported_types = list(FoundationType)
-            raise ValueError(
-                msg.format(foundation_type, supported_types)) from e
+    try:
+        abc_type = ABC_TYPE(abc_type)
+    except ValueError as e:
+        msg = error_msg_tmpl(abc_type, ABC_TYPE)
+        raise ValueError(msg) from e
+
+    foundation_type = str(foundation_type).casefold()
+
+    try:
+        foundation_type = FoundationType(foundation_type)
+    except ValueError as e:
+        msg = error_msg_tmpl(foundation_type, FoundationType)
+        raise ValueError(msg) from e
 
     # exception from create_foundation will automaatically propagate
     # no need to catch and handle it.

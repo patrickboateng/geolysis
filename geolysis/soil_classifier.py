@@ -1,10 +1,51 @@
+""" Soil classification module.
+
+Exceptions
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    SizeDistError
+
+Enums
+=====
+
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    CLF_TYPE
+    USCSSymbol
+    AASHTOSymbol
+
+Classes
+=======
+
+.. autosummary::
+    :toctree: _autosummary
+
+    AtterbergLimits
+    SizeDistribution
+    PSD
+    AASHTO
+    USCS
+
+Functions
+=========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    create_soil_classifier
+"""
 import enum
 from abc import abstractmethod
 from typing import Protocol
 from typing import NamedTuple, Optional, Sequence
 
-from geolysis import validators
-from geolysis.utils import isclose, round_
+from geolysis import validators, error_msg_tmpl
+from geolysis.utils import enum_repr, isclose, round_
 
 __all__ = ["CLF_TYPE", "AtterbergLimits", "PSD", "AASHTO", "USCS",
            "SizeDistribution", "create_soil_classifier"]
@@ -12,7 +53,6 @@ __all__ = ["CLF_TYPE", "AtterbergLimits", "PSD", "AASHTO", "USCS",
 
 class SizeDistError(ZeroDivisionError):
     """Exception raised when size distribution is not provided."""
-    pass
 
 
 class SoilClf(NamedTuple):
@@ -26,12 +66,14 @@ class SoilClassifier(Protocol):
     def classify(self) -> SoilClf: ...
 
 
+@enum_repr
 class CLF_TYPE(enum.StrEnum):
     """Enumeration of soil classification types."""
     AASHTO = enum.auto()
     USCS = enum.auto()
 
 
+@enum_repr
 class _Clf(tuple, enum.Enum):
 
     def __str__(self) -> str:
@@ -516,7 +558,7 @@ class USCS:
     termed as Peat. (:math:`P_t`)
     """
 
-    def __init__(self, atterberg_limits: AtterbergLimits, 
+    def __init__(self, atterberg_limits: AtterbergLimits,
                  psd: PSD, organic=False):
         """
         :param atterberg_limits: Atterberg limits of the soil.
@@ -645,11 +687,14 @@ class USCS:
                 f"{coarse_material_type}{fine_material_type}")
 
 
-def create_soil_classifier(liquid_limit: float, plastic_limit: float,
-                           fines: float, sand: Optional[float] = None,
+def create_soil_classifier(liquid_limit: float,
+                           plastic_limit: float,
+                           fines: float,
+                           sand: Optional[float] = None,
                            d_10: float = 0, d_30: float = 0, d_60: float = 0,
-                           add_group_idx: bool = True, organic: bool = False,
-                           clf_type: CLF_TYPE | str | None = None
+                           add_group_idx: bool = True,
+                           organic: bool = False,
+                           clf_type: Optional[CLF_TYPE | str] = None
                            ) -> SoilClassifier:
     """ A factory function that encapsulates the creation of a soil classifier.
 
@@ -692,22 +737,31 @@ def create_soil_classifier(liquid_limit: float, plastic_limit: float,
 
     :param clf_type: Used to indicate which type of soil classifier should be
                      used, defaults to None.
-    :type clf_type: ClfType, optional
+    :type clf_type: CLF_TYPE | str
 
-    :raises ValueError: Raises ValueError if ``clf_type`` is ``None`` or
-                        invalid
+    :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
+                        None
     """
     if clf_type is None:
-        raise ValueError("clf_type must be specified")
+        supported_types = list(CLF_TYPE)
+        msg = error_msg_tmpl.format(clf_type, supported_types)
+        raise ValueError(msg)
 
-    # raises ValueError if clf_type is not supported
-    if isinstance(clf_type, str):
-        clf_type = CLF_TYPE(clf_type.casefold())
+    clf_type = str(clf_type).casefold()
 
-    al = AtterbergLimits(liquid_limit=liquid_limit, plastic_limit=plastic_limit)
+    try:
+        clf_type = CLF_TYPE(clf_type)
+    except ValueError as e:
+        supported_types = list(CLF_TYPE)
+        msg = error_msg_tmpl.format(clf_type, supported_types)
+        raise ValueError(msg) from e
+
+    atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
+                                     plastic_limit=plastic_limit)
 
     if clf_type == CLF_TYPE.AASHTO:
-        clf = AASHTO(atterberg_limits=al, fines=fines, 
+        clf = AASHTO(atterberg_limits=atterberg_lmts,
+                     fines=fines,
                      add_group_idx=add_group_idx)
         return clf
 
@@ -717,6 +771,6 @@ def create_soil_classifier(liquid_limit: float, plastic_limit: float,
 
     size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
     psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
-    clf = USCS(atterberg_limits=al, psd=psd, organic=organic)
+    clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)
 
     return clf

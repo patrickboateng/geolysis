@@ -1,3 +1,30 @@
+""" Standard penetration test module.
+
+Enums
+=====
+
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    HammerType
+    SamplerType
+
+Classes
+=======
+
+.. autosummary::
+    :toctree: _autosummary
+
+    SPTDesign
+    EnergyCorrection
+    GibbsHoltzOPC
+    BazaraaPeckOPC
+    PeckOPC
+    LiaoWhitmanOPC
+    SkemptonOPC
+    DilatancyCorrection
+"""
 import enum
 from abc import abstractmethod
 from typing import Final, Sequence
@@ -5,8 +32,13 @@ from typing import Final, Sequence
 from geolysis import validators
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 
-__all__ = ["EnergyCorrection", "GibbsHoltzOPC", "BazaraaPeckOPC", "PeckOPC",
-           "LiaoWhitmanOPC", "SkemptonOPC", "DilatancyCorrection"]
+__all__ = ["EnergyCorrection",
+           "GibbsHoltzOPC",
+           "BazaraaPeckOPC",
+           "PeckOPC",
+           "LiaoWhitmanOPC",
+           "SkemptonOPC",
+           "DilatancyCorrection"]
 
 
 class SPTDesign:
@@ -102,6 +134,7 @@ class EnergyCorrection:
     ``ENERGY``: 0.6, 0.55, etc
     """
 
+    #: Hammer efficiency factors
     HAMMER_EFFICIENCY_FACTORS = {HammerType.AUTOMATIC: 0.70,
                                  HammerType.DONUT_1: 0.60,
                                  HammerType.DONUT_2: 0.50,
@@ -109,11 +142,14 @@ class EnergyCorrection:
                                  HammerType.DROP: 0.45,
                                  HammerType.PIN: 0.45}
 
+    #: Sampler correction factors
     SAMPLER_CORRECTION_FACTORS = {SamplerType.STANDARD: 1.00,
                                   SamplerType.NON_STANDARD: 1.20}
 
-    def __init__(self, recorded_spt_n_value: int, *, energy_percentage=0.6,
-                 borehole_diameter=65.0, rod_length=3.0,
+    def __init__(self, recorded_spt_n_value: int, *,
+                 energy_percentage=0.6,
+                 borehole_diameter=65.0,
+                 rod_length=3.0,
                  hammer_type=HammerType.DONUT_1,
                  sampler_type=SamplerType.STANDARD):
         """

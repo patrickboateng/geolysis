@@ -1,8 +1,38 @@
+""" Ultimate bearing capacity estimation package
+
+Enum
+====
+
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    UBC_TYPE
+
+Modules
+=======
+
+.. autosummary::
+    :toctree: _autosummary
+
+    hansen_ubc
+    vesic_ubc
+    terzaghi_ubc
+
+Functions
+=========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    create_ultimate_bearing_capacity
+"""
+import statistics
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from geolysis import validators
+from geolysis import validators, error_msg_tmpl
 from geolysis.foundation import FoundationSize, Shape, create_foundation
 from geolysis.utils import arctan, enum_repr, inf, tan
 
@@ -10,19 +40,9 @@ __all__ = ["UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircularFooting",
            "TerzaghiUBC4RectangularFooting",
-           "TerzaghiBearingCapacityFactor",
            "TerzaghiUBC4SquareFooting",
            "HansenUltimateBearingCapacity",
-           "HansenBearingCapacityFactor",
-           "HansenShapeFactor",
-           "HansenInclinationFactor",
-           "HansenDepthFactor",
            "VesicUltimateBearingCapacity",
-           "VesicBearingCapacityFactor",
-           "VesicShapeFactor",
-           "VesicInclinationFactor",
-           "VesicDepthFactor",
-           "VesicInclinationFactor",
            "create_ultimate_bearing_capacity"]
 
 
@@ -146,11 +166,6 @@ class UltimateBearingCapacity(ABC):
     def i_gamma(self) -> float:
         return 1.0
 
-    def bearing_capacity(self):
-        return (self._cohesion_term(1.0)
-                + self._surcharge_term()
-                + self._embedment_term(0.5))
-
     def _cohesion_term(self, coef: float = 1.0) -> float:
         return coef * self.cohesion * self.n_c * self.s_c * self.d_c * self.i_c
 
@@ -158,7 +173,7 @@ class UltimateBearingCapacity(ABC):
         depth = self.foundation_size.depth
         water_level = self.foundation_size.ground_water_level
 
-        if water_level == inf:
+        if water_level is None:
             water_corr = 1.0  # water correction
         else:
             # water level above the base of the foundation
@@ -174,7 +189,7 @@ class UltimateBearingCapacity(ABC):
         width = self.foundation_size.effective_width
         water_level = self.foundation_size.ground_water_level
 
-        if water_level == inf:
+        if water_level is None:
             # water correction
             water_corr = 1.0
         else:
@@ -184,6 +199,11 @@ class UltimateBearingCapacity(ABC):
 
         return (coef * self.moist_unit_wgt * width * self.n_gamma
                 * self.s_gamma * self.d_gamma * self.i_gamma * water_corr)
+
+    def bearing_capacity(self):
+        return (self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5))
 
     @property
     @abstractmethod
@@ -201,16 +221,12 @@ class UltimateBearingCapacity(ABC):
         ...
 
 
-from .hansen_ubc import (HansenBearingCapacityFactor, HansenDepthFactor,
-                         HansenInclinationFactor, HansenShapeFactor,
-                         HansenUltimateBearingCapacity)
-from .terzaghi_ubc import (TerzaghiBearingCapacityFactor,
-                           TerzaghiUBC4CircularFooting,
+from .hansen_ubc import HansenUltimateBearingCapacity
+from .terzaghi_ubc import (TerzaghiUBC4CircularFooting,
                            TerzaghiUBC4RectangularFooting,
-                           TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting)
-from .vesic_ubc import (VesicBearingCapacityFactor, VesicDepthFactor,
-                        VesicInclinationFactor, VesicShapeFactor,
-                        VesicUltimateBearingCapacity)
+                           TerzaghiUBC4SquareFooting,
+                           TerzaghiUBC4StripFooting)
+from .vesic_ubc import VesicUltimateBearingCapacity
 
 
 @enum_repr
@@ -227,13 +243,13 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                      depth: float,
                                      width: float,
                                      length: Optional[float] = None,
-                                     eccentricity=0.0,
-                                     ground_water_level=inf,
+                                     eccentricity: float = 0.0,
+                                     ground_water_level: Optional[
+                                         float] = None,
                                      shape: Shape | str = Shape.SQUARE,
                                      load_angle=0.0,
                                      apply_local_shear=False,
-                                     ubc_type: UBC_TYPE | str = \
-                                             UBC_TYPE.HANSEN,
+                                     ubc_type: Optional[UBC_TYPE | str] = None,
                                      ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate bearing
     capacity.
@@ -281,21 +297,25 @@ def create_ultimate_bearing_capacity(friction_angle: float,
 
     :param ubc_type: Type of allowable bearing capacity calculation to apply.
                      Available values are: "HANSEN", "TERZAGHI", "VESIC".
-                     defaults to "BOWLES".
+                     defaults to None.
     :type ubc_type:  UBC_TYPE | str, optional
 
     :raises ValueError: Raised if ubc_type is not supported.
     :raises ValueError: Raised when length is not provided for a rectangular
                         footing.
-    :raises TypeError: Raised if an invalid footing shape is provided.
+    :raises ValueError: Raised if an invalid footing shape is provided.
     """
-    if isinstance(ubc_type, str):
-        try:
-            ubc_type = UBC_TYPE(ubc_type.casefold())
-        except ValueError as e:
-            msg = "ubc_type: {0} is not supported, Supported types: {1}"
-            supported_types = list(UBC_TYPE)
-            raise ValueError(msg.format(ubc_type, supported_types)) from e
+    if ubc_type is None:
+        msg = error_msg_tmpl(ubc_type, UBC_TYPE)
+        raise ValueError(msg)
+
+    ubc_type = str(ubc_type).casefold()
+
+    try:
+        ubc_type = UBC_TYPE(ubc_type)
+    except ValueError as e:
+        msg = error_msg_tmpl(ubc_type, UBC_TYPE)
+        raise ValueError(msg) from e
 
     # exception from create_foundation will automaatically propagate
     # no need to catch and handle it.
