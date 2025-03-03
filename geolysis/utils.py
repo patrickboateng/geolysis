@@ -4,8 +4,22 @@ from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
 from typing import Callable, SupportsRound
 
-__all__ = ["inf", "pi", "deg2rad", "rad2deg", "tan", "cot", "sin", "cos",
-           "arctan", "round_", "mean", "exp", "isclose", "log10", "sqrt"]
+__all__ = ["enum_repr",
+           "inf",
+           "pi",
+           "deg2rad",
+           "rad2deg",
+           "tan",
+           "cot",
+           "sin",
+           "cos",
+           "arctan",
+           "round_",
+           "mean",
+           "exp",
+           "isclose",
+           "log10",
+           "sqrt"]
 
 
 def deg2rad(x: float, /) -> float:
@@ -41,6 +55,11 @@ def cos(x: float, /) -> float:
 def arctan(x: float, /) -> float:
     """Return the arc tangent (measured in degrees) of x."""
     return rad2deg(math.atan(x))
+
+
+def enum_repr(cls):
+    cls.__repr__ = lambda self: str(self.value)
+    return cls
 
 
 def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
