@@ -1,4 +1,8 @@
-.. currentmodule:: geolysis.bearing_capacity.abc.cohl
+******************************************
+geolysis.bearing_capacity.abc.meyerhof_abc
+******************************************
+
+.. automodule:: geolysis.bearing_capacity.abc._abc
 
 **************************************
 ``geolysis.bearing_capacity.abc.cohl``
@@ -7,7 +11,7 @@
 Exceptions
 ==========
 
-.. autosummary:: 
+.. autosummary::
     :toctree: _autosummary
     :nosignatures:
 
@@ -16,7 +20,7 @@ Exceptions
 Enums
 =====
 
-.. autosummary:: 
+.. autosummary::
     :toctree: _autosummary
     :nosignatures:
 
@@ -25,7 +29,7 @@ Enums
 Classes
 =======
 
-.. autosummary:: 
+.. autosummary::
     :toctree: _autosummary
     :nosignatures:
 
@@ -39,8 +43,8 @@ Classes
 Functions
 =========
 
-.. autosummary:: 
+.. autosummary::
     :toctree: _autosummary
-    :nosignatures:  
+    :nosignatures:
 
     create_allowable_bearing_capacity
