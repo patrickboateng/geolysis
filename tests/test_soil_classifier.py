@@ -1,10 +1,28 @@
 import unittest
-from typing import Sequence
 
 import pytest
 
-from geolysis.soil_classifier import (PSD, AtterbergLimits, SizeDistribution,
+from geolysis.soil_classifier import (PSD, AtterbergLimits, _SizeDistribution,
                                       create_soil_classifier)
+
+
+def test_create_soil_classifier():
+    with pytest.raises(ValueError):
+        create_soil_classifier(liquid_limit=30.4,
+                               plastic_limit=15.9,
+                               fines=40.20)
+
+    with pytest.raises(ValueError):
+        create_soil_classifier(liquid_limit=30.4,
+                               plastic_limit=15.9,
+                               fines=40.20,
+                               clf_type="IS")
+
+    with pytest.raises(ValueError):
+        create_soil_classifier(liquid_limit=30.4,
+                               plastic_limit=15.9,
+                               fines=40.20,
+                               clf_type="USCS")
 
 
 class TestAtterbergLimits(unittest.TestCase):
@@ -20,10 +38,14 @@ class TestAtterbergLimits(unittest.TestCase):
     def test_consistency_index(self):
         self.assertAlmostEqual(self.al.consistency_index(nmc=20), 50.0)
 
+    def test_errors(self):
+        with self.assertRaises(ValueError):
+            AtterbergLimits(liquid_limit=15.0, plastic_limit=25.0)
+
 
 class TestPSD(unittest.TestCase):
     def setUp(self) -> None:
-        size_dist = SizeDistribution(0.115, 0.53, 1.55)
+        size_dist = _SizeDistribution(0.115, 0.53, 1.55)
         self.psd = PSD(fines=0.0, sand=0.0, size_dist=size_dist)
 
     def test_coeff_of_uniformity(self):
@@ -34,7 +56,7 @@ class TestPSD(unittest.TestCase):
 
 
 class TestAASHTO:
-    @pytest.mark.parametrize("al,fines,expected",
+    @pytest.mark.parametrize(["al", "fines", "expected"],
                              [((30, 25), 10, "A-1-a(0)"),
                               ((17.9, 14.5), 24.01, "A-1-b(0)"),
                               ((0, 0), 9.5, "A-3(0)"),
@@ -47,12 +69,12 @@ class TestAASHTO:
                               ((70.0, 38.0), 86, "A-7-5(20)"),
                               ((52.6, 27.6), 45.8, "A-7-6(7)"),
                               ((45.0, 16.0), 60, "A-7-6(13)")])
-    def test_aashto_with_grp_idx(self, al, fines, expected: str):
+    def test_aashto_with_grp_idx(self, al, fines, expected):
         asshto_clf = create_soil_classifier(*al, fines=fines,
                                             clf_type="AASHTO")
         assert asshto_clf.classify().symbol == expected
 
-    @pytest.mark.parametrize("al,fines,expected",
+    @pytest.mark.parametrize(["al", "fines", "expected"],
                              [((0.0, 0.0), 9.5, "A-3"),
                               ((43.0, 35.0), 30.0, "A-2-5"),
                               ((43.0, 25.0), 30.0, "A-2-7"),
@@ -81,9 +103,8 @@ class TestUSCS:
                               ((30.59, 24.41), (9.87, 19.03), (0.07, 0.3, 0.8),
                                "GW-GM"),
                               ((32.78, 22.99), (3.87, 15.42), (2.5, 6, 15),
-                               "GP")])
-    def test_dual_classification(self, al: Sequence, psd,
-                                 dist: Sequence, expected):
+                               "GP"), ])
+    def test_dual_classification(self, al, psd, dist, expected):
         uscs_clf = create_soil_classifier(*al, *psd, *dist, clf_type="uscs")
         assert uscs_clf.classify().symbol == expected
 
@@ -95,42 +116,31 @@ class TestUSCS:
          ((30.33, 23.42), (8.93, 7.69), "GW-GM,GP-GM"),
          ((35.32, 25.57), (9.70, 5.63), "GW-GM,GP-GM"),
          ((26.17, 19.69), (12.00, 8.24), "GW-GC,GP-GC"),
-         ((32.78, 22.99), (3.87, 15.42), "GW,GP")])
-    def test_dual_classification_no_psd_coeff(self, al: Sequence,
-                                              psd: Sequence, expected):
+         ((32.78, 22.99), (3.87, 15.42), "GW,GP"), ])
+    def test_dual_classification_no_psd_coeff(self, al, psd, expected):
         uscs_clf = create_soil_classifier(*al, *psd, clf_type="uscs")
         assert uscs_clf.classify().symbol == expected
 
-    @pytest.mark.parametrize("al,psd,expected",
-                             [((34.1, 21.1), (47.88, 37.84), "SC"),
-                              ((27.5, 13.8), (54.23, 45.69), "CL"),
-                              ((27.7, 22.7), (18.95, 77.21), "SM-SC"),
-                              ((64.1, 29), (57.17, 42.58), "CH"),
-                              ((56, 32.4), (51.11, 46.87), "MH"),
-                              ((70, 38), (86, 7), "MH"),
-                              ((26.4, 19.4), (54.76, 45.24), "ML-CL"),
-                              ((33, 21), (30, 30), "GC"),
-                              ((34.46, 23.85), (18.09, 18.7), "GC"),
-                              ((45, 16), (59, 41), "CL"),
-                              ((55, 40), (85, 15), "MH"),
-                              ((49.93, 37.22), (49.4, 35.98), "SM"),
-                              ((42.77, 29.98), (27.6, 27.93), "GM"),
-                              ((35.83, 25.16), (68.94, 28.88), "ML")])
-    def test_single_classification(self, al: Sequence, psd: Sequence,
-                                   expected):
-        uscs_clf = create_soil_classifier(*al, *psd, clf_type="uscs")
+    @pytest.mark.parametrize(["al", "psd", "organic", "expected"],
+                             [((34.1, 21.1), (47.88, 37.84), False, "SC"),
+                              ((27.5, 13.8), (54.23, 45.69), False, "CL"),
+                              ((27.7, 22.7), (18.95, 77.21), False, "SM-SC"),
+                              ((64.1, 29), (57.17, 42.58), False, "CH"),
+                              ((56, 32.4), (51.11, 46.87), False, "MH"),
+                              ((70, 38), (86, 7), False, "MH"),
+                              ((26.4, 19.4), (54.76, 45.24), False, "ML-CL"),
+                              ((33, 21), (30, 30), False, "GC"),
+                              ((34.46, 23.85), (18.09, 18.7), False, "GC"),
+                              ((45, 16), (59, 41), False, "CL"),
+                              ((55, 40), (85, 15), False, "MH"),
+                              ((49.93, 37.22), (49.4, 35.98), False, "SM"),
+                              ((42.77, 29.98), (27.6, 27.93), False, "GM"),
+                              ((35.83, 25.16), (68.94, 28.88), False, "ML"),
+                              ((27.7, 22.7), (18.95, 20.48), False, "GM-GC"),
+                              ((35.83, 25.16), (68.94, 28.88), True, "OL"),
+                              ((55.0, 40.0), (85.0, 15.0), True, "OH")])
+    def test_single_classification(self, al, psd, organic, expected):
+        uscs_clf = create_soil_classifier(*al, *psd,
+                                          organic=organic,
+                                          clf_type="uscs")
         assert uscs_clf.classify().symbol == expected
-
-    def test_organic_soils_low_plasticity(self):
-        uscs_clf = create_soil_classifier(liquid_limit=35.83,
-                                          plastic_limit=25.16, fines=68.94,
-                                          sand=28.88, organic=True,
-                                          clf_type="uscs")
-        assert uscs_clf.classify().symbol == "OL"
-
-    def test_organic_soils_high_plasticity(self):
-        uscs_clf = create_soil_classifier(liquid_limit=55.0,
-                                          plastic_limit=40.0, fines=85.0,
-                                          sand=15.0, organic=True,
-                                          clf_type="uscs")
-        assert uscs_clf.classify().symbol == "OH"

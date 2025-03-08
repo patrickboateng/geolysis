@@ -1,7 +1,7 @@
 import pytest
 
-from geolysis.utils import (cos, cot, deg2rad, log10, pi, rad2deg, sin, sqrt,
-                            tan)
+from geolysis.utils import (cos, cot, deg2rad, log10, pi, rad2deg,
+                            sin, sqrt, tan, round_)
 
 
 def test_deg2rad():
@@ -34,3 +34,8 @@ def test_log():
 
 def test_sqrt():
     assert sqrt(25.0) == pytest.approx(5.0, 0.01)
+
+
+def test_round():
+    with pytest.raises(TypeError):
+        round_(ndigits=2.0)(lambda: 1.234)

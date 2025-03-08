@@ -7,7 +7,9 @@ class TestVesicUBC:
     @pytest.mark.parametrize(
         ["friction_angle", "cohesion", "moist_unit_wgt", "depth",
          "width", "length", "eccentricity", "shape", "expected"],
-        [(0.0, 100.0, 21.0, 1.0, 1.5, None, 0.2, "square", 765.2)])
+        [(0.0, 100.0, 21.0, 1.0, 1.5, None, 0.2, "square", 765.2),
+         (20.0, 20.0, 18.0, 1.5, 2.0, None, 0.0, "strip", 697.13),
+         (20.0, 20.0, 18.0, 1.5, 2.0, None, 0.0, "square", 901.37)])
     def test_bearing_capacity(self, friction_angle,
                               cohesion,
                               moist_unit_wgt,
