@@ -73,7 +73,7 @@ def n_gamma(friction_angle: float) -> float:
 
     :Equation:
 
-    .. math:: N_{\gamma} &= 2(N_q + 1) \tan(\phi)
+    .. math:: N_{\gamma} = 2(N_q + 1) \tan(\phi)
     """
     return 2.0 * (n_q(friction_angle) + 1.0) * tan(friction_angle)
 
@@ -109,8 +109,7 @@ def s_c(friction_angle: float, foundation_size: FoundationSize) -> float:
         return 1.0
     elif shape == Shape.RECTANGLE:
         return 1.0 + (width / length) * (_n_q / _n_c)
-    else:
-        # SQUARE, CIRCLE
+    else:  # SQUARE, CIRCLE
         return 1.0 + (_n_q / _n_c)
 
 
@@ -141,8 +140,7 @@ def s_q(friction_angle: float, foundation_size: FoundationSize) -> float:
         return 1.0
     elif shape == Shape.RECTANGLE:
         return 1.0 + (width / length) * tan(friction_angle)
-    else:
-        # SQUARE, CIRCLE
+    else:  # SQUARE, CIRCLE
         return 1.0 + tan(friction_angle)
 
 
@@ -170,8 +168,7 @@ def s_gamma(foundation_size: FoundationSize) -> float:
         return 1.0
     elif shape == Shape.RECTANGLE:
         return 1.0 - 0.4 * (width / length)
-    else:
-        # SQUARE, CIRCLE
+    else:  # SQUARE, CIRCLE
         return 0.6
 
 
@@ -188,7 +185,6 @@ def d_c(foundation_size: FoundationSize) -> float:
     """
     depth = foundation_size.depth
     width = foundation_size.width
-
     return 1.0 + 0.4 * depth / width
 
 
@@ -337,8 +333,3 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
     @property
     def i_gamma(self) -> float:
         return i_gamma(self.friction_angle, self.load_angle)
-
-    @round_
-    def bearing_capacity(self) -> float:
-        """Calculates ultimate bearing capacity."""
-        return super().bearing_capacity()

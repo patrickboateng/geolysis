@@ -104,8 +104,7 @@ def s_c(foundation_size: FoundationSize) -> float:
         return 1.0
     elif shape == Shape.RECTANGLE:
         return 1.0 + 0.2 * width / length
-    else:
-        # SQUARE & CIRCLE
+    else:  # SQUARE & CIRCLE
         return 1.3
 
 
@@ -132,8 +131,7 @@ def s_q(foundation_size: FoundationSize) -> float:
         return 1.0
     elif shape == Shape.RECTANGLE:
         return 1.0 + 0.2 * width / length
-    else:
-        # SQUARE & CIRCLE
+    else:  # SQUARE & CIRCLE
         return 1.2
 
 
@@ -165,8 +163,7 @@ def s_gamma(foundation_size: FoundationSize) -> float:
         return 1.0 - 0.4 * width / length
     elif shape == Shape.SQUARE:
         return 0.8
-    else:
-        # CIRCLE
+    else:  # CIRCLE
         return 0.6
 
 
@@ -324,8 +321,3 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
     @property
     def i_gamma(self) -> float:
         return i_gamma(self.load_angle)
-
-    @round_
-    def bearing_capacity(self) -> float:
-        """Calculates ultimate bearing capacity."""
-        return super().bearing_capacity()
