@@ -208,9 +208,9 @@ class AtterbergLimits:
         """
         Checks whether the soil is either clay or silt.
         """
-        return USCSSymbol.CLAY if self.above_A_LINE() else USCSSymbol.SILT
+        return USCSSymbol.CLAY if self.above_atterberg_line() else USCSSymbol.SILT
 
-    def above_A_LINE(self) -> bool:
+    def above_atterberg_line(self) -> bool:
         """Checks if the soil sample is above A-Line."""
         return self.plasticity_index > self.A_LINE
 
@@ -599,7 +599,7 @@ class USCS:
         if liquid_lmt < 50.0:
             # Low LL
             # Above A-line and PI > 7
-            if self.atterberg_limits.above_A_LINE() and plasticity_idx > 7.0:
+            if self.atterberg_limits.above_atterberg_line() and plasticity_idx > 7.0:
                 soil_clf = USCSSymbol.CL
 
             # Limit plot in hatched area on plasticity chart
@@ -613,7 +613,7 @@ class USCS:
         # High LL
         else:
             # Above A-Line
-            if self.atterberg_limits.above_A_LINE():
+            if self.atterberg_limits.above_atterberg_line():
                 soil_clf = USCSSymbol.CH
 
             # Below A-Line
@@ -628,7 +628,7 @@ class USCS:
         # More than 12% pass No. 200 sieve
         if self.psd.fines > 12.0:
             # Above A-line
-            if self.atterberg_limits.above_A_LINE():
+            if self.atterberg_limits.above_atterberg_line():
                 soil_clf = f"{coarse_material_type}{USCSSymbol.CLAY}"
 
             # Limit plot in hatched zone on plasticity chart
