@@ -27,14 +27,13 @@ Functions
 
     create_ultimate_bearing_capacity
 """
-import statistics
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
 from geolysis import validators, error_msg_tmpl
 from geolysis.foundation import FoundationSize, Shape, create_foundation
-from geolysis.utils import arctan, enum_repr, inf, tan
+from geolysis.utils import arctan, enum_repr, tan, round_
 
 __all__ = ["UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",
@@ -200,7 +199,9 @@ class UltimateBearingCapacity(ABC):
         return (coef * self.moist_unit_wgt * width * self.n_gamma
                 * self.s_gamma * self.d_gamma * self.i_gamma * water_corr)
 
+    @round_
     def bearing_capacity(self):
+        """Calculates the ultimate bearing capacity."""
         return (self._cohesion_term(1.0)
                 + self._surcharge_term()
                 + self._embedment_term(0.5))
@@ -325,7 +326,6 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                  eccentricity=eccentricity,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
-
     ubc_classes = {
         UBC_TYPE.HANSEN: HansenUltimateBearingCapacity,
         UBC_TYPE.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
