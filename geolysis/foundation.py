@@ -302,7 +302,7 @@ class FoundationSize:
         self._eccentricity = val
 
     @property
-    def ground_water_level(self) -> float:
+    def ground_water_level(self) -> Optional[float]:
         return self._ground_water_level
 
     @ground_water_level.setter
