@@ -32,7 +32,8 @@ from typing import Final, Sequence
 from geolysis import validators
 from geolysis.utils import isclose, log10, mean, round_, sqrt
 
-__all__ = ["EnergyCorrection",
+__all__ = ["SPTNDesign",
+           "EnergyCorrection",
            "GibbsHoltzOPC",
            "BazaraaPeckOPC",
            "PeckOPC",
@@ -41,7 +42,7 @@ __all__ = ["EnergyCorrection",
            "DilatancyCorrection"]
 
 
-class SPTDesign:
+class SPTNDesign:
     """ SPT Design Calculations.
 
     Due to uncertainty in field procedure in standard penetration test and also
@@ -53,28 +54,36 @@ class SPTDesign:
     N-value from the base.
     """
 
-    def __init__(self, spt_n_values: Sequence[float]) -> None:
+    def __init__(self, corrected_spt_n_values: Sequence[float]) -> None:
         """
-        :param spt_n_values: SPT N-values within the foundation influence zone. 
-                             ``spt_n_values`` can either be **corrected** or
-                             **uncorrected** SPT N-values.
-        :type spt_n_values: Sequence[float]
+        :param corrected_spt_n_values: Corrected SPT N-values within the
+                                       foundation influence zone.
+        :type corrected_spt_n_values: Sequence[float]
         """
-        self.spt_n_values = spt_n_values
+        self.corrected_spt_n_values = corrected_spt_n_values
+
+    @property
+    def corrected_spt_n_values(self) -> Sequence[float]:
+        return self._corrected_spt_n_values
+
+    @corrected_spt_n_values.setter
+    @validators.min_len(1)
+    def corrected_spt_n_values(self, val: Sequence[float]) -> None:
+        self._corrected_spt_n_values = val
 
     @round_(ndigits=1)
     def average_spt_n_design(self) -> float:
         """Calculates the average of the corrected SPT N-values within the
         foundation influence zone.
         """
-        return mean(self.spt_n_values)
+        return mean(self.corrected_spt_n_values)
 
     @round_(ndigits=1)
     def minimum_spt_n_design(self):
         """The lowest SPT N-value within the influence zone can be taken as the
         :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
         """
-        return min(self.spt_n_values)
+        return min(self.corrected_spt_n_values)
 
     @round_(ndigits=1)
     def weighted_spt_n_design(self):
@@ -92,9 +101,10 @@ class SPTDesign:
         sum_total = 0.0
         sum_wgts = 0.0
 
-        for i, corrected_spt in enumerate(self.spt_n_values, start=1):
+        for i, corr_spt_n_val in enumerate(self.corrected_spt_n_values,
+                                           start=1):
             wgt = 1 / i ** 2
-            sum_total += wgt * corrected_spt
+            sum_total += wgt * corr_spt_n_val
             sum_wgts += wgt
 
         return sum_total / sum_wgts
@@ -233,7 +243,6 @@ class EnergyCorrection:
             corr = 1.05
         else:
             corr = 1.15
-
         return corr
 
     @property
@@ -252,7 +261,6 @@ class EnergyCorrection:
             corr = 0.95
         else:
             corr = 1.00
-
         return corr
 
     def correction(self) -> float:
@@ -331,9 +339,7 @@ class GibbsHoltzOPC(OPC):
     def correction(self) -> float:
         """SPT Correction."""
         corr = 350.0 / (self.eop + 70.0)
-        if corr > 2.0:
-            corr /= 2.0
-        return corr
+        return corr / 2.0 if corr > 2.0 else corr
 
 
 class BazaraaPeckOPC(OPC):

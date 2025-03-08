@@ -48,7 +48,7 @@ from geolysis import validators, error_msg_tmpl
 from geolysis.utils import enum_repr, isclose, round_
 
 __all__ = ["CLF_TYPE", "AtterbergLimits", "PSD", "AASHTO", "USCS",
-           "SizeDistribution", "create_soil_classifier"]
+           "_SizeDistribution", "create_soil_classifier"]
 
 
 class SizeDistError(ZeroDivisionError):
@@ -67,29 +67,17 @@ class SoilClassifier(Protocol):
 
 
 @enum_repr
-class CLF_TYPE(enum.StrEnum):
-    """Enumeration of soil classification types."""
-    AASHTO = enum.auto()
-    USCS = enum.auto()
-
-
-@enum_repr
 class _Clf(tuple, enum.Enum):
 
     def __str__(self) -> str:
         return self.name
 
-    def __eq__(self, value: object) -> bool:
-        if isinstance(value, str):
-            return self.clf_symbol == value
-        return super().__eq__(value)
-
     @property
-    def clf_symbol(self) -> str:
+    def symbol(self) -> str:
         return self.value[0]
 
     @property
-    def clf_description(self) -> str:
+    def description(self) -> str:
         return self.value[1]
 
 
@@ -270,15 +258,13 @@ class AtterbergLimits:
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
 
-class SizeDistribution:
-    """Features obtained from the Particle Size Distribution graph."""
+class _SizeDistribution:
+    """Particle size distribution of soil sample.
+
+    Features obtained from the Particle Size Distribution graph.
+    """
 
     def __init__(self, d_10: float = 0, d_30: float = 0, d_60: float = 0):
-        """
-        :param float d_10: Diameter at which 10% of the soil by weight is finer.
-        :param float d_30: Diameter at which 30% of the soil by weight is finer.
-        :param float d_60: Diameter at which 60% of the soil by weight is finer.
-        """
         self.d_10 = d_10
         self.d_30 = d_30
         self.d_60 = d_60
@@ -301,9 +287,6 @@ class SizeDistribution:
         :param coarse_soil: Coarse fraction of the soil sample. Valid arguments 
                             are ``USCSSymbol.GRAVEL`` and ``USCSSymbol.SAND``.
         """
-        if not (coarse_soil in (USCSSymbol.GRAVEL, USCSSymbol.SAND)):
-            raise NotImplementedError
-
         if coarse_soil is USCSSymbol.GRAVEL:
             if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4:
                 grade = USCSSymbol.WELL_GRADED
@@ -325,7 +308,7 @@ class PSD:
     """
 
     def __init__(self, fines: float, sand: float,
-                 size_dist: Optional[SizeDistribution] = None):
+                 d_10: float = 0, d_30: float = 0, d_60: float = 0):
         """
         :param fines: Percentage of fines in soil sample i.e. The percentage of 
                       soil sample passing through No. 200 sieve (0.075mm).
@@ -334,13 +317,20 @@ class PSD:
         :param sand: Percentage of sand in soil sample.
         :type sand: float
 
-        :param size_dist: Particle size distribution of soil sample.
-        :type size_dist: SizeDistribution
+        :param d_10: Diameter at which 10% of the soil by weight is finer.
+        :type d_10: float
+        :param d_30: Diameter at which 30% of the soil by weight is finer.
+        :type d_30: float
+        :param d_60: Diameter at which 60% of the soil by weight is finer.
+        :type d_60: float
         """
         self.fines = fines
         self.sand = sand
-        self.gravel = 100.0 - (fines + sand)
-        self.size_dist = size_dist if size_dist else SizeDistribution()
+        self.size_dist = _SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
+
+    @property
+    def gravel(self):
+        return 100 - (self.fines + self.sand)
 
     @property
     def coarse_material_type(self) -> USCSSymbol:
@@ -372,9 +362,9 @@ class PSD:
 
         .. math:: C_u = \dfrac{D_{60}}{D_{10}}
 
-        :math:`C_u` value greater than 4 to 6 classifies the soil as well graded
-        for gravels and sands respectively. When :math:`C_u` is less than 4, it
-        is classified as poorly graded or uniformly graded soil.
+        :math:`C_u` value greater than 4 to 6 classifies the soil as well
+        graded for gravels and sands respectively. When :math:`C_u` is less
+        than 4, it is classified as poorly graded or uniformly graded soil.
 
         Higher values of :math:`C_u` indicates that the soil mass consists of
         soil particles with different size ranges.
@@ -470,7 +460,7 @@ class AASHTO:
         """Return the AASHTO classification of the soil."""
         soil_clf = self._classify()
 
-        symbol, description = soil_clf.clf_symbol, soil_clf.clf_description
+        symbol, description = soil_clf.symbol, soil_clf.description
 
         if self.add_group_idx:
             symbol = f"{symbol}({self.group_index():.0f})"
@@ -584,13 +574,13 @@ class USCS:
             soil_clf = USCSSymbol[soil_clf]
 
         if isinstance(soil_clf, USCSSymbol):
-            return SoilClf(soil_clf.clf_symbol, soil_clf.clf_description)
+            return SoilClf(soil_clf.symbol, soil_clf.description)
 
         # Handling tuple or list case for dual classification
         first_clf, second_clf = map(lambda clf: USCSSymbol[clf], soil_clf)
 
-        comb_symbol = f"{first_clf.clf_symbol},{second_clf.clf_symbol}"
-        comb_desc = f"{first_clf.clf_description},{second_clf.clf_description}"
+        comb_symbol = f"{first_clf.symbol},{second_clf.symbol}"
+        comb_desc = f"{first_clf.description},{second_clf.description}"
 
         return SoilClf(comb_symbol, comb_desc)
 
@@ -687,6 +677,13 @@ class USCS:
                 f"{coarse_material_type}{fine_material_type}")
 
 
+@enum_repr
+class CLF_TYPE(enum.StrEnum):
+    """Enumeration of soil classification types."""
+    AASHTO = enum.auto()
+    USCS = enum.auto()
+
+
 def create_soil_classifier(liquid_limit: float,
                            plastic_limit: float,
                            fines: float,
@@ -743,8 +740,7 @@ def create_soil_classifier(liquid_limit: float,
                         None
     """
     if clf_type is None:
-        supported_types = list(CLF_TYPE)
-        msg = error_msg_tmpl.format(clf_type, supported_types)
+        msg = error_msg_tmpl(clf_type, CLF_TYPE)
         raise ValueError(msg)
 
     clf_type = str(clf_type).casefold()
@@ -752,8 +748,7 @@ def create_soil_classifier(liquid_limit: float,
     try:
         clf_type = CLF_TYPE(clf_type)
     except ValueError as e:
-        supported_types = list(CLF_TYPE)
-        msg = error_msg_tmpl.format(clf_type, supported_types)
+        msg = error_msg_tmpl(clf_type, CLF_TYPE)
         raise ValueError(msg) from e
 
     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
@@ -769,8 +764,7 @@ def create_soil_classifier(liquid_limit: float,
     if sand is None:
         raise ValueError("sand must be specified for USCS classification")
 
-    size_dist = SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
-    psd = PSD(fines=fines, sand=sand, size_dist=size_dist)
+    psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
     clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)
 
     return clf
