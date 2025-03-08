@@ -25,34 +25,75 @@ def test_create_soil_classifier():
                                clf_type="USCS")
 
 
-class TestAtterbergLimits(unittest.TestCase):
-    def setUp(self) -> None:
-        self.al = AtterbergLimits(liquid_limit=25.0, plastic_limit=15.0)
+class TestAtterbergLimits:
+    @pytest.mark.parametrize(["liquid_lmt", "plastic_lmt", "expected"],
+                             [(25.0, 15.0, 10.0)])
+    def test_plasticity_idx(self, liquid_lmt: float,
+                            plastic_lmt: float,
+                            expected: float):
+        al = AtterbergLimits(liquid_limit=liquid_lmt,
+                             plastic_limit=plastic_lmt)
+        assert al.plasticity_index == pytest.approx(expected)
 
-    def test_plasticity_index(self):
-        self.assertAlmostEqual(self.al.plasticity_index, 10.0)
+    @pytest.mark.parametrize(["liquid_lmt", "plastic_lmt", "nmc", "expected"],
+                             [(25.0, 15.0, 20.0, 50.0)])
+    def test_liquidity_idx(self, liquid_lmt: float,
+                           plastic_lmt: float,
+                           nmc: float,
+                           expected: float):
+        al = AtterbergLimits(liquid_limit=liquid_lmt,
+                             plastic_limit=plastic_lmt)
+        assert al.liquidity_index(nmc=nmc) == pytest.approx(expected)
 
-    def test_liquidity_index(self):
-        self.assertAlmostEqual(self.al.liquidity_index(nmc=20), 50.0)
-
-    def test_consistency_index(self):
-        self.assertAlmostEqual(self.al.consistency_index(nmc=20), 50.0)
+    @pytest.mark.parametrize(["liquid_lmt", "plastic_lmt", "nmc", "expected"],
+                             [(25.0, 15.0, 20.0, 50.0)])
+    def test_consistency_idx(self, liquid_lmt: float,
+                             plastic_lmt: float,
+                             nmc: float,
+                             expected: float):
+        al = AtterbergLimits(liquid_limit=liquid_lmt,
+                             plastic_limit=plastic_lmt)
+        assert al.consistency_index(nmc=nmc) == pytest.approx(expected)
 
     def test_errors(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             AtterbergLimits(liquid_limit=15.0, plastic_limit=25.0)
 
+    # def test_plasticity_index(self):
+    #     self.assertAlmostEqual(self.al.plasticity_index, 10.0)
+    #
+    # def test_liquidity_index(self):
+    #     self.assertAlmostEqual(self.al.liquidity_index(nmc=20), 50.0)
+    #
+    # def test_consistency_index(self):
+    #     self.assertAlmostEqual(self.al.consistency_index(nmc=20), 50.0)
+    #
 
-class TestPSD(unittest.TestCase):
-    def setUp(self) -> None:
-        size_dist = _SizeDistribution(0.115, 0.53, 1.55)
-        self.psd = PSD(fines=0.0, sand=0.0, size_dist=size_dist)
 
-    def test_coeff_of_uniformity(self):
-        self.assertAlmostEqual(self.psd.coeff_of_uniformity, 13.48)
+class TestPSD:
+    # def setUp(self) -> None:
+    #     size_dist = _SizeDistribution(0.115, 0.53, 1.55)
+    #     self.psd = PSD(fines=0.0, sand=0.0, size_dist=size_dist)
 
-    def test_coeff_of_curvature(self):
-        self.assertAlmostEqual(self.psd.coeff_of_curvature, 1.58)
+    @pytest.mark.parametrize(
+        ["fines", "sand", "d_10", "d_30", "d_60", "expected"],
+        [(0.0, 0.0, 0.115, 0.53, 1.55, 13.48)])
+    def test_coeff_of_uniformity(self, fines,
+                                 sand,
+                                 d_10, d_30, d_60,
+                                 expected):
+        psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
+        assert psd.coeff_of_uniformity == pytest.approx(expected)
+
+    @pytest.mark.parametrize(
+        ["fines", "sand", "d_10", "d_30", "d_60", "expected"],
+        [(0.0, 0.0, 0.115, 0.53, 1.55, 1.58)])
+    def test_coeff_of_curvature(self, fines,
+                                sand,
+                                d_10, d_30, d_60,
+                                expected):
+        psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
+        assert psd.coeff_of_curvature == pytest.approx(expected)
 
 
 class TestAASHTO:
@@ -87,7 +128,7 @@ class TestAASHTO:
 
 
 class TestUSCS:
-    @pytest.mark.parametrize("al,psd,dist,expected",
+    @pytest.mark.parametrize(["al", "psd", "dist", "expected"],
                              [((30.8, 20.7), (10.29, 81.89), (0.07, 0.3, 0.8),
                                "SW-SC"),
                               ((24.4, 14.7), (9.77, 44.82), (0.06, 0.6, 7),
