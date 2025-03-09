@@ -29,12 +29,13 @@ Functions
 
     create_foundation
 """
+
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
 
-from geolysis import validators, error_msg_tmpl
-from geolysis.utils import inf, enum_repr, isclose
+from geolysis import error_msg_tmpl
+from geolysis.utils import inf, enum_repr, isclose, validators
 
 __all__ = ["create_foundation",
            "FoundationSize",
@@ -379,13 +380,13 @@ def create_foundation(depth: float,
         footing_size = SquareFooting(width=width)
     elif shape is Shape.CIRCLE:
         footing_size = CircularFooting(diameter=width)
-    elif shape is Shape.RECTANGLE:
+    else:  # RECTANGLE
         if not length:
             raise ValueError("Length of footing must be provided.")
         footing_size = RectangularFooting(width=width, length=length)
-    else:
-        msg = error_msg_tmpl(shape, Shape)
-        raise ValueError(msg)
+    # else:
+    #     msg = error_msg_tmpl(shape, Shape)
+    #     raise ValueError(msg)
 
     return FoundationSize(depth=depth,
                           eccentricity=eccentricity,

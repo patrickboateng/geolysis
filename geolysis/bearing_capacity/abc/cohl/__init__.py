@@ -39,12 +39,12 @@ import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from geolysis import validators, error_msg_tmpl
+from geolysis import error_msg_tmpl
 from geolysis.foundation import (FoundationSize,
                                  Shape,
                                  FoundationType,
                                  create_foundation)
-from geolysis.utils import inf, enum_repr
+from geolysis.utils import inf, enum_repr, validators
 
 
 class SettlementError(ValueError):

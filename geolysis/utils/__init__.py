@@ -58,7 +58,7 @@ def arctan(x: float, /) -> float:
 
 
 def enum_repr(cls):
-    cls.__repr__ = lambda self: str(self.value)
+    cls.__repr__ = lambda self: f"{self.value}"
     return cls
 
 

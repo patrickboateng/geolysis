@@ -1,3 +1,4 @@
+"""validators"""
 import operator
 from typing import Callable, TypeAlias
 

@@ -31,9 +31,9 @@ import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from geolysis import validators, error_msg_tmpl
+from geolysis import error_msg_tmpl
 from geolysis.foundation import FoundationSize, Shape, create_foundation
-from geolysis.utils import arctan, enum_repr, tan, round_
+from geolysis.utils import arctan, enum_repr, tan, round_, validators
 
 __all__ = ["UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",

@@ -16,7 +16,7 @@ Classes
 .. autosummary::
     :toctree: _autosummary
 
-    SPTDesign
+    SPTNDesign
     EnergyCorrection
     GibbsHoltzOPC
     BazaraaPeckOPC
@@ -29,8 +29,8 @@ import enum
 from abc import abstractmethod
 from typing import Final, Sequence
 
-from geolysis import validators
-from geolysis.utils import isclose, log10, mean, round_, sqrt
+from geolysis.utils import isclose, log10, mean, round_, sqrt, validators, \
+    enum_repr
 
 __all__ = ["SPTNDesign",
            "EnergyCorrection",
@@ -110,6 +110,7 @@ class SPTNDesign:
         return sum_total / sum_wgts
 
 
+@enum_repr
 class HammerType(enum.StrEnum):
     """Enumeration of hammer types."""
     AUTOMATIC = enum.auto()
@@ -119,6 +120,7 @@ class HammerType(enum.StrEnum):
     DROP = PIN = enum.auto()
 
 
+@enum_repr
 class SamplerType(enum.StrEnum):
     """Enumeration of sampler types."""
     STANDARD = enum.auto()

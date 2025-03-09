@@ -26,7 +26,6 @@ Classes
     :toctree: _autosummary
 
     AtterbergLimits
-    SizeDistribution
     PSD
     AASHTO
     USCS
@@ -44,26 +43,19 @@ from abc import abstractmethod
 from typing import Protocol
 from typing import NamedTuple, Optional, Sequence
 
-from geolysis import validators, error_msg_tmpl
-from geolysis.utils import enum_repr, isclose, round_
+from geolysis import error_msg_tmpl
+from geolysis.utils import enum_repr, isclose, round_, validators
 
-__all__ = ["CLF_TYPE", "AtterbergLimits", "PSD", "AASHTO", "USCS",
-           "_SizeDistribution", "create_soil_classifier"]
+__all__ = ["CLF_TYPE",
+           "AtterbergLimits",
+           "PSD",
+           "AASHTO",
+           "USCS",
+           "create_soil_classifier"]
 
 
 class SizeDistError(ZeroDivisionError):
     """Exception raised when size distribution is not provided."""
-
-
-class SoilClf(NamedTuple):
-    symbol: str
-    description: str
-
-
-class SoilClassifier(Protocol):
-
-    @abstractmethod
-    def classify(self) -> SoilClf: ...
 
 
 @enum_repr
@@ -142,14 +134,12 @@ class AtterbergLimits:
     """
 
     class __A_LINE:
-        """The ``A-line`` is used to determine if a soil is clayey or silty.
-
-        .. math:: A = 0.73(LL - 20.0)
-        """
 
         def __get__(self, obj, objtype=None) -> float:
             return 0.73 * (obj.liquid_limit - 20.0)
 
+    #:  The ``A-line`` determines if a soil is clayey or silty.
+    #: .. math:: A = 0.73(LL - 20.0)
     A_LINE = __A_LINE()
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
@@ -385,6 +375,11 @@ class PSD:
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
         """
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
+
+
+class SoilClf(NamedTuple):
+    symbol: str
+    description: str
 
 
 class AASHTO:
@@ -682,6 +677,11 @@ class CLF_TYPE(enum.StrEnum):
     """Enumeration of soil classification types."""
     AASHTO = enum.auto()
     USCS = enum.auto()
+
+
+class SoilClassifier(Protocol):
+    @abstractmethod
+    def classify(self) -> SoilClf: ...
 
 
 def create_soil_classifier(liquid_limit: float,
