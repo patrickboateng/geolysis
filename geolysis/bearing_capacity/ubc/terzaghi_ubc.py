@@ -1,5 +1,8 @@
 """ Terzaghi ultimate bearing capacity module.
 
+Classes
+=======
+
 .. autosummary::
     :toctree: _autosummary
 
@@ -8,6 +11,9 @@
     TerzaghiUBC4SquareFooting
     TerzaghiUBC4RectangularFooting
 
+
+Functions
+=========
 
 .. autosummary::
     :toctree: _autosummary

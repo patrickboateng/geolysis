@@ -17,16 +17,6 @@ Enums
 
     ABC_TYPE
 
-Modules
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    bowles_abc
-    meyerhof_abc
-    terzaghi_abc
-
 Functions
 =========
 

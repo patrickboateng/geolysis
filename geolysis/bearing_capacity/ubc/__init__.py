@@ -9,16 +9,6 @@ Enum
 
     UBC_TYPE
 
-Modules
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    hansen_ubc
-    vesic_ubc
-    terzaghi_ubc
-
 Functions
 =========
 
