@@ -18,9 +18,10 @@ sphinx-design = "==0.5.0"
 sphinxcontrib-bibtex = "==2.6.1"
 myst-parser = "==2.0.0"
 sphinx-notfound-page = "==1.0.0"
-isort = {extras = ["pipfile_deprecated_finder"], version = "*"}
+isort = { extras = ["pipfile_deprecated_finder"], version = "*" }
 pydata-sphinx-theme = "*"
-enum-tools = {extras = ["sphinx"], version = "*"}
+enum-tools = { extras = ["sphinx"], version = "*" }
+nbsphinx = "*"
 
 [requires]
 python_version = "3.11"
