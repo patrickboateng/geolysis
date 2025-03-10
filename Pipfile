@@ -22,6 +22,7 @@ isort = { extras = ["pipfile_deprecated_finder"], version = "*" }
 pydata-sphinx-theme = "*"
 enum-tools = { extras = ["sphinx"], version = "*" }
 nbsphinx = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.11"
