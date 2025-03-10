@@ -82,11 +82,17 @@ def n_gamma(friction_angle: float) -> float:
 
 
 @round_
-def s_c(foundation_size: FoundationSize) -> float:
+def s_c(f_width: float, f_length: float, f_shape: Shape) -> float:
     r"""Shape factor :math:`S_c`.
 
-    :param foundation_size: Size of the foundation.
-    :type foundation_size: FoundationSize
+    :param f_width: Width of foundation footing (m).
+    :type f_width: float
+
+    :param f_length: Length of foundation footing (m).
+    :type f_length: float
+
+    :param f_shape: Shape of foundation footing (m).
+    :type f_shape: Shape
 
     :Equation:
 
@@ -98,22 +104,26 @@ def s_c(foundation_size: FoundationSize) -> float:
 
         s_c &= 1.3 \rightarrow \text{Square or circular footing}
     """
-    width, length, shape = foundation_size.footing_params()
-
-    if shape == Shape.STRIP:
+    if f_shape == Shape.STRIP:
         return 1.0
-    elif shape == Shape.RECTANGLE:
-        return 1.0 + 0.2 * width / length
+    elif f_shape == Shape.RECTANGLE:
+        return 1.0 + 0.2 * f_width / f_length
     else:  # SQUARE & CIRCLE
         return 1.3
 
 
 @round_
-def s_q(foundation_size: FoundationSize) -> float:
+def s_q(f_width: float, f_length: float, f_shape: Shape) -> float:
     r"""Shape factor :math:`S_q`.
 
-    :param foundation_size: Size of the foundation.
-    :type foundation_size: FoundationSize
+    :param f_width: Width of foundation footing (m).
+    :type f_width: float
+
+    :param f_length: Length of foundation footing (m).
+    :type f_length: float
+
+    :param f_shape: Shape of foundation footing (m).
+    :type f_shape: Shape
 
     :Equation:
 
@@ -125,22 +135,27 @@ def s_q(foundation_size: FoundationSize) -> float:
 
         s_q &= 1.2 \rightarrow \text{Square or circular footing}
     """
-    width, length, shape = foundation_size.footing_params()
 
-    if shape == Shape.STRIP:
+    if f_shape == Shape.STRIP:
         return 1.0
-    elif shape == Shape.RECTANGLE:
-        return 1.0 + 0.2 * width / length
+    elif f_shape == Shape.RECTANGLE:
+        return 1.0 + 0.2 * f_width / f_length
     else:  # SQUARE & CIRCLE
         return 1.2
 
 
 @round_
-def s_gamma(foundation_size: FoundationSize) -> float:
+def s_gamma(f_width: float, f_length: float, f_shape: Shape) -> float:
     r"""Shape factor :math:`S_{\gamma}`.
 
-    :param foundation_size: Size of the foundation.
-    :type foundation_size: FoundationSize
+    :param f_width: Width of foundation footing (m).
+    :type f_width: float
+
+    :param f_length: Length of foundation footing (m).
+    :type f_length: float
+
+    :param f_shape: Shape of foundation footing (m).
+    :type f_shape: Shape
 
     :Equation:
 
@@ -155,47 +170,49 @@ def s_gamma(foundation_size: FoundationSize) -> float:
 
         s_{\gamma} &= 0.6 \rightarrow \text{Circular footing}
     """
-    width, length, shape = foundation_size.footing_params()
 
-    if shape == Shape.STRIP:
+    if f_shape == Shape.STRIP:
         return 1.0
-    elif shape == Shape.RECTANGLE:
-        return 1.0 - 0.4 * width / length
-    elif shape == Shape.SQUARE:
+    elif f_shape == Shape.RECTANGLE:
+        return 1.0 - 0.4 * f_width / f_length
+    elif f_shape == Shape.SQUARE:
         return 0.8
     else:  # CIRCLE
         return 0.6
 
 
 @round_
-def d_c(foundation_size: FoundationSize) -> float:
+def d_c(f_depth: float, f_width: float) -> float:
     r"""Depth factor :math:`D_c`.
 
-    :param foundation_size: Size of the foundation.
-    :type foundation_size: FoundationSize
+    :param f_depth: Depth of foundation (m).
+    :type f_depth: float
+
+    :param f_width: Width of foundation footing (m).
+    :type f_width: float
 
     :Equation:
 
     .. math:: d_c = 1.0 + 0.35 \cdot \frac{D_f}{B}
     """
-    depth = foundation_size.depth
-    width = foundation_size.width
-
-    return 1.0 + 0.35 * depth / width
+    return 1.0 + 0.35 * f_depth / f_width
 
 
 @round_
-def d_q(foundation_size: FoundationSize) -> float:
+def d_q(f_depth: float, f_width: float) -> float:
     r"""Depth factor :math:`D_q`.
 
-    :param foundation_size: Size of the foundation.
-    :type foundation_size: FoundationSize
+    :param f_depth: Depth of foundation (m).
+    :type f_depth: float
+
+    :param f_width: Width of foundation footing (m).
+    :type f_width: float
 
     :Equation:
 
     .. math:: d_q = 1.0 + 0.35 \cdot \frac{D_f}{B}
     """
-    return d_c(foundation_size)
+    return d_c(f_depth, f_width)
 
 
 @round_
@@ -212,7 +229,8 @@ def d_gamma() -> float:
 @round_
 def i_c(cohesion: float,
         load_angle: float,
-        foundation_size: FoundationSize) -> float:
+        f_width: float,
+        f_length: float) -> float:
     r"""Inclination factor :math:`I_c`.
 
     :param cohesion: Cohesion of the soil between footing and soil (kPa).
@@ -222,17 +240,17 @@ def i_c(cohesion: float,
                        (degrees)
     :type load_angle: float
 
-    :param foundation_size: Size of the foundation.
-    :type foundation_size: FoundationSize
+    :param f_width: Width of foundation footing (m).
+    :type f_width: float
+
+    :param f_length: Length of foundation footing (m).
+    :type f_length: float
 
     :Equation:
 
     .. math:: I_c = 1 - \frac{\sin(\alpha)}{2cBL}
     """
-    width = foundation_size.width
-    length = foundation_size.length
-
-    return 1.0 - sin(load_angle) / (2.0 * cohesion * width * length)
+    return 1.0 - sin(load_angle) / (2.0 * cohesion * f_width * f_length)
 
 
 @round_
@@ -288,23 +306,30 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def s_c(self) -> float:
-        return s_c(self.foundation_size)
+        width, length, shape = self.foundation_size.footing_params()
+        return s_c(width, length, shape)
 
     @property
     def s_q(self) -> float:
-        return s_q(self.foundation_size)
+        width, length, shape = self.foundation_size.footing_params()
+        return s_q(width, length, shape)
 
     @property
     def s_gamma(self) -> float:
-        return s_gamma(self.foundation_size)
+        width, length, shape = self.foundation_size.footing_params()
+        return s_gamma(width, length, shape)
 
     @property
     def d_c(self) -> float:
-        return d_c(self.foundation_size)
+        depth = self.foundation_size.depth
+        width = self.foundation_size.width
+        return d_c(depth, width)
 
     @property
     def d_q(self) -> float:
-        return d_q(self.foundation_size)
+        depth = self.foundation_size.depth
+        width = self.foundation_size.width
+        return d_q(depth, width)
 
     @property
     def d_gamma(self) -> float:
@@ -312,7 +337,8 @@ class HansenUltimateBearingCapacity(UltimateBearingCapacity):
 
     @property
     def i_c(self) -> float:
-        return i_c(self.cohesion, self.load_angle, self.foundation_size)
+        width, length = self.foundation_size.width, self.foundation_size.length
+        return i_c(self.cohesion, self.load_angle, width, length)
 
     @property
     def i_q(self) -> float:
