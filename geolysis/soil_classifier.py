@@ -139,7 +139,7 @@ class AtterbergLimits:
             return 0.73 * (obj.liquid_limit - 20.0)
 
     #:  The ``A-line`` determines if a soil is clayey or silty.
-    #: .. math:: A = 0.73(LL - 20.0)
+    #:  :math:`A = 0.73(LL - 20.0)`
     A_LINE = __A_LINE()
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
