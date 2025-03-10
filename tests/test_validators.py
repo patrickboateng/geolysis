@@ -1,5 +1,5 @@
 import pytest
-from geolysis.validators import le
+from geolysis.utils.validators import le
 
 
 def test_le():
