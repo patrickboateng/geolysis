@@ -1,5 +1,5 @@
-******************************************
-geolysis.bearing_capacity.abc.terzaghi_abc
-******************************************
+***********************************************
+geolysis.bearing_capacity.abc.cohl.terzaghi_abc
+***********************************************
 
-.. automodule:: geolysis.bearing_capacity.abc.terzaghi_abc
+.. automodule:: geolysis.bearing_capacity.abc.cohl.terzaghi_abc

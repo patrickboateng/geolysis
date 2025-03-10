@@ -1,8 +1,8 @@
-*****************************
-geolysis.bearing_capacity.abc
-*****************************
+**********************************
+geolysis.bearing_capacity.abc.cohl
+**********************************
 
-.. automodule:: geolysis.bearing_capacity.abc
+.. automodule:: geolysis.bearing_capacity.abc.cohl
 
 .. toctree::
     :hidden:
