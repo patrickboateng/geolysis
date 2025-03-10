@@ -35,16 +35,23 @@ extensions = [
     # Third Party Libraries
     "sphinx_design",
     "myst_parser",
-    # "notfound.extension",
     "enum_tools.autoenum",
+    "nbsphinx",
 ]
+
+source_suffix = [".rst", ".md", "ipynb"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["build"]
 
 # Sphinx AutoDoc Ext
 autodoc_default_options = {"exclude-members": "__init__",
-                           "class-doc-from": "both"}
+                           "class-doc-from": "both",
+                           "undoc-members": False}
+
+# Sphinx Autosummary Ext
+autosummary_generate = True
+autosummary_ignore_module_all = True
 
 # adds this string to the start of every .rst file
 rst_prolog = """.. include:: <isonum.txt>"""
@@ -65,7 +72,6 @@ html_css_files = [
     "custom.css",
 ]
 html_js_files = ["pypi-icon.js"]
-
 html_theme_options = {
     "icon_links": [
         {
