@@ -37,6 +37,8 @@ extensions = [
     "myst_parser",
     "enum_tools.autoenum",
     "nbsphinx",
+    "IPython.sphinxext.ipython_directive",
+    "IPython.sphinxext.ipython_console_highlighting",
 ]
 
 source_suffix = [".rst", ".md", "ipynb"]
