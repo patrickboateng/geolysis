@@ -170,8 +170,8 @@ Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 
 .. doctest::
 
-    >>> from geolysis.spt import SPTDesign
-    >>> spt_design = SPTDesign(spt_n_values=[7.0, 15.0, 18.0])
+    >>> from geolysis.spt import SPTNDesign
+    >>> spt_design = SPTNDesign(corrected_spt_n_values=[7.0, 15.0, 18.0])
     >>> spt_design.average_spt_n_design()
     13.3
     >>> spt_design.minimum_spt_n_design()
@@ -179,7 +179,6 @@ Calculating SPT :math:`N_{design}` from a list of SPT N-values:
     >>> spt_design.weighted_spt_n_design()
     9.4
 
-Standardizing SPT N-values depending on the field procedure used:
 
 .. doctest::
 
