@@ -210,3 +210,4 @@ dist
 
 docs/source/**/generated/
 docs/source/**/_autosummary/
+docs/source/**/savefig/
