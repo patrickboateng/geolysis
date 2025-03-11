@@ -2,6 +2,6 @@ User Guide
 ==========
 
 .. toctree::
-    :caption: Getting Started
+    :maxdepth: 2
 
     Getting Started <getting_started>
