@@ -11,7 +11,7 @@ classes, methods, functions, and attributes, detailing their purposes and
 functionalities.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     bearing_capacity/abc/cohl/index
     bearing_capacity/ubc/index
