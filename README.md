@@ -6,6 +6,7 @@ alt="geolysislogo" width="75%" />
 <div align="center">
 
 [![PyPI Latest Release](https://img.shields.io/pypi/v/geolysis?style=flat&logo=pypi)](https://pypi.org/project/geolysis/)
+[![PyPI Downloads](https://static.pepy.tech/badge/geolysis)](https://pepy.tech/projects/geolysis)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/geolysis.svg?logo=python&style=flat)](https://pypi.python.org/pypi/geolysis/)
 [![license](https://img.shields.io/pypi/l/geolysis?style=flat&logo=opensourceinitiative)](https://opensource.org/license/mit/)
 
@@ -130,7 +131,7 @@ SoilClf(symbol='A-6(4)', description='Clayey soils')
 ## Features
 
 |                                              |                                       |
-| -------------------------------------------- | ------------------------------------- |
+|----------------------------------------------|---------------------------------------|
 | **Soil Classification**                      | AASHTO Classification System          |
 |                                              | Unified Soil Classification System    |
 | **Standard Penetration Test (SPT) Analysis** | SPT Energy Correction                 |
@@ -146,7 +147,8 @@ Full documentation is available [here](https://docs.geolysis.io/en/latest/)
 
 ## Contributing
 
-Contribution guidelines can be found [here](https://docs.geolysis.io/en/latest/dev_guide/index.html)
+Contribution guidelines can be
+found [here](https://docs.geolysis.io/en/latest/dev_guide/index.html)
 
 ## License
 
