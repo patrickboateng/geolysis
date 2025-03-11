@@ -56,38 +56,53 @@ Features
 Quick Example
 =============
 
-.. doctest::
+.. ipython::
 
-   >>> from geolysis.soil_classifier import create_soil_classifier
-   >>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
-   ...                                   plastic_limit=21.1,
-   ...                                   fines=47.88,
-   ...                                   sand=37.84,
-   ...                                   clf_type="USCS")
-   >>> clf = uscs_clf.classify()
-   >>> clf
-   SoilClf(symbol='SC', description='Clayey sands')
-   >>> clf.symbol
-   'SC'
-   >>> clf.description
-   'Clayey sands'
+   In [1]: from geolysis.soil_classifier import create_soil_classifier
 
-.. doctest::
+   In [2]: uscs_clf = create_soil_classifier(liquid_limit=34.1,
+      ...:                                   plastic_limit=21.1,
+      ...:                                   fines=47.88,
+      ...:                                   sand=37.84,
+      ...:                                   clf_type="USCS")
 
-   >>> from geolysis.soil_classifier import create_soil_classifier
-   >>> aashto_clf = create_soil_classifier(liquid_limit=34.1, 
-   ...                                     plastic_limit=21.1,
-   ...                                     fines=47.88,
-   ...                                     sand=37.84,  # Sand is optional for AASHTO classification
-   ...                                     clf_type="AASHTO")
-   >>> clf = aashto_clf.classify()
-   >>> clf
-   SoilClf(symbol='A-6(4)', description='Clayey soils')
-   >>> clf.symbol
-   'A-6(4)'
-   >>> clf.description
-   'Clayey soils'
+   In [3]: clf = uscs_clf.classify()
 
+   @doctest
+   In [4]: clf
+   Out[4]: SoilClf(symbol='SC', description='Clayey sands')
+
+   @doctest
+   In [5]: clf.symbol
+   Out[5]: 'SC'
+
+   @doctest
+   In [6]: clf.description
+   Out[6]: 'Clayey sands'
+
+.. ipython::
+
+   In [1]: from geolysis.soil_classifier import create_soil_classifier
+
+   In [2]: aashto_clf = create_soil_classifier(liquid_limit=34.1,
+      ...:                                     plastic_limit=21.1,
+      ...:                                     fines=47.88,
+      ...:                                     sand=37.84,  # Sand is optional for AASHTO classification
+      ...:                                     clf_type="AASHTO")
+
+   In [3]: clf = aashto_clf.classify()
+
+   @doctest
+   In [4]: clf
+   Out[4]: SoilClf(symbol='A-6(4)', description='Clayey soils')
+
+   @doctest
+   In [5]: clf.symbol
+   Out[5]: 'A-6(4)'
+
+   @doctest
+   In [6]: clf.description
+   Out[6]: 'Clayey soils'
 
 Indices and tables
 ==================
