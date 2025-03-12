@@ -259,7 +259,7 @@ Correcting SPT N-values for water (dilatancy) influence:
 
     In [1]: from geolysis.spt import DilatancyCorrection
 
-    In [2]: dil_corr = DilatancyCorrection(std_spt_n_value=22.5)
+    In [2]: dil_corr = DilatancyCorrection(corr_spt_n_value=22.5)
 
     @doctest
     In [3]: dil_corr.corrected_spt_n_value()
