@@ -104,5 +104,5 @@ class TestDilatancyCorrection:
     @pytest.mark.parametrize(["std_spt_n_value", "expected"],
                              [(22.5, 18.8), (12.6, 12.6)])
     def test_correction(self, std_spt_n_value, expected):
-        corr = DilatancyCorrection(std_spt_n_value=std_spt_n_value)
+        corr = DilatancyCorrection(corr_spt_n_value=std_spt_n_value)
         assert corr.corrected_spt_n_value() == pytest.approx(expected)
