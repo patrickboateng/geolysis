@@ -385,9 +385,6 @@ def create_foundation(depth: float,
         if not length:
             raise ValueError("Length of footing must be provided.")
         footing_size = RectangularFooting(width=width, length=length)
-    # else:
-    #     msg = error_msg_tmpl(shape, Shape)
-    #     raise ValueError(msg)
 
     return FoundationSize(depth=depth,
                           eccentricity=eccentricity,
