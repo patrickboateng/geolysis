@@ -166,7 +166,9 @@ correlation:
     In [3]: hansen_ubc.bearing_capacity()
     Out[3]: 798.41
 
-Other available ultimate bearing capacity types are ``TERZAGHI`` and ``VESIC``
+Other available ``shape`` and ``ubc_type`` can be found in :class:`~geolysis.foundation.Shape`
+and :class:`~geolysis.bearing_capacity.ubc.UBC_TYPE` respectively.
+
 
 Allowable Bearing Capacity Estimation
 -------------------------------------
@@ -190,8 +192,9 @@ Calculating the allowable bearing capacity of soil for pad foundations using
     In [3]: bowles_abc.bearing_capacity()
     In [3]: 341.11
 
-Other available allowable bearing capacity types (``abc_type``) are ``MEYERHOF``
-and ``TERZAGHI``.
+Other available ``shape``, ``foundation_type``, and ``abc_type`` can be found
+in :class:`~geolysis.foundation.Shape`, :class:`~geolysis.foundation.FoundationType`,
+and :class:`~geolysis.bearing_capacity.abc.cohl.ABC_TYPE` respectively.
 
 Standard Penetration Tests Analysis
 -----------------------------------
