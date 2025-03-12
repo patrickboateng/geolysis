@@ -38,4 +38,4 @@ def test_sqrt():
 
 def test_round():
     with pytest.raises(TypeError):
-        round_(ndigits=2.0)(lambda: 1.234)
+        round_(ndigits=2.0)
