@@ -33,6 +33,8 @@ from geolysis.utils import isclose, log10, mean, round_, sqrt, validators, \
     enum_repr
 
 __all__ = ["SPTNDesign",
+           "HammerType",
+           "SamplerType",
            "EnergyCorrection",
            "GibbsHoltzOPC",
            "BazaraaPeckOPC",
