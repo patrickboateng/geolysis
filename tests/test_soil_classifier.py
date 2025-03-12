@@ -1,8 +1,6 @@
-import unittest
-
 import pytest
 
-from geolysis.soil_classifier import (PSD, AtterbergLimits, _SizeDistribution,
+from geolysis.soil_classifier import (PSD, AtterbergLimits,
                                       create_soil_classifier)
 
 
@@ -59,21 +57,8 @@ class TestAtterbergLimits:
         with pytest.raises(ValueError):
             AtterbergLimits(liquid_limit=15.0, plastic_limit=25.0)
 
-    # def test_plasticity_index(self):
-    #     self.assertAlmostEqual(self.al.plasticity_index, 10.0)
-    #
-    # def test_liquidity_index(self):
-    #     self.assertAlmostEqual(self.al.liquidity_index(nmc=20), 50.0)
-    #
-    # def test_consistency_index(self):
-    #     self.assertAlmostEqual(self.al.consistency_index(nmc=20), 50.0)
-    #
-
 
 class TestPSD:
-    # def setUp(self) -> None:
-    #     size_dist = _SizeDistribution(0.115, 0.53, 1.55)
-    #     self.psd = PSD(fines=0.0, sand=0.0, size_dist=size_dist)
 
     @pytest.mark.parametrize(
         ["fines", "sand", "d_10", "d_30", "d_60", "expected"],
