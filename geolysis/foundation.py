@@ -8,6 +8,7 @@ Enums
     :nosignatures:
 
     Shape
+    FoundationType
 
 Classes
 =======
