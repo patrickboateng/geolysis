@@ -306,7 +306,7 @@ class OPC:
     def corrected_spt_n_value(self) -> float:
         """Corrected SPT N-value."""
         corrected_spt = self.correction() * self.std_spt_n_value
-        # Corrected SPT should not be more 
+        # Corrected SPT should not be more
         # than 2 times the Standardized SPT
         return min(corrected_spt, 2 * self.std_spt_n_value)
 
@@ -466,26 +466,26 @@ class DilatancyCorrection:
         (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
     """
 
-    def __init__(self, std_spt_n_value: float) -> None:
+    def __init__(self, corr_spt_n_value: float) -> None:
         """
-        :param std_spt_n_value: SPT N-value standardized for field procedures
+        :param corr_spt_n_value: SPT N-value standardized for field procedures
                                 and/or corrected for overburden pressure.
-        :type std_spt_n_value: float
+        :type corr_spt_n_value: float
         """
-        self.std_spt_n_value = std_spt_n_value
+        self.corr_spt_n_value = corr_spt_n_value
 
     @property
-    def std_spt_n_value(self) -> float:
+    def corr_spt_n_value(self) -> float:
         return self._std_spt_n_value
 
-    @std_spt_n_value.setter
+    @corr_spt_n_value.setter
     @validators.gt(0.0)
-    def std_spt_n_value(self, val: float) -> None:
+    def corr_spt_n_value(self, val: float) -> None:
         self._std_spt_n_value = val
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
         """Corrected SPT N-value."""
-        if self.std_spt_n_value <= 15.0:
-            return self.std_spt_n_value
-        return 15.0 + 0.5 * (self.std_spt_n_value - 15.0)
+        if self.corr_spt_n_value <= 15.0:
+            return self.corr_spt_n_value
+        return 15.0 + 0.5 * (self.corr_spt_n_value - 15.0)
