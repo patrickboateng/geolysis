@@ -119,28 +119,28 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     """ A factory function that encapsulate the creation of  allowable bearing
     capacities.
 
-    :param corrected_spt_n_value: The corrected spt n value.
+    :param corrected_spt_n_value: The corrected SPT N-value.
     :type corrected_spt_n_value: float
 
-    :param tol_settlement: Tolerable settlement of foundation. (mm)
+    :param tol_settlement: Tolerable settlement of foundation (mm).
     :type tol_settlement: float
 
-    :param depth: Depth of foundation. (m)
+    :param depth: Depth of foundation (m).
     :type depth: float
 
-    :param width: Width of foundation footing. (m)
+    :param width: Width of foundation footing (m).
     :type width: float
 
-    :param length: Length of foundation footing. (m)
+    :param length: Length of foundation footing (m).
     :type length: float, optional
 
     :param eccentricity: The deviation of the foundation load from the center 
                          of gravity of the foundation footing, defaults to 0.0.
                          This means that the foundation load aligns with the
-                         center of gravity of the foundation footing. (m)
+                         center of gravity of the foundation footing (m).
     :type eccentricity: float, optional
 
-    :param ground_water_level: Depth of water below ground level. (m)
+    :param ground_water_level: Depth of water below ground level (m).
     :type ground_water_level: float
 
     :param shape: Shape of foundation footing, defaults to "SQUARE".
@@ -150,7 +150,7 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :type foundation_type: FoundationType | str, optional
 
     :param abc_type: Type of allowable bearing capacity calculation to apply.
-                     Available values are: "BOWLES", "MEYERHOF", "TERZAGHI".
+                     Available values can be found in :class:`ABC_TYPE`,
                      defaults to None.
     :type abc_type:  ABC_TYPE | str
 
@@ -163,18 +163,14 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
         msg = error_msg_tmpl(abc_type, ABC_TYPE)
         raise ValueError(msg)
 
-    abc_type = str(abc_type).casefold()
-
     try:
-        abc_type = ABC_TYPE(abc_type)
+        abc_type = ABC_TYPE(str(abc_type).casefold())
     except ValueError as e:
         msg = error_msg_tmpl(abc_type, ABC_TYPE)
         raise ValueError(msg) from e
 
-    foundation_type = str(foundation_type).casefold()
-
     try:
-        foundation_type = FoundationType(foundation_type)
+        foundation_type = FoundationType(str(foundation_type).casefold())
     except ValueError as e:
         msg = error_msg_tmpl(foundation_type, FoundationType)
         raise ValueError(msg) from e
