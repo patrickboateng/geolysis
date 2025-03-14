@@ -29,7 +29,6 @@ import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from geolysis import error_msg_tmpl
 from geolysis.foundation import (FoundationSize,
                                  Shape,
                                  FoundationType,
@@ -159,20 +158,23 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                         footing.
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
+    msg = (f"{abc_type = } is not supported, Supported "
+           f"types are: {list(ABC_TYPE)}")
+
     if abc_type is None:
-        msg = error_msg_tmpl(abc_type, ABC_TYPE)
         raise ValueError(msg)
 
     try:
         abc_type = ABC_TYPE(str(abc_type).casefold())
     except ValueError as e:
-        msg = error_msg_tmpl(abc_type, ABC_TYPE)
         raise ValueError(msg) from e
+
+    msg = (f"{foundation_type = } is not supported, Supported "
+           f"types are: {list(FoundationType)}")
 
     try:
         foundation_type = FoundationType(str(foundation_type).casefold())
     except ValueError as e:
-        msg = error_msg_tmpl(foundation_type, FoundationType)
         raise ValueError(msg) from e
 
     # exception from create_foundation will automaatically propagate

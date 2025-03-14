@@ -43,7 +43,6 @@ from abc import abstractmethod
 from typing import Protocol
 from typing import NamedTuple, Optional, Sequence
 
-from geolysis import error_msg_tmpl
 from geolysis.utils import enum_repr, isclose, round_, validators
 
 __all__ = ["CLF_TYPE",
@@ -145,15 +144,15 @@ class AtterbergLimits:
     def __init__(self, liquid_limit: float, plastic_limit: float):
         """
         :param liquid_limit: Water content beyond which soils flows under their 
-                             own weight. It can also be defined as the minimum 
-                             moisture content at which a soil flows upon 
-                             application of a very small shear force. (%)
+                             own weight (%). It can also be defined as the
+                             minimum moisture content at which a soil flows upon
+                             application of a very small shear force.
         :type liquid_limit: float
 
         :param plastic_limit: Water content at which plastic deformation can be 
-                              initiated. It is also the minimum water content at 
-                              which soil can be rolled into a thread 3mm thick. 
-                              (molded without breaking) (%)
+                              initiated (%). It is also the minimum water
+                              content at which soil can be rolled into a thread
+                              3mm thick. (molded without breaking)
         :type plastic_limit: float
         """
         if liquid_limit < plastic_limit:
@@ -189,6 +188,8 @@ class AtterbergLimits:
         It is also the numerical difference between the liquid limit and
         plastic limit of the soil.
 
+        :Equation:
+
         .. math:: PI = LL - PL
         """
         return self.liquid_limit - self.plastic_limit
@@ -222,6 +223,8 @@ class AtterbergLimits:
 
         :param float nmc: Moisture contents of the soil in natural condition.
 
+        :Equation:
+
         .. math:: I_l = \dfrac{w - PL}{PI} \cdot 100
         """
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100.0
@@ -242,6 +245,8 @@ class AtterbergLimits:
         state. It is also known as Relative Consistency.
 
         :param float nmc: Moisture contents of the soil in natural condition.
+
+        :Equation:
 
         .. math:: I_c = \dfrac{LL - w}{PI} \cdot 100
         """
@@ -300,11 +305,12 @@ class PSD:
     def __init__(self, fines: float, sand: float,
                  d_10: float = 0, d_30: float = 0, d_60: float = 0):
         """
-        :param fines: Percentage of fines in soil sample i.e. The percentage of 
-                      soil sample passing through No. 200 sieve (0.075mm).
+        :param fines: Percentage of fines in soil sample (%) i.e. The
+                      percentage of soil sample passing through No. 200 sieve
+                      (0.075mm).
         :type fines: float
 
-        :param sand: Percentage of sand in soil sample.
+        :param sand: Percentage of sand in soil sample (%).
         :type sand: float
 
         :param d_10: Diameter at which 10% of the soil by weight is finer.
@@ -320,7 +326,8 @@ class PSD:
 
     @property
     def gravel(self):
-        return 100 - (self.fines + self.sand)
+        """Percentage of gravel in soil sample (%)."""
+        return 100.0 - (self.fines + self.sand)
 
     @property
     def coarse_material_type(self) -> USCSSymbol:
@@ -334,7 +341,7 @@ class PSD:
     def coeff_of_curvature(self) -> float:
         r"""Coefficient of curvature of soil sample.
 
-        Coefficient of curvature :math:`(C_c)` is given by the formula:
+        :Equation:
 
         .. math:: C_c = \dfrac{D^2_{30}}{D_{60} \cdot D_{10}}
 
@@ -348,7 +355,7 @@ class PSD:
     def coeff_of_uniformity(self) -> float:
         r"""Coefficient of uniformity of soil sample.
 
-        Coefficient of uniformity :math:`(C_u)` is given by the formula:
+        :Equation:
 
         .. math:: C_u = \dfrac{D_{60}}{D_{10}}
 
@@ -370,6 +377,8 @@ class PSD:
         graded.
 
         Conditions for a well-graded soil:
+
+        :Equation:
 
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 4` (for gravels)
         - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
@@ -403,6 +412,8 @@ class AASHTO:
         The ``GI`` must be mentioned even when it is zero, to indicate that the 
         soil has been classified as per AASHTO system.
 
+    :Equation:
+
     .. math::
 
         GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
@@ -411,11 +422,11 @@ class AASHTO:
     def __init__(self, atterberg_limits: AtterbergLimits,
                  fines: float, add_group_idx=True):
         """
-        :param atterberg_limits: Atterberg limits of the soil.
+        :param atterberg_limits: Atterberg limits of soil sample.
         :type atterberg_limits: AtterbergLimits
 
-        :param fines: Percentage of fines in soil sample i.e. The percentage of 
-                      soil sample passing through No. 200 sieve (0.075mm).
+        :param fines: Percentage of fines in soil sample (%) i.e. The percentage
+                      of soil sample passing through No. 200 sieve (0.075mm).
         :type fines: float
 
         :param add_group_idx: Used to indicate whether the group index should
@@ -696,31 +707,31 @@ def create_soil_classifier(liquid_limit: float,
     """ A factory function that encapsulates the creation of a soil classifier.
 
     :param liquid_limit: Water content beyond which soils flows under their own
-                         weight. It can also be defined as the minimum moisture
-                         content at which a soil flows upon application of a
-                         very small shear force. (%)
+                         weight (%). It can also be defined as the minimum
+                         moisture content at which a soil flows upon application
+                         of a very small shear force.
     :type liquid_limit: float
 
     :param plastic_limit: Water content at which plastic deformation can be
-                          initiated. It is also the minimum water content at
+                          initiated (%). It is also the minimum water content at
                           which soil can be rolled into a thread 3mm thick.
-                          (molded without breaking) (%)
+                          (molded without breaking)
     :type plastic_limit: float
 
-    :param fines: Percentage of fines in soil sample i.e. The percentage of
-                  soil sample passing through No. 200 sieve (0.075mm). (%)
+    :param fines: Percentage of fines in soil sample (%) i.e. The percentage of
+                  soil sample passing through No. 200 sieve (0.075mm).
     :type fines: float
 
-    :param sand: Percentage of sand in soil sample. (%)
+    :param sand: Percentage of sand in soil sample (%).
     :type sand: float
 
-    :param d_10: Diameter at which 10% of the soil by weight is finer. (mm)
+    :param d_10: Diameter at which 10% of the soil by weight is finer.
     :type d_10: float
 
-    :param d_30: Diameter at which 30% of the soil by weight is finer. (mm)
+    :param d_30: Diameter at which 30% of the soil by weight is finer.
     :type d_30: float
 
-    :param d_60: Diameter at which 60% of the soil by weight is finer. (mm)
+    :param d_60: Diameter at which 60% of the soil by weight is finer.
     :type d_60: float
 
     :param add_group_idx: Used to indicate whether the group index should
@@ -728,8 +739,7 @@ def create_soil_classifier(liquid_limit: float,
                           True.
     :type add_group_idx: bool, optional
 
-    :param organic: Indicates whether soil is organic or not, defaults to
-                    False.
+    :param organic: Indicates whether soil is organic or not, defaults to False.
     :type organic: bool, optional
 
     :param clf_type: Used to indicate which type of soil classifier should be
@@ -738,17 +748,18 @@ def create_soil_classifier(liquid_limit: float,
 
     :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
                         None
+    :raises ValueError: Raises ValueError if ``sand`` is not provided for
+                        :class:`USCS` classification.
     """
+    msg = (f"{clf_type = } is not supported, Supported "
+           f"types are: {list(CLF_TYPE)}")
+
     if clf_type is None:
-        msg = error_msg_tmpl(clf_type, CLF_TYPE)
         raise ValueError(msg)
 
-    clf_type = str(clf_type).casefold()
-
     try:
-        clf_type = CLF_TYPE(clf_type)
+        clf_type = CLF_TYPE(str(clf_type).casefold())
     except ValueError as e:
-        msg = error_msg_tmpl(clf_type, CLF_TYPE)
         raise ValueError(msg) from e
 
     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,

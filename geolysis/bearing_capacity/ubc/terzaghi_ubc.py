@@ -10,17 +10,6 @@ Classes
     TerzaghiUBC4CircularFooting
     TerzaghiUBC4SquareFooting
     TerzaghiUBC4RectangularFooting
-
-
-Functions
-=========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    n_c
-    n_q
-    n_gamma
 """
 from abc import ABC
 
@@ -35,15 +24,6 @@ __all__ = ["TerzaghiUBC4StripFooting",
 
 @round_
 def n_c(friction_angle: float) -> float:
-    r"""Bearing capacity factor :math:`N_c`.
-
-    :param friction_angle: Angle of internal friction of the soil. (degrees)
-    :type friction_angle: float
-
-    :Equation:
-
-    .. math:: N_c = \cot(\phi) \cdot (N_q - 1)
-    """
     if isclose(friction_angle, 0.0):
         return 5.7
     return cot(friction_angle) * (n_q(friction_angle) - 1.0)
@@ -51,18 +31,6 @@ def n_c(friction_angle: float) -> float:
 
 @round_
 def n_q(friction_angle: float) -> float:
-    r"""Bearing capacity factor :math:`N_q`.
-
-    :param friction_angle: Angle of internal friction of the soil (degrees).
-    :type friction_angle: float
-
-    :Equation:
-
-    .. math::
-
-        N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
-                  {2\cos^2(45 + \frac{\phi}{2})}
-    """
     return (exp((3.0 * pi / 2.0 - deg2rad(friction_angle))
                 * tan(friction_angle))
             / (2.0 * (cos(45.0 + friction_angle / 2.0)) ** 2.0))
@@ -70,15 +38,6 @@ def n_q(friction_angle: float) -> float:
 
 @round_
 def n_gamma(friction_angle: float) -> float:
-    r"""Bearing capacity factor :math:`N_{\gamma}`.
-
-    :param friction_angle: Angle of internal friction of the soil (degrees).
-    :type friction_angle: float
-
-    :Equation:
-
-    .. math:: N_{\gamma} &=  (N_q - 1) \cdot \tan(1.4\phi)
-    """
     return (n_q(friction_angle) - 1.0) * tan(1.4 * friction_angle)
 
 
@@ -86,14 +45,35 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
 
     @property
     def n_c(self) -> float:
+        r"""Bearing capacity factor :math:`N_c`.
+
+        :Equation:
+
+        .. math:: N_c = \cot(\phi) \cdot (N_q - 1)
+        """
         return n_c(self.friction_angle)
 
     @property
     def n_q(self) -> float:
+        r"""Bearing capacity factor :math:`N_q`.
+
+        :Equation:
+
+        .. math::
+
+            N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
+                      {2\cos^2(45 + \frac{\phi}{2})}
+        """
         return n_q(self.friction_angle)
 
     @property
     def n_gamma(self) -> float:
+        r"""Bearing capacity factor :math:`N_{\gamma}`.
+
+        :Equation:
+
+        .. math:: N_{\gamma} &=  (N_q - 1) \cdot \tan(1.4\phi)
+        """
         return n_gamma(self.friction_angle)
 
 
@@ -104,6 +84,32 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     :Equation:
 
     .. math:: q_u = cN_c + qN_q + 0.5 \gamma BN_{\gamma}
+
+    .. list-table::
+       :widths: auto
+       :header-rows: 1
+
+       * - Symbol
+         - Description
+         - Unit
+       * - :math:`q_u`
+         - Ultimate bearing capacity
+         - :math:`kPa`
+       * - :math:`c`
+         - Cohesion of soil
+         - :math:`kPa`
+       * - :math:`q`
+         - Overburden pressure of soil
+         - :math:`kPa`
+       * - :math:`\gamma`
+         - Unit weight of soil
+         - :math:`kN/m^3`
+       * - :math:`B`
+         - Width of foundation footing
+         - :math:`m`
+       * - :math:`N_c`, :math:`N_q`, :math:`N_{\gamma}`
+         - Bearing capacity factors
+         - —
     """
 
     @round_
@@ -121,6 +127,32 @@ class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
     :Equation:
 
     .. math:: q_u = 1.3cN_c + qN_q + 0.3 \gamma BN_{\gamma}
+
+    .. list-table::
+       :widths: auto
+       :header-rows: 1
+
+       * - Symbol
+         - Description
+         - Unit
+       * - :math:`q_u`
+         - Ultimate bearing capacity
+         - :math:`kPa`
+       * - :math:`c`
+         - Cohesion of soil
+         - :math:`kPa`
+       * - :math:`q`
+         - Overburden pressure of soil
+         - :math:`kPa`
+       * - :math:`\gamma`
+         - Unit weight of soil
+         - :math:`kN/m^3`
+       * - :math:`B`
+         - Width of foundation footing
+         - :math:`m`
+       * - :math:`N_c`, :math:`N_q`, :math:`N_{\gamma}`
+         - Bearing capacity factors
+         - —
     """
 
     @round_
@@ -141,6 +173,35 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
 
             q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c + qN_q
                   + \left(1 - 0.2 \dfrac{B}{L} \right) 0.5 B \gamma N_{\gamma}
+
+    .. list-table::
+       :widths: auto
+       :header-rows: 1
+
+       * - Symbol
+         - Description
+         - Unit
+       * - :math:`q_u`
+         - Ultimate bearing capacity
+         - :math:`kPa`
+       * - :math:`c`
+         - Cohesion of soil
+         - :math:`kPa`
+       * - :math:`q`
+         - Overburden pressure of soil
+         - :math:`kPa`
+       * - :math:`\gamma`
+         - Unit weight of soil
+         - :math:`kN/m^3`
+       * - :math:`B`
+         - Width of foundation footing
+         - :math:`m`
+       * - :math:`L`
+         - Length of foundation footing
+         - :math:`m`
+       * - :math:`N_c`, :math:`N_q`, :math:`N_{\gamma}`
+         - Bearing capacity factors
+         - —
     """
 
     @round_
@@ -163,6 +224,32 @@ class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectangularFooting):
     :Equation:
 
     .. math:: q_u = 1.3cN_c + qN_q + 0.4 \gamma BN_{\gamma}
+
+    .. list-table::
+       :widths: auto
+       :header-rows: 1
+
+       * - Symbol
+         - Description
+         - Unit
+       * - :math:`q_u`
+         - Ultimate bearing capacity
+         - :math:`kPa`
+       * - :math:`c`
+         - Cohesion of soil
+         - :math:`kPa`
+       * - :math:`q`
+         - Overburden pressure of soil
+         - :math:`kPa`
+       * - :math:`\gamma`
+         - Unit weight of soil
+         - :math:`kN/m^3`
+       * - :math:`B`
+         - Width of foundation footing
+         - :math:`m`
+       * - :math:`N_c`, :math:`N_q`, :math:`N_{\gamma}`
+         - Bearing capacity factors
+         - —
     """
 
     def bearing_capacity(self):

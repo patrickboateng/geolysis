@@ -92,7 +92,7 @@ class SPTNDesign:
         r"""Calculates the weighted average of the corrected SPT N-values
         within the foundation influence zone.
 
-        Weighted average is given by the formula:
+        :Equation:
 
         .. math::
 
@@ -139,7 +139,7 @@ class EnergyCorrection:
     the measured N-value to :math:`N_{60}` assuming 60% hammer energy being
     transferred to the tip of the standard split spoon.
 
-    Energy correction is given by the formula:
+    :Equation:
 
     .. math::
 
@@ -186,7 +186,6 @@ class EnergyCorrection:
         :param sampler_type: Sampler type, defaults to :attr:`SamplerType.STANDARD`
         :type sampler_type: SamplerType, optional
         """
-
         self.recorded_spt_n_value = recorded_spt_n_value
         self.energy_percentage = energy_percentage
         self.borehole_diameter = borehole_diameter
@@ -289,7 +288,7 @@ class OPC:
         :param std_spt_n_value: SPT N-value standardized for field procedures.
         :type std_spt_n_value: float
 
-        :param eop: Effective overburden pressure (:math:`kN/m^2`)
+        :param eop: Effective overburden pressure (:math:`kPa`).
         :type eop: float
         """
         self.std_spt_n_value = std_spt_n_value
@@ -320,7 +319,7 @@ class OPC:
 class GibbsHoltzOPC(OPC):
     r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
 
-    Overburden Pressure Correction is given by the formula:
+    :Equation:
 
     .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
 
@@ -350,7 +349,7 @@ class BazaraaPeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
 
-    Overburden Pressure Correction is given by the formula:
+    :Equation:
 
     .. math::
 
@@ -362,7 +361,7 @@ class BazaraaPeckOPC(OPC):
         C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
     """
 
-    #: Maximum effective overburden pressure. (:math:`kN/m^2`)
+    #: Maximum effective overburden pressure (:math:`kPa`).
     STD_PRESSURE: Final = 71.8
 
     @property
@@ -388,7 +387,7 @@ class BazaraaPeckOPC(OPC):
 class PeckOPC(OPC):
     r"""Overburden Pressure Correction according to ``Peck et al. (1974)``.
 
-    Overburden Pressure Correction is given by the formula:
+    :Equation:
 
     .. math:: C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
     """
@@ -410,7 +409,7 @@ class PeckOPC(OPC):
 class LiaoWhitmanOPC(OPC):
     r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
 
-    Overburden Pressure Correction is given by the formula:
+    :Equation:
 
     .. math:: C_N = \sqrt{\dfrac{100}{\sigma_o}}
     """
@@ -432,7 +431,7 @@ class LiaoWhitmanOPC(OPC):
 class SkemptonOPC(OPC):
     r"""Overburden Pressure Correction according to ``Skempton (1986)``.
 
-    Overburden Pressure Correction is given by the formula:
+    :Equation:
 
     .. math:: C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
     """
@@ -458,7 +457,7 @@ class DilatancyCorrection:
     correction, overburden pressure correction is applied first and then
     dilatancy correction is applied.
 
-    Dilatancy correction is given by the formula:
+    :Equation:
 
     .. math::
 

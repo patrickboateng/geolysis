@@ -21,7 +21,6 @@ import enum
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from geolysis import error_msg_tmpl
 from geolysis.foundation import FoundationSize, Shape, create_foundation
 from geolysis.utils import arctan, enum_repr, tan, round_, validators
 
@@ -44,13 +43,13 @@ class UltimateBearingCapacity(ABC):
                  apply_local_shear=False) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general shear 
-                               failure. (degrees)
+                               failure (degrees).
         :type friction_angle: float
         
-        :param cohesion: Cohesion of soil. (kPa)
+        :param cohesion: Cohesion of soil (:math:`kPa`).
         :type cohesion: float
 
-        :param moist_unit_wgt: Moist unit weight of soil. (:math:`kN/m^3`)
+        :param moist_unit_wgt: Moist unit weight of soil (:math:`kN/m^3`).
         :type moist_unit_wgt: float
 
         :param foundation_size: Size of the foundation.
@@ -296,16 +295,15 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                         footing.
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
+    msg = (f"{ubc_type = } is not supported, Supported "
+           f"types are: {list(UBC_TYPE)}")
+
     if ubc_type is None:
-        msg = error_msg_tmpl(ubc_type, UBC_TYPE)
         raise ValueError(msg)
 
-    ubc_type = str(ubc_type).casefold()
-
     try:
-        ubc_type = UBC_TYPE(ubc_type)
+        ubc_type = UBC_TYPE(str(ubc_type).casefold())
     except ValueError as e:
-        msg = error_msg_tmpl(ubc_type, UBC_TYPE)
         raise ValueError(msg) from e
 
     # exception from create_foundation will automaatically propagate
