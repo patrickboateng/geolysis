@@ -50,6 +50,7 @@ exclude_patterns = ["build"]
 autodoc_default_options = {"exclude-members": "__init__",
                            "class-doc-from": "both",
                            "undoc-members": False}
+autodoc_member_order = "bysource"
 
 # Sphinx Autosummary Ext
 autosummary_generate = True
