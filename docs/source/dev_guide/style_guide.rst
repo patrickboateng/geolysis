@@ -2,13 +2,12 @@
 Python Style Guide
 ******************
 
-We follow the `PEP8 <https://peps.python.org/pep-0008/>`_ style guide
-for formatting Python code. Docstrings follow
-`PEP257 <https://peps.python.org/pep-0257/>`_. We use sphinx documentation
-format for documenting objects. (``packages``, ``modules``, ``classes``, 
-``methods``, ``functions`` and ``GLOBAL variables``)
+We follow the :pep:`8` style guide for formatting Python code. Docstrings
+follow :pep:`257`. We use sphinx documentation format for documenting objects.
+(``packages``, ``modules``, ``classes``, ``methods``, ``functions`` and
+``GLOBAL variables`` if necessary)
 
-The rest of the document describes additions and clarifications to the PEP 
+The rest of the document describes additions and clarifications to the **PEP**
 documents that we follow.
 
 Indentation
@@ -20,9 +19,9 @@ Import convention
 =================
 
 Except in cases of circular imports, all imports should be at the top of the 
-file, grouped into three sections, and separated by blanklines. The sections 
-should be, **standard library imports**, **third party imports**, and 
-**geolysis imports**.
+file, grouped into three sections and separated by blanklines. The sections
+should be imports from the **standard library**, followed by
+**third party libraries**, and then imports from **geolysis**.
 
 It is recommended to import modules/submodules as follows::
 

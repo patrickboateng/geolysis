@@ -45,7 +45,8 @@ or harmful.
 
 Community leaders have the right and responsibility to remove, edit, or reject
 comments, commits, code, wiki edits, issues, and other contributions that are
-not aligned to this Code of Conduct, and will communicate reasons for moderation
+not aligned to this Code of Conduct, and will communicate reasons for
+moderation
 decisions when appropriate.
 
 ## Scope
@@ -126,7 +127,11 @@ For answers to common questions about this code of conduct, see the FAQ at
 at [https://www.contributor-covenant.org/translations][translations].
 
 [homepage]: https://www.contributor-covenant.org
-[v2.0]: https://www.contributor-covenant.org/version/2/0/code_of_conduct.html
-[Mozilla CoC]: https://github.com/mozilla/diversity
+
+[v2.0]: https://www.contributor-covenant.org/version/2/0/code_of_conduct/
+
+[Mozilla CoC]:https://github.com/mozilla/inclusion
+
 [FAQ]: https://www.contributor-covenant.org/faq
+
 [translations]: https://www.contributor-covenant.org/translations
