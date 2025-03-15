@@ -77,18 +77,3 @@ skip_covered = true
 
 [tool.coverage.run]
 branch = true
-
-[tool.ruff]
-line-length = 79
-indent-width = 4
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-docstring-code-format = true
-docstring-code-line-length = 79
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-"utils.py" = ["F401"]
-"soil_classifier.py" = ["F821", "E741"]
