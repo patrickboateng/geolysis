@@ -4,6 +4,8 @@ from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
 from typing import Callable, SupportsRound
 
+from . import validators
+
 __all__ = ["enum_repr",
            "inf",
            "pi",
