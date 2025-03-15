@@ -86,6 +86,8 @@ class AllowableBearingCapacity(ABC):
     def bearing_capacity(self): ...
 
 
+from . import bowles_abc, terzaghi_abc, meyerhof_abc
+
 from geolysis.bearing_capacity.abc.cohl.bowles_abc import (
     BowlesABC4MatFoundation, BowlesABC4PadFoundation)
 from geolysis.bearing_capacity.abc.cohl.meyerhof_abc import (
