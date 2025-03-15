@@ -88,12 +88,9 @@ class AllowableBearingCapacity(ABC):
 
 from . import bowles_abc, terzaghi_abc, meyerhof_abc
 
-from geolysis.bearing_capacity.abc.cohl.bowles_abc import (
-    BowlesABC4MatFoundation, BowlesABC4PadFoundation)
-from geolysis.bearing_capacity.abc.cohl.meyerhof_abc import (
-    MeyerhofABC4MatFoundation, MeyerhofABC4PadFoundation)
-from geolysis.bearing_capacity.abc.cohl.terzaghi_abc import (
-    TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation)
+from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation
+from .meyerhof_abc import MeyerhofABC4MatFoundation, MeyerhofABC4PadFoundation
+from .terzaghi_abc import TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation
 
 
 @enum_repr
