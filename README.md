@@ -128,6 +128,9 @@ SoilClf(symbol='A-6(4)', description='Clayey soils')
 
 ```
 
+Check out more examples
+[here](https://docs.geolysis.io/en/latest/user_guide/getting_started.html#quick-start)
+
 ## Features
 
 <table>
