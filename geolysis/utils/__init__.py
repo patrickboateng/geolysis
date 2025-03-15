@@ -21,7 +21,8 @@ __all__ = ["enum_repr",
            "exp",
            "isclose",
            "log10",
-           "sqrt"]
+           "sqrt",
+           "validators"]
 
 
 def deg2rad(x: float, /) -> float:
