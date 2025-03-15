@@ -27,7 +27,7 @@ Before you start contributing, please make sure you have:
 - Familiarized yourself with the project by visiting the
   [Project Repository](https://github.com/patrickboateng/geolysis).
 - For an overview of the project's objective, it is recommended to read the
-  [README]https://github.com/patrickboateng/geolysis/blob/main/README.md).
+  [README](https://github.com/patrickboateng/geolysis/blob/main/README.md).
 - Create a [GitHub](https://github.com/signup) account if you don't have one
   already.
 - Review the project's issues and pull requests to see if the issue you want to
