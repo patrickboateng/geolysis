@@ -41,8 +41,9 @@ Repository = "https://github.com/patrickboateng/geolysis"
 Discussions = "https://github.com/patrickboateng/geolysis/discussions"
 "Issue Tracker" = "https://github.com/patrickboateng/geolysis/issues"
 
-[tool.setuptools]
-packages = ["geolysis"]
+[tool.setuptools.packages.find]
+include = ["geolysis*"]
+namespaces = false
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "coverage"]
