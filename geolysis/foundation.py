@@ -35,7 +35,7 @@ import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
 
-from .utils import enum_repr, inf, isclose, validators
+from geolysis.utils import enum_repr, inf, isclose, validators
 
 __all__ = ["create_foundation",
            "FoundationSize",
