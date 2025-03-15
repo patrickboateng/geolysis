@@ -18,7 +18,7 @@ The Python versions supported are:
 Summary - Release Highlights
 ============================
 
-- Improved API interface from version 0.3.0 to 0.4.0
+- Improved API interface from version 0.3.0 to 0.4.2
 - Removed unit property added to classes in 0.3.0
 - Added factory functions for creating complex classes.
 
