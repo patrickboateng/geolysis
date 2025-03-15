@@ -130,16 +130,40 @@ SoilClf(symbol='A-6(4)', description='Clayey soils')
 
 ## Features
 
-|                                              |                                       |
-|----------------------------------------------|---------------------------------------|
-| **Soil Classification**                      | AASHTO Classification System          |
-|                                              | Unified Soil Classification System    |
-| **Standard Penetration Test (SPT) Analysis** | SPT Energy Correction                 |
-|                                              | SPT Overburden Pressure Correction    |
-|                                              | Dilatancy Correction                  |
-|                                              | SPT N-Design Calculation              |
-| **Bearing Capacity Estimation**              | Allowable Bearing Capacity Estimation |
-|                                              | Ultimate Bearing Capacity Estimation  |
+<table>
+    <tr>
+        <td><strong>Soil Classification</strong></td>
+        <td>AASHTO Classification System</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Unified Soil Classification System</td>
+    </tr>
+    <tr>
+        <td><strong>Standard Penetration Test (SPT) Analysis</strong></td>
+        <td>SPT Energy Correction</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>SPT Overburden Pressure Correction</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Dilatancy Correction</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>SPT N-Design Calculation</td>
+    </tr>
+    <tr>
+        <td><strong>Bearing Capacity Estimation</strong></td>
+        <td>Allowable Bearing Capacity Estimation</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Ultimate Bearing Capacity Estimation</td>
+    </tr>
+</table>
 
 ## Documentation
 
