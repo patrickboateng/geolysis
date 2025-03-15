@@ -40,10 +40,9 @@ Functions
 """
 import enum
 from abc import abstractmethod
-from typing import Protocol
-from typing import NamedTuple, Optional, Sequence
+from typing import NamedTuple, Optional, Protocol, Sequence
 
-from geolysis.utils import enum_repr, isclose, round_, validators
+from .utils import enum_repr, isclose, round_, validators
 
 __all__ = ["CLF_TYPE",
            "AtterbergLimits",

@@ -9,9 +9,10 @@ Classes
     BowlesABC4PadFoundation
     BowlesABC4MatFoundation
 """
-from geolysis.bearing_capacity.abc.cohl import AllowableBearingCapacity
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
+
+from . import AllowableBearingCapacity
 
 
 class BowlesABC4PadFoundation(AllowableBearingCapacity):
