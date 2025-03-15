@@ -24,7 +24,8 @@ from typing import Optional
 from geolysis.foundation import FoundationSize, Shape, create_foundation
 from geolysis.utils import arctan, enum_repr, tan, round_, validators
 
-__all__ = ["UltimateBearingCapacity",
+__all__ = ["UBC_TYPE",
+           "UltimateBearingCapacity",
            "TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircularFooting",
            "TerzaghiUBC4RectangularFooting",
