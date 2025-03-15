@@ -1,10 +1,10 @@
 ****************
-Feb 2025 [0.4.0]
+Feb 2025 [0.4.2]
 ****************
 
 :Editor: Patrick Boateng
 
-Welcome to the February 2025 release of ``geolysis``. ``geolysis`` **0.4.0**
+Welcome to the February 2025 release of ``geolysis``. ``geolysis`` **0.4.2**
 is a beta release version.
 
 Python Versions Supported
@@ -21,7 +21,6 @@ Summary - Release Highlights
 - Improved API interface from version 0.3.0 to 0.4.0
 - Removed unit property added to classes in 0.3.0
 - Added factory functions for creating complex classes.
-
 
 Thank You
 =========
