@@ -15,7 +15,7 @@ Enums
     :toctree: _autosummary
     :nosignatures:
 
-    ABC_TYPE
+    ABCType
 
 Functions
 =========
@@ -39,7 +39,7 @@ from .terzaghi_abc import TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation
 
 
 @enum_repr
-class ABC_TYPE(enum.StrEnum):
+class ABCType(enum.StrEnum):
     """Enumeration of available allowable bearing capacity types."""
     BOWLES = enum.auto()
     MEYERHOF = enum.auto()
@@ -57,7 +57,7 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                       foundation_type: FoundationType | str =
                                       FoundationType.PAD,
                                       abc_type: Optional[
-                                          ABC_TYPE | str] = None,
+                                          ABCType | str] = None,
                                       ) -> AllowableBearingCapacity:
     """ A factory function that encapsulate the creation of  allowable bearing
     capacities.
@@ -103,13 +103,13 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
     msg = (f"{abc_type=} is not supported, Supported "
-           f"types are: {list(ABC_TYPE)}")
+           f"types are: {list(ABCType)}")
 
     if abc_type is None:
         raise ValueError(msg)
 
     try:
-        abc_type = ABC_TYPE(str(abc_type).casefold())
+        abc_type = ABCType(str(abc_type).casefold())
     except ValueError as e:
         raise ValueError(msg) from e
 
@@ -128,23 +128,24 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                  length=length,
                                  eccentricity=eccentricity,
                                  ground_water_level=ground_water_level,
+                                 foundation_type=foundation_type,
                                  shape=shape)
     abc_classes = {
-        ABC_TYPE.BOWLES: {
+        ABCType.BOWLES: {
             FoundationType.PAD: BowlesABC4PadFoundation,
             FoundationType.MAT: BowlesABC4MatFoundation,
         },
-        ABC_TYPE.MEYERHOF: {
+        ABCType.MEYERHOF: {
             FoundationType.PAD: MeyerhofABC4PadFoundation,
             FoundationType.MAT: MeyerhofABC4MatFoundation,
         },
-        ABC_TYPE.TERZAGHI: {
+        ABCType.TERZAGHI: {
             FoundationType.PAD: TerzaghiABC4PadFoundation,
             FoundationType.MAT: TerzaghiABC4MatFoundation,
         }
     }
 
-    abc_class = abc_classes[abc_type][foundation_type]
+    abc_class = abc_classes[abc_type][fnd_size.foundation_type]
     abc = abc_class(corrected_spt_n_value=corrected_spt_n_value,
                     tol_settlement=tol_settlement,
                     foundation_size=fnd_size)

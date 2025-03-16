@@ -15,7 +15,7 @@ Enums
     :toctree: _autosummary
     :nosignatures:
 
-    CLF_TYPE
+    ClfType
     USCSSymbol
     AASHTOSymbol
 
@@ -44,7 +44,7 @@ from typing import NamedTuple, Optional, Protocol, Sequence
 
 from .utils import enum_repr, isclose, round_, validators
 
-__all__ = ["CLF_TYPE",
+__all__ = ["ClfType",
            "AtterbergLimits",
            "PSD",
            "AASHTO",
@@ -683,7 +683,7 @@ class USCS:
 
 
 @enum_repr
-class CLF_TYPE(enum.StrEnum):
+class ClfType(enum.StrEnum):
     """Enumeration of soil classification types."""
     AASHTO = enum.auto()
     USCS = enum.auto()
@@ -701,7 +701,7 @@ def create_soil_classifier(liquid_limit: float,
                            d_10: float = 0, d_30: float = 0, d_60: float = 0,
                            add_group_idx: bool = True,
                            organic: bool = False,
-                           clf_type: Optional[CLF_TYPE | str] = None
+                           clf_type: Optional[ClfType | str] = None
                            ) -> SoilClassifier:
     """ A factory function that encapsulates the creation of a soil classifier.
 
@@ -752,20 +752,20 @@ def create_soil_classifier(liquid_limit: float,
                         :class:`USCS` classification.
     """
     msg = (f"{clf_type=} is not supported, Supported "
-           f"types are: {list(CLF_TYPE)}")
+           f"types are: {list(ClfType)}")
 
     if clf_type is None:
         raise ValueError(msg)
 
     try:
-        clf_type = CLF_TYPE(str(clf_type).casefold())
+        clf_type = ClfType(str(clf_type).casefold())
     except ValueError as e:
         raise ValueError(msg) from e
 
     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
                                      plastic_limit=plastic_limit)
 
-    if clf_type == CLF_TYPE.AASHTO:
+    if clf_type == ClfType.AASHTO:
         clf = AASHTO(atterberg_limits=atterberg_lmts,
                      fines=fines,
                      add_group_idx=add_group_idx)

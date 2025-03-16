@@ -7,7 +7,7 @@ Enum
     :toctree: _autosummary
     :nosignatures:
 
-    UBC_TYPE
+    UBCType
 
 Functions
 =========
@@ -30,7 +30,7 @@ from .terzaghi_ubc import (TerzaghiUBC4CircularFooting,
                            TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting)
 from .vesic_ubc import VesicUltimateBearingCapacity
 
-__all__ = ["UBC_TYPE",
+__all__ = ["UBCType",
            "TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircularFooting",
            "TerzaghiUBC4RectangularFooting",
@@ -41,7 +41,7 @@ __all__ = ["UBC_TYPE",
 
 
 @enum_repr
-class UBC_TYPE(enum.StrEnum):
+class UBCType(enum.StrEnum):
     """Enumeration of available ultimate bearing capacity types."""
     HANSEN = enum.auto()
     TERZAGHI = enum.auto()
@@ -60,7 +60,7 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                      shape: Shape | str = Shape.SQUARE,
                                      load_angle=0.0,
                                      apply_local_shear=False,
-                                     ubc_type: Optional[UBC_TYPE | str] = None,
+                                     ubc_type: Optional[UBCType | str] = None,
                                      ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate bearing
     capacity.
@@ -117,13 +117,13 @@ def create_ultimate_bearing_capacity(friction_angle: float,
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
     msg = (f"{ubc_type=} is not supported, Supported "
-           f"types are: {list(UBC_TYPE)}")
+           f"types are: {list(UBCType)}")
 
     if ubc_type is None:
         raise ValueError(msg)
 
     try:
-        ubc_type = UBC_TYPE(str(ubc_type).casefold())
+        ubc_type = UBCType(str(ubc_type).casefold())
     except ValueError as e:
         raise ValueError(msg) from e
 
@@ -136,15 +136,15 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
     ubc_classes = {
-        UBC_TYPE.HANSEN: HansenUltimateBearingCapacity,
-        UBC_TYPE.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
-                            Shape.CIRCLE: TerzaghiUBC4CircularFooting,
-                            Shape.SQUARE: TerzaghiUBC4SquareFooting,
-                            Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
-        UBC_TYPE.VESIC: VesicUltimateBearingCapacity,
+        UBCType.HANSEN: HansenUltimateBearingCapacity,
+        UBCType.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
+                           Shape.CIRCLE: TerzaghiUBC4CircularFooting,
+                           Shape.SQUARE: TerzaghiUBC4SquareFooting,
+                           Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
+        UBCType.VESIC: VesicUltimateBearingCapacity,
     }
 
-    if ubc_type == UBC_TYPE.TERZAGHI:
+    if ubc_type == UBCType.TERZAGHI:
         ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]
     else:
         ubc_class = ubc_classes[ubc_type]
