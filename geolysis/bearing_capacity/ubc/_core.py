@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from geolysis.foundation import FoundationSize
-from geolysis.utils import validators, round_, arctan, tan
+from geolysis.utils import arctan, round_, tan, validators
 
 
 class UltimateBearingCapacity(ABC):

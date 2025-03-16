@@ -8,9 +8,10 @@ Classes
 
     HansenUltimateBearingCapacity
 """
-from ._core import UltimateBearingCapacity
 from geolysis.foundation import Shape
 from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan
+
+from ._core import UltimateBearingCapacity
 
 __all__ = ["HansenUltimateBearingCapacity"]
 
