@@ -722,7 +722,7 @@ def create_soil_classifier(liquid_limit: float,
     :type fines: float
 
     :param sand: Percentage of sand in soil sample (%). This is optional for
-                 ``AASHTO`` classification.
+                 :class:`AASHTO` classification.
     :type sand: float, optional
 
     :param d_10: Diameter at which 10% of the soil by weight is finer.
