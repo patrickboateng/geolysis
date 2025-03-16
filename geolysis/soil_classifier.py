@@ -721,17 +721,18 @@ def create_soil_classifier(liquid_limit: float,
                   soil sample passing through No. 200 sieve (0.075mm).
     :type fines: float
 
-    :param sand: Percentage of sand in soil sample (%).
-    :type sand: float
+    :param sand: Percentage of sand in soil sample (%). This is optional for
+                 ``AASHTO`` classification.
+    :type sand: float, optional
 
     :param d_10: Diameter at which 10% of the soil by weight is finer.
-    :type d_10: float
+    :type d_10: float, optional
 
     :param d_30: Diameter at which 30% of the soil by weight is finer.
-    :type d_30: float
+    :type d_30: float, optional
 
     :param d_60: Diameter at which 60% of the soil by weight is finer.
-    :type d_60: float
+    :type d_60: float, optional
 
     :param add_group_idx: Used to indicate whether the group index should
                           be added to the classification or not, defaults to
@@ -743,14 +744,14 @@ def create_soil_classifier(liquid_limit: float,
 
     :param clf_type: Used to indicate which type of soil classifier should be
                      used, defaults to None.
-    :type clf_type: CLF_TYPE | str
+    :type clf_type: CLF_TYPE | str, optional
 
     :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
                         None
     :raises ValueError: Raises ValueError if ``sand`` is not provided for
                         :class:`USCS` classification.
     """
-    msg = (f"{clf_type = } is not supported, Supported "
+    msg = (f"{clf_type=} is not supported, Supported "
            f"types are: {list(CLF_TYPE)}")
 
     if clf_type is None:

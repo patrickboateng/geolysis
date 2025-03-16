@@ -360,7 +360,7 @@ def create_foundation(depth: float,
     :type ground_water_level: float, optional
 
     :param shape: Shape of foundation footing, defaults to :class:`Shape.SQUARE`
-    :type shape: Shape | str
+    :type shape: Shape | str, optional
 
     :raises ValueError: Raised when length is not provided for a rectangular
                         footing.
@@ -371,7 +371,7 @@ def create_foundation(depth: float,
     try:
         shape = Shape(shape)
     except ValueError as e:
-        msg = (f"{shape = } is not supported, Supported "
+        msg = (f"{shape=} is not supported, Supported "
                f"types are: {list(Shape)}")
 
         raise ValueError(msg) from e
