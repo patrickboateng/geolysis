@@ -240,7 +240,8 @@ class FoundationSize:
     def __init__(self, depth: float,
                  footing_size: FootingSize,
                  eccentricity: float = 0.0,
-                 ground_water_level: Optional[float] = None) -> None:
+                 ground_water_level: Optional[float] = None,
+                 foundation_type: FoundationType = FoundationType.PAD) -> None:
         """
         :param depth: Depth of foundation (m).
         :type depth: float
@@ -262,7 +263,9 @@ class FoundationSize:
         self.depth = depth
         self.footing_size = footing_size
         self.eccentricity = eccentricity
+
         self._ground_water_level = ground_water_level
+        self._foundation_type = foundation_type
 
     @property
     def depth(self) -> float:
@@ -312,6 +315,10 @@ class FoundationSize:
         self._ground_water_level = val
 
     @property
+    def foundation_type(self) -> FoundationType:
+        return self._foundation_type
+
+    @property
     def effective_width(self) -> float:
         """Returns the effective width of the foundation footing."""
         return self.width - 2.0 * self.eccentricity
@@ -335,6 +342,7 @@ def create_foundation(depth: float,
                       length: Optional[float] = None,
                       eccentricity: float = 0.0,
                       ground_water_level: Optional[float] = None,
+                      foundation_type: FoundationType = FoundationType.PAD,
                       shape: Shape | str = Shape.SQUARE) -> FoundationSize:
     """A factory function that encapsulate the creation of a foundation.
 
@@ -358,6 +366,10 @@ def create_foundation(depth: float,
     :param ground_water_level: Depth of the water below ground level (m),
                                defaults to None.
     :type ground_water_level: float, optional
+
+    :param foundation_type: Type of foundation footing, defaults to
+                            FoundationType.PAD.
+    :type foundation_type: FoundationType, optional
 
     :param shape: Shape of foundation footing, defaults to :class:`Shape.SQUARE`
     :type shape: Shape | str, optional
@@ -390,4 +402,5 @@ def create_foundation(depth: float,
     return FoundationSize(depth=depth,
                           eccentricity=eccentricity,
                           ground_water_level=ground_water_level,
+                          foundation_type=foundation_type,
                           footing_size=footing_size)
