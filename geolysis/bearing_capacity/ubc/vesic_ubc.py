@@ -8,10 +8,11 @@ Classes
 
     VesicUltimateBearingCapacity
 """
-from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
-from geolysis.bearing_capacity.ubc import hansen_ubc
-from geolysis.foundation import FoundationSize, Shape
+from geolysis.foundation import Shape
 from geolysis.utils import isclose, round_, sin, tan
+
+from . import hansen_ubc
+from ._core import UltimateBearingCapacity
 
 __all__ = ["VesicUltimateBearingCapacity"]
 

@@ -13,8 +13,9 @@ Classes
 """
 from abc import ABC
 
-from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
 from geolysis.utils import cos, cot, deg2rad, exp, isclose, pi, round_, tan
+
+from ._core import UltimateBearingCapacity
 
 __all__ = ["TerzaghiUBC4StripFooting",
            "TerzaghiUBC4CircularFooting",

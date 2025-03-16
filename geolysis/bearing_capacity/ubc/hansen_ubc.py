@@ -8,8 +8,8 @@ Classes
 
     HansenUltimateBearingCapacity
 """
-from geolysis.bearing_capacity.ubc import UltimateBearingCapacity
-from geolysis.foundation import FoundationSize, Shape
+from ._core import UltimateBearingCapacity
+from geolysis.foundation import Shape
 from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan
 
 __all__ = ["HansenUltimateBearingCapacity"]

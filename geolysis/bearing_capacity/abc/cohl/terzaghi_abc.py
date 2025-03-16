@@ -12,7 +12,7 @@ Classes
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 
-from . import AllowableBearingCapacity
+from ._core import AllowableBearingCapacity
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):

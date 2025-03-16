@@ -25,6 +25,7 @@ Functions
 
     create_allowable_bearing_capacity
 """
+
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -35,62 +36,10 @@ from geolysis.foundation import (FoundationSize,
                                  create_foundation)
 from geolysis.utils import inf, enum_repr, validators
 
-
-class SettlementError(ValueError):
-    """Raised when tolerable settlement is greater than the maximum 
-    allowable settlement.
-    """
-
-
-class AllowableBearingCapacity(ABC):
-    #: Maximum tolerable foundation settlement (mm).
-    MAX_TOL_SETTLEMENT = 25.4
-
-    def __init__(self, corrected_spt_n_value: float,
-                 tol_settlement: float,
-                 foundation_size: FoundationSize) -> None:
-        self.corrected_spt_n_value = corrected_spt_n_value
-        self.tol_settlement = tol_settlement
-        self.foundation_size = foundation_size
-
-    @property
-    def corrected_spt_n_value(self) -> float:
-        return self._corrected_spt_n_value
-
-    @corrected_spt_n_value.setter
-    @validators.ge(0.0)
-    def corrected_spt_n_value(self, val: float) -> None:
-        self._corrected_spt_n_value = val
-
-    @property
-    def tol_settlement(self) -> float:
-        return self._tol_settlement
-
-    @tol_settlement.setter
-    @validators.le(25.4, exc_type=SettlementError)
-    def tol_settlement(self, tol_settlement: float) -> None:
-        self._tol_settlement = tol_settlement
-
-    def _sr(self) -> float:
-        """Calculate the settlement ratio."""
-        return self.tol_settlement / self.MAX_TOL_SETTLEMENT
-
-    def _fd(self) -> float:
-        """Calculate the depth factor."""
-        depth = self.foundation_size.depth
-        width = self.foundation_size.width
-
-        return min(1.0 + 0.33 * depth / width, 1.33)
-
-    @abstractmethod
-    def bearing_capacity(self): ...
-
-
-from . import bowles_abc, terzaghi_abc, meyerhof_abc
-
-from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation
-from .meyerhof_abc import MeyerhofABC4MatFoundation, MeyerhofABC4PadFoundation
+from ._core import AllowableBearingCapacity
 from .terzaghi_abc import TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation
+from .meyerhof_abc import MeyerhofABC4MatFoundation, MeyerhofABC4PadFoundation
+from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation
 
 
 @enum_repr
@@ -109,8 +58,8 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                       eccentricity: float = 0.0,
                                       ground_water_level: float = inf,
                                       shape: Shape | str = Shape.SQUARE,
-                                      foundation_type: FoundationType | str = \
-                                              FoundationType.PAD,
+                                      foundation_type: FoundationType | str =
+                                      FoundationType.PAD,
                                       abc_type: Optional[
                                           ABC_TYPE | str] = None,
                                       ) -> AllowableBearingCapacity:
@@ -139,7 +88,7 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :type eccentricity: float, optional
 
     :param ground_water_level: Depth of water below ground level (m).
-    :type ground_water_level: float
+    :type ground_water_level: float, optional
 
     :param shape: Shape of foundation footing, defaults to "SQUARE".
     :type shape: str, optional
@@ -150,14 +99,14 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :param abc_type: Type of allowable bearing capacity calculation to apply.
                      Available values can be found in :class:`ABC_TYPE`,
                      defaults to None.
-    :type abc_type:  ABC_TYPE | str
+    :type abc_type:  ABC_TYPE | str, optional
 
     :raises ValueError: Raised if abc_type or foundation_type is not supported.
     :raises ValueError: Raised when length is not provided for a rectangular
                         footing.
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
-    msg = (f"{abc_type = } is not supported, Supported "
+    msg = (f"{abc_type=} is not supported, Supported "
            f"types are: {list(ABC_TYPE)}")
 
     if abc_type is None:
@@ -168,7 +117,7 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     except ValueError as e:
         raise ValueError(msg) from e
 
-    msg = (f"{foundation_type = } is not supported, Supported "
+    msg = (f"{foundation_type=} is not supported, Supported "
            f"types are: {list(FoundationType)}")
 
     try:
