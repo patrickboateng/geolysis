@@ -116,7 +116,6 @@ SoilClf(symbol='SC', description='Clayey sands')
 >>> aashto_clf = create_soil_classifier(liquid_limit=34.1,
 ...                                     plastic_limit=21.1,
 ...                                     fines=47.88,
-...                                     sand=37.84,  # Sand is optional for AASHTO classification
 ...                                     clf_type="AASHTO")
 >>> clf = aashto_clf.classify()
 >>> clf
