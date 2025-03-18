@@ -66,7 +66,7 @@ class FoundationType(enum.StrEnum):
 
 
 class FootingSize(ABC):
-    SHAPE: Shape
+    _SHAPE: Shape
 
     @property
     @abstractmethod
@@ -88,13 +88,14 @@ class FootingSize(ABC):
 
     @property
     def shape(self) -> Shape:
-        return self.SHAPE
+        """Return the shape of the foundation footing."""
+        return self._SHAPE
 
 
 class StripFooting(FootingSize):
     """A class representation of strip footing."""
 
-    SHAPE = Shape.STRIP
+    _SHAPE = Shape.STRIP
 
     def __init__(self, width: float, length: float = inf) -> None:
         """
@@ -109,6 +110,7 @@ class StripFooting(FootingSize):
 
     @property
     def width(self) -> float:
+        """Width of foundation footing (m)."""
         return self._width
 
     @width.setter
@@ -118,6 +120,7 @@ class StripFooting(FootingSize):
 
     @property
     def length(self) -> float:
+        """Length of foundation footing (m)."""
         return self._length
 
     @length.setter
@@ -136,7 +139,7 @@ class CircularFooting(FootingSize):
         square and rectangular footing follow.
     """
 
-    SHAPE = Shape.CIRCLE
+    _SHAPE = Shape.CIRCLE
 
     def __init__(self, diameter: float):
         """
@@ -146,6 +149,7 @@ class CircularFooting(FootingSize):
 
     @property
     def diameter(self) -> float:
+        """Diameter of foundation footing (m)."""
         return self._diameter
 
     @diameter.setter
@@ -155,6 +159,7 @@ class CircularFooting(FootingSize):
 
     @property
     def width(self):
+        """Diameter of foundation footing (m)."""
         return self.diameter
 
     @width.setter
@@ -163,6 +168,7 @@ class CircularFooting(FootingSize):
 
     @property
     def length(self):
+        """Diameter of foundation footing (m)."""
         return self.diameter
 
     @length.setter
@@ -173,7 +179,7 @@ class CircularFooting(FootingSize):
 class SquareFooting(FootingSize):
     """A class representation of square footing."""
 
-    SHAPE = Shape.SQUARE
+    _SHAPE = Shape.SQUARE
 
     def __init__(self, width: float):
         """
@@ -183,6 +189,7 @@ class SquareFooting(FootingSize):
 
     @property
     def width(self):
+        """Width of foundation footing (m)."""
         return self._width
 
     @width.setter
@@ -192,6 +199,7 @@ class SquareFooting(FootingSize):
 
     @property
     def length(self):
+        """Width of foundation footing (m)."""
         return self.width
 
     @length.setter
@@ -202,7 +210,7 @@ class SquareFooting(FootingSize):
 class RectangularFooting(FootingSize):
     """A class representation of rectangular footing."""
 
-    SHAPE = Shape.RECTANGLE
+    _SHAPE = Shape.RECTANGLE
 
     def __init__(self, width: float, length: float):
         """
@@ -217,6 +225,7 @@ class RectangularFooting(FootingSize):
 
     @property
     def width(self) -> float:
+        """Width of foundation footing (m)."""
         return self._width
 
     @width.setter
@@ -226,6 +235,7 @@ class RectangularFooting(FootingSize):
 
     @property
     def length(self) -> float:
+        """Length of foundation footing (m)."""
         return self._length
 
     @length.setter
@@ -259,6 +269,10 @@ class FoundationSize:
         :param ground_water_level: Depth of the water below ground level (m),
                                    defaults to inf.
         :type ground_water_level: float, optional
+
+        :param foundation_type: Type of foundation, defaults to
+                                :attr:`FoundationType.PAD`
+        :type foundation_type: FoundationType, optional
         """
         self.depth = depth
         self.footing_size = footing_size
@@ -269,6 +283,7 @@ class FoundationSize:
 
     @property
     def depth(self) -> float:
+        """Depth of foundation (m)."""
         return self._depth
 
     @depth.setter
@@ -277,7 +292,8 @@ class FoundationSize:
         self._depth = val
 
     @property
-    def width(self):
+    def width(self) -> float:
+        """Width of foundation footing (m)."""
         return self.footing_size.width
 
     @width.setter
@@ -285,7 +301,8 @@ class FoundationSize:
         self.footing_size.width = val
 
     @property
-    def length(self):
+    def length(self) -> float:
+        """Length of foundation footing (m)."""
         return self.footing_size.length
 
     @length.setter
@@ -293,11 +310,15 @@ class FoundationSize:
         self.footing_size.length = val
 
     @property
-    def footing_shape(self):
+    def footing_shape(self) -> Shape:
+        """Shape of foundation footing."""
         return self.footing_size.shape
 
     @property
     def eccentricity(self) -> float:
+        """The deviation of the foundation load from the center of gravity of
+        the foundation footing.
+        """
         return self._eccentricity
 
     @eccentricity.setter
@@ -307,6 +328,7 @@ class FoundationSize:
 
     @property
     def ground_water_level(self) -> Optional[float]:
+        """Depth of the water below ground level (m)."""
         return self._ground_water_level
 
     @ground_water_level.setter
@@ -316,6 +338,7 @@ class FoundationSize:
 
     @property
     def foundation_type(self) -> FoundationType:
+        """Type of foundation."""
         return self._foundation_type
 
     @property
@@ -324,10 +347,8 @@ class FoundationSize:
         return self.width - 2.0 * self.eccentricity
 
     def footing_params(self) -> tuple[float, float, Shape]:
-        """Returns the ``width``, ``length``, and ``shape`` of the
-        foundation footing.
-
-        .. note:: "width" is the effective width of the foundation footing.
+        """Returns the :attr:`effective_width`, :attr:`length`, and
+        :attr:`footing_shape` of the foundation footing.
         """
         width, length, shape = self.effective_width, self.length, self.footing_shape
 
