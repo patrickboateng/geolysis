@@ -26,6 +26,7 @@ Summary - Release Highlights
 - Changed enum name from ``CLF_TYPE`` to :class:`~geolysis.soil_classifier.ClfType`
 - Changed enum name from ``ABC_TYPE`` to :class:`~geolysis.bearing_capacity.abc.cohl.ABCType`
 - Changed enum name from ``ABC_TYPE`` to :class:`~geolysis.bearing_capacity.ubc.UBCType`
+- Improved the documentation of all public objects.
 
 Thank You
 =========
