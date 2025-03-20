@@ -102,7 +102,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def s_gamma(self) -> float:
-        """Shape factor :math:`S_{\gamma}`"""
+        r"""Shape factor :math:`S_{\gamma}`"""
         return 1.0
 
     @property
@@ -117,7 +117,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def d_gamma(self) -> float:
-        """Depth factor :math:`d_{\gamma}`"""
+        r"""Depth factor :math:`d_{\gamma}`"""
         return 1.0
 
     @property
@@ -132,7 +132,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def i_gamma(self) -> float:
-        """Inclination factor :math:`i_{\gamma}`"""
+        r"""Inclination factor :math:`i_{\gamma}`"""
         return 1.0
 
     def _cohesion_term(self, coef: float = 1.0) -> float:

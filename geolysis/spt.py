@@ -472,7 +472,7 @@ class SkemptonOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        """SPT Correction.
+        r"""SPT Correction.
 
         :Equation:
 
@@ -511,7 +511,7 @@ class DilatancyCorrection:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
-        """Corrected SPT N-value.
+        r"""Corrected SPT N-value.
 
         :Equation:
 
