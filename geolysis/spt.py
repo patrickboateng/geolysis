@@ -187,10 +187,10 @@ class EnergyCorrection:
         :param rod_length: Length of SPT rod, defaults to 3.0. (m)
         :type rod_length: float, optional
 
-        :param hammer_type: Hammer type, defaults to :attr:`HammerType.DONUT_1`
+        :param hammer_type: Hammer type, defaults to :py:enum:mem:`~HammerType.DONUT_1`
         :type hammer_type: HammerType, optional
 
-        :param sampler_type: Sampler type, defaults to :attr:`SamplerType.STANDARD`
+        :param sampler_type: Sampler type, defaults to :py:enum:mem:`~SamplerType.STANDARD`
         :type sampler_type: SamplerType, optional
         """
         self.recorded_spt_n_value = recorded_spt_n_value
@@ -502,12 +502,12 @@ class DilatancyCorrection:
         """SPT N-value standardized for field procedures and/or corrected for
         overburden pressure.
         """
-        return self._std_spt_n_value
+        return self._corr_spt_n_value
 
     @corr_spt_n_value.setter
     @validators.gt(0.0)
     def corr_spt_n_value(self, val: float) -> None:
-        self._std_spt_n_value = val
+        self._corr_spt_n_value = val
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
@@ -559,20 +559,20 @@ def create_spt_correction(recorded_spt_n_value: int,
                               sampler, defaults to 0.6
     :type energy_percentage: float, optional
 
-    :param borehole_diameter: Borehole diameter, defaults to 65.0 (mm).
+    :param borehole_diameter: Borehole diameter (mm), defaults to 65.0.
     :type borehole_diameter: float, optional
 
-    :param rod_length: Rod length, defaults to 3.0 (m).
+    :param rod_length: Rod length (m), defaults to 3.0.
     :type rod_length: float, optional
 
-    :param hammer_type: Hammer type, defaults to :attr:`HammerType.DONUT_1`
+    :param hammer_type: Hammer type, defaults to :py:enum:mem:`~HammerType.DONUT_1`
     :type hammer_type: HammerType, optional
 
-    :param sampler_type: Sampler type, defaults to :attr:`SamplerType.STANDARD`
+    :param sampler_type: Sampler type, defaults to :py:enum:mem:`~SamplerType.STANDARD`
     :type sampler_type: SamplerType, optional
 
     :param opc_type: Overburden Pressure Correction type to apply,
-                    defaults to :attr:`OPCType.GIBBS`
+                    defaults to :py:enum:mem:`~OPCType.GIBBS`
     :type opc_type: OPCType, optional
 
     :param apply_dilatancy_correction: Indicates whether to apply dilatancy
@@ -595,13 +595,13 @@ def create_spt_correction(recorded_spt_n_value: int,
         hammer_type=hammer_type,
         sampler_type=sampler_type)
 
-    std_spt_n_value = energy_correction.standardized_spt_n_value()
-
     opc_types = {OPCType.GIBBS: GibbsHoltzOPC,
                  OPCType.BAZARAA: BazaraaPeckOPC,
                  OPCType.PECK: PeckOPC,
                  OPCType.LIAO: LiaoWhitmanOPC,
                  OPCType.SKEMPTON: SkemptonOPC}
+
+    std_spt_n_value = energy_correction.standardized_spt_n_value()
 
     opc_class = opc_types[opc_type]
     opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)

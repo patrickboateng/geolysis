@@ -79,14 +79,14 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :type ground_water_level: float, optional
 
     :param shape: Shape of foundation footing, defaults to
-                  :attr:`~geolysis.foundation.Shape.SQUARE`.
+                  :py:enum:mem:`~geolysis.foundation.Shape.SQUARE`.
     :type shape: str, optional
 
     :param foundation_type: Type of foundation, defaults to "pad".
     :type foundation_type: FoundationType | str, optional
 
     :param abc_type: Type of allowable bearing capacity calculation to apply.
-                     Available values can be found in :class:`ABCType`,
+                     Available values can be found in :py:enum:`ABCType`,
                      defaults to None.
     :type abc_type:  ABCType | str, optional
 

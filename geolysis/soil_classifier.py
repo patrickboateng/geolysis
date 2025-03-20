@@ -279,7 +279,8 @@ class _SizeDistribution:
         graded.
 
         :param coarse_soil: Coarse fraction of the soil sample. Valid arguments 
-                            are ``USCSSymbol.GRAVEL`` and ``USCSSymbol.SAND``.
+                            are :py:enum:mem:`~USCSSymbol.GRAVEL` and
+                            :py:enum:mem:`~USCSSymbol.SAND`.
         """
         if coarse_soil is USCSSymbol.GRAVEL:
             if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4:

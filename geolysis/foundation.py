@@ -317,7 +317,7 @@ class FoundationSize:
     @property
     def eccentricity(self) -> float:
         """The deviation of the foundation load from the center of gravity of
-        the foundation footing.
+        the foundation footing (m).
         """
         return self._eccentricity
 
@@ -343,7 +343,7 @@ class FoundationSize:
 
     @property
     def effective_width(self) -> float:
-        """Returns the effective width of the foundation footing."""
+        """Returns the effective width of the foundation footing (m)."""
         return self.width - 2.0 * self.eccentricity
 
     def footing_params(self) -> tuple[float, float, Shape]:
