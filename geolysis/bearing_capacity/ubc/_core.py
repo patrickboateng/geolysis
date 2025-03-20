@@ -71,6 +71,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def moist_unit_wgt(self) -> float:
+        """Moist unit weight of soil (:math:`kN/m^3`)."""
         return self._moist_unit_wgt
 
     @moist_unit_wgt.setter
@@ -80,6 +81,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def load_angle(self) -> float:
+        """Inclination of the applied load with the  vertical."""
         return self._load_angle
 
     @load_angle.setter
@@ -90,38 +92,47 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def s_c(self) -> float:
+        """Shape factor :math:`S_c`"""
         return 1.0
 
     @property
     def s_q(self) -> float:
+        """Shape factor :math:`S_q`"""
         return 1.0
 
     @property
     def s_gamma(self) -> float:
+        """Shape factor :math:`S_{\gamma}`"""
         return 1.0
 
     @property
     def d_c(self) -> float:
+        """Depth factor :math:`d_c`"""
         return 1.0
 
     @property
     def d_q(self) -> float:
+        """Depth factor :math:`d_q`"""
         return 1.0
 
     @property
     def d_gamma(self) -> float:
+        """Depth factor :math:`d_{\gamma}`"""
         return 1.0
 
     @property
     def i_c(self) -> float:
+        """Inclination factor :math:`i_c`"""
         return 1.0
 
     @property
     def i_q(self) -> float:
+        """Inclination factor :math:`i_q`"""
         return 1.0
 
     @property
     def i_gamma(self) -> float:
+        """Inclination factor :math:`i_{\gamma}`"""
         return 1.0
 
     def _cohesion_term(self, coef: float = 1.0) -> float:
