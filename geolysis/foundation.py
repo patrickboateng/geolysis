@@ -260,18 +260,18 @@ class FoundationSize:
         :type footing_size: FootingSize
 
         :param eccentricity: The deviation of the foundation load from the
-                             center of gravity of the foundation footing,
+                             center of gravity of the foundation footing (m),
                              defaults to 0.0. This means that the foundation 
                              load aligns with the center of gravity of the 
-                             foundation footing (m).
+                             foundation footing.
         :type eccentricity: float, optional
 
         :param ground_water_level: Depth of the water below ground level (m),
-                                   defaults to inf.
+                                   defaults to None.
         :type ground_water_level: float, optional
 
         :param foundation_type: Type of foundation, defaults to
-                                :attr:`FoundationType.PAD`
+                                :py:enum:mem:`~FoundationType.PAD`
         :type foundation_type: FoundationType, optional
         """
         self.depth = depth
@@ -389,10 +389,11 @@ def create_foundation(depth: float,
     :type ground_water_level: float, optional
 
     :param foundation_type: Type of foundation footing, defaults to
-                            FoundationType.PAD.
+                            :py:enum:mem:`~FoundationType.PAD`.
     :type foundation_type: FoundationType, optional
 
-    :param shape: Shape of foundation footing, defaults to :class:`Shape.SQUARE`
+    :param shape: Shape of foundation footing, defaults to 
+                  :py:enum:mem:`~Shape.SQUARE`
     :type shape: Shape | str, optional
 
     :raises ValueError: Raised when length is not provided for a rectangular
