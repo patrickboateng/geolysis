@@ -23,6 +23,7 @@ class AllowableBearingCapacity(ABC):
 
     @property
     def corrected_spt_n_value(self) -> float:
+        """Statistical average of corrected SPT N-value."""
         return self._corrected_spt_n_value
 
     @corrected_spt_n_value.setter
@@ -32,6 +33,7 @@ class AllowableBearingCapacity(ABC):
 
     @property
     def tol_settlement(self) -> float:
+        """Tolerable settlement foundation (mm)."""
         return self._tol_settlement
 
     @tol_settlement.setter
@@ -47,7 +49,6 @@ class AllowableBearingCapacity(ABC):
         """Calculate the depth factor."""
         depth = self.foundation_size.depth
         width = self.foundation_size.width
-
         return min(1.0 + 0.33 * depth / width, 1.33)
 
     @abstractmethod
