@@ -1,13 +1,5 @@
 """ Allowable bearing capacity package for cohesionless soils.
 
-Exceptions
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    SettlementError
-
 Enums
 =====
 
@@ -78,29 +70,31 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :type length: float, optional
 
     :param eccentricity: The deviation of the foundation load from the center 
-                         of gravity of the foundation footing, defaults to 0.0.
-                         This means that the foundation load aligns with the
-                         center of gravity of the foundation footing (m).
+                         of gravity of the foundation footing (m), defaults to
+                         0.0. This means that the foundation load aligns with
+                         the center of gravity of the foundation footing.
     :type eccentricity: float, optional
 
     :param ground_water_level: Depth of water below ground level (m).
     :type ground_water_level: float, optional
 
-    :param shape: Shape of foundation footing, defaults to "SQUARE".
+    :param shape: Shape of foundation footing, defaults to
+                  :attr:`~geolysis.foundation.Shape.SQUARE`.
     :type shape: str, optional
 
     :param foundation_type: Type of foundation, defaults to "pad".
     :type foundation_type: FoundationType | str, optional
 
     :param abc_type: Type of allowable bearing capacity calculation to apply.
-                     Available values can be found in :class:`ABC_TYPE`,
+                     Available values can be found in :class:`ABCType`,
                      defaults to None.
-    :type abc_type:  ABC_TYPE | str, optional
+    :type abc_type:  ABCType | str, optional
 
-    :raises ValueError: Raised if abc_type or foundation_type is not supported.
-    :raises ValueError: Raised when length is not provided for a rectangular
+    :raises ValueError: Raised if ``abc_type`` or ``foundation_type`` is not
+                        supported.
+    :raises ValueError: Raised when ``length`` is not provided for a rectangular
                         footing.
-    :raises ValueError: Raised if an invalid footing shape is provided.
+    :raises ValueError: Raised if an invalid footing ``shape`` is provided.
     """
     msg = (f"{abc_type=} is not supported, Supported "
            f"types are: {list(ABCType)}")
