@@ -230,7 +230,7 @@ Calculating SPT :math:`N_{design}` from a list of SPT N-values:
        ...:                                rod_length=3.0)
 
     @doctest
-    In [3]: energy_corr.corrected_spt_n_value()
+    In [3]: energy_corr.standardized_spt_n_value()
     Out[3]: 22.5
 
 Correcting SPT N-values for overburden pressure influence using 
