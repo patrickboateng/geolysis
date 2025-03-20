@@ -9,7 +9,28 @@ from geolysis.spt import (EnergyCorrection,
                           PeckOPC,
                           SPTNDesign,
                           HammerType,
-                          SamplerType)
+                          SamplerType,
+                          create_spt_correction)
+
+
+def test_correction():
+    opc_corr = create_spt_correction(recorded_spt_n_value=23,
+                                     eop=100.0,
+                                     opc_type="GIBBS")
+    assert opc_corr.corrected_spt_n_value() == pytest.approx(17.7)
+
+    dil_corr = create_spt_correction(recorded_spt_n_value=23,
+                                     eop=100.0,
+                                     opc_type="GIBBS",
+                                     apply_dilatancy_correction=True)
+    assert dil_corr.corrected_spt_n_value() == pytest.approx(16.4)
+
+
+def test_create_spt_correction_errors():
+    with pytest.raises(ValueError):
+        create_spt_correction(recorded_spt_n_value=34,
+                              eop=100,
+                              opc_type="TERZAGHI")
 
 
 class TestSPTDesign:
@@ -50,7 +71,8 @@ class TestEnergyCorrection:
                                        hammer_type=hammer_type,
                                        sampler_type=sampler_type)
 
-        assert energy_corr.corrected_spt_n_value() == pytest.approx(expected)
+        assert energy_corr.standardized_spt_n_value() == pytest.approx(
+            expected)
 
 
 class TestGibbsHoltzOPC:
