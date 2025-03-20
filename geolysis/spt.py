@@ -9,6 +9,7 @@ Enums
 
     HammerType
     SamplerType
+    OPCType
 
 Classes
 =======
@@ -24,6 +25,14 @@ Classes
     LiaoWhitmanOPC
     SkemptonOPC
     DilatancyCorrection
+
+Functions
+=========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    create_spt_correction
 """
 import enum
 from abc import abstractmethod
@@ -65,6 +74,7 @@ class SPTNDesign:
 
     @property
     def corrected_spt_n_values(self) -> Sequence[float]:
+        """Corrected SPT N-values within the foundation influence zone."""
         return self._corrected_spt_n_values
 
     @corrected_spt_n_values.setter
@@ -147,17 +157,15 @@ class EnergyCorrection:
     ``ENERGY``: 0.6, 0.55, etc
     """
 
-    #: Hammer efficiency factors
-    HAMMER_EFFICIENCY_FACTORS = {HammerType.AUTOMATIC: 0.70,
-                                 HammerType.DONUT_1: 0.60,
-                                 HammerType.DONUT_2: 0.50,
-                                 HammerType.SAFETY: 0.55,
-                                 HammerType.DROP: 0.45,
-                                 HammerType.PIN: 0.45}
+    _HAMMER_EFFICIENCY_FACTORS = {HammerType.AUTOMATIC: 0.70,
+                                  HammerType.DONUT_1: 0.60,
+                                  HammerType.DONUT_2: 0.50,
+                                  HammerType.SAFETY: 0.55,
+                                  HammerType.DROP: 0.45,
+                                  HammerType.PIN: 0.45}
 
-    #: Sampler correction factors
-    SAMPLER_CORRECTION_FACTORS = {SamplerType.STANDARD: 1.00,
-                                  SamplerType.NON_STANDARD: 1.20}
+    _SAMPLER_CORRECTION_FACTORS = {SamplerType.STANDARD: 1.00,
+                                   SamplerType.NON_STANDARD: 1.20}
 
     def __init__(self, recorded_spt_n_value: int, *,
                  energy_percentage=0.6,
@@ -173,10 +181,10 @@ class EnergyCorrection:
                                   sampler, defaults to 0.6
         :type energy_percentage: float, optional
 
-        :param borehole_diameter: Borehole diameter, defaults to 65.0. (mm)
+        :param borehole_diameter: Borehole diameter (mm), defaults to 65.0.
         :type borehole_diameter: float, optional
 
-        :param rod_length: Rod length, defaults to 3.0. (m)
+        :param rod_length: Length of SPT rod, defaults to 3.0. (m)
         :type rod_length: float, optional
 
         :param hammer_type: Hammer type, defaults to :attr:`HammerType.DONUT_1`
@@ -194,6 +202,7 @@ class EnergyCorrection:
 
     @property
     def recorded_spt_n_value(self) -> int:
+        """Recorded SPT N-value from field."""
         return self._recorded_spt_value
 
     @recorded_spt_n_value.setter
@@ -204,6 +213,7 @@ class EnergyCorrection:
 
     @property
     def energy_percentage(self) -> float:
+        """Energy percentage reaching the tip of the sampler."""
         return self._energy_percentage
 
     @energy_percentage.setter
@@ -214,6 +224,7 @@ class EnergyCorrection:
 
     @property
     def borehole_diameter(self) -> float:
+        """Borehole diameter (mm)."""
         return self._borehole_diameter
 
     @borehole_diameter.setter
@@ -224,6 +235,7 @@ class EnergyCorrection:
 
     @property
     def rod_length(self) -> float:
+        """Length of SPT rod."""
         return self._rod_length
 
     @rod_length.setter
@@ -234,7 +246,7 @@ class EnergyCorrection:
     @property
     def hammer_efficiency(self) -> float:
         """Hammer efficiency correction factor."""
-        return self.HAMMER_EFFICIENCY_FACTORS[self.hammer_type]
+        return self._HAMMER_EFFICIENCY_FACTORS[self.hammer_type]
 
     @property
     def borehole_diameter_correction(self) -> float:
@@ -250,7 +262,7 @@ class EnergyCorrection:
     @property
     def sampler_correction(self) -> float:
         """Sampler correction factor."""
-        return self.SAMPLER_CORRECTION_FACTORS[self.sampler_type]
+        return self._SAMPLER_CORRECTION_FACTORS[self.sampler_type]
 
     @property
     def rod_length_correction(self) -> float:
@@ -274,8 +286,8 @@ class EnergyCorrection:
         return numerator / self.energy_percentage
 
     @round_(ndigits=1)
-    def corrected_spt_n_value(self) -> float:
-        """Corrected SPT N-value."""
+    def standardized_spt_n_value(self) -> float:
+        """Standardized SPT N-value."""
         return self.correction() * self.recorded_spt_n_value
 
 
@@ -295,6 +307,7 @@ class OPC:
 
     @property
     def std_spt_n_value(self) -> float:
+        """SPT N-value standardized for field procedures."""
         return self._std_spt_n_value
 
     @std_spt_n_value.setter
@@ -304,7 +317,18 @@ class OPC:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
-        """Corrected SPT N-value."""
+        r"""Corrected SPT N-value.
+
+        :Equation:
+
+        .. math:: (N_1)_{60} = C_N \cdot N_{60}
+
+        .. note::
+
+            ``60`` is used in this case to represent ``60%`` hammer efficiency
+            and can be any percentage of hammer efficiency e.g :math:`N_{55}`
+            for ``55%`` hammer efficiency.
+        """
         corrected_spt = self.correction() * self.std_spt_n_value
         # Corrected SPT should not be more
         # than 2 times the Standardized SPT
@@ -316,20 +340,11 @@ class OPC:
 
 
 class GibbsHoltzOPC(OPC):
-    r"""Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``.
-
-    :Equation:
-
-    .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
-
-    :math:`\frac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if
-    :math:`\frac{N_c}{N_{60}}` is greater than 2.0, :math:`N_c` should be
-    divided by 2.0 to obtain the design value used in finding the bearing
-    capacity of the soil.
-    """
+    """Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``."""
 
     @property
     def eop(self) -> float:
+        """Effective overburden pressure (:math:`kpa`)."""
         return self._eop
 
     @eop.setter
@@ -339,25 +354,24 @@ class GibbsHoltzOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        """SPT Correction."""
+        r"""SPT Correction.
+
+        :Equation:
+
+        .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
+
+        :math:`\frac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if
+        :math:`\frac{N_c}{N_{60}}` is greater than 2.0, :math:`N_c` should be
+        divided by 2.0 to obtain the design value used in finding the bearing
+        capacity of the soil.
+        """
         corr = 350.0 / (self.eop + 70.0)
         return corr / 2.0 if corr > 2.0 else corr
 
 
 class BazaraaPeckOPC(OPC):
-    r"""Overburden Pressure Correction according to ``Bazaraa (1967)``, and
+    """Overburden Pressure Correction according to ``Bazaraa (1967)``, and
     also by ``Peck and Bazaraa (1969)``.
-
-    :Equation:
-
-    .. math::
-
-        C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
-
-        C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o}, 
-               \, \sigma_o \gt 71.8kN/m^2
-
-        C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
     """
 
     #: Maximum effective overburden pressure (:math:`kPa`).
@@ -365,15 +379,29 @@ class BazaraaPeckOPC(OPC):
 
     @property
     def eop(self) -> float:
+        """Effective overburden pressure (:math:`kPa`)."""
         return self._eop
 
     @eop.setter
     @validators.ge(0.0)
     def eop(self, val: float) -> None:
+        """Effective overburden pressure (:math:`kPa`)."""
         self._eop = val
 
     def correction(self) -> float:
-        """SPT Correction."""
+        r"""SPT Correction.
+
+        :Equation:
+
+        .. math::
+
+            C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
+
+            C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o},
+                   \, \sigma_o \gt 71.8kN/m^2
+
+            C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
+        """
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
         elif self.eop < self.STD_PRESSURE:
@@ -384,15 +412,11 @@ class BazaraaPeckOPC(OPC):
 
 
 class PeckOPC(OPC):
-    r"""Overburden Pressure Correction according to ``Peck et al. (1974)``.
-
-    :Equation:
-
-    .. math:: C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
-    """
+    """Overburden Pressure Correction according to ``Peck et al. (1974)``."""
 
     @property
     def eop(self) -> float:
+        """Effective overburden pressure (:math:`kPa`)."""
         return self._eop
 
     @eop.setter
@@ -401,20 +425,22 @@ class PeckOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        """SPT Correction."""
+        r"""SPT Correction.
+
+        :Equation:
+
+        .. math:: C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
+        """
         return 0.77 * log10(2000.0 / self.eop)
 
 
 class LiaoWhitmanOPC(OPC):
-    r"""Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
-
-    :Equation:
-
-    .. math:: C_N = \sqrt{\dfrac{100}{\sigma_o}}
+    """Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
     """
 
     @property
     def eop(self) -> float:
+        """Effective overburden pressure (:math:`kPa`)."""
         return self._eop
 
     @eop.setter
@@ -423,20 +449,21 @@ class LiaoWhitmanOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        """SPT Correction."""
+        r"""SPT Correction.
+
+        :Equation:
+
+        .. math:: C_N = \sqrt{\dfrac{100}{\sigma_o}}
+        """
         return sqrt(100.0 / self.eop)
 
 
 class SkemptonOPC(OPC):
-    r"""Overburden Pressure Correction according to ``Skempton (1986)``.
-
-    :Equation:
-
-    .. math:: C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
-    """
+    """Overburden Pressure Correction according to ``Skempton (1986)``."""
 
     @property
     def eop(self) -> float:
+        """Effective overburden pressure (:math:`kPa`)."""
         return self._eop
 
     @eop.setter
@@ -445,25 +472,21 @@ class SkemptonOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        """SPT Correction."""
+        """SPT Correction.
+
+        :Equation:
+
+        .. math:: C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
+        """
         return 2.0 / (1.0 + 0.01044 * self.eop)
 
 
 class DilatancyCorrection:
-    r"""Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
+    """Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
 
     For coarse sand, this correction is not required. In applying this
     correction, overburden pressure correction is applied first and then
     dilatancy correction is applied.
-
-    :Equation:
-
-    .. math::
-
-        (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \,
-                      (N_1)_{60} \gt 15
-
-        (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
     """
 
     def __init__(self, corr_spt_n_value: float) -> None:
@@ -476,6 +499,9 @@ class DilatancyCorrection:
 
     @property
     def corr_spt_n_value(self) -> float:
+        """SPT N-value standardized for field procedures and/or corrected for
+        overburden pressure.
+        """
         return self._std_spt_n_value
 
     @corr_spt_n_value.setter
@@ -485,7 +511,103 @@ class DilatancyCorrection:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
-        """Corrected SPT N-value."""
+        """Corrected SPT N-value.
+
+        :Equation:
+
+        .. math::
+
+            (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \,
+                          (N_1)_{60} \gt 15
+
+            (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
+        """
         if self.corr_spt_n_value <= 15.0:
             return self.corr_spt_n_value
         return 15.0 + 0.5 * (self.corr_spt_n_value - 15.0)
+
+
+@enum_repr
+class OPCType(enum.StrEnum):
+    """Enumeration of overburden pressure correction types."""
+    GIBBS = enum.auto()
+    BAZARAA = enum.auto()
+    PECK = enum.auto()
+    LIAO = enum.auto()
+    SKEMPTON = enum.auto()
+
+
+def create_spt_correction(recorded_spt_n_value: int,
+                          eop: float,
+                          energy_percentage=0.6,
+                          borehole_diameter=65.0,
+                          rod_length=3.0,
+                          hammer_type=HammerType.DONUT_1,
+                          sampler_type=SamplerType.STANDARD,
+                          opc_type: OPCType | str = OPCType.GIBBS,
+                          apply_dilatancy_correction: bool = False
+                          ) -> OPC | DilatancyCorrection:
+    """A factory function that encapsulates the creation of spt correction.
+
+    :param recorded_spt_n_value: Recorded SPT N-value from field.
+    :type recorded_spt_n_value: int
+
+    :param eop: Effective overburden pressure (:math:`kPa`).
+    :type eop: float
+
+    :param energy_percentage: Energy percentage reaching the tip of the
+                              sampler, defaults to 0.6
+    :type energy_percentage: float, optional
+
+    :param borehole_diameter: Borehole diameter, defaults to 65.0 (mm).
+    :type borehole_diameter: float, optional
+
+    :param rod_length: Rod length, defaults to 3.0 (m).
+    :type rod_length: float, optional
+
+    :param hammer_type: Hammer type, defaults to :attr:`HammerType.DONUT_1`
+    :type hammer_type: HammerType, optional
+
+    :param sampler_type: Sampler type, defaults to :attr:`SamplerType.STANDARD`
+    :type sampler_type: SamplerType, optional
+
+    :param opc_type: Overburden Pressure Correction type to apply,
+                    defaults to :attr:`OPCType.GIBBS`
+    :type opc_type: OPCType, optional
+
+    :param apply_dilatancy_correction: Indicates whether to apply dilatancy
+                                       correction, defaults to False.
+    :type apply_dilatancy_correction: bool, optional
+    """
+
+    try:
+        opc_type = OPCType(str(opc_type).casefold())
+    except ValueError as e:
+        msg = (f"{opc_type=} is not supported, Supported "
+               f"types are: {list(OPCType)}")
+        raise ValueError(msg) from e
+
+    energy_correction = EnergyCorrection(
+        recorded_spt_n_value=recorded_spt_n_value,
+        energy_percentage=energy_percentage,
+        borehole_diameter=borehole_diameter,
+        rod_length=rod_length,
+        hammer_type=hammer_type,
+        sampler_type=sampler_type)
+
+    std_spt_n_value = energy_correction.standardized_spt_n_value()
+
+    opc_types = {OPCType.GIBBS: GibbsHoltzOPC,
+                 OPCType.BAZARAA: BazaraaPeckOPC,
+                 OPCType.PECK: PeckOPC,
+                 OPCType.LIAO: LiaoWhitmanOPC,
+                 OPCType.SKEMPTON: SkemptonOPC}
+
+    opc_class = opc_types[opc_type]
+    opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)
+
+    if apply_dilatancy_correction:
+        corr_spt_n_value = opc_corr.corrected_spt_n_value()
+        return DilatancyCorrection(corr_spt_n_value=corr_spt_n_value)
+
+    return opc_corr
