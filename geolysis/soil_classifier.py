@@ -162,6 +162,7 @@ class AtterbergLimits:
 
     @property
     def liquid_limit(self) -> float:
+        """Water content beyond which soils flows under their own weight (%)."""
         return self._liquid_limit
 
     @liquid_limit.setter
@@ -171,6 +172,7 @@ class AtterbergLimits:
 
     @property
     def plastic_limit(self) -> float:
+        """Water content at which plastic deformation can be initiated (%)."""
         return self._plastic_limit
 
     @plastic_limit.setter
@@ -195,9 +197,7 @@ class AtterbergLimits:
 
     @property
     def fine_material_type(self) -> USCSSymbol:
-        """
-        Checks whether the soil is either clay or silt.
-        """
+        """Checks whether the soil is either clay or silt."""
         return USCSSymbol.CLAY if self.above_A_LINE() else USCSSymbol.SILT
 
     def above_A_LINE(self) -> bool:
@@ -439,6 +439,7 @@ class AASHTO:
 
     @property
     def fines(self) -> float:
+        """Percentage of fines in soil sample (%)."""
         return self._fines
 
     @fines.setter
@@ -682,16 +683,16 @@ class USCS:
                 f"{coarse_material_type}{fine_material_type}")
 
 
+class SoilClassifier(Protocol):
+    @abstractmethod
+    def classify(self) -> SoilClf: ...
+
+
 @enum_repr
 class ClfType(enum.StrEnum):
     """Enumeration of soil classification types."""
     AASHTO = enum.auto()
     USCS = enum.auto()
-
-
-class SoilClassifier(Protocol):
-    @abstractmethod
-    def classify(self) -> SoilClf: ...
 
 
 def create_soil_classifier(liquid_limit: float,
@@ -744,7 +745,7 @@ def create_soil_classifier(liquid_limit: float,
 
     :param clf_type: Used to indicate which type of soil classifier should be
                      used, defaults to None.
-    :type clf_type: CLF_TYPE | str, optional
+    :type clf_type: ClfType | str
 
     :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
                         None
