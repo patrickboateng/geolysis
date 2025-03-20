@@ -167,7 +167,7 @@ correlation:
     Out[3]: 798.41
 
 Other available ``shape`` and ``ubc_type`` can be found in :class:`~geolysis.foundation.Shape`
-and :class:`~geolysis.bearing_capacity.ubc.UBC_TYPE` respectively.
+and :class:`~geolysis.bearing_capacity.ubc.UBCType` respectively.
 
 
 Allowable Bearing Capacity Estimation
@@ -194,7 +194,7 @@ Calculating the allowable bearing capacity of soil for pad foundations using
 
 Other available ``shape``, ``foundation_type``, and ``abc_type`` can be found
 in :class:`~geolysis.foundation.Shape`, :class:`~geolysis.foundation.FoundationType`,
-and :class:`~geolysis.bearing_capacity.abc.cohl.ABC_TYPE` respectively.
+and :class:`~geolysis.bearing_capacity.abc.cohl.ABCType` respectively.
 
 Standard Penetration Tests Analysis
 -----------------------------------
