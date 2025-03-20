@@ -57,45 +57,42 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                      eccentricity: float = 0.0,
                                      ground_water_level: Optional[
                                          float] = None,
-                                     shape: Shape | str = Shape.SQUARE,
                                      load_angle=0.0,
                                      apply_local_shear=False,
+                                     shape: Shape | str = Shape.SQUARE,
                                      ubc_type: Optional[UBCType | str] = None,
                                      ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate bearing
     capacity.
 
     :param friction_angle: Internal angle of friction for general shear
-                           failure. (degree)
+                           failure (degree).
     :type friction_angle: float
 
-    :param cohesion: Cohesion of soil. (kPa)
+    :param cohesion: Cohesion of soil (:math:`kPa`).
     :type cohesion: float
 
-    :param moist_unit_wgt: Moist unit weight of soil. (:math:`kN/m^3`)
+    :param moist_unit_wgt: Moist unit weight of soil (:math:`kN/m^3`).
     :type moist_unit_wgt: float
 
-    :param depth: Depth of foundation. (m)
+    :param depth: Depth of foundation (m).
     :type depth: float
 
-    :param width: Width of foundation footing. (m)
+    :param width: Width of foundation footing (m).
     :type width: float
 
-    :param length: Length of foundation footing. (m)
+    :param length: Length of foundation footing (m).
     :type length: float, optional
 
     :param eccentricity: The deviation of the foundation load from the
                          center of gravity of the foundation footing,
-                         defaults to 0.0. This means that the foundation
+                         defaults to 0.0 (m). This means that the foundation
                          load aligns with the center of gravity of the
-                         foundation footing. (m)
+                         foundation footing.
     :type eccentricity: float, optional
 
-    :param ground_water_level: Depth of water below ground level. (m)
+    :param ground_water_level: Depth of water below ground level (m).
     :type ground_water_level: float, optional
-
-    :param shape: Shape of foundation footing, defaults to "SQUARE".
-    :type shape: Shape | str, optional
 
     :param load_angle: Inclination of the applied load with the  vertical
                        (:math:`\alpha^{\circ}`), defaults to 0.0.
@@ -106,10 +103,15 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                               False.
     :type apply_local_shear: bool, optional
 
+    :param shape: Shape of foundation footing, defaults to
+                  :attr:`~geolysis.foundation.Shape.SQUARE`.
+    :type shape: Shape | str, optional
+
     :param ubc_type: Type of allowable bearing capacity calculation to apply.
-                     Available values are: "HANSEN", "TERZAGHI", "VESIC".
+                     Available values are: :attr:`~UBCType.HANSEN`,
+                     :attr:`~UBCType.TERZAGHI`, and :attr:`~UBCType.VESIC`
                      defaults to None.
-    :type ubc_type:  UBC_TYPE | str, optional
+    :type ubc_type:  UBCType | str, optional
 
     :raises ValueError: Raised if ubc_type is not supported.
     :raises ValueError: Raised when length is not provided for a rectangular
@@ -127,7 +129,7 @@ def create_ultimate_bearing_capacity(friction_angle: float,
     except ValueError as e:
         raise ValueError(msg) from e
 
-    # exception from create_foundation will automaatically propagate
+    # exception from create_foundation will automatically propagate
     # no need to catch and handle it.
     fnd_size = create_foundation(depth=depth,
                                  width=width,
