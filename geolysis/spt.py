@@ -1,39 +1,3 @@
-""" Standard penetration test module.
-
-Enums
-=====
-
-.. autosummary::
-    :toctree: _autosummary
-    :nosignatures:
-
-    HammerType
-    SamplerType
-    OPCType
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    SPTNDesign
-    EnergyCorrection
-    GibbsHoltzOPC
-    BazaraaPeckOPC
-    PeckOPC
-    LiaoWhitmanOPC
-    SkemptonOPC
-    DilatancyCorrection
-
-Functions
-=========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    create_spt_correction
-"""
 import enum
 from abc import abstractmethod
 from typing import Final, Sequence
@@ -50,11 +14,12 @@ __all__ = ["SPTNDesign",
            "LiaoWhitmanOPC",
            "SkemptonOPC",
            "DilatancyCorrection",
+           "OPCType",
            "create_spt_correction"]
 
 
 class SPTNDesign:
-    """ SPT Design Calculations.
+    """SPT Design Calculations.
 
     Due to uncertainty in field procedure in standard penetration test and also
     to consider all the N-value in the influence zone of a foundation, a method
@@ -149,13 +114,7 @@ class EnergyCorrection:
     the measured N-value to :math:`N_{60}` assuming 60% hammer energy being
     transferred to the tip of the standard split spoon.
 
-    :Equation:
 
-    .. math::
-
-        N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{ENERGY}
-
-    ``ENERGY``: 0.6, 0.55, etc
     """
 
     _HAMMER_EFFICIENCY_FACTORS = {HammerType.AUTOMATIC: 0.70,
@@ -279,7 +238,16 @@ class EnergyCorrection:
         return corr
 
     def correction(self) -> float:
-        """Energy correction factor."""
+        """Energy correction factor.
+
+        :Equation:
+
+        .. math::
+
+            N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{ENERGY}
+
+        ``ENERGY``: 0.6, 0.55, etc
+        """
         numerator = (self.hammer_efficiency
                      * self.borehole_diameter_correction
                      * self.sampler_correction
@@ -290,6 +258,10 @@ class EnergyCorrection:
     def standardized_spt_n_value(self) -> float:
         """Standardized SPT N-value."""
         return self.correction() * self.recorded_spt_n_value
+
+    def corrected_spt_n_value(self) -> float:
+        """Same as :meth:`standardized_spt_n_value`."""
+        return self.standardized_spt_n_value()
 
 
 class OPC:

@@ -1,14 +1,3 @@
-"""Terzaghi allowable bearing capacity.
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    TerzaghiABC4PadFoundation
-    TerzaghiABC4MatFoundation
-"""
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 

@@ -1,13 +1,3 @@
-"""Vesic ultimate bearing capacity module.
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    VesicUltimateBearingCapacity
-"""
 from geolysis.foundation import Shape
 from geolysis.utils import isclose, round_, sin, tan
 

@@ -1,22 +1,3 @@
-""" Ultimate bearing capacity estimation package
-
-Enum
-====
-
-.. autosummary::
-    :toctree: _autosummary
-    :nosignatures:
-
-    UBCType
-
-Functions
-=========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    create_ultimate_bearing_capacity
-"""
 import enum
 from typing import Optional
 

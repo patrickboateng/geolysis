@@ -1,14 +1,3 @@
-""" Bowles allowable bearing capacity.
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    BowlesABC4PadFoundation
-    BowlesABC4MatFoundation
-"""
 from geolysis.foundation import FoundationSize
 from geolysis.utils import round_
 

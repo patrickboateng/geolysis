@@ -1,13 +1,3 @@
-""" Hansen ultimate bearing capacity module.
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    HansenUltimateBearingCapacity
-"""
 from geolysis.foundation import Shape
 from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan
 

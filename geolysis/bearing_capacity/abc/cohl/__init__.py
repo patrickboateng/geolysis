@@ -1,23 +1,3 @@
-""" Allowable bearing capacity package for cohesionless soils.
-
-Enums
-=====
-
-.. autosummary::
-    :toctree: _autosummary
-    :nosignatures:
-
-    ABCType
-
-Functions
-=========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    create_allowable_bearing_capacity
-"""
-
 import enum
 from typing import Optional
 

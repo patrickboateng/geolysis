@@ -1,36 +1,3 @@
-""" Basic foundation module.
-
-Enums
-=====
-
-.. autosummary::
-    :toctree: _autosummary
-    :nosignatures:
-
-    Shape
-    FoundationType
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    StripFooting
-    CircularFooting
-    SquareFooting
-    RectangularFooting
-    FoundationSize
-
-Functions
-=========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    create_foundation
-"""
-
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar

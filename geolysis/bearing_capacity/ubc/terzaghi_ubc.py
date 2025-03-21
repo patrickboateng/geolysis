@@ -1,16 +1,3 @@
-""" Terzaghi ultimate bearing capacity module.
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: _autosummary
-
-    TerzaghiUBC4StripFooting
-    TerzaghiUBC4CircularFooting
-    TerzaghiUBC4SquareFooting
-    TerzaghiUBC4RectangularFooting
-"""
 from abc import ABC
 
 from geolysis.utils import cos, cot, deg2rad, exp, isclose, pi, round_, tan
