@@ -2,11 +2,20 @@
 geolysis.bearing_capacity.ubc
 *****************************
 
-.. automodule:: geolysis.bearing_capacity.ubc
+.. py:currentmodule:: geolysis.bearing_capacity.ubc
 
-.. toctree::
-    :hidden:
+.. autoenum:: UBCType
 
-    hansen_ubc
-    terzaghi_ubc
-    vesic_ubc
+.. autoclass:: HansenUltimateBearingCapacity
+
+.. autoclass:: TerzaghiUBC4CircularFooting
+
+.. autoclass:: TerzaghiUBC4RectangularFooting
+
+.. autoclass:: TerzaghiUBC4SquareFooting
+
+.. autoclass:: TerzaghiUBC4StripFooting
+
+.. autoclass:: VesicUltimateBearingCapacity
+
+.. autofunction:: create_ultimate_bearing_capacity

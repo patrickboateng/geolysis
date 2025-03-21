@@ -53,7 +53,7 @@ autodoc_default_options = {"exclude-members": "__init__",
 autodoc_member_order = "bysource"
 
 # Sphinx Autosummary Ext
-autosummary_generate = True
+autosummary_generate = False
 autosummary_ignore_module_all = True
 
 # adds this string to the start of every .rst file
