@@ -49,7 +49,8 @@ __all__ = ["SPTNDesign",
            "PeckOPC",
            "LiaoWhitmanOPC",
            "SkemptonOPC",
-           "DilatancyCorrection"]
+           "DilatancyCorrection",
+           "create_spt_correction"]
 
 
 class SPTNDesign:
