@@ -43,8 +43,17 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def friction_angle(self) -> float:
-        """Return friction angle for local shear in the case of local shear
+        r"""Return friction angle for local shear in the case of local shear
         failure or general shear in the case of general shear failure.
+
+        :Equation:
+
+        In the case of local shear failure:
+
+        .. math::
+
+           \phi' = \tan^{-1} \left(\frac{2}{3} \tan \phi\right)
+
         """
         if self.apply_local_shear:
             return arctan((2 / 3) * tan(self._friction_angle))
@@ -57,8 +66,16 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def cohesion(self) -> float:
-        """Return cohesion for local shear in the case of local shear failure
+        r"""Return cohesion for local shear in the case of local shear failure
         or general shear in the case of general shear failure.
+
+        :Equation:
+
+        In the case of local shear failure:
+
+        .. math::
+
+            C^{'} = \dfrac{2}{3} \cdot C
         """
         if self.apply_local_shear:
             return (2.0 / 3.0) * self._cohesion
@@ -170,7 +187,7 @@ class UltimateBearingCapacity(ABC):
                 * self.s_gamma * self.d_gamma * self.i_gamma * water_corr)
 
     @round_
-    def bearing_capacity(self):
+    def bearing_capacity(self) -> float:
         """Calculates the ultimate bearing capacity."""
         return (self._cohesion_term(1.0)
                 + self._surcharge_term()
