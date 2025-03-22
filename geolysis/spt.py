@@ -113,8 +113,6 @@ class EnergyCorrection:
     in testing procedures may be at least partially compensated by converting
     the measured N-value to :math:`N_{60}` assuming 60% hammer energy being
     transferred to the tip of the standard split spoon.
-
-
     """
 
     _HAMMER_EFFICIENCY_FACTORS = {HammerType.AUTOMATIC: 0.70,
@@ -238,7 +236,7 @@ class EnergyCorrection:
         return corr
 
     def correction(self) -> float:
-        """Energy correction factor.
+        r"""Energy correction factor.
 
         :Equation:
 
