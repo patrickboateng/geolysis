@@ -56,7 +56,7 @@ class UltimateBearingCapacity(ABC):
 
         """
         if self.apply_local_shear:
-            return arctan((2 / 3) * tan(self._friction_angle))
+            return arctan((2.0 / 3.0) * tan(self._friction_angle))
         return self._friction_angle
 
     @friction_angle.setter
