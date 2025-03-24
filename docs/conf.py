@@ -10,7 +10,7 @@ import os
 import sys
 from datetime import datetime
 
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath(".."))
 
 import geolysis
 
@@ -64,7 +64,7 @@ myst_heading_anchors = 6
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-logo_path = "./_static/branding/"
+logo_path = "_static/branding/"
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_logo = logo_path + "geolysislogoicon.svg"

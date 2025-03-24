@@ -76,11 +76,11 @@ geolysis.bearing_capacity.ubc
 
     .. autosummary::
 
-        ~TerzaghiUBC4RectangularFooting.cohesion
-        ~TerzaghiUBC4RectangularFooting.friction_angle
-        ~TerzaghiUBC4RectangularFooting.n_c
-        ~TerzaghiUBC4RectangularFooting.n_q
-        ~TerzaghiUBC4RectangularFooting.n_gamma
+          ~TerzaghiUBC4RectangularFooting.cohesion
+          ~TerzaghiUBC4RectangularFooting.friction_angle
+          ~TerzaghiUBC4RectangularFooting.n_c
+          ~TerzaghiUBC4RectangularFooting.n_q
+          ~TerzaghiUBC4RectangularFooting.n_gamma
 
 -----------
 

@@ -16,7 +16,8 @@ tasks:
 - Writing technical documentation
 - Branding (logo design etc.)
 
-This project has a [code of conduct](CODE_OF_CONDUCT.md) that we expect all
+This project has a [code of conduct](CODE_OF_CONDUCT.md) that we expect
+all
 contributors to adhere to. Please read and follow it when participating in this
 project.
 
@@ -118,7 +119,8 @@ these steps:
       git checkout -b your-branch-name
       ```
 
-    - Make your changes, following the [style guide](./style_guide.rst).
+    - Make your changes, following
+      the [style guide](dev_guide/style_guide.rst).
       _Kindly read the style guide before contributing code to the `geolysis`
       project_.
 
@@ -128,7 +130,7 @@ these steps:
       existing tests), run all [tests locally](#testing). Be sure to document
       any
       changed behavior in docstrings, keeping to the
-      [style guide](style_guide.rst#code-documentation).
+      [style guide](dev_guide/style_guide.rst#code-documentation).
 
 1. To submit your contribution:
 
@@ -199,7 +201,7 @@ install if you run `pipenv install`
 Improvements to documentation are always appreciated. If you make changes to
 the
 code, please update the documentation as needed.
-See [style guide](style_guide.rst)
+See [style guide](dev_guide/style_guide.rst)
 for more information.
 
 ## Community
