@@ -7,7 +7,7 @@ source code and documentation.
 Layout of Project Source Code
 -----------------------------
 
-The ``geolysis`` folder contains all the source code for the project, and it is
+The ``geolysis`` folder contain all the source code for the project, and it is
 the root (main package namespace) of the project.
 
 - ``bearing_capacity`` package (folder) contains the code for bearing
