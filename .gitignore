@@ -208,6 +208,6 @@ dist
 
 # docs build generated files
 
-docs/source/**/generated/
-docs/source/**/_autosummary/
-docs/source/**/savefig/
+docs/**/generated/
+docs/**/_autosummary/
+docs/**/savefig/
