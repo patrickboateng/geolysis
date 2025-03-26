@@ -81,7 +81,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
         return min(cw, 2.0)
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self):
         """Calculates the allowable bearing capacity of the pad foundation."""
         n_corr = self.corrected_spt_n_value
@@ -124,7 +124,7 @@ class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     ===================  ======================================  ===========
     """
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self):
         """Calculates the allowable bearing capacity of the mat foundation."""
         n_corr = self.corrected_spt_n_value

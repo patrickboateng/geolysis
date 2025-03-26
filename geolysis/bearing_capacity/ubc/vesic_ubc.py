@@ -7,22 +7,22 @@ from ._core import UltimateBearingCapacity
 __all__ = ["VesicUltimateBearingCapacity"]
 
 
-@round_
+@round_(ndigits=2)
 def n_c(friction_angle: float) -> float:
     return hansen_ubc.n_c(friction_angle)
 
 
-@round_
+@round_(ndigits=2)
 def n_q(friction_angle: float) -> float:
     return hansen_ubc.n_q(friction_angle)
 
 
-@round_
+@round_(ndigits=2)
 def n_gamma(friction_angle: float) -> float:
     return 2.0 * (n_q(friction_angle) + 1.0) * tan(friction_angle)
 
 
-@round_
+@round_(ndigits=2)
 def s_c(friction_angle: float,
         f_width: float,
         f_length: float,
@@ -38,7 +38,7 @@ def s_c(friction_angle: float,
         return 1.0 + (_n_q / _n_c)
 
 
-@round_
+@round_(ndigits=2)
 def s_q(friction_angle: float,
         f_width: float,
         f_length: float,
@@ -51,7 +51,7 @@ def s_q(friction_angle: float,
         return 1.0 + tan(friction_angle)
 
 
-@round_
+@round_(ndigits=2)
 def s_gamma(f_width: float, f_length: float, f_shape: Shape) -> float:
     if f_shape == Shape.STRIP:
         return 1.0
@@ -61,34 +61,34 @@ def s_gamma(f_width: float, f_length: float, f_shape: Shape) -> float:
         return 0.6
 
 
-@round_
+@round_(ndigits=2)
 def d_c(f_depth: float, f_width: float) -> float:
     return 1.0 + 0.4 * f_depth / f_width
 
 
-@round_
+@round_(ndigits=2)
 def d_q(friction_angle: float, f_depth: float, f_width: float) -> float:
     return (1.0 + 2.0 * tan(friction_angle)
             * (1.0 - sin(friction_angle)) ** 2.0
             * (f_depth / f_width))
 
 
-@round_
+@round_(ndigits=2)
 def d_gamma() -> float:
     return 1.0
 
 
-@round_
+@round_(ndigits=2)
 def i_c(load_angle: float) -> float:
     return (1.0 - load_angle / 90.0) ** 2.0
 
 
-@round_
+@round_(ndigits=2)
 def i_q(load_angle: float) -> float:
     return i_c(load_angle)
 
 
-@round_
+@round_(ndigits=2)
 def i_gamma(friction_angle: float, load_angle: float) -> float:
     if isclose(friction_angle, 0.0):
         return 1.0

@@ -186,7 +186,7 @@ class UltimateBearingCapacity(ABC):
         return (coef * self.moist_unit_wgt * width * self.n_gamma
                 * self.s_gamma * self.d_gamma * self.i_gamma * water_corr)
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self) -> float:
         """Calculates the ultimate bearing capacity."""
         return (self._cohesion_term(1.0)

@@ -6,25 +6,25 @@ from ._core import UltimateBearingCapacity
 __all__ = ["HansenUltimateBearingCapacity"]
 
 
-@round_
+@round_(ndigits=2)
 def n_c(friction_angle: float) -> float:
     if isclose(friction_angle, 0.0):
         return 5.14
     return cot(friction_angle) * (n_q(friction_angle) - 1.0)
 
 
-@round_
+@round_(ndigits=2)
 def n_q(friction_angle: float) -> float:
     return (tan(45.0 + friction_angle / 2.0) ** 2.0
             * exp(pi * tan(friction_angle)))
 
 
-@round_
+@round_(ndigits=2)
 def n_gamma(friction_angle: float) -> float:
     return 1.8 * (n_q(friction_angle) - 1.0) * tan(friction_angle)
 
 
-@round_
+@round_(ndigits=2)
 def s_c(f_width: float, f_length: float, f_shape: Shape) -> float:
     if f_shape == Shape.STRIP:
         return 1.0
@@ -34,7 +34,7 @@ def s_c(f_width: float, f_length: float, f_shape: Shape) -> float:
         return 1.3
 
 
-@round_
+@round_(ndigits=2)
 def s_q(f_width: float, f_length: float, f_shape: Shape) -> float:
     if f_shape == Shape.STRIP:
         return 1.0
@@ -44,7 +44,7 @@ def s_q(f_width: float, f_length: float, f_shape: Shape) -> float:
         return 1.2
 
 
-@round_
+@round_(ndigits=2)
 def s_gamma(f_width: float, f_length: float, f_shape: Shape) -> float:
     if f_shape == Shape.STRIP:
         return 1.0
@@ -56,22 +56,22 @@ def s_gamma(f_width: float, f_length: float, f_shape: Shape) -> float:
         return 0.6
 
 
-@round_
+@round_(ndigits=2)
 def d_c(f_depth: float, f_width: float) -> float:
     return 1.0 + 0.35 * f_depth / f_width
 
 
-@round_
+@round_(ndigits=2)
 def d_q(f_depth: float, f_width: float) -> float:
     return d_c(f_depth, f_width)
 
 
-@round_
+@round_(ndigits=2)
 def d_gamma() -> float:
     return 1.0
 
 
-@round_
+@round_(ndigits=2)
 def i_c(cohesion: float,
         load_angle: float,
         f_width: float,
@@ -79,12 +79,12 @@ def i_c(cohesion: float,
     return 1.0 - sin(load_angle) / (2.0 * cohesion * f_width * f_length)
 
 
-@round_
+@round_(ndigits=2)
 def i_q(load_angle: float) -> float:
     return 1.0 - (1.5 * sin(load_angle)) / cos(load_angle)
 
 
-@round_
+@round_(ndigits=2)
 def i_gamma(load_angle: float) -> float:
     return i_q(load_angle) ** 2.0
 

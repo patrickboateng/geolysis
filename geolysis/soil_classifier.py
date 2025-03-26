@@ -141,7 +141,7 @@ class AtterbergLimits:
         self._plastic_limit = val
 
     @property
-    @round_
+    @round_(2)
     def plasticity_index(self) -> float:
         """Plasticity index (PI) is the range of water content over which the
         soil remains in the plastic state.
@@ -170,7 +170,7 @@ class AtterbergLimits:
         """
         return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
-    @round_
+    @round_(ndigits=2)
     def liquidity_index(self, nmc: float) -> float:
         r"""Return the liquidity index of the soil.
 
@@ -188,7 +188,7 @@ class AtterbergLimits:
         """
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100.0
 
-    @round_
+    @round_(2)
     def consistency_index(self, nmc: float) -> float:
         r"""Return the consistency index of the soil.
 
@@ -297,7 +297,7 @@ class PSD:
         return USCSSymbol.SAND
 
     @property
-    @round_
+    @round_(ndigits=2)
     def coeff_of_curvature(self) -> float:
         r"""Coefficient of curvature of soil sample.
 
@@ -311,7 +311,7 @@ class PSD:
         return self.size_dist.coeff_of_curvature
 
     @property
-    @round_
+    @round_(ndigits=2)
     def coeff_of_uniformity(self) -> float:
         r"""Coefficient of uniformity of soil sample.
 
@@ -735,7 +735,8 @@ def create_soil_classifier(liquid_limit: float,
 
     # USCS classification
     if sand is None:
-        raise ValueError("sand must be specified for USCS classification")
+        msg = f"sand must be specified for {clf_type.name} classification"
+        raise ValueError(msg)
 
     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
     clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)

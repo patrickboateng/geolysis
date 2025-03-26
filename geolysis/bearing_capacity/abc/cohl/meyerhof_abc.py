@@ -52,7 +52,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
                          tol_settlement=tol_settlement,
                          foundation_size=foundation_size)
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self):
         """Calculates the allowable bearing capacity of the pad foundation."""
         n_corr = self.corrected_spt_n_value
@@ -89,7 +89,7 @@ class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
     ===================  ======================================  ===========
     """
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self):
         """Calculate the allowable bearing capacity of the mat foundation."""
         n_corr = self.corrected_spt_n_value

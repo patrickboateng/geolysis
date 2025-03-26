@@ -10,21 +10,21 @@ __all__ = ["TerzaghiUBC4StripFooting",
            "TerzaghiUBC4RectangularFooting"]
 
 
-@round_
+@round_(ndigits=2)
 def n_c(friction_angle: float) -> float:
     if isclose(friction_angle, 0.0):
         return 5.7
     return cot(friction_angle) * (n_q(friction_angle) - 1.0)
 
 
-@round_
+@round_(ndigits=2)
 def n_q(friction_angle: float) -> float:
     return (exp((3.0 * pi / 2.0 - deg2rad(friction_angle))
                 * tan(friction_angle))
             / (2.0 * (cos(45.0 + friction_angle / 2.0)) ** 2.0))
 
 
-@round_
+@round_(ndigits=2)
 def n_gamma(friction_angle: float) -> float:
     return (n_q(friction_angle) - 1.0) * tan(1.4 * friction_angle)
 
@@ -100,7 +100,7 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
          - —
     """
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for strip footing."""
         return (self._cohesion_term(1.0)
@@ -143,7 +143,7 @@ class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
          - —
     """
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for circular footing."""
         return (self._cohesion_term(1.3)
@@ -192,7 +192,7 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
          - —
     """
 
-    @round_
+    @round_(ndigits=2)
     def bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for rectangular footing."""
         width = self.foundation_size.width
