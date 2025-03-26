@@ -33,7 +33,7 @@ def _len_validator(bound: float, /, *,
             if not compare_fn(_len, bound):
                 msg = f"Length of '{fn.__name__}' must be {compare_symbol} {bound}"
                 raise exc_type(err_msg if err_msg else msg)
-            return fn(obj, val)
+            fn(obj, val)
 
         return wrapper
 
