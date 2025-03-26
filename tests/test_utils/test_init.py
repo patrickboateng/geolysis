@@ -36,6 +36,10 @@ def test_sqrt():
     assert sqrt(25.0) == pytest.approx(5.0, 0.01)
 
 
-def test_round():
+def test_round_():
+    @round_(ndigits=2.0)
+    def area_of_circle(r: float) -> float:
+        return 3.142 * r ** 2
+
     with pytest.raises(TypeError):
-        round_(ndigits=2.0)
+        area_of_circle(4)
