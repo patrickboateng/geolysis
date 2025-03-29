@@ -1,6 +1,5 @@
 import enum
-from abc import abstractmethod
-from typing import NamedTuple, Optional, Protocol, Sequence
+from typing import NamedTuple, Optional, Sequence
 
 from .utils import enum_repr, isclose, round_, validators
 
