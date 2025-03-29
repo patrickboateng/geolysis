@@ -644,11 +644,6 @@ class USCS:
                 f"{coarse_material_type}{fine_material_type}")
 
 
-class SoilClassifier(Protocol):
-    @abstractmethod
-    def classify(self) -> SoilClf: ...
-
-
 @enum_repr
 class ClfType(enum.StrEnum):
     """Enumeration of soil classification types."""
@@ -664,7 +659,7 @@ def create_soil_classifier(liquid_limit: float,
                            add_group_idx: bool = True,
                            organic: bool = False,
                            clf_type: Optional[ClfType | str] = None
-                           ) -> SoilClassifier:
+                           ) -> AASHTO | USCS:
     """ A factory function that encapsulates the creation of a soil classifier.
 
     :param liquid_limit: Water content beyond which soils flows under their own
