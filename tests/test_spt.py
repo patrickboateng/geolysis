@@ -15,8 +15,7 @@ from geolysis.spt import (EnergyCorrection,
 
 def test_correction():
     opc_corr = create_spt_correction(recorded_spt_n_value=23,
-                                     eop=100.0,
-                                     opc_type="GIBBS")
+                                     eop=100.0, opc_type="GIBBS")
     assert opc_corr.corrected_spt_n_value() == pytest.approx(17.7)
 
     dil_corr = create_spt_correction(recorded_spt_n_value=23,
@@ -29,8 +28,7 @@ def test_correction():
 def test_create_spt_correction_errors():
     with pytest.raises(ValueError):
         create_spt_correction(recorded_spt_n_value=34,
-                              eop=100,
-                              opc_type="TERZAGHI")
+                              eop=100, opc_type="TERZAGHI")
 
 
 class TestSPTDesign:
