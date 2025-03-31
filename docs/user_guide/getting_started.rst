@@ -137,8 +137,8 @@ correlation:
 798.41
 
 
-Other available ``shape`` and ``ubc_type`` can be found in :class:`~geolysis.foundation.Shape`
-and :class:`~geolysis.bearing_capacity.ubc.UBCType` respectively.
+Other available ``shape`` and ``ubc_type`` can be found in :enum:`~geolysis.foundation.Shape`
+and :enum:`~geolysis.bearing_capacity.ubc.UBCType` respectively.
 
 
 Allowable Bearing Capacity Estimation
@@ -158,10 +158,9 @@ Calculating the allowable bearing capacity of soil for pad foundations using
 >>> bowles_abc.bearing_capacity()
 341.11
 
-
 Other available ``shape``, ``foundation_type``, and ``abc_type`` can be found
-in :class:`~geolysis.foundation.Shape`, :class:`~geolysis.foundation.FoundationType`,
-and :class:`~geolysis.bearing_capacity.abc.cohl.ABCType` respectively.
+in :enum:`~geolysis.foundation.Shape`, :enum:`~geolysis.foundation.FoundationType`,
+and :enum:`~geolysis.bearing_capacity.abc.cohl.ABCType` respectively.
 
 Standard Penetration Tests Analysis
 -----------------------------------
@@ -188,21 +187,19 @@ Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 Correcting SPT N-values for overburden pressure influence using
 ``Gibbs & Holtz (1957)`` correlation:
 
->>> from geolysis.spt import GibbsHoltzOPC
->>> opc_corr = GibbsHoltzOPC(std_spt_n_value=22.5, eop=100.0)
+>>> from geolysis.spt import create_spt_correction
+>>> opc_corr = create_spt_correction(recorded_spt_n_value=23,
+...                                  eop=100, opc_type="GIBBS")
 >>> opc_corr.corrected_spt_n_value()
-23.2
+17.7
 
-Other correlations for calculating Overburden Pressure Corrections are:
-
-- :class:`~geolysis.spt.BazaraaPeckOPC`
-- :class:`~geolysis.spt.PeckOPC`
-- :class:`~geolysis.spt.LiaoWhitmanOPC`
-- :class:`~geolysis.spt.SkemptonOPC`
+Other available ``opc_type`` can be found in :enum:`~geolysis.spt.OPCType`.
 
 Correcting SPT N-values for water (dilatancy) influence:
 
->>> from geolysis.spt import DilatancyCorrection
->>> dil_corr = DilatancyCorrection(corr_spt_n_value=22.5)
+>>> from geolysis.spt import create_spt_correction
+>>> dil_corr = create_spt_correction(recorded_spt_n_value=23,
+...                                  eop=100.0, opc_type="GIBBS",
+...                                  apply_dilatancy_correction=True)
 >>> dil_corr.corrected_spt_n_value()
-18.8
+16.4
