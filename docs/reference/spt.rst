@@ -46,6 +46,7 @@ geolysis.spt
 
           ~EnergyCorrection.correction
           ~EnergyCorrection.standardized_spt_n_value
+          ~EnergyCorrection.corrected_spt_n_value
 
     .. rubric:: Attributes
 
