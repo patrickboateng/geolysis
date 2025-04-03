@@ -1,5 +1,5 @@
 """ 
-This module provides a factory function and utilities for creating ultimate 
+This package provides a factory function and utilities for creating ultimate 
 bearing capacity calculations using methods like Hansen, Terzaghi, and Vesic 
 for various foundation shapes.
 """
