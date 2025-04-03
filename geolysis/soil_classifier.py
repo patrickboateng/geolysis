@@ -1,3 +1,6 @@
+"""This module provides classes for soil classification using systems like 
+USCS and AASHTO, based on particle size distribution and  Atterberg limits.
+"""
 import enum
 from typing import NamedTuple, Optional, Sequence
 
@@ -9,7 +12,6 @@ __all__ = ["ClfType",
            "AASHTO",
            "USCS",
            "create_soil_classifier"]
-
 
 class SizeDistError(ZeroDivisionError):
     """Exception raised when size distribution is not provided."""

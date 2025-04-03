@@ -1,3 +1,7 @@
+"""This package provides a factory function and utilities for creating 
+allowable bearing capacity calculations using methods like Bowles, Meyerhof, 
+and Terzaghi for various foundation types and shapes.
+"""
 import enum
 from typing import Optional
 

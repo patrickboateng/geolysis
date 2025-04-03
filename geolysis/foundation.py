@@ -1,3 +1,5 @@
+"""This module defines classes and utilities for modeling various foundation
+footing types, their dimensions, and properties."""
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
