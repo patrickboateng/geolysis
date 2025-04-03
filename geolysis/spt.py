@@ -1,3 +1,7 @@
+"""This module provides classes for performing Standard Penetration Test (SPT) 
+corrections, including energy, overburden pressure, and dilatancy corrections, 
+as well as calculating design N-values.
+"""
 import enum
 from abc import abstractmethod
 from typing import Final, Sequence
@@ -16,7 +20,6 @@ __all__ = ["SPTNDesign",
            "DilatancyCorrection",
            "OPCType",
            "create_spt_correction"]
-
 
 class SPTNDesign:
     """SPT Design Calculations.
@@ -508,47 +511,20 @@ class OPCType(enum.StrEnum):
     SKEMPTON = enum.auto()
 
 
-def create_spt_correction(recorded_spt_n_value: int,
-                          eop: float,
-                          energy_percentage=0.6,
-                          borehole_diameter=65.0,
-                          rod_length=3.0,
-                          hammer_type=HammerType.DONUT_1,
-                          sampler_type=SamplerType.STANDARD,
-                          opc_type: OPCType | str = OPCType.GIBBS,
-                          apply_dilatancy_correction: bool = False
-                          ) -> OPC | DilatancyCorrection:
-    """A factory function that encapsulates the creation of spt correction.
+def create_overburden_pressure_correction(std_spt_n_value: float, eop,
+                                          opc_type: OPCType | str = OPCType.GIBBS) -> OPC:
+    """A factory function that encapsulates the creation of overburden
+    pressure correction.
 
-    :param recorded_spt_n_value: Recorded SPT N-value from field.
-    :type recorded_spt_n_value: int
+    :param std_spt_n_value: SPT N-value standardized for field procedures.
+    :type std_spt_n_value: float
 
     :param eop: Effective overburden pressure (:math:`kPa`).
     :type eop: float
 
-    :param energy_percentage: Energy percentage reaching the tip of the
-                              sampler, defaults to 0.6
-    :type energy_percentage: float, optional
-
-    :param borehole_diameter: Borehole diameter (mm), defaults to 65.0.
-    :type borehole_diameter: float, optional
-
-    :param rod_length: Rod length (m), defaults to 3.0.
-    :type rod_length: float, optional
-
-    :param hammer_type: Hammer type, defaults to :py:enum:mem:`~HammerType.DONUT_1`
-    :type hammer_type: HammerType, optional
-
-    :param sampler_type: Sampler type, defaults to :py:enum:mem:`~SamplerType.STANDARD`
-    :type sampler_type: SamplerType, optional
-
     :param opc_type: Overburden Pressure Correction type to apply,
                     defaults to :py:enum:mem:`~OPCType.GIBBS`
     :type opc_type: OPCType, optional
-
-    :param apply_dilatancy_correction: Indicates whether to apply dilatancy
-                                       correction, defaults to False.
-    :type apply_dilatancy_correction: bool, optional
     """
 
     try:
@@ -558,27 +534,13 @@ def create_spt_correction(recorded_spt_n_value: int,
                f"types are: {list(OPCType)}")
         raise ValueError(msg) from e
 
-    energy_correction = EnergyCorrection(
-        recorded_spt_n_value=recorded_spt_n_value,
-        energy_percentage=energy_percentage,
-        borehole_diameter=borehole_diameter,
-        rod_length=rod_length,
-        hammer_type=hammer_type,
-        sampler_type=sampler_type)
-
     opc_types = {OPCType.GIBBS: GibbsHoltzOPC,
                  OPCType.BAZARAA: BazaraaPeckOPC,
                  OPCType.PECK: PeckOPC,
                  OPCType.LIAO: LiaoWhitmanOPC,
                  OPCType.SKEMPTON: SkemptonOPC}
 
-    std_spt_n_value = energy_correction.standardized_spt_n_value()
-
     opc_class = opc_types[opc_type]
     opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)
-
-    if apply_dilatancy_correction:
-        corr_spt_n_value = opc_corr.corrected_spt_n_value()
-        return DilatancyCorrection(corr_spt_n_value=corr_spt_n_value)
 
     return opc_corr
