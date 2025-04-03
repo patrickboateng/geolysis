@@ -151,7 +151,7 @@ class EnergyCorrection:
         :param sampler_type: Sampler type, defaults to :py:enum:mem:`~SamplerType.STANDARD`
         :type sampler_type: SamplerType, optional
         """
-        self.recorded_spt_n_value = recorded_spt_n_value
+        self.recorded_spt_n_value = int(recorded_spt_n_value)
         self.energy_percentage = energy_percentage
         self.borehole_diameter = borehole_diameter
         self.rod_length = rod_length
