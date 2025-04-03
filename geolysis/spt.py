@@ -19,7 +19,8 @@ __all__ = ["SPTNDesign",
            "SkemptonOPC",
            "DilatancyCorrection",
            "OPCType",
-           "create_spt_correction"]
+           "create_overburden_pressure_correction"]
+
 
 class SPTNDesign:
     """SPT Design Calculations.
