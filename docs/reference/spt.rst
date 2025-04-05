@@ -46,7 +46,6 @@ geolysis.spt
 
           ~EnergyCorrection.correction
           ~EnergyCorrection.standardized_spt_n_value
-          ~EnergyCorrection.corrected_spt_n_value
 
     .. rubric:: Attributes
 
@@ -176,4 +175,4 @@ geolysis.spt
 
 ------------
 
-.. autofunction:: create_spt_correction
+.. autofunction:: create_overburden_pressure_correction
