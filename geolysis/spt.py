@@ -262,10 +262,6 @@ class EnergyCorrection:
         """Standardized SPT N-value."""
         return self.correction() * self.recorded_spt_n_value
 
-    def corrected_spt_n_value(self) -> float:
-        """Same as :meth:`standardized_spt_n_value`."""
-        return self.standardized_spt_n_value()
-
 
 class OPC:
     """Base class for Overburden Pressure Correction (OPC)."""
