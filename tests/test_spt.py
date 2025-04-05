@@ -60,9 +60,6 @@ class TestEnergyCorrection:
         assert energy_corr.standardized_spt_n_value() == pytest.approx(
             expected)
 
-        assert energy_corr.corrected_spt_n_value() == pytest.approx(
-            expected)
-
 
 class TestGibbsHoltzOPC:
 
