@@ -187,19 +187,17 @@ Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 Correcting SPT N-values for overburden pressure influence using
 ``Gibbs & Holtz (1957)`` correlation:
 
->>> from geolysis.spt import create_spt_correction
->>> opc_corr = create_spt_correction(recorded_spt_n_value=23,
-...                                  eop=100, opc_type="GIBBS")
+>>> from geolysis.spt import create_overburden_pressure_correction
+>>> opc_corr = create_overburden_pressure_correction(std_spt_n_value=23,
+...                                                  eop=100, opc_type="GIBBS")
 >>> opc_corr.corrected_spt_n_value()
-17.7
+23.7
 
 Other available ``opc_type`` can be found in :enum:`~geolysis.spt.OPCType`.
 
 Correcting SPT N-values for water (dilatancy) influence:
 
->>> from geolysis.spt import create_spt_correction
->>> dil_corr = create_spt_correction(recorded_spt_n_value=23,
-...                                  eop=100.0, opc_type="GIBBS",
-...                                  apply_dilatancy_correction=True)
+>>> from geolysis.spt import DilatancyCorrection
+>>> dil_corr = DilatancyCorrection(corr_spt_n_value=17.7)
 >>> dil_corr.corrected_spt_n_value()
 16.4
