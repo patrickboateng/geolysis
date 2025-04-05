@@ -1,0 +1,29 @@
+****************
+Apr 2025 [0.6.0]
+****************
+
+:Editor: Patrick Boateng
+
+Welcome to the April 2025 release of ``geolysis``. ``geolysis`` **0.6.0**
+is a beta release version.
+
+Python Versions Supported
+=========================
+
+The Python versions supported are:
+
+- `3.11 <https://docs.python.org/3/whatsnew/3.11.html>`_
+- `3.12 <https://docs.python.org/3/whatsnew/3.12.html>`_
+
+Summary - Release Highlights
+============================
+
+- Removed ``create_spt_correction`` factory function.
+- Added :func:`~geolysis.spt.create_overburden_pressure_correction` factory
+  function.
+
+Thank You
+=========
+
+Last but certainly not least, a big *Thank You* to all the contributors of
+``geolysis``.
