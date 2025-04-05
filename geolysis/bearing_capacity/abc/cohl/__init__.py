@@ -6,7 +6,7 @@ import enum
 from typing import Optional
 
 from geolysis.foundation import FoundationType, Shape, create_foundation
-from geolysis.utils import enum_repr, inf, ErrorMsg
+from geolysis.utils import ErrorMsg, enum_repr, inf
 
 from ._core import AllowableBearingCapacity
 from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation

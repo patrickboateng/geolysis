@@ -1,10 +1,8 @@
-from geolysis.foundation import (
-    Shape, StripFooting, RectangularFooting,
-    FoundationSize, create_foundation
-)
 import unittest
 
-from geolysis.foundation import CircularFooting, SquareFooting
+from geolysis.foundation import (CircularFooting, FoundationSize,
+                                 RectangularFooting, Shape, SquareFooting,
+                                 StripFooting, create_foundation)
 
 
 class TestCircularFooting(unittest.TestCase):

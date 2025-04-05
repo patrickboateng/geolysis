@@ -4,7 +4,7 @@ USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 import enum
 from typing import NamedTuple, Optional, Sequence
 
-from .utils import enum_repr, isclose, round_, validators, ErrorMsg
+from .utils import ErrorMsg, enum_repr, isclose, round_, validators
 
 __all__ = ["ClfType",
            "AtterbergLimits",

@@ -1,16 +1,9 @@
 import pytest
 
-from geolysis.spt import (EnergyCorrection,
-                          BazaraaPeckOPC,
-                          DilatancyCorrection,
-                          GibbsHoltzOPC,
-                          LiaoWhitmanOPC,
-                          SkemptonOPC,
-                          PeckOPC,
-                          SPTNDesign,
-                          HammerType,
-                          SamplerType,
-                          create_overburden_pressure_correction)
+from geolysis.spt import (BazaraaPeckOPC, DilatancyCorrection,
+                          EnergyCorrection, GibbsHoltzOPC, HammerType,
+                          LiaoWhitmanOPC, PeckOPC, SamplerType, SkemptonOPC,
+                          SPTNDesign, create_overburden_pressure_correction)
 
 
 def test_create_spt_correction_errors():

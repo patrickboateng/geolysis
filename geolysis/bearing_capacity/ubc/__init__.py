@@ -7,14 +7,13 @@ import enum
 from typing import Optional
 
 from geolysis.foundation import Shape, create_foundation
-from geolysis.utils import enum_repr, ErrorMsg
+from geolysis.utils import ErrorMsg, enum_repr
 
 from ._core import UltimateBearingCapacity
 from .hansen_ubc import HansenUltimateBearingCapacity
 from .terzaghi_ubc import (TerzaghiUBC4CircularFooting,
                            TerzaghiUBC4RectangularFooting,
-                           TerzaghiUBC4SquareFooting,
-                           TerzaghiUBC4StripFooting)
+                           TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting)
 from .vesic_ubc import VesicUltimateBearingCapacity
 
 __all__ = ["UBCType",

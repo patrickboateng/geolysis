@@ -6,8 +6,8 @@ import enum
 from abc import abstractmethod
 from typing import Final, Sequence
 
-from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators, \
-    ErrorMsg
+from .utils import (ErrorMsg, enum_repr, isclose, log10, mean, round_, sqrt,
+                    validators)
 
 __all__ = ["SPTNDesign",
            "HammerType",
