@@ -33,7 +33,7 @@ class AllowableBearingCapacity(ABC):
 
     @property
     def tol_settlement(self) -> float:
-        """Tolerable settlement foundation (mm)."""
+        """Tolerable settlement of foundation (mm)."""
         return self._tol_settlement
 
     @tol_settlement.setter

@@ -1,4 +1,4 @@
-"""This module defines classes and utilities for modeling various foundation
+"""This module provides classes and utilities for modeling various foundation
 footing types, their dimensions, and properties."""
 import enum
 from abc import ABC, abstractmethod
