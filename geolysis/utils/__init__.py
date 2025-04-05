@@ -2,8 +2,8 @@ import functools
 import math
 from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
-from typing import Callable, SupportsRound, Iterable, Any, Optional, \
-    NotRequired, TypedDict, Unpack
+from typing import (Any, Callable, NotRequired, Optional, SupportsRound,
+                    TypedDict, Unpack)
 
 from . import validators
 
@@ -107,6 +107,6 @@ class ErrorMsg(str):
         # Assume kwargs contains values for param_name, param_value,
         # param_type, if not, KeyError exception is raised
 
-        msg = (f"Invalid value for {kw["param_name"]}: {kw['param_value']}, "
-               f"Supported types are: {list(kw["param_type"])}")
+        msg = (f"Invalid value for {kw['param_name']}: {kw['param_value']}, "
+               f"Supported types are: {list(kw['param_type'])}")
         return super().__new__(cls, msg)
