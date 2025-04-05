@@ -4,7 +4,7 @@ import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
 
-from .utils import enum_repr, inf, isclose, validators
+from .utils import enum_repr, inf, isclose, validators, ErrorMsg
 
 __all__ = ["create_foundation",
            "FoundationSize",
@@ -369,14 +369,11 @@ def create_foundation(depth: float,
                         footing.
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
-    shape = str(shape).casefold()
 
     try:
-        shape = Shape(shape)
+        shape = Shape(str(shape).casefold())
     except ValueError as e:
-        msg = (f"{shape=} is not supported, Supported "
-               f"types are: {list(Shape)}")
-
+        msg = ErrorMsg(param_name="shape", param_value=shape, param_type=Shape)
         raise ValueError(msg) from e
 
     if shape is Shape.STRIP:
@@ -387,7 +384,8 @@ def create_foundation(depth: float,
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
         if not length:
-            raise ValueError("Length of footing must be provided.")
+            msg = ErrorMsg(msg="Length of footing must be provided.")
+            raise ValueError(msg)
         footing_size = RectangularFooting(width=width, length=length)
 
     return FoundationSize(depth=depth,

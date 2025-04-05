@@ -2,11 +2,13 @@ import functools
 import math
 from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
-from typing import Callable, SupportsRound
+from typing import Callable, SupportsRound, Iterable, Any, Optional, \
+    NotRequired, TypedDict, Unpack
 
 from . import validators
 
-__all__ = ["enum_repr",
+__all__ = ["ErrorMsg",
+           "enum_repr",
            "inf",
            "pi",
            "deg2rad",
@@ -86,3 +88,25 @@ def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
         return wrapper
 
     return dec
+
+
+class _ErrorParams(TypedDict):
+    param_name: NotRequired[str]
+    param_value: NotRequired[Any]
+    param_type: NotRequired[Any]
+
+
+class ErrorMsg(str):
+
+    @staticmethod
+    def __new__(cls, *args, msg: Optional[str] = None,
+                **kw: Unpack[_ErrorParams]):
+        if msg:
+            return super().__new__(cls, msg)
+
+        # Assume kwargs contains values for param_name, param_value,
+        # param_type, if not, KeyError exception is raised
+
+        msg = (f"Invalid value for {kw["param_name"]}: {kw['param_value']}, "
+               f"Supported types are: {list(kw["param_type"])}")
+        return super().__new__(cls, msg)

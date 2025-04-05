@@ -6,7 +6,8 @@ import enum
 from abc import abstractmethod
 from typing import Final, Sequence
 
-from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
+from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators, \
+    ErrorMsg
 
 __all__ = ["SPTNDesign",
            "HammerType",
@@ -531,8 +532,9 @@ def create_overburden_pressure_correction(std_spt_n_value: float, eop,
     try:
         opc_type = OPCType(str(opc_type).casefold())
     except ValueError as e:
-        msg = (f"{opc_type=} is not supported, Supported "
-               f"types are: {list(OPCType)}")
+        msg = ErrorMsg(param_name="opc_type",
+                       param_value=opc_type,
+                       param_type=OPCType)
         raise ValueError(msg) from e
 
     opc_types = {OPCType.GIBBS: GibbsHoltzOPC,

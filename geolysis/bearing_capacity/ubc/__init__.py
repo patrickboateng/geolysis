@@ -7,13 +7,14 @@ import enum
 from typing import Optional
 
 from geolysis.foundation import Shape, create_foundation
-from geolysis.utils import enum_repr
+from geolysis.utils import enum_repr, ErrorMsg
 
 from ._core import UltimateBearingCapacity
 from .hansen_ubc import HansenUltimateBearingCapacity
 from .terzaghi_ubc import (TerzaghiUBC4CircularFooting,
                            TerzaghiUBC4RectangularFooting,
-                           TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting)
+                           TerzaghiUBC4SquareFooting,
+                           TerzaghiUBC4StripFooting)
 from .vesic_ubc import VesicUltimateBearingCapacity
 
 __all__ = ["UBCType",
@@ -104,8 +105,10 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                         footing.
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
-    msg = (f"{ubc_type=} is not supported, Supported "
-           f"types are: {list(UBCType)}")
+
+    msg = ErrorMsg(param_name="ubc_type",
+                   param_value=ubc_type,
+                   param_type=UBCType)
 
     if ubc_type is None:
         raise ValueError(msg)
