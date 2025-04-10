@@ -99,7 +99,8 @@ class HammerType(enum.StrEnum):
     DONUT_1 = enum.auto()
     DONUT_2 = enum.auto()
     SAFETY = enum.auto()
-    DROP = PIN = enum.auto()
+    DROP = enum.auto()
+    PIN = enum.auto()
 
 
 @enum_repr
