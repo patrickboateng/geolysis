@@ -220,7 +220,9 @@ class _SizeDistribution:
     Features obtained from the Particle Size Distribution graph.
     """
 
-    def __init__(self, d_10: float = 0, d_30: float = 0, d_60: float = 0):
+    def __init__(self, d_10: float = 0.0,
+                 d_30: float = 0.0,
+                 d_60: float = 0.0):
         self.d_10 = d_10
         self.d_30 = d_30
         self.d_60 = d_60
@@ -382,7 +384,7 @@ class AASHTO:
     """
 
     def __init__(self, atterberg_limits: AtterbergLimits,
-                 fines: float, add_group_idx=True):
+                 fines: float, add_group_idx: bool = True):
         """
         :param atterberg_limits: Atterberg limits of soil sample.
         :type atterberg_limits: AtterbergLimits

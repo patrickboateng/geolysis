@@ -1,13 +1,7 @@
 from abc import ABC, abstractmethod
 
 from geolysis.foundation import FoundationSize
-from geolysis.utils import validators
-
-
-class SettlementError(ValueError):
-    """Raised when tolerable settlement is greater than the maximum 
-    allowable settlement.
-    """
+from geolysis.utils import validators, exceptions as exc
 
 
 class AllowableBearingCapacity(ABC):
@@ -37,7 +31,7 @@ class AllowableBearingCapacity(ABC):
         return self._tol_settlement
 
     @tol_settlement.setter
-    @validators.le(25.4, exc_type=SettlementError)
+    @validators.le(25.4, exc_type=exc.SettlementError)
     def tol_settlement(self, tol_settlement: float) -> None:
         self._tol_settlement = tol_settlement
 

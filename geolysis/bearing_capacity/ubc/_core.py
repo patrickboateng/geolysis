@@ -9,8 +9,8 @@ class UltimateBearingCapacity(ABC):
                  cohesion: float,
                  moist_unit_wgt: float,
                  foundation_size: FoundationSize,
-                 load_angle=0.0,
-                 apply_local_shear=False) -> None:
+                 load_angle: float = 0.0,
+                 apply_local_shear: bool = False) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general shear 
                                failure (degrees).

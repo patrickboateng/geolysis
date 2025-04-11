@@ -43,8 +43,8 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                      eccentricity: float = 0.0,
                                      ground_water_level: Optional[
                                          float] = None,
-                                     load_angle=0.0,
-                                     apply_local_shear=False,
+                                     load_angle: float = 0.0,
+                                     apply_local_shear: bool = False,
                                      shape: Shape | str = Shape.SQUARE,
                                      ubc_type: Optional[UBCType | str] = None,
                                      ) -> UltimateBearingCapacity:
