@@ -4,7 +4,8 @@ USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 import enum
 from typing import NamedTuple, Optional, Sequence
 
-from .utils import ErrorMsg, enum_repr, isclose, round_, validators
+from .utils import enum_repr, isclose, round_, validators
+from .utils.exceptions import EnumErrorMsg
 
 __all__ = ["ClfType",
            "AtterbergLimits",
@@ -712,9 +713,9 @@ def create_soil_classifier(liquid_limit: float,
     :raises ValueError: Raises ValueError if ``sand`` is not provided for
                         :class:`USCS` classification.
     """
-    msg = ErrorMsg(param_name="clf_type",
-                   param_value=clf_type,
-                   param_type=ClfType)
+    msg = EnumErrorMsg(param_name="clf_type",
+                       param_value=clf_type,
+                       param_type=ClfType)
 
     if clf_type is None:
         raise ValueError(msg)
@@ -735,7 +736,8 @@ def create_soil_classifier(liquid_limit: float,
 
     # USCS classification
     if sand is None:
-        msg = ErrorMsg(msg=f"sand must be specified for USCS classification")
+        msg = EnumErrorMsg(
+            msg=f"sand must be specified for USCS classification")
         raise ValueError(msg)
 
     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)

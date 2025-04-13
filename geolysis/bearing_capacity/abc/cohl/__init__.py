@@ -6,7 +6,8 @@ import enum
 from typing import Optional
 
 from geolysis.foundation import FoundationType, Shape, create_foundation
-from geolysis.utils import ErrorMsg, enum_repr, inf
+from geolysis.utils import enum_repr, inf
+from geolysis.utils.exceptions import EnumErrorMsg
 
 from ._core import AllowableBearingCapacity
 from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation
@@ -81,9 +82,9 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :raises ValueError: Raised if an invalid footing ``shape`` is provided.
     """
 
-    msg = ErrorMsg(param_name="abc_type",
-                   param_value=abc_type,
-                   param_type=ABCType)
+    msg = EnumErrorMsg(param_name="abc_type",
+                       param_value=abc_type,
+                       param_type=ABCType)
 
     if abc_type is None:
         raise ValueError(msg)
@@ -96,9 +97,9 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     try:
         foundation_type = FoundationType(str(foundation_type).casefold())
     except ValueError as e:
-        msg = ErrorMsg(param_name="foundation_type",
-                       param_value=foundation_type,
-                       param_type=FoundationType)
+        msg = EnumErrorMsg(param_name="foundation_type",
+                           param_value=foundation_type,
+                           param_type=FoundationType)
         raise ValueError(msg) from e
 
     # exception from create_foundation will automaatically propagate
