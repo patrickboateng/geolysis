@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
 
 from .utils import enum_repr, inf, isclose, validators
-from .utils.exceptions import EnumErrorMsg
+from .utils.exceptions import EnumErrorMsg, ErrorMsg
 
 __all__ = ["create_foundation",
            "FoundationSize",
@@ -386,7 +386,7 @@ def create_foundation(depth: float,
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
         if not length:
-            msg = EnumErrorMsg(msg="Length of footing must be provided.")
+            msg = ErrorMsg(msg="Length of footing must be provided.")
             raise ValueError(msg)
         footing_size = RectangularFooting(width=width, length=length)
 
