@@ -735,7 +735,7 @@ def create_soil_classifier(liquid_limit: float,
         return clf
 
     # USCS classification
-    if sand is None:
+    if not sand:
         msg = ErrorMsg("sand must be specified for USCS classification")
         raise ValueError(msg)
 

@@ -510,6 +510,13 @@ class OPCType(enum.StrEnum):
     SKEMPTON = enum.auto()
 
 
+_opctypes = {OPCType.GIBBS: GibbsHoltzOPC,
+             OPCType.BAZARAA: BazaraaPeckOPC,
+             OPCType.PECK: PeckOPC,
+             OPCType.LIAO: LiaoWhitmanOPC,
+             OPCType.SKEMPTON: SkemptonOPC}
+
+
 def create_overburden_pressure_correction(std_spt_n_value: float, eop,
                                           opc_type: OPCType | str = OPCType.GIBBS) -> OPC:
     """A factory function that encapsulates the creation of overburden
@@ -534,13 +541,7 @@ def create_overburden_pressure_correction(std_spt_n_value: float, eop,
                            param_type=OPCType)
         raise ValueError(msg) from e
 
-    opc_types = {OPCType.GIBBS: GibbsHoltzOPC,
-                 OPCType.BAZARAA: BazaraaPeckOPC,
-                 OPCType.PECK: PeckOPC,
-                 OPCType.LIAO: LiaoWhitmanOPC,
-                 OPCType.SKEMPTON: SkemptonOPC}
-
-    opc_class = opc_types[opc_type]
+    opc_class = _opctypes[opc_type]
     opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)
 
     return opc_corr

@@ -35,6 +35,16 @@ class UBCType(enum.StrEnum):
     VESIC = enum.auto()
 
 
+ubc_classes = {
+    UBCType.HANSEN: HansenUltimateBearingCapacity,
+    UBCType.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
+                       Shape.CIRCLE: TerzaghiUBC4CircularFooting,
+                       Shape.SQUARE: TerzaghiUBC4SquareFooting,
+                       Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
+    UBCType.VESIC: VesicUltimateBearingCapacity,
+}
+
+
 def create_ultimate_bearing_capacity(friction_angle: float,
                                      cohesion: float,
                                      moist_unit_wgt: float,
@@ -126,14 +136,6 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                  eccentricity=eccentricity,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
-    ubc_classes = {
-        UBCType.HANSEN: HansenUltimateBearingCapacity,
-        UBCType.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
-                           Shape.CIRCLE: TerzaghiUBC4CircularFooting,
-                           Shape.SQUARE: TerzaghiUBC4SquareFooting,
-                           Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
-        UBCType.VESIC: VesicUltimateBearingCapacity,
-    }
 
     if ubc_type == UBCType.TERZAGHI:
         ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]

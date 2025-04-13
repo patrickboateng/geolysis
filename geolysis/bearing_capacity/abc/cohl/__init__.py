@@ -3,6 +3,7 @@ allowable bearing capacity calculations using methods like Bowles, Meyerhof,
 and Terzaghi for various foundation types and shapes.
 """
 import enum
+from codecs import backslashreplace_errors
 from typing import Optional
 
 from geolysis.foundation import FoundationType, Shape, create_foundation
@@ -21,6 +22,22 @@ class ABCType(enum.StrEnum):
     BOWLES = enum.auto()
     MEYERHOF = enum.auto()
     TERZAGHI = enum.auto()
+
+
+abc_classes = {
+    ABCType.BOWLES: {
+        FoundationType.PAD: BowlesABC4PadFoundation,
+        FoundationType.MAT: BowlesABC4MatFoundation,
+    },
+    ABCType.MEYERHOF: {
+        FoundationType.PAD: MeyerhofABC4PadFoundation,
+        FoundationType.MAT: MeyerhofABC4MatFoundation,
+    },
+    ABCType.TERZAGHI: {
+        FoundationType.PAD: TerzaghiABC4PadFoundation,
+        FoundationType.MAT: TerzaghiABC4MatFoundation,
+    }
+}
 
 
 def create_allowable_bearing_capacity(corrected_spt_n_value: float,
@@ -111,20 +128,6 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                  ground_water_level=ground_water_level,
                                  foundation_type=foundation_type,
                                  shape=shape)
-    abc_classes = {
-        ABCType.BOWLES: {
-            FoundationType.PAD: BowlesABC4PadFoundation,
-            FoundationType.MAT: BowlesABC4MatFoundation,
-        },
-        ABCType.MEYERHOF: {
-            FoundationType.PAD: MeyerhofABC4PadFoundation,
-            FoundationType.MAT: MeyerhofABC4MatFoundation,
-        },
-        ABCType.TERZAGHI: {
-            FoundationType.PAD: TerzaghiABC4PadFoundation,
-            FoundationType.MAT: TerzaghiABC4MatFoundation,
-        }
-    }
 
     abc_class = abc_classes[abc_type][fnd_size.foundation_type]
     abc = abc_class(corrected_spt_n_value=corrected_spt_n_value,
