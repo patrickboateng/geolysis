@@ -168,12 +168,15 @@ Standard Penetration Tests Analysis
 Calculating SPT :math:`N_{design}` from a list of SPT N-values:
 
 >>> from geolysis.spt import SPTNDesign
->>> spt_design = SPTNDesign(corrected_spt_n_values=[7.0, 15.0, 18.0])
->>> spt_design.average_spt_n_design()
+>>> spt_design = SPTNDesign(corrected_spt_n_values=[7.0, 15.0, 18.0],
+...                         method="avg")
+>>> spt_design.n_design()
 13.3
->>> spt_design.minimum_spt_n_design()
+>>> spt_design.method = "min"
+>>> spt_design.n_design()
 7.0
->>> spt_design.weighted_spt_n_design()
+>>> spt_design.method = "wgt"
+>>> spt_design.n_design()
 9.4
 
 >>> from geolysis.spt import EnergyCorrection
