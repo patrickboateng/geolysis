@@ -65,6 +65,10 @@ Here are brief descriptions of these projects:
   </tr>
 </table>
 
+# Microsoft Excel Example
+
+![geolysis excel example](geolysis_excel_example.gif)
+
 ## Project Structure
 
     .
