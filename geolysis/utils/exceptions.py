@@ -19,15 +19,9 @@ class EnumErrorMsg(ErrorMsg):
     @staticmethod
     def __new__(cls, *args, msg: Optional[str] = None,
                 **kwargs: Unpack[_ErrorParams]):
-        if msg:
-            err_msg = msg
-        else:
-            # Assume kwargs contains values for param_name, param_value,
-            # param_type, if not, KeyError exception is raised
-
-            err_msg = (
-                f"Invalid value for {kwargs['param_name']}: {kwargs['param_value']}, "
-                f"Supported types are: {list(kwargs['param_type'])}")
+        err_msg = msg if msg else (
+            f"Invalid value for {kwargs['param_name']}: {kwargs['param_value']}, "
+            f"Supported types are: {list(kwargs['param_type'])}")
 
         return super().__new__(cls, err_msg)
 
