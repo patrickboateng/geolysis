@@ -24,9 +24,7 @@ geolysis.spt
 
     .. autosummary::
 
-        ~SPTNDesign.average_spt_n_design
-        ~SPTNDesign.minimum_spt_n_design
-        ~SPTNDesign.weighted_spt_n_design
+        ~SPTNDesign.n_design
 
     .. rubric:: Attributes
 
