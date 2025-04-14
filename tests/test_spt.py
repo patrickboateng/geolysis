@@ -15,15 +15,22 @@ def test_create_spt_correction_errors():
 class TestSPTDesign:
 
     def test_spt_n_design(self):
-        spt_design = SPTNDesign([7.0, 15.0, 18])
+        spt_design = SPTNDesign([7.0, 15.0, 18], method="min")
 
-        assert spt_design.minimum_spt_n_design() == pytest.approx(7.0)
-        assert spt_design.average_spt_n_design() == pytest.approx(13.3)
-        assert spt_design.weighted_spt_n_design() == pytest.approx(9.4)
+        assert spt_design.n_design() == pytest.approx(7.0)
+        spt_design.method = "avg"
+        assert spt_design.n_design() == pytest.approx(13.3)
+        spt_design.method = "wgt"
+        assert spt_design.n_design() == pytest.approx(9.4)
 
     def test_errors(self):
         with pytest.raises(ValueError):
             SPTNDesign(corrected_spt_n_values=[])
+
+        with pytest.raises(ValueError):
+            spt_design = SPTNDesign(corrected_spt_n_values=[7.0, 15.0, 18],
+                                    method="max")
+            spt_design.n_design()
 
 
 class TestEnergyCorrection:

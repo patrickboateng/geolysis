@@ -4,10 +4,10 @@ as well as calculating design N-values.
 """
 import enum
 from abc import abstractmethod
-from typing import Final, Sequence
+from typing import Final, Sequence, Literal
 
 from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
-from .utils.exceptions import EnumErrorMsg
+from .utils.exceptions import EnumErrorMsg, ErrorMsg
 
 __all__ = ["SPTNDesign",
            "HammerType",
@@ -35,13 +35,15 @@ class SPTNDesign:
     N-value from the base.
     """
 
-    def __init__(self, corrected_spt_n_values: Sequence[float]) -> None:
+    def __init__(self, corrected_spt_n_values: Sequence[float],
+                 method: Literal["min", "avg", "wgt"] = "wgt") -> None:
         """
         :param corrected_spt_n_values: Corrected SPT N-values within the
                                        foundation influence zone.
         :type corrected_spt_n_values: Sequence[float]
         """
         self.corrected_spt_n_values = corrected_spt_n_values
+        self.method = method
 
     @property
     def corrected_spt_n_values(self) -> Sequence[float]:
@@ -53,24 +55,40 @@ class SPTNDesign:
     def corrected_spt_n_values(self, val: Sequence[float]) -> None:
         self._corrected_spt_n_values = val
 
-    @round_(ndigits=1)
-    def average_spt_n_design(self) -> float:
-        """Calculates the average of the corrected SPT N-values within the
-        foundation influence zone.
-        """
-        return mean(self.corrected_spt_n_values)
+    @staticmethod
+    def _avg_spt_n_design(vals) -> float:
+        return mean(vals)
+
+    @staticmethod
+    def _min_spt_n_design(vals):
+        return min(vals)
+
+    @staticmethod
+    def _wgt_spt_n_design(vals):
+
+        sum_total = 0.0
+        sum_wgts = 0.0
+
+        for i, corr_spt_n_val in enumerate(vals, start=1):
+            wgt = 1 / i ** 2
+            sum_total += wgt * corr_spt_n_val
+            sum_wgts += wgt
+
+        return sum_total / sum_wgts
 
     @round_(ndigits=1)
-    def minimum_spt_n_design(self):
-        """The lowest SPT N-value within the influence zone can be taken as the
-        :math:`N_{design}` as suggested by ``Terzaghi & Peck (1948)``.
-        """
-        return min(self.corrected_spt_n_values)
+    def n_design(self):
+        r"""Calculates the SPT N-design within the foundation influence zone.
 
-    @round_(ndigits=1)
-    def weighted_spt_n_design(self):
-        r"""Calculates the weighted average of the corrected SPT N-values
-        within the foundation influence zone.
+        If ``method="min"``, it returns the minimum N-value within the foundation
+        influence zone as the SPT N-design value. This approach was suggested
+        by ``Terzaghi & Peck (1948)``.
+
+        if ``method="avg"``, it returns the average N-value within the foundation
+        influence zone as the SPT N-design value.
+
+        if ``method="wgt"``, it returns the weighted average N-value within the
+        foundation influence zone as the SPT N-design value.
 
         :Equation:
 
@@ -79,17 +97,15 @@ class SPTNDesign:
             N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
                          {\sum_{i=1}^{n}\frac{1}{i^2}}
         """
-
-        sum_total = 0.0
-        sum_wgts = 0.0
-
-        for i, corr_spt_n_val in enumerate(self.corrected_spt_n_values,
-                                           start=1):
-            wgt = 1 / i ** 2
-            sum_total += wgt * corr_spt_n_val
-            sum_wgts += wgt
-
-        return sum_total / sum_wgts
+        if self.method == "min":
+            return self._min_spt_n_design(self.corrected_spt_n_values)
+        elif self.method == "avg":
+            return self._avg_spt_n_design(self.corrected_spt_n_values)
+        elif self.method == "wgt":
+            return self._wgt_spt_n_design(self.corrected_spt_n_values)
+        else:
+            msg = ErrorMsg("method must be 'min', 'avg', or 'wgt'")
+            raise ValueError(msg)
 
 
 @enum_repr
