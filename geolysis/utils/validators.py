@@ -1,6 +1,7 @@
 """validators"""
 import operator
 from typing import Callable, TypeAlias, Optional
+from functools import wraps
 
 from .exceptions import ValidationError
 
@@ -13,6 +14,7 @@ def _num_validator(bound: float, /, *,
                    exc_type: Callable,
                    err_msg: str):
     def dec(fn):
+        @wraps(fn)
         def wrapper(obj, val):
             if not compare_fn(val, bound):
                 msg = f"{fn.__name__} must be {compare_symbol} {bound}"
@@ -30,6 +32,7 @@ def _len_validator(bound: float, /, *,
                    exc_type: Callable,
                    err_msg: str):
     def dec(fn):
+        @wraps(fn)
         def wrapper(obj, val):
             _len = len(val)
             if not compare_fn(_len, bound):
