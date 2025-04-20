@@ -67,7 +67,12 @@ Here are brief descriptions of these projects:
 
 # Microsoft Excel Example
 
-![geolysis excel example](geolysis_excel_example.gif)
+<div align="center">
+<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/_static/geolysis_excel_example.gif" 
+alt="geolysis excel example" width="100%" />
+</div><br>
+
+<!-- ![geolysis excel example](https://github.com/patrickboateng/geolysis/blob/main/geolysis_excel_example.gif) -->
 
 ## Project Structure
 
