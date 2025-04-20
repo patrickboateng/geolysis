@@ -320,7 +320,9 @@ class FoundationSize:
         """Returns the :attr:`effective_width`, :attr:`length`, and
         :attr:`footing_shape` of the foundation footing.
         """
-        width, length, shape = self.effective_width, self.length, self.footing_shape
+        width, length, shape = (self.effective_width,
+                                self.length,
+                                self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -374,7 +376,8 @@ def create_foundation(depth: float,
     try:
         shape = Shape(str(shape).casefold())
     except ValueError as e:
-        msg = EnumErrorMsg(param_name="shape", param_value=shape,
+        msg = EnumErrorMsg(param_name="shape",
+                           param_value=shape,
                            param_type=Shape)
         raise ValueError(msg) from e
 
