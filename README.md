@@ -17,62 +17,77 @@ alt="geolysislogo" width="75%" />
 
 </div>
 
-`geolysis` is an open-source library for geotechnical analysis and modeling.
-It offers tools for soil classification, Standard Penetration Test (SPT)
-analysis, and bearing capacity estimation, among others.
+`geolysis` is an open-source python package (library) for geotechnical analysis
+and modeling. It offers tools for soil classification, Standard Penetration
+Test (SPT) analysis, and bearing capacity estimation, among others.
 
-The `geolysis` library is among four main projects: `geolysis.gui`,
-`geolysis.excel`, and `geolysis.ai`. The geolysis library powers all of these
-projects.
+The `geolysis` package is among three other projects, `geolysis.gui`,
+`geolysis.excel`, and `geolysis.ai`.
 
-**_The `geolysis` projects are currently under developement and not yet
-publicly available_**.
+Here are brief descriptions of the `geolysis` projects:
 
-**_Active development of `geolysis` occurs on the `dev` branch. For more
-information on the latest features of `geolysis`, switch to the
-`dev` branch_**.
+1. `geolysis`
 
-Here are brief descriptions of these projects:
+   A python package (library) which provides the core functionalities for
+   `geolysis.gui` and the `geolysis.excel` applications. Current features
+   provided by the `geolysis` package are shown in the table below.
 
-<table>
-  <tr>
-    <td>
-    <strong>geolysis.gui</strong>
-    </td>
-    <td>A graphical user interface that allows users to interact with the
-     geolysis library. Through this interface, users can view generated reports
-     and visualizations, such as Particle Size Distribution (PSD) curves,
-     Atterberg Limits plots, and Compaction curves, among others.
-     Additionally, it enables users to conduct foundation analysis and
-     design, among other functionalities.
-    </td>
-  </tr>
-  <tr>
-    <td>
-    <strong>geolysis.excel</strong>
-    </td>
-    <td>An add-in for Microsoft Excel that performs simple geotechnical
-     analysis. It offers some features similar to <code>geolysis.gui</code>
-     within Microsoft Excel.
-    </td>
-  </tr>
-  <tr>
-    <td>
-    <strong>geolysis.ai</strong>
-    </td>
-    <td>Offers machine learning models that are trained using geotechnical data.
-    </td>
-  </tr>
-</table>
+   <table>
+    <tr>
+        <td><strong>Soil Classification</strong></td>
+        <td>AASHTO Classification System</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Unified Soil Classification System</td>
+    </tr>
+    <tr>
+        <td><strong>Standard Penetration Test (SPT) Analysis</strong></td>
+        <td>SPT Energy Correction</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>SPT Overburden Pressure Correction</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>SPT Dilatancy Correction</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>SPT N-Design Calculation</td>
+    </tr>
+    <tr>
+        <td><strong>Bearing Capacity Estimation</strong></td>
+        <td>Allowable Bearing Capacity Estimation</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Ultimate Bearing Capacity Estimation</td>
+    </tr>
+   </table>
 
-# Microsoft Excel Example
+2. `geolysis.gui`
 
-<div align="center">
-<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/_static/geolysis_excel_example.gif" 
-alt="geolysis excel example" width="100%" />
-</div><br>
+   A graphical user interface that allows users to interact with the `geolysis`
+   package. Through this interface, users can view generated reports and
+   visualizations, such as Particle Size Distribution (PSD) curves, Atterberg
+   Limits plots, and Compaction curves, among others.
 
-<!-- ![geolysis excel example](https://github.com/patrickboateng/geolysis/blob/main/geolysis_excel_example.gif) -->
+3. `geolysis.excel`
+
+   An add-in for Microsoft Excel that performs simple geotechnical analysis.
+   It offers some features similar to `geolysis.gui` within Microsoft Excel.
+   Below is an example of the Microsoft Excel addin.
+
+   <div align="center">
+    <img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/_static/geolysis_excel_example.gif" 
+    alt="geolysis excel example" width="100%" />
+   </div><br>
+
+4. `geolysis.ai`
+
+   Offers machine learning models that are trained using geotechnical data.
 
 ## Project Structure
 
@@ -139,43 +154,6 @@ SoilClf(symbol='A-6(4)', description='Clayey soils')
 Check out more examples
 [here](https://docs.geolysis.io/en/latest/user_guide/getting_started.html#quick-start)
 
-## Features
-
-<table>
-    <tr>
-        <td><strong>Soil Classification</strong></td>
-        <td>AASHTO Classification System</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>Unified Soil Classification System</td>
-    </tr>
-    <tr>
-        <td><strong>Standard Penetration Test (SPT) Analysis</strong></td>
-        <td>SPT Energy Correction</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>SPT Overburden Pressure Correction</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>Dilatancy Correction</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>SPT N-Design Calculation</td>
-    </tr>
-    <tr>
-        <td><strong>Bearing Capacity Estimation</strong></td>
-        <td>Allowable Bearing Capacity Estimation</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>Ultimate Bearing Capacity Estimation</td>
-    </tr>
-</table>
-
 ## Documentation
 
 Full documentation is available [here](https://docs.geolysis.io/en/latest/)
@@ -193,5 +171,5 @@ file for more details.
 
 ## Contact
 
-For questions or feedback, please contact us at
-[boatengpato.pb@gmail.com](mailto:boatengpato.pb@gmail.com)
+For questions or feedback, please
+contact [boatengpato.pb@gmail.com](mailto:boatengpato.pb@gmail.com)
