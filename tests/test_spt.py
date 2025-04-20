@@ -32,6 +32,12 @@ class TestSPTDesign:
                                     method="max")
             spt_design.n_design()
 
+        with pytest.raises(ValueError):
+            SPTNDesign(corrected_spt_n_values=[22, 44, 120])
+
+        with pytest.raises(ValueError):
+            SPTNDesign(corrected_spt_n_values=[0.0, 15.0, 18])
+
 
 class TestEnergyCorrection:
 

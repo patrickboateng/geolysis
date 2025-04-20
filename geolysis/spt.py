@@ -7,7 +7,7 @@ from abc import abstractmethod
 from typing import Final, Sequence, Literal
 
 from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
-from .utils.exceptions import EnumErrorMsg, ErrorMsg
+from .utils.exceptions import EnumErrorMsg, ErrorMsg, ValidationError
 
 __all__ = ["SPTNDesign",
            "HammerType",
@@ -53,6 +53,10 @@ class SPTNDesign:
     @corrected_spt_n_values.setter
     @validators.min_len(1)
     def corrected_spt_n_values(self, val: Sequence[float]) -> None:
+        for v in val:
+            if v <= 0.0 or v > 100:
+                raise ValidationError(
+                    "SPT N-values must be between 0.0 and 100.")
         self._corrected_spt_n_values = val
 
     @staticmethod
@@ -300,6 +304,7 @@ class OPC:
         return self._std_spt_n_value
 
     @std_spt_n_value.setter
+    @validators.le(100)
     @validators.gt(0.0)
     def std_spt_n_value(self, val: float) -> None:
         self._std_spt_n_value = val
@@ -494,6 +499,7 @@ class DilatancyCorrection:
         return self._corr_spt_n_value
 
     @corr_spt_n_value.setter
+    @validators.le(100.0)
     @validators.gt(0.0)
     def corr_spt_n_value(self, val: float) -> None:
         self._corr_spt_n_value = val
