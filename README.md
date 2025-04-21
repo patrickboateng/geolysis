@@ -102,7 +102,6 @@ Here are brief descriptions of the `geolysis` projects:
 
 - [Installation](#installation)
 - [Usage Example](#usage-example)
-- [Features](#features)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
