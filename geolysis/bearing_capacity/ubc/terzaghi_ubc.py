@@ -60,7 +60,7 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
 
         :Equation:
 
-        .. math:: N_{\gamma} &=  (N_q - 1) \cdot \tan(1.4\phi)
+        .. math:: N_{\gamma} =  (N_q - 1) \cdot \tan(1.4\phi)
         """
         return n_gamma(self.friction_angle)
 
