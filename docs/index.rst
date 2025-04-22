@@ -45,7 +45,7 @@ Features
    * -
      - SPT Overburden Pressure Correction
    * -
-     - Dilatancy Correction
+     - SPT Dilatancy Correction
    * -
      - SPT N-Design Calculation
    * - **Bearing Capacity Estimation**
