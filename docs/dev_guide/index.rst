@@ -12,8 +12,8 @@ the root (main package namespace) of the project.
 
 - ``bearing_capacity`` package (folder) contains the code for bearing
   capacity analysis.
-- ``utils`` package (folder) contains useful functions that are used across
-  the project.
+- ``utils`` package (folder) contains useful objects (exception classes,
+   validators, decorators, etc) that are used across the project.
 - ``foundation.py`` module contains classes for representing a foundation.
 - ``soil_classifier.py`` module contains classes for soil classification.
 - ``spt.py`` module contains classes for Standard Penetration Test Analysis.
