@@ -1,36 +1,41 @@
-from typing import Unpack, TypedDict, NotRequired, Any, Optional
+from typing import Optional
 
 
-class _ErrorParams(TypedDict):
-    param_name: NotRequired[str]
-    param_value: NotRequired[Any]
-    param_type: NotRequired[Any]
-
-
-class ErrorMsg(str):
+class _ErrorMsg(str):
 
     @staticmethod
-    def __new__(cls, msg):
+    def __new__(cls, msg, *args, **kwargs):
         return super().__new__(cls, msg)
 
 
-class EnumErrorMsg(ErrorMsg):
+class SetterErrorMsg(_ErrorMsg):
 
     @staticmethod
-    def __new__(cls, *args, msg: Optional[str] = None,
-                **kwargs: Unpack[_ErrorParams]):
-        err_msg = msg if msg else (
-            f"Invalid value for {kwargs['param_name']}: {kwargs['param_value']}, "
-            f"Supported types are: {list(kwargs['param_type'])}")
+    def __new__(cls, *args, name, val, symbol, bound,
+                msg: Optional[str] = None, **kwargs):
+        if not msg:
+            msg = f"{name}: {val} must be {symbol} {bound}"
 
-        return super().__new__(cls, err_msg)
+        return super().__new__(cls, msg)
+
+
+class EnumErrorMsg(_ErrorMsg):
+
+    @staticmethod
+    def __new__(cls, *args, name, val, bound,
+                msg: Optional[str] = None, **kwargs):
+        if not msg:
+            msg = f"Invalid value for {name}: {val}, " \
+                  f"Supported types are: {list(bound)}"
+
+        return super().__new__(cls, msg)
 
 
 class ValidationError(ValueError):
     """Exception raised when a validation error occurs."""
 
 
-class SettlementError(ValueError):
+class SettlementError(ValidationError):
     """Raised when tolerable settlement is greater than the maximum
     allowable settlement.
     """
