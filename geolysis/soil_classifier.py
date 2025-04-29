@@ -5,7 +5,7 @@ import enum
 from typing import NamedTuple, Optional, Sequence
 
 from .utils import enum_repr, isclose, round_, validators
-from .utils.exceptions import EnumErrorMsg, ErrorMsg
+from .utils.exceptions import EnumErrorMsg, _ErrorMsg
 
 __all__ = ["ClfType",
            "AtterbergLimits",
@@ -713,9 +713,9 @@ def create_soil_classifier(liquid_limit: float,
     :raises ValueError: Raises ValueError if ``sand`` is not provided for
                         :class:`USCS` classification.
     """
-    msg = EnumErrorMsg(param_name="clf_type",
-                       param_value=clf_type,
-                       param_type=ClfType)
+    msg = EnumErrorMsg(name="clf_type",
+                       val=clf_type,
+                       bound=ClfType)
 
     if clf_type is None:
         raise ValueError(msg)
@@ -736,7 +736,7 @@ def create_soil_classifier(liquid_limit: float,
 
     # USCS classification
     if not sand:
-        msg = ErrorMsg("sand must be specified for USCS classification")
+        msg = _ErrorMsg("sand must be specified for USCS classification")
         raise ValueError(msg)
 
     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)

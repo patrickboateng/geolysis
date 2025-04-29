@@ -99,9 +99,9 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :raises ValueError: Raised if an invalid footing ``shape`` is provided.
     """
 
-    msg = EnumErrorMsg(param_name="abc_type",
-                       param_value=abc_type,
-                       param_type=ABCType)
+    msg = EnumErrorMsg(name="abc_type",
+                       val=abc_type,
+                       bound=ABCType)
 
     if abc_type is None:
         raise ValueError(msg)
@@ -114,9 +114,9 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     try:
         foundation_type = FoundationType(str(foundation_type).casefold())
     except ValueError as e:
-        msg = EnumErrorMsg(param_name="foundation_type",
-                           param_value=foundation_type,
-                           param_type=FoundationType)
+        msg = EnumErrorMsg(name="foundation_type",
+                           val=foundation_type,
+                           bound=FoundationType)
         raise ValueError(msg) from e
 
     # exception from create_foundation will automaatically propagate

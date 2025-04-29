@@ -116,9 +116,9 @@ def create_ultimate_bearing_capacity(friction_angle: float,
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
 
-    msg = EnumErrorMsg(param_name="ubc_type",
-                       param_value=ubc_type,
-                       param_type=UBCType)
+    msg = EnumErrorMsg(name="ubc_type",
+                       val=ubc_type,
+                       bound=UBCType)
 
     if ubc_type is None:
         raise ValueError(msg)

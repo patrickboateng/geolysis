@@ -7,7 +7,7 @@ from abc import abstractmethod
 from typing import Final, Sequence, Literal
 
 from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
-from .utils.exceptions import EnumErrorMsg, ErrorMsg, ValidationError
+from .utils.exceptions import EnumErrorMsg, _ErrorMsg, ValidationError
 
 __all__ = ["SPTNDesign",
            "HammerType",
@@ -51,13 +51,20 @@ class SPTNDesign:
         return self._corrected_spt_n_values
 
     @corrected_spt_n_values.setter
+    @validators.le(100.0)
+    @validators.gt(0.0)
     @validators.min_len(1)
     def corrected_spt_n_values(self, val: Sequence[float]) -> None:
-        for v in val:
-            if v <= 0.0 or v > 100:
-                raise ValidationError(
-                    "SPT N-values must be between 0.0 and 100.")
         self._corrected_spt_n_values = val
+
+    @property
+    def method(self):
+        return self._method
+
+    @method.setter
+    @validators.contains(("min", "avg", "wgt"))
+    def method(self, val: str) -> None:
+        self._method = val
 
     @staticmethod
     def _avg_spt_n_design(vals) -> float:
@@ -105,11 +112,8 @@ class SPTNDesign:
             return self._min_spt_n_design(self.corrected_spt_n_values)
         elif self.method == "avg":
             return self._avg_spt_n_design(self.corrected_spt_n_values)
-        elif self.method == "wgt":
+        else:  # method="wgt"
             return self._wgt_spt_n_design(self.corrected_spt_n_values)
-        else:
-            msg = ErrorMsg("method must be 'min', 'avg', or 'wgt'")
-            raise ValueError(msg)
 
 
 @enum_repr
@@ -558,9 +562,9 @@ def create_overburden_pressure_correction(std_spt_n_value: float, eop,
     try:
         opc_type = OPCType(str(opc_type).casefold())
     except ValueError as e:
-        msg = EnumErrorMsg(param_name="opc_type",
-                           param_value=opc_type,
-                           param_type=OPCType)
+        msg = EnumErrorMsg(name="opc_type",
+                           val=opc_type,
+                           bound=OPCType)
         raise ValueError(msg) from e
 
     opc_class = _opctypes[opc_type]
