@@ -51,34 +51,39 @@ class _NumValidator(_Validator):
 
 
 class _LenValidator(_Validator):
+    def _check_val(self, v: Iterable[Any], fname: str):
+        if not self.func(len(v), self.bound):
+            msg = SetterErrorMsg(msg=self.err_msg,
+                                 name=fname,
+                                 val=v,
+                                 symbol=self.symbol,
+                                 bound=self.bound)
+            msg = "Length of " + msg
+            raise self.exc_type(msg)
+
     def __call__(self, fn):
         @wraps(fn)
-        def wrapper(obj, val):
-            _len = len(val)
-            if not self.func(_len, self.bound):
-                msg = SetterErrorMsg(msg=self.err_msg,
-                                     name=fn.__name__,
-                                     val=val,
-                                     symbol=self.symbol,
-                                     bound=self.bound)
-                msg = f"Length of {msg}"
-                raise self.exc_type(msg)
+        def wrapper(obj, val: Iterable):
+            self._check_val(val, fn.__name__)
             fn(obj, val)
 
         return wrapper
 
 
 class _InValidator(_Validator):
+    def _check_val(self, v, fname):
+        if not self.func(self.bound, v):
+            msg = SetterErrorMsg(msg=self.err_msg,
+                                 name=fname,
+                                 val=v,
+                                 symbol=self.symbol,
+                                 bound=self.bound)
+            raise self.exc_type(msg)
+
     def __call__(self, fn):
         @wraps(fn)
         def wrapper(obj, val):
-            if not self.func(self.bound, val):
-                msg = SetterErrorMsg(msg=self.err_msg,
-                                     name=fn.__name__,
-                                     val=val,
-                                     symbol=self.symbol,
-                                     bound=self.bound)
-                raise self.exc_type(msg)
+            self._check_val(val, fn.__name__)
             fn(obj, val)
 
         return wrapper
