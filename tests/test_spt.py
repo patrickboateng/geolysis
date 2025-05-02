@@ -1,18 +1,18 @@
 import pytest
 
-from geolysis.spt import (BazaraaPeckOPC, DilatancyCorrection,
-                          EnergyCorrection, GibbsHoltzOPC, HammerType,
-                          LiaoWhitmanOPC, PeckOPC, SamplerType, SkemptonOPC,
-                          SPTNDesign, create_overburden_pressure_correction)
+from geolysis.spt import (DilatancyCorrection, EnergyCorrection, HammerType,
+                          SamplerType, SPTNDesign,
+                          create_overburden_pressure_correction)
+from geolysis.utils.exceptions import ValidationError
 
 
 def test_create_spt_correction_errors():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         create_overburden_pressure_correction(std_spt_n_value=34,
                                               eop=100, opc_type="TERZAGHI")
 
 
-class TestSPTDesign:
+class TestSPTNDesign:
 
     def test_spt_n_design(self):
         spt_design = SPTNDesign([7.0, 15.0, 18], method="min")
@@ -24,23 +24,25 @@ class TestSPTDesign:
         assert spt_design.n_design() == pytest.approx(9.4)
 
     def test_errors(self):
-        with pytest.raises(ValueError):
+        # Provided an empty value for corrected_spt_n_values
+        with pytest.raises(ValidationError):
             SPTNDesign(corrected_spt_n_values=[])
 
-        with pytest.raises(ValueError):
+        # Provided an invalid method
+        with pytest.raises(ValidationError):
             SPTNDesign(corrected_spt_n_values=[7.0, 15.0, 18], method="max")
 
-        with pytest.raises(ValueError):
+        # corrected_spt_n_values is greater than 100
+        with pytest.raises(ValidationError):
             SPTNDesign(corrected_spt_n_values=[22, 44, 120])
 
-        with pytest.raises(ValueError):
+        # corrected_spt_n_values is 0.0
+        with pytest.raises(ValidationError):
             SPTNDesign(corrected_spt_n_values=[0.0, 15.0, 18])
 
-        with pytest.raises(ValueError):
+        # corrected_spt_n_values is less than 0.0
+        with pytest.raises(ValidationError):
             SPTNDesign(corrected_spt_n_values=[-10, 15.0, 18])
-
-        with pytest.raises(ValueError):
-            SPTNDesign(corrected_spt_n_values=[150, 15.0, 18])
 
 
 class TestEnergyCorrection:
@@ -69,6 +71,15 @@ class TestEnergyCorrection:
 
         assert energy_corr.standardized_spt_n_value() == pytest.approx(
             expected)
+
+    def test_errors(self):
+        # Provided an invalid value for hammer_type
+        with pytest.raises(ValidationError):
+            EnergyCorrection(recorded_spt_n_value=22, hammer_type="manual")
+
+        # Provided an invalid value for sampler_type
+        with pytest.raises(ValidationError):
+            EnergyCorrection(recorded_spt_n_value=22, sampler_type="std")
 
 
 class TestGibbsHoltzOPC:

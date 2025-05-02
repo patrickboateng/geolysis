@@ -3,12 +3,11 @@ allowable bearing capacity calculations using methods like Bowles, Meyerhof,
 and Terzaghi for various foundation types and shapes.
 """
 import enum
-from codecs import backslashreplace_errors
 from typing import Optional
 
 from geolysis.foundation import FoundationType, Shape, create_foundation
 from geolysis.utils import enum_repr, inf
-from geolysis.utils.exceptions import EnumErrorMsg
+from geolysis.utils.exceptions import ErrorMsg, ValidationError
 
 from ._core import AllowableBearingCapacity
 from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation
@@ -99,25 +98,27 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :raises ValueError: Raised if an invalid footing ``shape`` is provided.
     """
 
-    msg = EnumErrorMsg(name="abc_type",
-                       val=abc_type,
-                       bound=ABCType)
+    msg = ErrorMsg(param_name="abc_type",
+                   param_value=abc_type,
+                   symbol="in",
+                   param_value_bound=list(ABCType))
 
     if abc_type is None:
-        raise ValueError(msg)
+        raise ValidationError(msg)
 
     try:
         abc_type = ABCType(str(abc_type).casefold())
     except ValueError as e:
-        raise ValueError(msg) from e
+        raise ValidationError(msg) from e
 
     try:
         foundation_type = FoundationType(str(foundation_type).casefold())
     except ValueError as e:
-        msg = EnumErrorMsg(name="foundation_type",
-                           val=foundation_type,
-                           bound=FoundationType)
-        raise ValueError(msg) from e
+        msg = ErrorMsg(param_name="foundation_type",
+                       param_value=foundation_type,
+                       symbol="in",
+                       param_value_bound=list(FoundationType))
+        raise ValidationError(msg) from e
 
     # exception from create_foundation will automaatically propagate
     # no need to catch and handle it.

@@ -5,7 +5,7 @@ import enum
 from typing import NamedTuple, Optional, Sequence
 
 from .utils import enum_repr, isclose, round_, validators
-from .utils.exceptions import EnumErrorMsg, _ErrorMsg
+from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = ["ClfType",
            "AtterbergLimits",
@@ -713,17 +713,18 @@ def create_soil_classifier(liquid_limit: float,
     :raises ValueError: Raises ValueError if ``sand`` is not provided for
                         :class:`USCS` classification.
     """
-    msg = EnumErrorMsg(name="clf_type",
-                       val=clf_type,
-                       bound=ClfType)
+    msg = ErrorMsg(param_name="clf_type",
+                   param_value=clf_type,
+                   symbol="in",
+                   param_value_bound=list(ClfType))
 
     if clf_type is None:
-        raise ValueError(msg)
+        raise ValidationError(msg)
 
     try:
         clf_type = ClfType(str(clf_type).casefold())
     except ValueError as e:
-        raise ValueError(msg) from e
+        raise ValidationError(msg) from e
 
     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
                                      plastic_limit=plastic_limit)
@@ -736,8 +737,10 @@ def create_soil_classifier(liquid_limit: float,
 
     # USCS classification
     if not sand:
-        msg = _ErrorMsg("sand must be specified for USCS classification")
-        raise ValueError(msg)
+        msg = ErrorMsg(param_name="sand",
+                       param_value=sand,
+                       msg="sand must be specified for USCS classification")
+        raise ValidationError(msg)
 
     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
     clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)

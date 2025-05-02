@@ -4,10 +4,10 @@ as well as calculating design N-values.
 """
 import enum
 from abc import abstractmethod
-from typing import Final, Sequence, Literal
+from typing import Final, Literal, Sequence
 
 from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
-from .utils.exceptions import EnumErrorMsg, _ErrorMsg, ValidationError
+from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = ["SPTNDesign",
            "HammerType",
@@ -62,7 +62,7 @@ class SPTNDesign:
         return self._method
 
     @method.setter
-    @validators.contains(("min", "avg", "wgt"))
+    @validators.in_(("min", "avg", "wgt"))
     def method(self, val: str) -> None:
         self._method = val
 
@@ -230,6 +230,24 @@ class EnergyCorrection:
     @validators.gt(0.0)
     def rod_length(self, val: float) -> None:
         self._rod_length = val
+
+    @property
+    def hammer_type(self) -> HammerType:
+        return self._hammer_type
+
+    @hammer_type.setter
+    @validators.in_(tuple(HammerType))
+    def hammer_type(self, val: HammerType) -> None:
+        self._hammer_type = val
+
+    @property
+    def sampler_type(self) -> SamplerType:
+        return self._sampler_type
+
+    @sampler_type.setter
+    @validators.in_(tuple(SamplerType))
+    def sampler_type(self, val: SamplerType) -> None:
+        self._sampler_type = val
 
     @property
     def hammer_efficiency(self) -> float:
@@ -562,10 +580,11 @@ def create_overburden_pressure_correction(std_spt_n_value: float, eop,
     try:
         opc_type = OPCType(str(opc_type).casefold())
     except ValueError as e:
-        msg = EnumErrorMsg(name="opc_type",
-                           val=opc_type,
-                           bound=OPCType)
-        raise ValueError(msg) from e
+        msg = ErrorMsg(param_name="opc_type",
+                       param_value=opc_type,
+                       symbol="in",
+                       param_value_bound=list(OPCType))
+        raise ValidationError(msg) from e
 
     opc_class = _opctypes[opc_type]
     opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)

@@ -8,7 +8,7 @@ from typing import Optional
 
 from geolysis.foundation import Shape, create_foundation
 from geolysis.utils import enum_repr
-from geolysis.utils.exceptions import EnumErrorMsg
+from geolysis.utils.exceptions import ErrorMsg, ValidationError
 
 from ._core import UltimateBearingCapacity
 from .hansen_ubc import HansenUltimateBearingCapacity
@@ -116,17 +116,18 @@ def create_ultimate_bearing_capacity(friction_angle: float,
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
 
-    msg = EnumErrorMsg(name="ubc_type",
-                       val=ubc_type,
-                       bound=UBCType)
+    msg = ErrorMsg(param_name="ubc_type",
+                   param_value=ubc_type,
+                   symbol="in",
+                   param_value_bound=list(UBCType))
 
     if ubc_type is None:
-        raise ValueError(msg)
+        raise ValidationError(msg)
 
     try:
         ubc_type = UBCType(str(ubc_type).casefold())
     except ValueError as e:
-        raise ValueError(msg) from e
+        raise ValidationError(msg) from e
 
     # exception from create_foundation will automatically propagate
     # no need to catch and handle it.

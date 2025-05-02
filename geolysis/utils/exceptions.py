@@ -1,20 +1,20 @@
-from typing import Any
 from collections import UserString
+from typing import Any
 
 
 class _ErrorMsg(UserString):
-    def __init__(self, name: str = None,
-                 val: Any = None,
+    def __init__(self, param_name: str = None,
+                 param_value: Any = None,
                  symbol: str = None,
-                 bound: str = None,
+                 param_value_bound: Any = None,
                  msg: str = None):
         if not msg:
-            msg = f"{name}: {val} must be {symbol} {bound}"
+            msg = f"{param_name}: {param_value!r} must be {symbol} {param_value_bound}"
 
-        self.name = name
-        self.val = val
+        self.param_name = param_name
+        self.param_value = param_value
         self.symbol = symbol
-        self.bound = bound
+        self.param_value_bound = param_value_bound
         self.msg = msg
 
         super().__init__(msg)
@@ -34,16 +34,16 @@ class _ErrorMsg(UserString):
         return NotImplemented
 
 
-class SetterErrorMsg(_ErrorMsg):
-    pass
-
-
-class EnumErrorMsg(_ErrorMsg):
+class ErrorMsg(_ErrorMsg):
     pass
 
 
 class ValidationError(ValueError):
     """Exception raised when a validation error occurs."""
+
+    def __init__(self, error: ErrorMsg):
+        super().__init__(error)
+        self.error = error
 
 
 class SettlementError(ValidationError):

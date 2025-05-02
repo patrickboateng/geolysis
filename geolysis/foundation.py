@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
 
 from .utils import enum_repr, inf, isclose, validators
-from .utils.exceptions import EnumErrorMsg, _ErrorMsg
+from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = ["create_foundation",
            "FoundationSize",
@@ -31,8 +31,10 @@ class Shape(enum.StrEnum):
 @enum_repr
 class FoundationType(enum.StrEnum):
     """Enumeration of foundation types."""
-    PAD = ISOLATED = enum.auto()
-    MAT = RAFT = enum.auto()
+    PAD = enum.auto()
+    ISOLATED = PAD
+    MAT = enum.auto()
+    RAFT = MAT
 
 
 class FootingSize(ABC):
@@ -376,10 +378,11 @@ def create_foundation(depth: float,
     try:
         shape = Shape(str(shape).casefold())
     except ValueError as e:
-        msg = EnumErrorMsg(name="shape",
-                           val=shape,
-                           bound=Shape)
-        raise ValueError(msg) from e
+        msg = ErrorMsg(param_name="shape",
+                       param_value=shape,
+                       symbol="in",
+                       param_value_bound=list(Shape))
+        raise ValidationError(msg) from e
 
     if shape is Shape.STRIP:
         footing_size = StripFooting(width=width)
@@ -389,8 +392,10 @@ def create_foundation(depth: float,
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
         if not length:
-            msg = _ErrorMsg(msg="Length of footing must be provided.")
-            raise ValueError(msg)
+            msg = ErrorMsg(param_name="length",
+                           param_value=length,
+                           msg="Length of footing must be provided.")
+            raise ValidationError(msg)
         footing_size = RectangularFooting(width=width, length=length)
 
     return FoundationSize(depth=depth,

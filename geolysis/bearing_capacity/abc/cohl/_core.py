@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
 from geolysis.foundation import FoundationSize
-from geolysis.utils import validators, exceptions as exc
+from geolysis.utils import exceptions as exc
+from geolysis.utils import validators
 
 
 class AllowableBearingCapacity(ABC):
