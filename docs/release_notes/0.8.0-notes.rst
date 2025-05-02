@@ -1,0 +1,27 @@
+****************
+May 2025 [0.8.0]
+****************
+
+:Editor: Patrick Boateng
+
+Welcome to the May 2025 release of ``geolysis``. ``geolysis`` **0.8.0**
+is a beta release version.
+
+Python Versions Supported
+=========================
+
+The Python versions supported are:
+
+- `3.11 <https://docs.python.org/3/whatsnew/3.11.html>`_
+- `3.12 <https://docs.python.org/3/whatsnew/3.12.html>`_
+
+Summary - Release Highlights
+============================
+
+- Redesigned the error system used in ``geolysis``.
+
+Thank You
+=========
+
+Last but certainly not least, a big *Thank You* to all the contributors of
+``geolysis``.
