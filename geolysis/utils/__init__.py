@@ -67,17 +67,18 @@ def enum_repr(cls):
     return cls
 
 
-def round_(ndigits: int | Callable[..., SupportsRound]) -> Callable:
+def round_(ndigits: int) -> Callable:
     """A decorator that rounds the result of a callable to a specified number
     of decimal places.
 
     The returned value of the callable should support the ``__round__`` dunder
-    method and should be a numeric value. ``ndigits`` can either be an int
-    which will indicate the number of decimal places to round to or a
-    callable. If ``ndigits`` is callable the default decimal places is 2.
+    method and should be a numeric value.
 
-    TypeError is raised when ``ndigits`` is neither an int nor a callable.
+    TypeError is raised when ``ndigits`` is not an int.
     """
+
+    if not isinstance(ndigits, int):
+        raise TypeError("ndigits must be an int")
 
     def dec(fn) -> Callable[..., float]:
         @functools.wraps(fn)
