@@ -2,7 +2,7 @@ from collections import UserString
 from typing import Any
 
 
-class _ErrorMsg(UserString):
+class ErrorMsg(UserString):
     def __init__(self, *, param_name: str = None,
                  param_value: Any = None,
                  symbol: str = None,
@@ -23,8 +23,7 @@ class _ErrorMsg(UserString):
         return self.data
 
     def __add__(self, other):
-        other = str(other)
-        msg = self.msg + other
+        msg = self.msg + str(other)
         return self.__class__(param_name=self.param_name,
                               param_value=self.param_value,
                               symbol=self.symbol,
@@ -32,8 +31,7 @@ class _ErrorMsg(UserString):
                               msg=msg)
 
     def __radd__(self, other):
-        other = str(other)
-        msg = other + self.msg
+        msg = str(other) + self.msg
         return self.__class__(param_name=self.param_name,
                               param_value=self.param_value,
                               symbol=self.symbol,
@@ -56,10 +54,6 @@ class _ErrorMsg(UserString):
         }
 
 
-class ErrorMsg(_ErrorMsg):
-    pass
-
-
 class ValidationError(ValueError):
     """Exception raised when a validation error occurs."""
 
@@ -67,8 +61,5 @@ class ValidationError(ValueError):
         super().__init__(error)
         self.error = error
 
-
-class SettlementError(ValidationError):
-    """Raised when tolerable settlement is greater than the maximum
-    allowable settlement.
-    """
+    def __repr__(self):
+        return f"ValidationError(error={self.error!r})"
