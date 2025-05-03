@@ -47,5 +47,5 @@ class TestMeyerhofABC:
             shape=footing_shape,
             foundation_type=foundation_type,
             abc_type="MEYERHOF")
-        assert meyerhof.bearing_capacity() == pytest.approx(expected=100.54,
+        assert meyerhof.bearing_capacity() == pytest.approx(expected=expected,
                                                             rel=0.01)

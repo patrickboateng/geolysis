@@ -1,6 +1,7 @@
 import pytest
 
 from geolysis.utils.validators import eq, le, lt, ne
+from geolysis.utils.exceptions import ValidationError
 
 
 def test_le():
@@ -20,7 +21,7 @@ def test_le():
 
     c = C(22.0)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         _val = c.foo + 22.0
         c.foo = _val
 
@@ -42,7 +43,7 @@ def test_lt():
 
     c = C(22.0)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         _val = c.foo + 22.0
         c.foo = _val
 
@@ -64,7 +65,7 @@ def test_eq():
 
     c = C(22)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         _val = c.foo
         c.foo = _val + 22
 
@@ -86,6 +87,6 @@ def test_ne():
 
     c = C(28)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         _val = c.foo  # Just to make the getter for foo run
         c.foo = 22

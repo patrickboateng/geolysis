@@ -4,22 +4,22 @@ from geolysis.soil_classifier import (PSD, AtterbergLimits,
                                       create_soil_classifier)
 
 
-def test_create_soil_classifier():
+def test_create_soil_classifier_errors():
+    # Did not provide a classification (clf_type) value
     with pytest.raises(ValueError):
-        # Did not provide a classification (clf_type) value
         create_soil_classifier(liquid_limit=30.4,
                                plastic_limit=15.9,
                                fines=40.20)
 
+    # Provided a wrong value for clf_type
     with pytest.raises(ValueError):
-        # Provided a wrong value for clf_type
         create_soil_classifier(liquid_limit=30.4,
                                plastic_limit=15.9,
                                fines=40.20,
                                clf_type="IS")
 
+    # Did not provide sand for USCS classification
     with pytest.raises(ValueError):
-        # Did not provide sand for USCS classification
         create_soil_classifier(liquid_limit=30.4,
                                plastic_limit=15.9,
                                fines=40.20,
@@ -57,6 +57,7 @@ class TestAtterbergLimits:
         assert al.consistency_index(nmc=nmc) == pytest.approx(expected)
 
     def test_errors(self):
+        # Plastic limit is greater than liquid limit
         with pytest.raises(ValueError):
             AtterbergLimits(liquid_limit=15.0, plastic_limit=25.0)
 

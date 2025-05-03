@@ -47,5 +47,5 @@ class TestBowlesABC:
             shape=footing_shape,
             foundation_type=foundation_type,
             abc_type="BOWLES")
-        assert bowles.bearing_capacity() == pytest.approx(expected=150.55,
+        assert bowles.bearing_capacity() == pytest.approx(expected=expected,
                                                           rel=0.01)

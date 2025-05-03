@@ -37,9 +37,5 @@ def test_sqrt():
 
 
 def test_round_():
-    @round_(ndigits=2.0)
-    def area_of_circle(r: float) -> float:
-        return 3.142 * r ** 2
-
     with pytest.raises(TypeError):
-        area_of_circle(4)
+        round_(ndigits=2.0)

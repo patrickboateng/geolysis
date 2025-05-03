@@ -4,6 +4,7 @@ from geolysis.utils.exceptions import ErrorMsg
 def test_error_msg():
     error_msg = ErrorMsg(msg="testing")
 
+    print(repr(error_msg))
     assert error_msg.msg == "testing"
 
     mod_msg = error_msg + "001"
@@ -11,6 +12,9 @@ def test_error_msg():
 
     mod_msg = "001" + error_msg
     assert mod_msg == "001testing"
+
+    mod_msg = error_msg + 1
+    assert mod_msg == "testing1"
 
 
 def test_to_dict_default_message():
