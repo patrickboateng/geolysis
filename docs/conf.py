@@ -32,8 +32,6 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
-    # Custom Extensions
-    "_ext.pyver",
     # Third Party Libraries
     "sphinx_design",
     "myst_parser",
@@ -41,6 +39,8 @@ extensions = [
     "nbsphinx",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
+    # Custom Extensions
+    "_ext.pyver",
 ]
 
 # Custom Extension Config
