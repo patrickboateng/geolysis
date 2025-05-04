@@ -1,0 +1,14 @@
+a.external-link {
+    text-decoration: none;
+}
+
+a.external-link::after {
+    /* Set the font and weight for this icon style */
+    font: var(--fa-font-solid);
+    /* Make sure icons render pixel-perfect */
+    -webkit-font-smoothing: antialiased;
+    /* external-link icon from fontawesome*/
+    content: '\f08e';
+    margin-left: 0.15em;
+}
+
