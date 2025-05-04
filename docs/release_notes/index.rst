@@ -5,6 +5,7 @@ Release Notes
 .. toctree::
     :maxdepth: 1
 
+    0.8.0 release notes [May 2025] <0.8.0-notes>
     0.7.0 release notes [Apr 2025] <0.7.0-notes>
     0.6.0 release notes [Apr 2025] <0.6.0-notes>
     0.5.0 release notes [Mar 2025] <0.5.0-notes>

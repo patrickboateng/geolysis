@@ -12,9 +12,9 @@ Python Versions Supported
 
 The Python versions supported are:
 
-- `3.10 <https://docs.python.org/3/whatsnew/3.10.html>`_
-- `3.11 <https://docs.python.org/3/whatsnew/3.11.html>`_
-- `3.12 <https://docs.python.org/3/whatsnew/3.12.html>`_
+- :pyver:`3.10`
+- :pyver:`3.11`
+- :pyver:`3.12`
 
 Summary - Release Highlights
 ============================
