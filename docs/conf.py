@@ -43,9 +43,6 @@ extensions = [
     "_ext.pyver",
 ]
 
-# Custom Extension Config
-python_docs_url = "https://docs.python.org/3/whatsnew"
-
 source_suffix = [".rst", ".md", "ipynb"]
 
 templates_path = ["_templates"]
