@@ -20,7 +20,7 @@ def pyver_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
 
     pyver = mtch.group(0)
     pyver_docs_page = "https://docs.python.org/3/whatsnew"
-    refuri = pyver_docs_page + '/' + f"{pyver}.html"
+    refuri = f"{pyver_docs_page}/{pyver}.html"
     node = nodes.reference(rawtext,
                            utils.unescape(pyver),
                            refuri=refuri,
