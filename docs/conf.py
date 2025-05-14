@@ -10,7 +10,8 @@ import os
 import sys
 from datetime import datetime
 
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath(".."))  # Path to the package
+sys.path.insert(1, os.path.abspath("./_ext"))  # Custom Extensions
 
 import geolysis
 
@@ -40,7 +41,7 @@ extensions = [
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
     # Custom Extensions
-    "_ext.pyver",
+    "pyver",
 ]
 
 source_suffix = [".rst", ".md", "ipynb"]
