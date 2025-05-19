@@ -117,9 +117,6 @@ class AtterbergLimits:
                               3mm thick. (molded without breaking)
         :type plastic_limit: float
         """
-        if liquid_limit < plastic_limit:
-            raise ValueError("liquid_limit cannot be less than plastic_limit")
-
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
 
@@ -141,6 +138,14 @@ class AtterbergLimits:
     @plastic_limit.setter
     @validators.ge(0.0)
     def plastic_limit(self, val: float) -> None:
+        if self.liquid_limit < val:
+            msg = ErrorMsg(param_name="plastic_limit",
+                           param_value=val,
+                           param_value_bound=f"<{self.liquid_limit}",
+                           msg=f"plastic_limit: {val} cannot be greater than "
+                               f"liquid_limit: {self.liquid_limit}")
+            raise ValidationError(msg)
+
         self._plastic_limit = val
 
     @property
@@ -421,12 +426,12 @@ class AASHTO:
         plasticity_idx = self.atterberg_limits.plasticity_index
         fines = self.fines
 
-        var_a = 1.0 if (x_0 := fines - 35.0) < 0.0 else min(x_0, 40.0)
-        var_b = 1.0 if (x_0 := liquid_lmt - 40.0) < 0.0 else min(x_0, 20.0)
-        var_c = 1.0 if (x_0 := fines - 15.0) < 0.0 else min(x_0, 40.0)
-        var_d = 1.0 if (x_0 := plasticity_idx - 10.0) < 0.0 else min(x_0, 20.0)
+        x_1 = 1.0 if (x_0 := fines - 35.0) < 0.0 else min(x_0, 40.0)
+        x_2 = 1.0 if (x_0 := liquid_lmt - 40.0) < 0.0 else min(x_0, 20.0)
+        x_3 = 1.0 if (x_0 := fines - 15.0) < 0.0 else min(x_0, 40.0)
+        x_4 = 1.0 if (x_0 := plasticity_idx - 10.0) < 0.0 else min(x_0, 20.0)
 
-        return var_a * (0.2 + 0.005 * var_b) + 0.01 * var_c * var_d
+        return x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
 
     def classify(self) -> SoilClf:
         """Return the AASHTO classification of the soil."""

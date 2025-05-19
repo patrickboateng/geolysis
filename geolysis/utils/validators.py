@@ -15,16 +15,13 @@ class _Validator:
                  check: Callable,
                  exc_type: Callable,
                  err_msg: str):
-        """
-
-        """
         self.bound = bound
         self.symbol = symbol
         self.check = check
         self.exc_type = exc_type
         self.err_msg = err_msg
 
-    def _check_val(self, val, fname: str):
+    def check_val(self, val, fname: str):
         raise NotImplementedError
 
     def __call__(self, fn):
@@ -32,9 +29,9 @@ class _Validator:
         def wrapper(obj, val):
             if isinstance(val, List | Tuple):
                 for v in val:
-                    self._check_val(v, fn.__name__)
+                    self.check_val(v, fn.__name__)
             else:
-                self._check_val(val, fn.__name__)
+                self.check_val(val, fn.__name__)
 
             fn(obj, val)
 
@@ -43,7 +40,7 @@ class _Validator:
 
 class _NumValidator(_Validator):
 
-    def _check_val(self, v: Number, fname: str):
+    def check_val(self, v: Number, fname: str):
         if not self.check(v, self.bound):
             msg = ErrorMsg(msg=self.err_msg,
                            param_name=fname,
@@ -72,7 +69,7 @@ class _LenValidator(_Validator):
 
 
 class _InValidator(_Validator):
-    def _check_val(self, v, fname):
+    def check_val(self, v, fname):
         if not self.check(self.bound, v):
             msg = ErrorMsg(msg=self.err_msg,
                            param_name=fname,
