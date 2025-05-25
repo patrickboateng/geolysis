@@ -1,6 +1,6 @@
 import unittest
 
-from geolysis.foundation import (CircularFooting, FoundationSize,
+from geolysis.foundation import (CircularFooting, Foundation,
                                  RectangularFooting, Shape, SquareFooting,
                                  StripFooting, create_foundation)
 
@@ -53,9 +53,9 @@ class TestFoundation(unittest.TestCase):
 
     def test_foundation_size(self):
         footing = StripFooting(width=2.0)
-        foundation = FoundationSize(depth=1.5,
-                                    footing_size=footing,
-                                    eccentricity=0.1)
+        foundation = Foundation(depth=1.5,
+                                footing_size=footing,
+                                eccentricity=0.1)
         self.assertEqual(foundation.depth, 1.5)
         self.assertEqual(foundation.width, 2.0)
         self.assertEqual(foundation.length, float('inf'))

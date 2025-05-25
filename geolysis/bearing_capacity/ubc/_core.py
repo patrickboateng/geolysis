@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from geolysis.foundation import FoundationSize
+from geolysis.foundation import Foundation
 from geolysis.utils import arctan, round_, tan, validators
 
 
@@ -8,8 +8,8 @@ class UltimateBearingCapacity(ABC):
     def __init__(self, friction_angle: float,
                  cohesion: float,
                  moist_unit_wgt: float,
-                 foundation_size: FoundationSize,
-                 load_angle: float = 0.0,
+                 foundation_size: Foundation,
+                 # load_angle: float = 0.0,
                  apply_local_shear: bool = False) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general shear 
@@ -23,11 +23,7 @@ class UltimateBearingCapacity(ABC):
         :type moist_unit_wgt: float
 
         :param foundation_size: Size of the foundation.
-        :type foundation_size: FoundationSize
-
-        :param load_angle: Inclination of the applied load with the  vertical 
-                           (:math:`\alpha^{\circ}`), defaults to 0.0.
-        :type load_angle: float, optional
+        :type foundation_size: Foundation
 
         :param apply_local_shear: Indicate whether bearing capacity failure is
                                   general shear or local shear failure,
@@ -37,7 +33,6 @@ class UltimateBearingCapacity(ABC):
         self.friction_angle = friction_angle
         self.cohesion = cohesion
         self.moist_unit_wgt = moist_unit_wgt
-        self.load_angle = load_angle
         self.foundation_size = foundation_size
         self.apply_local_shear = apply_local_shear
 
@@ -97,15 +92,9 @@ class UltimateBearingCapacity(ABC):
         self._moist_unit_wgt = val
 
     @property
-    def load_angle(self) -> float:
+    def load_angle(self):
         """Inclination of the applied load with the  vertical."""
-        return self._load_angle
-
-    @load_angle.setter
-    @validators.le(90.0)
-    @validators.ge(0.0)
-    def load_angle(self, val: float):
-        self._load_angle = val
+        return self.foundation_size.load_angle
 
     @property
     def s_c(self) -> float:

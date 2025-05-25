@@ -1,4 +1,4 @@
-from geolysis.foundation import FoundationSize
+from geolysis.foundation import Foundation
 from geolysis.utils import round_
 
 from ._core import AllowableBearingCapacity
@@ -40,7 +40,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
     def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
-                 foundation_size: FoundationSize) -> None:
+                 foundation_size: Foundation) -> None:
         """
         :param corrected_spt_n_value: Lowest (or average) uncorrected SPT 
                                       N-value (60% energy) within the foundation 
@@ -52,7 +52,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :type tol_settlement: float
 
         :param foundation_size: Size of the foundation.
-        :type foundation_size: FoundationSize
+        :type foundation_size: Foundation
         """
         super().__init__(corrected_spt_n_value=corrected_spt_n_value,
                          tol_settlement=tol_settlement,

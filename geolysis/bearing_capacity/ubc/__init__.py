@@ -135,6 +135,7 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                  width=width,
                                  length=length,
                                  eccentricity=eccentricity,
+                                 load_angle=load_angle,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
 
@@ -147,6 +148,5 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                     cohesion=cohesion,
                     moist_unit_wgt=moist_unit_wgt,
                     foundation_size=fnd_size,
-                    load_angle=load_angle,
                     apply_local_shear=apply_local_shear)
     return ubc

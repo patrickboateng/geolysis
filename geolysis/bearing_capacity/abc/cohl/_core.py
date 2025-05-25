@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from geolysis.foundation import FoundationSize
+from geolysis.foundation import Foundation
 from geolysis.utils import validators
 
 
@@ -10,7 +10,7 @@ class AllowableBearingCapacity(ABC):
 
     def __init__(self, corrected_spt_n_value: float,
                  tol_settlement: float,
-                 foundation_size: FoundationSize) -> None:
+                 foundation_size: Foundation) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
         self.foundation_size = foundation_size

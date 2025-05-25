@@ -8,7 +8,7 @@ from .utils import enum_repr, inf, isclose, validators
 from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = ["create_foundation",
-           "FoundationSize",
+           "Foundation",
            "FoundationType",
            "Shape",
            "StripFooting",
@@ -216,15 +216,16 @@ class RectangularFooting(FootingSize):
         self._length = val
 
 
-class FoundationSize:
+class Foundation:
     """A simple class representing a foundation structure."""
 
     def __init__(self, depth: float,
                  footing_size: FootingSize,
                  eccentricity: float = 0.0,
+                 load_angle: float = 0.0,
                  ground_water_level: Optional[float] = None,
                  foundation_type: FoundationType = FoundationType.PAD) -> None:
-        """
+        r"""
         :param depth: Depth of foundation (m).
         :type depth: float
 
@@ -238,6 +239,10 @@ class FoundationSize:
                              foundation footing.
         :type eccentricity: float, optional
 
+        :param load_angle: Inclination of the applied load with the  vertical
+                           (:math:`\alpha^{\circ}`), defaults to 0.0.
+        :type load_angle: float, optional
+
         :param ground_water_level: Depth of the water below ground level (m),
                                    defaults to None.
         :type ground_water_level: float, optional
@@ -249,6 +254,7 @@ class FoundationSize:
         self.depth = depth
         self.footing_size = footing_size
         self.eccentricity = eccentricity
+        self.load_angle = load_angle
 
         self._ground_water_level = ground_water_level
         self._foundation_type = foundation_type
@@ -299,6 +305,17 @@ class FoundationSize:
         self._eccentricity = val
 
     @property
+    def load_angle(self) -> float:
+        """Inclination of the applied load with the  vertical."""
+        return self._load_angle
+
+    @load_angle.setter
+    @validators.le(90.0)
+    @validators.ge(0.0)
+    def load_angle(self, val: float):
+        self._load_angle = val
+
+    @property
     def ground_water_level(self) -> Optional[float]:
         """Depth of the water below ground level (m)."""
         return self._ground_water_level
@@ -336,10 +353,11 @@ def create_foundation(depth: float,
                       width: float,
                       length: Optional[float] = None,
                       eccentricity: float = 0.0,
+                      load_angle: float = 0.0,
                       ground_water_level: Optional[float] = None,
                       foundation_type: FoundationType = FoundationType.PAD,
-                      shape: Shape | str = Shape.SQUARE) -> FoundationSize:
-    """A factory function that encapsulate the creation of a foundation.
+                      shape: Shape | str = Shape.SQUARE) -> Foundation:
+    r"""A factory function that encapsulate the creation of a foundation.
 
     :param depth: Depth of foundation (m).
     :type depth: float
@@ -357,6 +375,10 @@ def create_foundation(depth: float,
                          load aligns with the center of gravity of the
                          foundation footing .
     :type eccentricity: float, optional
+
+    :param load_angle: Inclination of the applied load with the  vertical
+                           (:math:`\alpha^{\circ}`), defaults to 0.0.
+    :type load_angle: float, optional
 
     :param ground_water_level: Depth of the water below ground level (m),
                                defaults to None.
@@ -398,8 +420,9 @@ def create_foundation(depth: float,
             raise ValidationError(msg)
         footing_size = RectangularFooting(width=width, length=length)
 
-    return FoundationSize(depth=depth,
-                          eccentricity=eccentricity,
-                          ground_water_level=ground_water_level,
-                          foundation_type=foundation_type,
-                          footing_size=footing_size)
+    return Foundation(depth=depth,
+                      eccentricity=eccentricity,
+                      load_angle=load_angle,
+                      ground_water_level=ground_water_level,
+                      foundation_type=foundation_type,
+                      footing_size=footing_size)
