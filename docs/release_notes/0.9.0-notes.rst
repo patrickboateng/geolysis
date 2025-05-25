@@ -1,0 +1,28 @@
+****************
+May 2025 [0.8.0]
+****************
+
+:Editor: Patrick Boateng
+
+Welcome to the May 2025 release of ``geolysis``. ``geolysis`` **0.8.0**
+is a beta release version.
+
+Python Versions Supported
+=========================
+
+The Python versions supported are:
+
+- :pyver:`3.11`
+- :pyver:`3.12`
+
+Summary - Release Highlights
+============================
+
+- Changed class name from ``FoundationSize`` to :class:`~geolysis.foundation.Foundation`.
+  because ``FoundationSize`` was not very descriptive of the class's purpose.
+
+Thank You
+=========
+
+Last but certainly not least, a big *Thank You* to all the contributors of
+``geolysis``.
