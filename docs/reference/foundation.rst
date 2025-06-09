@@ -70,7 +70,7 @@ geolysis.foundation
 
 -------------
 
-.. autoclass:: FoundationSize
+.. autoclass:: Foundation
     :members:
     :no-undoc-members:
 
@@ -78,20 +78,20 @@ geolysis.foundation
 
     .. autosummary::
 
-        ~FoundationSize.footing_params
+        ~Foundation.footing_params
 
     .. rubric:: Attributes
 
     .. autosummary::
 
-        ~FoundationSize.depth
-        ~FoundationSize.eccentricity
-        ~FoundationSize.effective_width
-        ~FoundationSize.footing_shape
-        ~FoundationSize.foundation_type
-        ~FoundationSize.ground_water_level
-        ~FoundationSize.length
-        ~FoundationSize.width
+        ~Foundation.depth
+        ~Foundation.eccentricity
+        ~Foundation.effective_width
+        ~Foundation.footing_shape
+        ~Foundation.foundation_type
+        ~Foundation.ground_water_level
+        ~Foundation.length
+        ~Foundation.width
 
 -------------
 
