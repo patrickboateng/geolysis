@@ -16,7 +16,7 @@ geolysis.spt
 
 -------
 
-.. autoclass:: SPTNDesign
+.. autoclass:: SPT
     :members:
     :no-undoc-members:
 
@@ -24,13 +24,13 @@ geolysis.spt
 
     .. autosummary::
 
-        ~SPTNDesign.n_design
+        ~SPT.n_design
 
     .. rubric:: Attributes
 
     .. autosummary::
 
-        ~SPTNDesign.corrected_spt_n_values
+        ~SPT.corrected_spt_n_values
 
 -------
 

@@ -9,7 +9,7 @@ from typing import Final, Literal, Sequence
 from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
 from .utils.exceptions import ErrorMsg, ValidationError
 
-__all__ = ["SPTNDesign",
+__all__ = ["SPT",
            "HammerType",
            "SamplerType",
            "EnergyCorrection",
@@ -23,7 +23,7 @@ __all__ = ["SPTNDesign",
            "create_overburden_pressure_correction"]
 
 
-class SPTNDesign:
+class SPT:
     """SPT Design Calculations.
 
     Due to uncertainty in field procedure in standard penetration test and also

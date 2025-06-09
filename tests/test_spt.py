@@ -1,7 +1,7 @@
 import pytest
 
 from geolysis.spt import (DilatancyCorrection, EnergyCorrection, HammerType,
-                          SamplerType, SPTNDesign,
+                          SamplerType, SPT,
                           create_overburden_pressure_correction)
 from geolysis.utils.exceptions import ValidationError
 
@@ -15,7 +15,7 @@ def test_create_spt_correction_errors():
 class TestSPTNDesign:
 
     def test_spt_n_design(self):
-        spt_design = SPTNDesign([7.0, 15.0, 18], method="min")
+        spt_design = SPT([7.0, 15.0, 18], method="min")
 
         assert spt_design.n_design() == pytest.approx(7.0)
         spt_design.method = "avg"
@@ -26,23 +26,23 @@ class TestSPTNDesign:
     def test_errors(self):
         # Provided an empty value for corrected_spt_n_values
         with pytest.raises(ValidationError):
-            SPTNDesign(corrected_spt_n_values=[])
+            SPT(corrected_spt_n_values=[])
 
         # Provided an invalid method
         with pytest.raises(ValidationError):
-            SPTNDesign(corrected_spt_n_values=[7.0, 15.0, 18], method="max")
+            SPT(corrected_spt_n_values=[7.0, 15.0, 18], method="max")
 
         # corrected_spt_n_values is greater than 100
         with pytest.raises(ValidationError):
-            SPTNDesign(corrected_spt_n_values=[22, 44, 120])
+            SPT(corrected_spt_n_values=[22, 44, 120])
 
         # corrected_spt_n_values is 0.0
         with pytest.raises(ValidationError):
-            SPTNDesign(corrected_spt_n_values=[0.0, 15.0, 18])
+            SPT(corrected_spt_n_values=[0.0, 15.0, 18])
 
         # corrected_spt_n_values is less than 0.0
         with pytest.raises(ValidationError):
-            SPTNDesign(corrected_spt_n_values=[-10, 15.0, 18])
+            SPT(corrected_spt_n_values=[-10, 15.0, 18])
 
 
 class TestEnergyCorrection:
