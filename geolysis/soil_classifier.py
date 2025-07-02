@@ -2,7 +2,7 @@
 USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 """
 import enum
-from typing import NamedTuple, Optional, Sequence
+from typing import NamedTuple, Optional, Sequence, Callable
 
 from .utils import enum_repr, isclose, round_, validators
 from .utils.exceptions import ErrorMsg, ValidationError
@@ -12,6 +12,8 @@ __all__ = ["ClfType",
            "PSD",
            "AASHTO",
            "USCS",
+           "create_aashto_classifier",
+           "create_uscs_classifier",
            "create_soil_classifier"]
 
 
@@ -751,3 +753,85 @@ def create_soil_classifier(liquid_limit: float,
     clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)
 
     return clf
+
+
+def create_aashto_classifier(liquid_limit: float, plastic_limit: float,
+                             fines: float,
+                             add_group_idx: bool = True) -> AASHTO:
+    """ A helper function that encapsulates the creation of a AASHTO
+    classifier.
+
+    :param liquid_limit: Water content beyond which soils flows under their own
+                         weight (%). It can also be defined as the minimum
+                         moisture content at which a soil flows upon application
+                         of a very small shear force.
+    :type liquid_limit: float
+
+    :param plastic_limit: Water content at which plastic deformation can be
+                          initiated (%). It is also the minimum water content at
+                          which soil can be rolled into a thread 3mm thick.
+                          (molded without breaking)
+    :type plastic_limit: float
+
+    :param fines: Percentage of fines in soil sample (%) i.e. The percentage of
+                  soil sample passing through No. 200 sieve (0.075mm).
+    :type fines: float
+
+    :param add_group_idx: Used to indicate whether the group index should
+                          be added to the classification or not, defaults to
+                          True.
+    :type add_group_idx: bool, optional
+    """
+    atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
+                                     plastic_limit=plastic_limit)
+    return AASHTO(atterberg_limits=atterberg_lmts,
+                  fines=fines,
+                  add_group_idx=add_group_idx)
+
+
+def create_uscs_classifier(liquid_limit: float, plastic_limit: float,
+                           fines: float, sand: float,
+                           d_10: float = 0, d_30: float = 0,
+                           d_60: float = 0, organic: bool = False):
+    """ A helper function that encapsulates the creation of a USCS
+    classifier.
+
+    :param liquid_limit: Water content beyond which soils flows under
+                         their own weight (%). It can also be defined as
+                         the minimum moisture content at which a soil
+                         flows upon application of a very small shear
+                         force.
+    :type liquid_limit: float
+
+    :param plastic_limit: Water content at which plastic deformation can
+                          be initiated (%). It is also the minimum water
+                          content at which soil can be rolled into a
+                          thread 3mm thick. (molded without breaking)
+    :type plastic_limit: float
+
+    :param fines: Percentage of fines in soil sample (%) i.e. The
+                  percentage of soil sample passing through No. 200
+                  sieve (0.075mm).
+    :type fines: float
+
+    :param sand: Percentage of sand in soil sample (%). This is optional
+                 for :class:`AASHTO` classification.
+    :type sand: float, optional
+
+    :param d_10: Diameter at which 10% of the soil by weight is finer.
+    :type d_10: float, optional
+
+    :param d_30: Diameter at which 30% of the soil by weight is finer.
+    :type d_30: float, optional
+
+    :param d_60: Diameter at which 60% of the soil by weight is finer.
+    :type d_60: float, optional
+
+    :param organic: Indicates whether soil is organic or not, defaults
+                    to False.
+    :type organic: bool, optional
+    """
+    atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
+                                     plastic_limit=plastic_limit)
+    psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
+    return USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)

@@ -1,7 +1,9 @@
 import pytest
 
 from geolysis.soil_classifier import (PSD, AtterbergLimits,
-                                      create_soil_classifier)
+                                      create_soil_classifier,
+                                      create_aashto_classifier,
+                                      create_uscs_classifier)
 
 
 def test_create_soil_classifier_errors():
@@ -100,8 +102,7 @@ class TestAASHTO:
                               ((52.6, 27.6), 45.8, "A-7-6(7)"),
                               ((45.0, 16.0), 60, "A-7-6(13)")])
     def test_aashto_with_grp_idx(self, al, fines, expected):
-        asshto_clf = create_soil_classifier(*al, fines=fines,
-                                            clf_type="AASHTO")
+        asshto_clf = create_aashto_classifier(*al, fines=fines)
         assert asshto_clf.classify().symbol == expected
 
     @pytest.mark.parametrize(["al", "fines", "expected"],
@@ -110,9 +111,8 @@ class TestAASHTO:
                               ((43.0, 25.0), 30.0, "A-2-7"),
                               ((35.0, 28.0), 40.0, "A-4")])
     def test_aashto_without_grp_idx(self, al, fines, expected):
-        asshto_clf = create_soil_classifier(*al, fines=fines,
-                                            add_group_idx=False,
-                                            clf_type="AASHTO")
+        asshto_clf = create_aashto_classifier(*al, fines=fines,
+                                              add_group_idx=False)
         assert asshto_clf.classify().symbol == expected
 
 
@@ -135,7 +135,7 @@ class TestUSCS:
                               ((32.78, 22.99), (3.87, 15.42), (2.5, 6, 15),
                                "GP"), ])
     def test_dual_classification(self, al, psd, dist, expected):
-        uscs_clf = create_soil_classifier(*al, *psd, *dist, clf_type="uscs")
+        uscs_clf = create_uscs_classifier(*al, *psd, *dist)
         assert uscs_clf.classify().symbol == expected
 
     @pytest.mark.parametrize(
@@ -148,7 +148,7 @@ class TestUSCS:
          ((26.17, 19.69), (12.00, 8.24), "GW-GC,GP-GC"),
          ((32.78, 22.99), (3.87, 15.42), "GW,GP"), ])
     def test_dual_classification_no_psd_coeff(self, al, psd, expected):
-        uscs_clf = create_soil_classifier(*al, *psd, clf_type="uscs")
+        uscs_clf = create_uscs_classifier(*al, *psd)
         assert uscs_clf.classify().symbol == expected
 
     @pytest.mark.parametrize(["al", "psd", "organic", "expected"],
@@ -170,7 +170,5 @@ class TestUSCS:
                               ((35.83, 25.16), (68.94, 28.88), True, "OL"),
                               ((55.0, 40.0), (85.0, 15.0), True, "OH")])
     def test_single_classification(self, al, psd, organic, expected):
-        uscs_clf = create_soil_classifier(*al, *psd,
-                                          organic=organic,
-                                          clf_type="uscs")
+        uscs_clf = create_uscs_classifier(*al, *psd, organic=organic)
         assert uscs_clf.classify().symbol == expected
