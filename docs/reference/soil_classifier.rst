@@ -8,10 +8,6 @@ geolysis.soil_classifier
 
 ------------
 
-.. autoenum:: ClfType
-
-------------
-
 .. autoenum:: USCSSymbol
 
 ------------
@@ -98,4 +94,5 @@ geolysis.soil_classifier
 
 ------------
 
-.. autofunction:: create_soil_classifier
+.. autofunction:: create_aashto_classifier
+.. autofunction:: create_uscs_classifier
