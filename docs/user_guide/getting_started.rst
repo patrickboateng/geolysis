@@ -78,10 +78,9 @@ Soil Classification
 >>> from geolysis.soil_classifier import create_aashto_classifier
 >>> aashto_clf = create_aashto_classifier(liquid_limit=45.0,
 ...                                     plastic_limit=16.0,
-...                                     fines=60.0,
-...                                     add_group_idx=False, )
+...                                     fines=60.0, )
 >>> clf = aashto_clf.classify()
->>> clf.symbol
+>>> clf.symbol_no_grp_idx
 'A-7-6'
 >>> clf.description
 'Clayey soils'

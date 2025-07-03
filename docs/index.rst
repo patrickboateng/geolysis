@@ -62,8 +62,6 @@ Quick Example
 ...                                   fines=47.88,
 ...                                   sand=37.84, )
 >>> clf = uscs_clf.classify()
->>> clf
-SoilClf(symbol='SC', description='Clayey sands')
 >>> clf.symbol
 'SC'
 >>> clf.description
@@ -75,8 +73,6 @@ SoilClf(symbol='SC', description='Clayey sands')
 ...                                     plastic_limit=21.1,
 ...                                     fines=47.88, )
 >>> clf = aashto_clf.classify()
->>> clf
-SoilClf(symbol='A-6(4)', description='Clayey soils')
 >>> clf.symbol
 'A-6(4)'
 >>> clf.description
