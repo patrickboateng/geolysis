@@ -14,7 +14,7 @@ __all__ = ["ClfType",
            "USCS",
            "create_aashto_classifier",
            "create_uscs_classifier",
-           "create_soil_classifier"]
+           ]
 
 
 class SizeDistError(ZeroDivisionError):
@@ -663,96 +663,96 @@ class ClfType(enum.StrEnum):
     USCS = enum.auto()
 
 
-def create_soil_classifier(liquid_limit: float,
-                           plastic_limit: float,
-                           fines: float,
-                           sand: Optional[float] = None,
-                           d_10: float = 0, d_30: float = 0, d_60: float = 0,
-                           add_group_idx: bool = True,
-                           organic: bool = False,
-                           clf_type: Optional[ClfType | str] = None
-                           ) -> AASHTO | USCS:
-    """ A factory function that encapsulates the creation of a soil classifier.
-
-    :param liquid_limit: Water content beyond which soils flows under their own
-                         weight (%). It can also be defined as the minimum
-                         moisture content at which a soil flows upon application
-                         of a very small shear force.
-    :type liquid_limit: float
-
-    :param plastic_limit: Water content at which plastic deformation can be
-                          initiated (%). It is also the minimum water content at
-                          which soil can be rolled into a thread 3mm thick.
-                          (molded without breaking)
-    :type plastic_limit: float
-
-    :param fines: Percentage of fines in soil sample (%) i.e. The percentage of
-                  soil sample passing through No. 200 sieve (0.075mm).
-    :type fines: float
-
-    :param sand: Percentage of sand in soil sample (%). This is optional for
-                 :class:`AASHTO` classification.
-    :type sand: float, optional
-
-    :param d_10: Diameter at which 10% of the soil by weight is finer.
-    :type d_10: float, optional
-
-    :param d_30: Diameter at which 30% of the soil by weight is finer.
-    :type d_30: float, optional
-
-    :param d_60: Diameter at which 60% of the soil by weight is finer.
-    :type d_60: float, optional
-
-    :param add_group_idx: Used to indicate whether the group index should
-                          be added to the classification or not, defaults to
-                          True.
-    :type add_group_idx: bool, optional
-
-    :param organic: Indicates whether soil is organic or not, defaults to False.
-    :type organic: bool, optional
-
-    :param clf_type: Used to indicate which type of soil classifier should be
-                     used, defaults to None.
-    :type clf_type: ClfType | str
-
-    :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
-                        None
-    :raises ValueError: Raises ValueError if ``sand`` is not provided for
-                        :class:`USCS` classification.
-    """
-    msg = ErrorMsg(param_name="clf_type",
-                   param_value=clf_type,
-                   symbol="in",
-                   param_value_bound=list(ClfType))
-
-    if clf_type is None:
-        raise ValidationError(msg)
-
-    try:
-        clf_type = ClfType(str(clf_type).casefold())
-    except ValueError as e:
-        raise ValidationError(msg) from e
-
-    atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
-                                     plastic_limit=plastic_limit)
-
-    if clf_type == ClfType.AASHTO:
-        clf = AASHTO(atterberg_limits=atterberg_lmts,
-                     fines=fines,
-                     add_group_idx=add_group_idx)
-        return clf
-
-    # USCS classification
-    if not sand:
-        msg = ErrorMsg(param_name="sand",
-                       param_value=sand,
-                       msg="sand must be specified for USCS classification")
-        raise ValidationError(msg)
-
-    psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
-    clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)
-
-    return clf
+# def create_soil_classifier(liquid_limit: float,
+#                            plastic_limit: float,
+#                            fines: float,
+#                            sand: Optional[float] = None,
+#                            d_10: float = 0, d_30: float = 0, d_60: float = 0,
+#                            add_group_idx: bool = True,
+#                            organic: bool = False,
+#                            clf_type: Optional[ClfType | str] = None
+#                            ) -> AASHTO | USCS:
+#     """ A factory function that encapsulates the creation of a soil classifier.
+#
+#     :param liquid_limit: Water content beyond which soils flows under their own
+#                          weight (%). It can also be defined as the minimum
+#                          moisture content at which a soil flows upon application
+#                          of a very small shear force.
+#     :type liquid_limit: float
+#
+#     :param plastic_limit: Water content at which plastic deformation can be
+#                           initiated (%). It is also the minimum water content at
+#                           which soil can be rolled into a thread 3mm thick.
+#                           (molded without breaking)
+#     :type plastic_limit: float
+#
+#     :param fines: Percentage of fines in soil sample (%) i.e. The percentage of
+#                   soil sample passing through No. 200 sieve (0.075mm).
+#     :type fines: float
+#
+#     :param sand: Percentage of sand in soil sample (%). This is optional for
+#                  :class:`AASHTO` classification.
+#     :type sand: float, optional
+#
+#     :param d_10: Diameter at which 10% of the soil by weight is finer.
+#     :type d_10: float, optional
+#
+#     :param d_30: Diameter at which 30% of the soil by weight is finer.
+#     :type d_30: float, optional
+#
+#     :param d_60: Diameter at which 60% of the soil by weight is finer.
+#     :type d_60: float, optional
+#
+#     :param add_group_idx: Used to indicate whether the group index should
+#                           be added to the classification or not, defaults to
+#                           True.
+#     :type add_group_idx: bool, optional
+#
+#     :param organic: Indicates whether soil is organic or not, defaults to False.
+#     :type organic: bool, optional
+#
+#     :param clf_type: Used to indicate which type of soil classifier should be
+#                      used, defaults to None.
+#     :type clf_type: ClfType | str
+#
+#     :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
+#                         None
+#     :raises ValueError: Raises ValueError if ``sand`` is not provided for
+#                         :class:`USCS` classification.
+#     """
+#     msg = ErrorMsg(param_name="clf_type",
+#                    param_value=clf_type,
+#                    symbol="in",
+#                    param_value_bound=list(ClfType))
+#
+#     if clf_type is None:
+#         raise ValidationError(msg)
+#
+#     try:
+#         clf_type = ClfType(str(clf_type).casefold())
+#     except ValueError as e:
+#         raise ValidationError(msg) from e
+#
+#     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
+#                                      plastic_limit=plastic_limit)
+#
+#     if clf_type == ClfType.AASHTO:
+#         clf = AASHTO(atterberg_limits=atterberg_lmts,
+#                      fines=fines,
+#                      add_group_idx=add_group_idx)
+#         return clf
+#
+#     # USCS classification
+#     if not sand:
+#         msg = ErrorMsg(param_name="sand",
+#                        param_value=sand,
+#                        msg="sand must be specified for USCS classification")
+#         raise ValidationError(msg)
+#
+#     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
+#     clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)
+#
+#     return clf
 
 
 def create_aashto_classifier(liquid_limit: float, plastic_limit: float,

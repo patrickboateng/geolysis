@@ -1,31 +1,8 @@
 import pytest
 
 from geolysis.soil_classifier import (PSD, AtterbergLimits,
-                                      create_soil_classifier,
                                       create_aashto_classifier,
                                       create_uscs_classifier)
-
-
-def test_create_soil_classifier_errors():
-    # Did not provide a classification (clf_type) value
-    with pytest.raises(ValueError):
-        create_soil_classifier(liquid_limit=30.4,
-                               plastic_limit=15.9,
-                               fines=40.20)
-
-    # Provided a wrong value for clf_type
-    with pytest.raises(ValueError):
-        create_soil_classifier(liquid_limit=30.4,
-                               plastic_limit=15.9,
-                               fines=40.20,
-                               clf_type="IS")
-
-    # Did not provide sand for USCS classification
-    with pytest.raises(ValueError):
-        create_soil_classifier(liquid_limit=30.4,
-                               plastic_limit=15.9,
-                               fines=40.20,
-                               clf_type="USCS")
 
 
 class TestAtterbergLimits:
