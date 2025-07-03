@@ -3,18 +3,19 @@ USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 """
 import enum
 from typing import NamedTuple, Sequence
+from types import SimpleNamespace
 
 from .utils import enum_repr, isclose, round_, validators
 from .utils.exceptions import ErrorMsg, ValidationError
 
-__all__ = ["ClfType",
-           "AtterbergLimits",
-           "PSD",
-           "AASHTO",
-           "USCS",
-           "create_aashto_classifier",
-           "create_uscs_classifier",
-           ]
+__all__ = [
+    "AtterbergLimits",
+    "PSD",
+    "AASHTO",
+    "USCS",
+    "create_aashto_classifier",
+    "create_uscs_classifier",
+]
 
 
 class SizeDistError(ZeroDivisionError):
@@ -153,8 +154,8 @@ class AtterbergLimits:
     @property
     @round_(2)
     def plasticity_index(self) -> float:
-        """Plasticity index (PI) is the range of water content over which the
-        soil remains in the plastic state.
+        """Plasticity index (PI) is the range of water content over which
+        the soil remains in the plastic state.
 
         It is also the numerical difference between the liquid limit and
         plastic limit of the soil.
@@ -391,24 +392,19 @@ class AASHTO:
         GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
     """
 
-    def __init__(self, atterberg_limits: AtterbergLimits,
-                 fines: float, add_group_idx: bool = True):
+    def __init__(self, atterberg_limits: AtterbergLimits, fines: float, ):
         """
         :param atterberg_limits: Atterberg limits of soil sample.
         :type atterberg_limits: AtterbergLimits
 
-        :param fines: Percentage of fines in soil sample (%) i.e. The percentage
-                      of soil sample passing through No. 200 sieve (0.075mm).
+        :param fines: Percentage of fines in soil sample (%) i.e. The
+                      percentage of soil sample passing through No. 200
+                      sieve (0.075mm).
         :type fines: float
 
-        :param add_group_idx: Used to indicate whether the group index should
-                              be added to the classification or not, defaults
-                              to True.
-        :type add_group_idx: bool, optional
         """
         self.atterberg_limits = atterberg_limits
         self.fines = fines
-        self.add_group_idx = add_group_idx
 
     @property
     def fines(self) -> float:
@@ -435,16 +431,18 @@ class AASHTO:
 
         return x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
 
-    def classify(self) -> SoilClf:
+    def classify(self):
         """Return the AASHTO classification of the soil."""
         soil_clf = self._classify()
 
-        symbol, description = soil_clf.symbol, soil_clf.description
+        symbol_no_grp_idx, description = soil_clf.symbol, soil_clf.description
+        group_idx = f"{self.group_index():.0f}"
+        symbol = f"{symbol_no_grp_idx}({group_idx})"
 
-        if self.add_group_idx:
-            symbol = f"{symbol}({self.group_index():.0f})"
-
-        return SoilClf(symbol, description)
+        return SimpleNamespace(**{"symbol": symbol,
+                                  "symbol_no_grp_idx": symbol_no_grp_idx,
+                                  "description": description,
+                                  "group_index": group_idx})
 
     def _classify(self) -> AASHTOSymbol:
         # Silts A4-A7
@@ -544,7 +542,7 @@ class USCS:
         self.psd = psd
         self.organic = organic
 
-    def classify(self) -> SoilClf:
+    def classify(self):
         """Return the USCS classification of the soil."""
         soil_clf = self._classify()
 
@@ -553,7 +551,8 @@ class USCS:
             soil_clf = USCSSymbol[soil_clf]
 
         if isinstance(soil_clf, USCSSymbol):
-            return SoilClf(soil_clf.symbol, soil_clf.description)
+            return SimpleNamespace(**{"symbol": soil_clf.symbol,
+                                      "description": soil_clf.description})
 
         # Handling tuple or list case for dual classification
         first_clf, second_clf = map(lambda clf: USCSSymbol[clf], soil_clf)
@@ -561,7 +560,8 @@ class USCS:
         comb_symbol = f"{first_clf.symbol},{second_clf.symbol}"
         comb_desc = f"{first_clf.description},{second_clf.description}"
 
-        return SoilClf(comb_symbol, comb_desc)
+        return SimpleNamespace(**{"symbol": comb_symbol,
+                                  "description": comb_desc})
 
     def _classify(self) -> USCSSymbol | str | Sequence[str]:
         # Fine-grained, Run Atterberg
@@ -656,105 +656,6 @@ class USCS:
                 f"{coarse_material_type}{fine_material_type}")
 
 
-@enum_repr
-class ClfType(enum.StrEnum):
-    """Enumeration of soil classification types."""
-    AASHTO = enum.auto()
-    USCS = enum.auto()
-
-
-# def create_soil_classifier(liquid_limit: float,
-#                            plastic_limit: float,
-#                            fines: float,
-#                            sand: Optional[float] = None,
-#                            d_10: float = 0, d_30: float = 0, d_60: float = 0,
-#                            add_group_idx: bool = True,
-#                            organic: bool = False,
-#                            clf_type: Optional[ClfType | str] = None
-#                            ) -> AASHTO | USCS:
-#     """ A factory function that encapsulates the creation of a soil classifier.
-#
-#     :param liquid_limit: Water content beyond which soils flows under their own
-#                          weight (%). It can also be defined as the minimum
-#                          moisture content at which a soil flows upon application
-#                          of a very small shear force.
-#     :type liquid_limit: float
-#
-#     :param plastic_limit: Water content at which plastic deformation can be
-#                           initiated (%). It is also the minimum water content at
-#                           which soil can be rolled into a thread 3mm thick.
-#                           (molded without breaking)
-#     :type plastic_limit: float
-#
-#     :param fines: Percentage of fines in soil sample (%) i.e. The percentage of
-#                   soil sample passing through No. 200 sieve (0.075mm).
-#     :type fines: float
-#
-#     :param sand: Percentage of sand in soil sample (%). This is optional for
-#                  :class:`AASHTO` classification.
-#     :type sand: float, optional
-#
-#     :param d_10: Diameter at which 10% of the soil by weight is finer.
-#     :type d_10: float, optional
-#
-#     :param d_30: Diameter at which 30% of the soil by weight is finer.
-#     :type d_30: float, optional
-#
-#     :param d_60: Diameter at which 60% of the soil by weight is finer.
-#     :type d_60: float, optional
-#
-#     :param add_group_idx: Used to indicate whether the group index should
-#                           be added to the classification or not, defaults to
-#                           True.
-#     :type add_group_idx: bool, optional
-#
-#     :param organic: Indicates whether soil is organic or not, defaults to False.
-#     :type organic: bool, optional
-#
-#     :param clf_type: Used to indicate which type of soil classifier should be
-#                      used, defaults to None.
-#     :type clf_type: ClfType | str
-#
-#     :raises ValueError: Raises ValueError if ``clf_type`` is  not supported or
-#                         None
-#     :raises ValueError: Raises ValueError if ``sand`` is not provided for
-#                         :class:`USCS` classification.
-#     """
-#     msg = ErrorMsg(param_name="clf_type",
-#                    param_value=clf_type,
-#                    symbol="in",
-#                    param_value_bound=list(ClfType))
-#
-#     if clf_type is None:
-#         raise ValidationError(msg)
-#
-#     try:
-#         clf_type = ClfType(str(clf_type).casefold())
-#     except ValueError as e:
-#         raise ValidationError(msg) from e
-#
-#     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
-#                                      plastic_limit=plastic_limit)
-#
-#     if clf_type == ClfType.AASHTO:
-#         clf = AASHTO(atterberg_limits=atterberg_lmts,
-#                      fines=fines,
-#                      add_group_idx=add_group_idx)
-#         return clf
-#
-#     # USCS classification
-#     if not sand:
-#         msg = ErrorMsg(param_name="sand",
-#                        param_value=sand,
-#                        msg="sand must be specified for USCS classification")
-#         raise ValidationError(msg)
-#
-#     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
-#     clf = USCS(atterberg_limits=atterberg_lmts, psd=psd, organic=organic)
-#
-#     return clf
-
-
 def create_aashto_classifier(liquid_limit: float, plastic_limit: float,
                              fines: float,
                              add_group_idx: bool = True) -> AASHTO:
@@ -784,9 +685,7 @@ def create_aashto_classifier(liquid_limit: float, plastic_limit: float,
     """
     atterberg_lmts = AtterbergLimits(liquid_limit=liquid_limit,
                                      plastic_limit=plastic_limit)
-    return AASHTO(atterberg_limits=atterberg_lmts,
-                  fines=fines,
-                  add_group_idx=add_group_idx)
+    return AASHTO(atterberg_limits=atterberg_lmts, fines=fines)
 
 
 def create_uscs_classifier(liquid_limit: float, plastic_limit: float,
