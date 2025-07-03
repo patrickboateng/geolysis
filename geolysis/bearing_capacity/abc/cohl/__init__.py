@@ -23,22 +23,6 @@ class ABCType(enum.StrEnum):
     TERZAGHI = enum.auto()
 
 
-abc_classes = {
-    ABCType.BOWLES: {
-        FoundationType.PAD: BowlesABC4PadFoundation,
-        FoundationType.MAT: BowlesABC4MatFoundation,
-    },
-    ABCType.MEYERHOF: {
-        FoundationType.PAD: MeyerhofABC4PadFoundation,
-        FoundationType.MAT: MeyerhofABC4MatFoundation,
-    },
-    ABCType.TERZAGHI: {
-        FoundationType.PAD: TerzaghiABC4PadFoundation,
-        FoundationType.MAT: TerzaghiABC4MatFoundation,
-    }
-}
-
-
 def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                       tol_settlement: float,
                                       depth: float,
@@ -130,8 +114,27 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                                  foundation_type=foundation_type,
                                  shape=shape)
 
-    abc_class = abc_classes[abc_type][fnd_size.foundation_type]
-    abc = abc_class(corrected_spt_n_value=corrected_spt_n_value,
-                    tol_settlement=tol_settlement,
-                    foundation_size=fnd_size)
-    return abc
+    abc_class = _get_allowable_bearing_capacity(abc_type,
+                                                fnd_size.foundation_type)
+    return abc_class(corrected_spt_n_value=corrected_spt_n_value,
+                     tol_settlement=tol_settlement,
+                     foundation_size=fnd_size)
+
+
+def _get_allowable_bearing_capacity(abc_type: ABCType,
+                                    foundation_type: FoundationType):
+    abc_classes = {
+        ABCType.BOWLES: {
+            FoundationType.PAD: BowlesABC4PadFoundation,
+            FoundationType.MAT: BowlesABC4MatFoundation,
+        },
+        ABCType.MEYERHOF: {
+            FoundationType.PAD: MeyerhofABC4PadFoundation,
+            FoundationType.MAT: MeyerhofABC4MatFoundation,
+        },
+        ABCType.TERZAGHI: {
+            FoundationType.PAD: TerzaghiABC4PadFoundation,
+            FoundationType.MAT: TerzaghiABC4MatFoundation,
+        }
+    }
+    return abc_classes[abc_type][foundation_type]

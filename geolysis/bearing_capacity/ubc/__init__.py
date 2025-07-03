@@ -35,16 +35,6 @@ class UBCType(enum.StrEnum):
     VESIC = enum.auto()
 
 
-ubc_classes = {
-    UBCType.HANSEN: HansenUltimateBearingCapacity,
-    UBCType.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
-                       Shape.CIRCLE: TerzaghiUBC4CircularFooting,
-                       Shape.SQUARE: TerzaghiUBC4SquareFooting,
-                       Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
-    UBCType.VESIC: VesicUltimateBearingCapacity,
-}
-
-
 def create_ultimate_bearing_capacity(friction_angle: float,
                                      cohesion: float,
                                      moist_unit_wgt: float,
@@ -139,14 +129,27 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                                  ground_water_level=ground_water_level,
                                  shape=shape)
 
+    ubc_class = _get_ultimate_bearing_capacity(ubc_type,
+                                               fnd_size.footing_shape)
+
+    return ubc_class(friction_angle=friction_angle,
+                     cohesion=cohesion,
+                     moist_unit_wgt=moist_unit_wgt,
+                     foundation_size=fnd_size,
+                     apply_local_shear=apply_local_shear)
+
+
+def _get_ultimate_bearing_capacity(ubc_type: UBCType, foundation_shape: Shape):
+    ubc_classes = {
+        UBCType.HANSEN: HansenUltimateBearingCapacity,
+        UBCType.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
+                           Shape.CIRCLE: TerzaghiUBC4CircularFooting,
+                           Shape.SQUARE: TerzaghiUBC4SquareFooting,
+                           Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
+        UBCType.VESIC: VesicUltimateBearingCapacity,
+    }
     if ubc_type == UBCType.TERZAGHI:
-        ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]
+        ubc_class = ubc_classes[ubc_type][foundation_shape]
     else:
         ubc_class = ubc_classes[ubc_type]
-
-    ubc = ubc_class(friction_angle=friction_angle,
-                    cohesion=cohesion,
-                    moist_unit_wgt=moist_unit_wgt,
-                    foundation_size=fnd_size,
-                    apply_local_shear=apply_local_shear)
-    return ubc
+    return ubc_class
