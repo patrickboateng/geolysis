@@ -2,7 +2,7 @@
 USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 """
 import enum
-from typing import NamedTuple, Optional, Sequence, Callable
+from typing import NamedTuple, Sequence
 
 from .utils import enum_repr, isclose, round_, validators
 from .utils.exceptions import ErrorMsg, ValidationError
