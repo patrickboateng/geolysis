@@ -56,12 +56,11 @@ Features
 Quick Example
 =============
 
->>> from geolysis.soil_classifier import create_soil_classifier
->>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
+>>> from geolysis.soil_classifier import create_uscs_classifier
+>>> uscs_clf = create_uscs_classifier(liquid_limit=34.1,
 ...                                   plastic_limit=21.1,
 ...                                   fines=47.88,
-...                                   sand=37.84,
-...                                   clf_type="USCS")
+...                                   sand=37.84, )
 >>> clf = uscs_clf.classify()
 >>> clf
 SoilClf(symbol='SC', description='Clayey sands')
@@ -71,11 +70,10 @@ SoilClf(symbol='SC', description='Clayey sands')
 'Clayey sands'
 
 
->>> from geolysis.soil_classifier import create_soil_classifier
->>> aashto_clf = create_soil_classifier(liquid_limit=34.1,
+>>> from geolysis.soil_classifier import create_aashto_classifier
+>>> aashto_clf = create_aashto_classifier(liquid_limit=34.1,
 ...                                     plastic_limit=21.1,
-...                                     fines=47.88,
-...                                     clf_type="AASHTO")
+...                                     fines=47.88, )
 >>> clf = aashto_clf.classify()
 >>> clf
 SoilClf(symbol='A-6(4)', description='Clayey soils')

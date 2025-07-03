@@ -62,11 +62,10 @@ Soil Classification
 
 **AASHTO** classification example with **Group Index (GI)**:
 
->>> from geolysis.soil_classifier import create_soil_classifier
->>> aashto_clf = create_soil_classifier(liquid_limit=30.2,
-...                                     plastic_limit=23.9,
-...                                     fines=11.18,
-...                                     clf_type="AASHTO")
+>>> from geolysis.soil_classifier import create_aashto_classifier
+>>> aashto_clf = create_aashto_classifier(liquid_limit=30.2,
+...                                       plastic_limit=23.9,
+...                                       fines=11.18, )
 >>> clf = aashto_clf.classify()
 >>> clf.symbol
 'A-2-4(0)'
@@ -76,12 +75,11 @@ Soil Classification
 
 **AASHTO** classification example without **Group Index (GI)**:
 
->>> from geolysis.soil_classifier import create_soil_classifier
->>> aashto_clf = create_soil_classifier(liquid_limit=45.0,
+>>> from geolysis.soil_classifier import create_aashto_classifier
+>>> aashto_clf = create_aashto_classifier(liquid_limit=45.0,
 ...                                     plastic_limit=16.0,
 ...                                     fines=60.0,
-...                                     add_group_idx=False,
-...                                     clf_type="AASHTO")
+...                                     add_group_idx=False, )
 >>> clf = aashto_clf.classify()
 >>> clf.symbol
 'A-7-6'
@@ -90,14 +88,14 @@ Soil Classification
 
 **USCS** classification example with soil grading:
 
->>> uscs_clf = create_soil_classifier(liquid_limit=30.8,
+>>> from geolysis.soil_classifier import create_uscs_classifier
+>>> uscs_clf = create_uscs_classifier(liquid_limit=30.8,
 ...                                   plastic_limit=20.7,
 ...                                   fines=10.29,
 ...                                   sand=81.89,
 ...                                   d_10=0.07,
 ...                                   d_30=0.3,
-...                                   d_60=0.8,
-...                                   clf_type="USCS")
+...                                   d_60=0.8, )
 >>> clf = uscs_clf.classify()
 >>> clf.symbol
 'SW-SC'
@@ -107,11 +105,10 @@ Soil Classification
 
 **USCS** classification example without soil grading:
 
->>> uscs_clf = create_soil_classifier(liquid_limit=34.1,
+>>> uscs_clf = create_uscs_classifier(liquid_limit=34.1,
 ...                                   plastic_limit=21.1,
 ...                                   fines=47.88,
-...                                   sand=37.84,
-...                                   clf_type="USCS")
+...                                   sand=37.84, )
 >>> clf = uscs_clf.classify()
 >>> clf.symbol
 'SC'
