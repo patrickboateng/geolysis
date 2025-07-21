@@ -34,6 +34,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     # Third Party Libraries
+    "autoapi.extension",
     "sphinx_design",
     "myst_parser",
     "enum_tools.autoenum",
@@ -54,6 +55,9 @@ autodoc_default_options = {"exclude-members": "__init__",
                            "class-doc-from": "both",
                            "undoc-members": False}
 autodoc_member_order = "bysource"
+
+# Sphinx AutoAPI Ext
+autoapi_dirs = ["../geolysis"]
 
 # Sphinx Autosummary Ext
 autosummary_generate = False
