@@ -12,7 +12,7 @@ geolysis documentation
    User Guide               <user_guide/index>
    Contributor's Guide      <dev_guide/index>
    Release notes            <release_notes/index>
-   API Reference            <reference/index>
+   API Reference            <reference/geolysis/index>
 
 .. note::
 

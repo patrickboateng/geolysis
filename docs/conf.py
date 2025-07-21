@@ -58,6 +58,11 @@ autodoc_member_order = "bysource"
 
 # Sphinx AutoAPI Ext
 autoapi_dirs = ["../geolysis"]
+autoapi_root = "reference"
+auto_add_toctree_entry = False
+autoapi_options = ['members', 'undoc-members',
+                   'show-inheritance', 'show-module-summary',
+                   'imported-members', ]
 
 # Sphinx Autosummary Ext
 autosummary_generate = False
