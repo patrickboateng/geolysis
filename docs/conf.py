@@ -71,7 +71,7 @@ logo_path = "_static/branding/"
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_logo = logo_path + "geolysislogoicon.svg"
-html_favicon = logo_path + "geolysislogoicon.svg"
+html_favicon = html_logo
 html_title = project
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
