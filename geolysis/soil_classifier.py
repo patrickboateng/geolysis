@@ -360,7 +360,7 @@ class PSD:
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass
 class AASHTOResult:
     symbol: str
     symbol_no_grp_idx: str
