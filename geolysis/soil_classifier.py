@@ -2,6 +2,7 @@
 USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 """
 import enum
+from dataclasses import dataclass
 from typing import NamedTuple, Sequence
 from types import SimpleNamespace
 
@@ -359,9 +360,12 @@ class PSD:
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
 
 
-class SoilClf(NamedTuple):
+@dataclass(slots=True, frozen=True)
+class AASHTOResult:
     symbol: str
+    symbol_no_grp_idx: str
     description: str
+    group_index: str
 
 
 class AASHTO:
@@ -431,7 +435,7 @@ class AASHTO:
 
         return x_1 * (0.2 + 0.005 * x_2) + 0.01 * x_3 * x_4
 
-    def classify(self):
+    def classify(self) -> AASHTOResult:
         """Return the AASHTO classification of the soil."""
         soil_clf = self._classify()
 
@@ -439,10 +443,10 @@ class AASHTO:
         group_idx = f"{self.group_index():.0f}"
         symbol = f"{symbol_no_grp_idx}({group_idx})"
 
-        return SimpleNamespace(**{"symbol": symbol,
-                                  "symbol_no_grp_idx": symbol_no_grp_idx,
-                                  "description": description,
-                                  "group_index": group_idx})
+        return AASHTOResult(symbol=symbol,
+                            symbol_no_grp_idx=symbol_no_grp_idx,
+                            description=description,
+                            group_index=group_idx)
 
     def _classify(self) -> AASHTOSymbol:
         # Silts A4-A7
@@ -503,6 +507,12 @@ class AASHTO:
         return soil_clf
 
 
+@dataclass
+class USCSResult:
+    symbol: str
+    description: str
+
+
 class USCS:
     """Unified Soil Classification System (USCS).
 
@@ -551,17 +561,16 @@ class USCS:
             soil_clf = USCSSymbol[soil_clf]
 
         if isinstance(soil_clf, USCSSymbol):
-            return SimpleNamespace(**{"symbol": soil_clf.symbol,
-                                      "description": soil_clf.description})
+            soil_clf = USCSResult(symbol=soil_clf.symbol,
+                                  description=soil_clf.description)
+        else:
+            # Handling tuple or list case for dual classification
+            first_clf, second_clf = map(lambda clf: USCSSymbol[clf], soil_clf)
+            comb_symbol = f"{first_clf.symbol},{second_clf.symbol}"
+            comb_desc = f"{first_clf.description},{second_clf.description}"
+            soil_clf = USCSResult(symbol=comb_symbol, description=comb_desc)
 
-        # Handling tuple or list case for dual classification
-        first_clf, second_clf = map(lambda clf: USCSSymbol[clf], soil_clf)
-
-        comb_symbol = f"{first_clf.symbol},{second_clf.symbol}"
-        comb_desc = f"{first_clf.description},{second_clf.description}"
-
-        return SimpleNamespace(**{"symbol": comb_symbol,
-                                  "description": comb_desc})
+        return soil_clf
 
     def _classify(self) -> USCSSymbol | str | Sequence[str]:
         # Fine-grained, Run Atterberg
@@ -580,21 +589,17 @@ class USCS:
             # Above A-line and PI > 7
             if self.atterberg_limits.above_A_LINE() and plasticity_idx > 7.0:
                 soil_clf = USCSSymbol.CL
-
             # Limit plot in hatched area on plasticity chart
             elif self.atterberg_limits.limit_plot_in_hatched_zone():
                 soil_clf = USCSSymbol.ML_CL
-
             # Below A-line or PI < 4
             else:
                 soil_clf = USCSSymbol.OL if self.organic else USCSSymbol.ML
-
         # High LL
         else:
             # Above A-Line
             if self.atterberg_limits.above_A_LINE():
                 soil_clf = USCSSymbol.CH
-
             # Below A-Line
             else:
                 soil_clf = USCSSymbol.OH if self.organic else USCSSymbol.MH
