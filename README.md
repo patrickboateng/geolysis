@@ -1,6 +1,6 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/_static/branding/geolysislogoicon.svg" 
-alt="geolysislogo" width="40%" height="40%" />
+<img src="https://raw.githubusercontent.com/patrickboateng/geolysis/main/docs/_static/branding/pkg-logo.svg" 
+alt="logo" width="40%" height="40%" />
 </div><br>
 
 <div align="center">
