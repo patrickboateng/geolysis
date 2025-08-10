@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Annotated
 
-from func_validator import validate, MustBeNonNegative, MustBeLessThan
+from func_validator import validate, MustBeNonNegative, MustBeLessThanOrEqual
 
 from geolysis.foundation import Foundation
 
@@ -34,7 +34,9 @@ class AllowableBearingCapacity(ABC):
 
     @tol_settlement.setter
     @validate
-    def tol_settlement(self, tol_settlement: Annotated[float, MustBeLessThan]):
+    def tol_settlement(self,
+                       tol_settlement: Annotated[
+                           float, MustBeLessThanOrEqual(25.4)]):
         self._tol_settlement = tol_settlement
 
     def _sr(self) -> float:
