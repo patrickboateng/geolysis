@@ -29,7 +29,7 @@ class TestSPTNDesign:
             SPT(corrected_spt_n_values=[])
 
         # Provided an invalid method
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             SPT(corrected_spt_n_values=[7.0, 15.0, 18], method="max")
 
         # corrected_spt_n_values is greater than 100
@@ -74,11 +74,11 @@ class TestEnergyCorrection:
 
     def test_errors(self):
         # Provided an invalid value for hammer_type
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             EnergyCorrection(recorded_spt_n_value=22, hammer_type="manual")
 
         # Provided an invalid value for sampler_type
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             EnergyCorrection(recorded_spt_n_value=22, sampler_type="std")
 
 
