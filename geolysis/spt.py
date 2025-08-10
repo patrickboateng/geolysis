@@ -6,10 +6,10 @@ import enum
 from abc import abstractmethod
 from typing import Annotated, Final, Literal, Sequence
 
-from func_validator import validate, MustBeBetween, MustBePositive, MustBeIn, \
-    MustBeNonNegative, MustBeGreaterThanOrEqual
+from func_validator import (validate, MustBeBetween, MustBePositive, MustBeIn,
+                            MustBeNonNegative, MustBeGreaterThanOrEqual)
 
-from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
+from .utils import enum_repr, isclose, log10, mean, round_, sqrt
 from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = ["SPT",
@@ -55,12 +55,10 @@ class SPT:
 
     # TODO:
     @corrected_spt_n_values.setter
-    @validators.le(100.0)
-    @validators.gt(0.0)
-    @validators.min_len(1)
+    @validate(min_length=1, check_iterable_values=True)
     def corrected_spt_n_values(self,
                                val: Annotated[Sequence[float],
-                               MustBeBetween(min_value=0.0, max_value=100.0)]
+                               MustBeBetween(min_value=1.0, max_value=100.0)]
                                ) -> None:
         self._corrected_spt_n_values = val
 
