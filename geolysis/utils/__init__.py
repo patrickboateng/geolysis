@@ -2,13 +2,9 @@ import functools
 import math
 from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
-from typing import (Any, Callable, NotRequired, Optional, SupportsRound,
-                    TypedDict, Unpack)
+from typing import Callable
 
-from . import validators
-
-__all__ = ["ErrorMsg",
-           "enum_repr",
+__all__ = ["enum_repr",
            "inf",
            "pi",
            "deg2rad",
@@ -23,8 +19,7 @@ __all__ = ["ErrorMsg",
            "exp",
            "isclose",
            "log10",
-           "sqrt",
-           "validators"]
+           "sqrt", ]
 
 
 def deg2rad(x: float, /) -> float:
