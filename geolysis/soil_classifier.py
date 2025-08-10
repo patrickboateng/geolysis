@@ -10,14 +10,12 @@ from func_validator import validate, MustBeNonNegative
 from .utils import enum_repr, isclose, round_
 from .utils.exceptions import ErrorMsg, ValidationError
 
-__all__ = [
-    "AtterbergLimits",
-    "PSD",
-    "AASHTO",
-    "USCS",
-    "create_aashto_classifier",
-    "create_uscs_classifier",
-]
+__all__ = ["AtterbergLimits",
+           "PSD",
+           "AASHTO",
+           "USCS",
+           "create_aashto_classifier",
+           "create_uscs_classifier", ]
 
 
 class SizeDistError(ZeroDivisionError):
