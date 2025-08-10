@@ -25,7 +25,7 @@ class TestSPTNDesign:
 
     def test_errors(self):
         # Provided an empty value for corrected_spt_n_values
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             SPT(corrected_spt_n_values=[])
 
         # Provided an invalid method
@@ -33,15 +33,15 @@ class TestSPTNDesign:
             SPT(corrected_spt_n_values=[7.0, 15.0, 18], method="max")
 
         # corrected_spt_n_values is greater than 100
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             SPT(corrected_spt_n_values=[22, 44, 120])
 
         # corrected_spt_n_values is 0.0
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             SPT(corrected_spt_n_values=[0.0, 15.0, 18])
 
         # corrected_spt_n_values is less than 0.0
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             SPT(corrected_spt_n_values=[-10, 15.0, 18])
 
 
