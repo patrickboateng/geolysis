@@ -4,7 +4,10 @@ as well as calculating design N-values.
 """
 import enum
 from abc import abstractmethod
-from typing import Final, Literal, Sequence
+from typing import Annotated, Final, Literal, Sequence
+
+from func_validator import validate, MustBeBetween, MustBePositive, MustBeIn, \
+    MustBeNonNegative, MustBeGreaterThanOrEqual
 
 from .utils import enum_repr, isclose, log10, mean, round_, sqrt, validators
 from .utils.exceptions import ErrorMsg, ValidationError
@@ -50,11 +53,15 @@ class SPT:
         """Corrected SPT N-values within the foundation influence zone."""
         return self._corrected_spt_n_values
 
+    # TODO:
     @corrected_spt_n_values.setter
     @validators.le(100.0)
     @validators.gt(0.0)
     @validators.min_len(1)
-    def corrected_spt_n_values(self, val: Sequence[float]) -> None:
+    def corrected_spt_n_values(self,
+                               val: Annotated[Sequence[float],
+                               MustBeBetween(min_value=0.0, max_value=100.0)]
+                               ) -> None:
         self._corrected_spt_n_values = val
 
     @property
@@ -62,8 +69,9 @@ class SPT:
         return self._method
 
     @method.setter
-    @validators.in_(("min", "avg", "wgt"))
-    def method(self, val: str) -> None:
+    @validate
+    def method(self,
+               val: Annotated[str, MustBeIn({"min", "avg", "wgt"})]) -> None:
         self._method = val
 
     @staticmethod
@@ -194,9 +202,11 @@ class EnergyCorrection:
         return self._recorded_spt_value
 
     @recorded_spt_n_value.setter
-    @validators.le(100)
-    @validators.gt(0)
-    def recorded_spt_n_value(self, val: int) -> None:
+    @validate
+    def recorded_spt_n_value(self,
+                             val: Annotated[int,
+                             MustBeBetween(min_value=0, max_value=100)]
+                             ) -> None:
         self._recorded_spt_value = val
 
     @property
@@ -205,9 +215,12 @@ class EnergyCorrection:
         return self._energy_percentage
 
     @energy_percentage.setter
-    @validators.le(1.0)
-    @validators.gt(0.0)
-    def energy_percentage(self, val: float) -> None:
+    @validate
+    def energy_percentage(self,
+                          val: Annotated[
+                              float,
+                              MustBeBetween(min_value=0.0, max_value=1.0)]
+                          ) -> None:
         self._energy_percentage = val
 
     @property
@@ -216,9 +229,12 @@ class EnergyCorrection:
         return self._borehole_diameter
 
     @borehole_diameter.setter
-    @validators.le(200.0)
-    @validators.ge(65.0)
-    def borehole_diameter(self, val: float) -> None:
+    @validate
+    def borehole_diameter(self,
+                          val: Annotated[
+                              float,
+                              MustBeBetween(min_value=65.0, max_value=200.0)]
+                          ) -> None:
         self._borehole_diameter = val
 
     @property
@@ -227,8 +243,8 @@ class EnergyCorrection:
         return self._rod_length
 
     @rod_length.setter
-    @validators.gt(0.0)
-    def rod_length(self, val: float) -> None:
+    @validate
+    def rod_length(self, val: Annotated[float, MustBePositive]) -> None:
         self._rod_length = val
 
     @property
@@ -236,8 +252,10 @@ class EnergyCorrection:
         return self._hammer_type
 
     @hammer_type.setter
-    @validators.in_(tuple(HammerType))
-    def hammer_type(self, val: HammerType) -> None:
+    @validate
+    def hammer_type(self,
+                    val: Annotated[HammerType, MustBeIn(set(HammerType))]
+                    ) -> None:
         self._hammer_type = val
 
     @property
@@ -245,8 +263,10 @@ class EnergyCorrection:
         return self._sampler_type
 
     @sampler_type.setter
-    @validators.in_(tuple(SamplerType))
-    def sampler_type(self, val: SamplerType) -> None:
+    @validate
+    def sampler_type(self,
+                     val: Annotated[SamplerType, MustBeIn(set(SamplerType))]
+                     ) -> None:
         self._sampler_type = val
 
     @property
@@ -321,14 +341,28 @@ class OPC:
         self.eop = eop
 
     @property
+    def eop(self) -> float:
+        """Effective overburden pressure (:math:`kPa`)."""
+        return self._eop
+
+    @eop.setter
+    @validate
+    def eop(self, val: Annotated[float, MustBeNonNegative]) -> None:
+        """Effective overburden pressure (:math:`kPa`)."""
+        self._eop = val
+
+    @property
     def std_spt_n_value(self) -> float:
         """SPT N-value standardized for field procedures."""
         return self._std_spt_n_value
 
     @std_spt_n_value.setter
-    @validators.le(100)
-    @validators.gt(0.0)
-    def std_spt_n_value(self, val: float) -> None:
+    @validate
+    def std_spt_n_value(self,
+                        val: Annotated[
+                            float,
+                            MustBeBetween(min_value=0.0, max_value=100.0)]
+                        ) -> None:
         self._std_spt_n_value = val
 
     @round_(ndigits=1)
@@ -364,9 +398,12 @@ class GibbsHoltzOPC(OPC):
         return self._eop
 
     @eop.setter
-    @validators.le(280.0)
-    @validators.gt(0.0)
-    def eop(self, val: float) -> None:
+    @validate
+    def eop(self,
+            val: Annotated[
+                float,
+                MustBeBetween(min_value=0.0, max_value=280.0)]
+            ) -> None:
         self._eop = val
 
     def correction(self) -> float:
@@ -392,17 +429,6 @@ class BazaraaPeckOPC(OPC):
 
     #: Maximum effective overburden pressure (:math:`kPa`).
     STD_PRESSURE: Final = 71.8
-
-    @property
-    def eop(self) -> float:
-        """Effective overburden pressure (:math:`kPa`)."""
-        return self._eop
-
-    @eop.setter
-    @validators.ge(0.0)
-    def eop(self, val: float) -> None:
-        """Effective overburden pressure (:math:`kPa`)."""
-        self._eop = val
 
     def correction(self) -> float:
         r"""SPT Correction.
@@ -436,8 +462,9 @@ class PeckOPC(OPC):
         return self._eop
 
     @eop.setter
-    @validators.ge(24.0)
-    def eop(self, val: float) -> None:
+    @validate
+    def eop(self,
+            val: Annotated[float, MustBeGreaterThanOrEqual(24.0)]) -> None:
         self._eop = val
 
     def correction(self) -> float:
@@ -454,16 +481,6 @@ class LiaoWhitmanOPC(OPC):
     """Overburden Pressure Correction according to ``Liao & Whitman (1986)``.
     """
 
-    @property
-    def eop(self) -> float:
-        """Effective overburden pressure (:math:`kPa`)."""
-        return self._eop
-
-    @eop.setter
-    @validators.gt(0.0)
-    def eop(self, val: float) -> None:
-        self._eop = val
-
     def correction(self) -> float:
         r"""SPT Correction.
 
@@ -476,16 +493,6 @@ class LiaoWhitmanOPC(OPC):
 
 class SkemptonOPC(OPC):
     """Overburden Pressure Correction according to ``Skempton (1986)``."""
-
-    @property
-    def eop(self) -> float:
-        """Effective overburden pressure (:math:`kPa`)."""
-        return self._eop
-
-    @eop.setter
-    @validators.ge(0.0)
-    def eop(self, val: float) -> None:
-        self._eop = val
 
     def correction(self) -> float:
         r"""SPT Correction.
@@ -521,9 +528,12 @@ class DilatancyCorrection:
         return self._corr_spt_n_value
 
     @corr_spt_n_value.setter
-    @validators.le(100.0)
-    @validators.gt(0.0)
-    def corr_spt_n_value(self, val: float) -> None:
+    @validate
+    def corr_spt_n_value(self,
+                         val: Annotated[
+                             float,
+                             MustBeBetween(min_value=0.0, max_value=100.0)]
+                         ) -> None:
         self._corr_spt_n_value = val
 
     @round_(ndigits=1)

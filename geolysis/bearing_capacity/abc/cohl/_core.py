@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import Annotated
+
+from func_validator import validate, MustBeNonNegative, MustBeLessThan
 
 from geolysis.foundation import Foundation
-from geolysis.utils import validators
 
 
 class AllowableBearingCapacity(ABC):
@@ -21,8 +23,8 @@ class AllowableBearingCapacity(ABC):
         return self._corrected_spt_n_value
 
     @corrected_spt_n_value.setter
-    @validators.ge(0.0)
-    def corrected_spt_n_value(self, val: float) -> None:
+    @validate
+    def corrected_spt_n_value(self, val: Annotated[float, MustBeNonNegative]):
         self._corrected_spt_n_value = val
 
     @property
@@ -31,8 +33,8 @@ class AllowableBearingCapacity(ABC):
         return self._tol_settlement
 
     @tol_settlement.setter
-    @validators.le(25.4)
-    def tol_settlement(self, tol_settlement: float) -> None:
+    @validate
+    def tol_settlement(self, tol_settlement: Annotated[float, MustBeLessThan]):
         self._tol_settlement = tol_settlement
 
     def _sr(self) -> float:

@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import Annotated
+
+from func_validator import validate, MustBeNonNegative, MustBePositive
 
 from geolysis.foundation import Foundation
-from geolysis.utils import arctan, round_, tan, validators
+from geolysis.utils import arctan, round_, tan
 
 
 class UltimateBearingCapacity(ABC):
@@ -9,7 +12,6 @@ class UltimateBearingCapacity(ABC):
                  cohesion: float,
                  moist_unit_wgt: float,
                  foundation_size: Foundation,
-                 # load_angle: float = 0.0,
                  apply_local_shear: bool = False) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general shear 
@@ -55,8 +57,8 @@ class UltimateBearingCapacity(ABC):
         return self._friction_angle
 
     @friction_angle.setter
-    @validators.ge(0.0)
-    def friction_angle(self, val: float):
+    @validate
+    def friction_angle(self, val: Annotated[float, MustBeNonNegative]):
         self._friction_angle = val
 
     @property
@@ -77,8 +79,8 @@ class UltimateBearingCapacity(ABC):
         return self._cohesion
 
     @cohesion.setter
-    @validators.ge(0.0)
-    def cohesion(self, val: float):
+    @validate
+    def cohesion(self, val: Annotated[float, MustBeNonNegative]):
         self._cohesion = val
 
     @property
@@ -87,8 +89,8 @@ class UltimateBearingCapacity(ABC):
         return self._moist_unit_wgt
 
     @moist_unit_wgt.setter
-    @validators.gt(0.0)
-    def moist_unit_wgt(self, val: float):
+    @validate
+    def moist_unit_wgt(self, val: Annotated[float, MustBePositive]):
         self._moist_unit_wgt = val
 
     @property

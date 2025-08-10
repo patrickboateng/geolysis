@@ -3,10 +3,11 @@ USCS and AASHTO, based on particle size distribution and  Atterberg limits.
 """
 import enum
 from dataclasses import dataclass
-from typing import NamedTuple, Sequence
-from types import SimpleNamespace
+from typing import Annotated, Sequence
 
-from .utils import enum_repr, isclose, round_, validators
+from func_validator import validate, MustBeNonNegative
+
+from .utils import enum_repr, isclose, round_
 from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = [
@@ -130,8 +131,8 @@ class AtterbergLimits:
         return self._liquid_limit
 
     @liquid_limit.setter
-    @validators.ge(0.0)
-    def liquid_limit(self, val: float) -> None:
+    @validate
+    def liquid_limit(self, val: Annotated[float, MustBeNonNegative]) -> None:
         self._liquid_limit = val
 
     @property
@@ -140,8 +141,8 @@ class AtterbergLimits:
         return self._plastic_limit
 
     @plastic_limit.setter
-    @validators.ge(0.0)
-    def plastic_limit(self, val: float) -> None:
+    @validate
+    def plastic_limit(self, val: Annotated[float, MustBeNonNegative]) -> None:
         if self.liquid_limit < val:
             msg = ErrorMsg(param_name="plastic_limit",
                            param_value=val,
@@ -416,14 +417,13 @@ class AASHTO:
         return self._fines
 
     @fines.setter
-    @validators.ge(0.0)
-    def fines(self, val: float) -> None:
+    @validate
+    def fines(self, val: Annotated[float, MustBeNonNegative]) -> None:
         self._fines = val
 
     @round_(ndigits=0)
     def group_index(self) -> float:
         """Return the Group Index (GI) of the soil sample."""
-
         liquid_lmt = self.atterberg_limits.liquid_limit
         plasticity_idx = self.atterberg_limits.plasticity_index
         fines = self.fines

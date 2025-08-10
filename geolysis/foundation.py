@@ -2,9 +2,12 @@
 footing types, their dimensions, and properties."""
 import enum
 from abc import ABC, abstractmethod
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Annotated
 
-from .utils import enum_repr, inf, isclose, validators
+from func_validator import (validate, MustBePositive, MustBeNonNegative,
+                            MustBeBetween)
+
+from .utils import enum_repr, inf, isclose
 from .utils.exceptions import ErrorMsg, ValidationError
 
 __all__ = ["create_foundation",
@@ -86,8 +89,8 @@ class StripFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validators.gt(0.0)
-    def width(self, val: float):
+    @validate
+    def width(self, val: Annotated[float, MustBePositive]) -> None:
         self._width = val
 
     @property
@@ -96,8 +99,8 @@ class StripFooting(FootingSize):
         return self._length
 
     @length.setter
-    @validators.ge(0.0)
-    def length(self, val: float):
+    @validate
+    def length(self, val: Annotated[float, MustBePositive]) -> None:
         self._length = val
 
 
@@ -125,8 +128,8 @@ class CircularFooting(FootingSize):
         return self._diameter
 
     @diameter.setter
-    @validators.gt(0.0)
-    def diameter(self, val: float):
+    @validate
+    def diameter(self, val: Annotated[float, MustBePositive]) -> None:
         self._diameter = val
 
     @property
@@ -134,10 +137,12 @@ class CircularFooting(FootingSize):
         """Diameter of foundation footing (m)."""
         return self.diameter
 
+    # Not checking for positive as diameter setter already does that
     @width.setter
     def width(self, val: float):
         self.diameter = val
 
+    # Not checking for positive as diameter setter already does that
     @property
     def length(self):
         """Diameter of foundation footing (m)."""
@@ -165,8 +170,8 @@ class SquareFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validators.gt(0)
-    def width(self, val):
+    @validate
+    def width(self, val: Annotated[float, MustBePositive]) -> None:
         self._width = val
 
     @property
@@ -174,6 +179,7 @@ class SquareFooting(FootingSize):
         """Width of foundation footing (m)."""
         return self.width
 
+    # Not checking for positive as width setter already does that
     @length.setter
     def length(self, val):
         self.width = val
@@ -201,8 +207,8 @@ class RectangularFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validators.gt(0.0)
-    def width(self, val):
+    @validate
+    def width(self, val: Annotated[float, MustBePositive]) -> None:
         self._width = val
 
     @property
@@ -211,8 +217,8 @@ class RectangularFooting(FootingSize):
         return self._length
 
     @length.setter
-    @validators.gt(0.0)
-    def length(self, val):
+    @validate
+    def length(self, val: Annotated[float, MustBePositive]) -> None:
         self._length = val
 
 
@@ -265,8 +271,8 @@ class Foundation:
         return self._depth
 
     @depth.setter
-    @validators.gt(0.0)
-    def depth(self, val: float) -> None:
+    @validate
+    def depth(self, val: Annotated[float, MustBePositive]) -> None:
         self._depth = val
 
     @property
@@ -275,7 +281,7 @@ class Foundation:
         return self.footing_size.width
 
     @width.setter
-    def width(self, val: float):
+    def width(self, val: Annotated[float, MustBePositive]):
         self.footing_size.width = val
 
     @property
@@ -284,7 +290,7 @@ class Foundation:
         return self.footing_size.length
 
     @length.setter
-    def length(self, val: float):
+    def length(self, val: Annotated[float, MustBePositive]):
         self.footing_size.length = val
 
     @property
@@ -300,8 +306,8 @@ class Foundation:
         return self._eccentricity
 
     @eccentricity.setter
-    @validators.ge(0.0)
-    def eccentricity(self, val: float) -> None:
+    @validate
+    def eccentricity(self, val: Annotated[float, MustBeNonNegative]) -> None:
         self._eccentricity = val
 
     @property
@@ -310,9 +316,11 @@ class Foundation:
         return self._load_angle
 
     @load_angle.setter
-    @validators.le(90.0)
-    @validators.ge(0.0)
-    def load_angle(self, val: float):
+    @validate
+    def load_angle(self,
+                   val: Annotated[
+                       float, MustBeBetween(min_value=0.0, max_value=90.0)]
+                   ) -> None:
         self._load_angle = val
 
     @property
@@ -321,8 +329,9 @@ class Foundation:
         return self._ground_water_level
 
     @ground_water_level.setter
-    @validators.ge(0.0)
-    def ground_water_level(self, val: float) -> None:
+    @validate
+    def ground_water_level(self,
+                           val: Annotated[float, MustBePositive]) -> None:
         self._ground_water_level = val
 
     @property
