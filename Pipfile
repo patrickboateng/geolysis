@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 sphinx-autoapi = "*"
+func-validator = {ref = "main", git = "https://github.com/patrickboateng/func-validator.git"}
 
 [dev-packages]
 pytest = "*"

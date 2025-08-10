@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "70f067033e710f80a65cd89d358356038669acb2ac8595ae5022a0c32e251a7d"
+            "sha256": "6910530e0a7a51d6aa57c662fcba37c7463d946d53a13bf3fa3e72be1286c379"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -161,6 +161,11 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==0.21.2"
+        },
+        "func-validator": {
+            "git": "https://github.com/patrickboateng/func-validator.git",
+            "markers": "python_version >= '3.10'",
+            "ref": "95c5cc00358c976971f9c7a0d6600e48ffe08017"
         },
         "idna": {
             "hashes": [
