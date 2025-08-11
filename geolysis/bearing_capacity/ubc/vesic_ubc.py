@@ -23,10 +23,9 @@ def n_gamma(friction_angle: float) -> float:
 
 
 @round_(ndigits=2)
-def s_c(friction_angle: float,
-        f_width: float,
-        f_length: float,
-        f_shape: Shape) -> float:
+def s_c(
+    friction_angle: float, f_width: float, f_length: float, f_shape: Shape
+) -> float:
     _n_q = n_q(friction_angle)
     _n_c = n_c(friction_angle)
 
@@ -39,10 +38,9 @@ def s_c(friction_angle: float,
 
 
 @round_(ndigits=2)
-def s_q(friction_angle: float,
-        f_width: float,
-        f_length: float,
-        f_shape: Shape) -> float:
+def s_q(
+    friction_angle: float, f_width: float, f_length: float, f_shape: Shape
+) -> float:
     if f_shape == Shape.STRIP:
         return 1.0
     elif f_shape == Shape.RECTANGLE:
@@ -68,9 +66,9 @@ def d_c(f_depth: float, f_width: float) -> float:
 
 @round_(ndigits=2)
 def d_q(friction_angle: float, f_depth: float, f_width: float) -> float:
-    return (1.0 + 2.0 * tan(friction_angle)
-            * (1.0 - sin(friction_angle)) ** 2.0
-            * (f_depth / f_width))
+    return 1.0 + 2.0 * tan(friction_angle) * (1.0 - sin(friction_angle)) ** 2.0 * (
+        f_depth / f_width
+    )
 
 
 @round_(ndigits=2)

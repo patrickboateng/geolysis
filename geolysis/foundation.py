@@ -1,39 +1,46 @@
 """This module provides classes and utilities for modeling various foundation
 footing types, their dimensions, and properties."""
+
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Annotated
 
-from func_validator import (validate, MustBePositive, MustBeNonNegative,
-                            MustBeBetween)
+from func_validator import (
+    validate,
+    MustBePositive,
+    MustBeNonNegative,
+    MustBeBetween,
+    MustBeIn,
+)
 
-from .utils import enum_repr, inf, isclose
-from .utils.exceptions import ErrorMsg, ValidationError
+from .utils import AbstractStrEnum, inf, isclose
 
-__all__ = ["create_foundation",
-           "Foundation",
-           "FoundationType",
-           "Shape",
-           "StripFooting",
-           "CircularFooting",
-           "SquareFooting",
-           "RectangularFooting"]
+__all__ = [
+    "create_foundation",
+    "Foundation",
+    "FoundationType",
+    "Shape",
+    "StripFooting",
+    "CircularFooting",
+    "SquareFooting",
+    "RectangularFooting",
+]
 
 T = TypeVar("T")
 
 
-@enum_repr
-class Shape(enum.StrEnum):
+class Shape(AbstractStrEnum):
     """Enumeration of foundation shapes."""
+
     STRIP = enum.auto()
     CIRCLE = enum.auto()
     SQUARE = enum.auto()
     RECTANGLE = enum.auto()
 
 
-@enum_repr
-class FoundationType(enum.StrEnum):
+class FoundationType(AbstractStrEnum):
     """Enumeration of foundation types."""
+
     PAD = enum.auto()
     ISOLATED = PAD
     MAT = enum.auto()
@@ -72,7 +79,7 @@ class StripFooting(FootingSize):
 
     _SHAPE = Shape.STRIP
 
-    def __init__(self, width: float, length: float = inf) -> None:
+    def __init__(self, width: float, length: float = inf):
         """
         :param width: Width of foundation footing (m).
         :type width: float
@@ -225,12 +232,15 @@ class RectangularFooting(FootingSize):
 class Foundation:
     """A simple class representing a foundation structure."""
 
-    def __init__(self, depth: float,
-                 footing_size: FootingSize,
-                 eccentricity: float = 0.0,
-                 load_angle: float = 0.0,
-                 ground_water_level: Optional[float] = None,
-                 foundation_type: FoundationType = FoundationType.PAD) -> None:
+    def __init__(
+        self,
+        depth: float,
+        footing_size: FootingSize,
+        eccentricity: float = 0.0,
+        load_angle: float = 0.0,
+        ground_water_level: Optional[float] = None,
+        foundation_type: FoundationType = FoundationType.PAD,
+    ) -> None:
         r"""
         :param depth: Depth of foundation (m).
         :type depth: float
@@ -240,8 +250,8 @@ class Foundation:
 
         :param eccentricity: The deviation of the foundation load from the
                              center of gravity of the foundation footing (m),
-                             defaults to 0.0. This means that the foundation 
-                             load aligns with the center of gravity of the 
+                             defaults to 0.0. This means that the foundation
+                             load aligns with the center of gravity of the
                              foundation footing.
         :type eccentricity: float, optional
 
@@ -263,7 +273,7 @@ class Foundation:
         self.load_angle = load_angle
 
         self._ground_water_level = ground_water_level
-        self._foundation_type = foundation_type
+        self.foundation_type = foundation_type
 
     @property
     def depth(self) -> float:
@@ -317,10 +327,9 @@ class Foundation:
 
     @load_angle.setter
     @validate
-    def load_angle(self,
-                   val: Annotated[
-                       float, MustBeBetween(min_value=0.0, max_value=90.0)]
-                   ) -> None:
+    def load_angle(
+        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
+    ) -> None:
         self._load_angle = val
 
     @property
@@ -330,14 +339,18 @@ class Foundation:
 
     @ground_water_level.setter
     @validate
-    def ground_water_level(self,
-                           val: Annotated[float, MustBePositive]) -> None:
+    def ground_water_level(self, val: Annotated[float, MustBePositive]):
         self._ground_water_level = val
 
     @property
     def foundation_type(self) -> FoundationType:
         """Type of foundation."""
         return self._foundation_type
+
+    @foundation_type.setter
+    @validate
+    def foundation_type(self, val: Annotated[FoundationType, MustBeIn(FoundationType)]):
+        self._foundation_type = val
 
     @property
     def effective_width(self) -> float:
@@ -348,9 +361,7 @@ class Foundation:
         """Returns the :attr:`effective_width`, :attr:`length`, and
         :attr:`footing_shape` of the foundation footing.
         """
-        width, length, shape = (self.effective_width,
-                                self.length,
-                                self.footing_shape)
+        width, length, shape = (self.effective_width, self.length, self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -358,14 +369,17 @@ class Foundation:
         return width, length, shape
 
 
-def create_foundation(depth: float,
-                      width: float,
-                      length: Optional[float] = None,
-                      eccentricity: float = 0.0,
-                      load_angle: float = 0.0,
-                      ground_water_level: Optional[float] = None,
-                      foundation_type: FoundationType = FoundationType.PAD,
-                      shape: Shape | str = Shape.SQUARE) -> Foundation:
+@validate
+def create_foundation(
+    depth: float,
+    width: float,
+    length: Optional[float] = None,
+    eccentricity: float = 0.0,
+    load_angle: float = 0.0,
+    ground_water_level: Optional[float] = None,
+    foundation_type: FoundationType = "pad",
+    shape: Annotated[Shape | str, MustBeIn(Shape)] = "square",
+) -> Foundation:
     r"""A factory function that encapsulate the creation of a foundation.
 
     :param depth: Depth of foundation (m).
@@ -397,7 +411,7 @@ def create_foundation(depth: float,
                             :py:enum:mem:`~FoundationType.PAD`.
     :type foundation_type: FoundationType, optional
 
-    :param shape: Shape of foundation footing, defaults to 
+    :param shape: Shape of foundation footing, defaults to
                   :py:enum:mem:`~Shape.SQUARE`
     :type shape: Shape | str, optional
 
@@ -406,14 +420,7 @@ def create_foundation(depth: float,
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
 
-    try:
-        shape = Shape(str(shape).casefold())
-    except ValueError as e:
-        msg = ErrorMsg(param_name="shape",
-                       param_value=shape,
-                       symbol="in",
-                       param_value_bound=list(Shape))
-        raise ValidationError(msg) from e
+    shape = Shape(str(shape).casefold())
 
     if shape is Shape.STRIP:
         footing_size = StripFooting(width=width)
@@ -423,15 +430,15 @@ def create_foundation(depth: float,
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
         if not length:
-            msg = ErrorMsg(param_name="length",
-                           param_value=length,
-                           msg="Length of footing must be provided.")
-            raise ValidationError(msg)
+            msg = "Length of rectangular footing must be provided."
+            raise ValueError(msg)
         footing_size = RectangularFooting(width=width, length=length)
 
-    return Foundation(depth=depth,
-                      eccentricity=eccentricity,
-                      load_angle=load_angle,
-                      ground_water_level=ground_water_level,
-                      foundation_type=foundation_type,
-                      footing_size=footing_size)
+    return Foundation(
+        depth=depth,
+        eccentricity=eccentricity,
+        load_angle=load_angle,
+        ground_water_level=ground_water_level,
+        foundation_type=foundation_type,
+        footing_size=footing_size,
+    )

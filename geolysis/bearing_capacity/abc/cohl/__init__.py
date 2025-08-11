@@ -1,13 +1,15 @@
-"""This package provides a factory function and utilities for creating 
-allowable bearing capacity calculations using methods like Bowles, Meyerhof, 
+"""This package provides a factory function and utilities for creating
+allowable bearing capacity calculations using methods like Bowles, Meyerhof,
 and Terzaghi for various foundation types and shapes.
 """
+
 import enum
-from typing import Optional
+from typing import Optional, Annotated
+
+from func_validator import MustBeIn, validate
 
 from geolysis.foundation import FoundationType, Shape, create_foundation
-from geolysis.utils import enum_repr, inf
-from geolysis.utils.exceptions import ErrorMsg, ValidationError
+from geolysis.utils import AbstractStrEnum, inf
 
 from ._core import AllowableBearingCapacity
 from .bowles_abc import BowlesABC4MatFoundation, BowlesABC4PadFoundation
@@ -15,28 +17,28 @@ from .meyerhof_abc import MeyerhofABC4MatFoundation, MeyerhofABC4PadFoundation
 from .terzaghi_abc import TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation
 
 
-@enum_repr
-class ABCType(enum.StrEnum):
+class ABCType(AbstractStrEnum):
     """Enumeration of available allowable bearing capacity types."""
+
     BOWLES = enum.auto()
     MEYERHOF = enum.auto()
     TERZAGHI = enum.auto()
 
 
-def create_allowable_bearing_capacity(corrected_spt_n_value: float,
-                                      tol_settlement: float,
-                                      depth: float,
-                                      width: float,
-                                      length: Optional[float] = None,
-                                      eccentricity: float = 0.0,
-                                      ground_water_level: float = inf,
-                                      shape: Shape | str = Shape.SQUARE,
-                                      foundation_type: FoundationType | str =
-                                      FoundationType.PAD,
-                                      abc_type: Optional[
-                                          ABCType | str] = None,
-                                      ) -> AllowableBearingCapacity:
-    """ A factory function that encapsulate the creation of  allowable bearing
+@validate
+def create_allowable_bearing_capacity(
+    corrected_spt_n_value: float,
+    tol_settlement: float,
+    depth: float,
+    width: float,
+    length: Optional[float] = None,
+    eccentricity: float = 0.0,
+    ground_water_level: float = inf,
+    shape: Shape | str = "square",
+    foundation_type: Annotated[FoundationType | str, MustBeIn(FoundationType)] = "pad",
+    abc_type: Annotated[ABCType | str, MustBeIn(ABCType)] = "bowles",
+) -> AllowableBearingCapacity:
+    """A factory function that encapsulate the creation of  allowable bearing
     capacities.
 
     :param corrected_spt_n_value: The corrected SPT N-value.
@@ -54,7 +56,7 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
     :param length: Length of foundation footing (m).
     :type length: float, optional
 
-    :param eccentricity: The deviation of the foundation load from the center 
+    :param eccentricity: The deviation of the foundation load from the center
                          of gravity of the foundation footing (m), defaults to
                          0.0. This means that the foundation load aligns with
                          the center of gravity of the foundation footing.
@@ -81,48 +83,30 @@ def create_allowable_bearing_capacity(corrected_spt_n_value: float,
                         footing.
     :raises ValueError: Raised if an invalid footing ``shape`` is provided.
     """
-
-    msg = ErrorMsg(param_name="abc_type",
-                   param_value=abc_type,
-                   symbol="in",
-                   param_value_bound=list(ABCType))
-
-    if abc_type is None:
-        raise ValidationError(msg)
-
-    try:
-        abc_type = ABCType(str(abc_type).casefold())
-    except ValueError as e:
-        raise ValidationError(msg) from e
-
-    try:
-        foundation_type = FoundationType(str(foundation_type).casefold())
-    except ValueError as e:
-        msg = ErrorMsg(param_name="foundation_type",
-                       param_value=foundation_type,
-                       symbol="in",
-                       param_value_bound=list(FoundationType))
-        raise ValidationError(msg) from e
+    abc_type = ABCType(abc_type)
+    foundation_type = FoundationType(foundation_type)
 
     # exception from create_foundation will automaatically propagate
     # no need to catch and handle it.
-    fnd_size = create_foundation(depth=depth,
-                                 width=width,
-                                 length=length,
-                                 eccentricity=eccentricity,
-                                 ground_water_level=ground_water_level,
-                                 foundation_type=foundation_type,
-                                 shape=shape)
+    fnd_size = create_foundation(
+        depth=depth,
+        width=width,
+        length=length,
+        eccentricity=eccentricity,
+        ground_water_level=ground_water_level,
+        foundation_type=foundation_type,
+        shape=shape,
+    )
 
-    abc_class = _get_allowable_bearing_capacity(abc_type,
-                                                fnd_size.foundation_type)
-    return abc_class(corrected_spt_n_value=corrected_spt_n_value,
-                     tol_settlement=tol_settlement,
-                     foundation_size=fnd_size)
+    abc_class = _get_allowable_bearing_capacity(abc_type, fnd_size.foundation_type)
+    return abc_class(
+        corrected_spt_n_value=corrected_spt_n_value,
+        tol_settlement=tol_settlement,
+        foundation_size=fnd_size,
+    )
 
 
-def _get_allowable_bearing_capacity(abc_type: ABCType,
-                                    foundation_type: FoundationType):
+def _get_allowable_bearing_capacity(abc_type: ABCType, foundation_type: FoundationType):
     abc_classes = {
         ABCType.BOWLES: {
             FoundationType.PAD: BowlesABC4PadFoundation,
@@ -135,6 +119,6 @@ def _get_allowable_bearing_capacity(abc_type: ABCType,
         ABCType.TERZAGHI: {
             FoundationType.PAD: TerzaghiABC4PadFoundation,
             FoundationType.MAT: TerzaghiABC4MatFoundation,
-        }
+        },
     }
     return abc_classes[abc_type][foundation_type]

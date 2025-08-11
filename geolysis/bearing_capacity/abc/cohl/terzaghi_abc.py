@@ -38,13 +38,16 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     ===================  ======================================  ===========
     """
 
-    def __init__(self, corrected_spt_n_value: float,
-                 tol_settlement: float,
-                 foundation_size: Foundation) -> None:
+    def __init__(
+        self,
+        corrected_spt_n_value: float,
+        tol_settlement: float,
+        foundation_size: Foundation,
+    ) -> None:
         """
-        :param corrected_spt_n_value: Lowest (or average) uncorrected SPT 
-                                      N-value (60% energy) within the foundation 
-                                      influence zone i.e :math:`D_f` to 
+        :param corrected_spt_n_value: Lowest (or average) uncorrected SPT
+                                      N-value (60% energy) within the foundation
+                                      influence zone i.e :math:`D_f` to
                                       :math:`D_f + 2B`
         :type corrected_spt_n_value: float
 
@@ -54,9 +57,11 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: Foundation
         """
-        super().__init__(corrected_spt_n_value=corrected_spt_n_value,
-                         tol_settlement=tol_settlement,
-                         foundation_size=foundation_size)
+        super().__init__(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            foundation_size=foundation_size,
+        )
 
     def _fd(self) -> float:
         """Calculate the depth factor."""
@@ -90,8 +95,13 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         if width <= 1.2:
             return 12 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
 
-        return (8 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2
-                * (1 / (self._cw() * self._fd())) * self._sr())
+        return (
+            8
+            * n_corr
+            * ((3.28 * width + 1) / (3.28 * width)) ** 2
+            * (1 / (self._cw() * self._fd()))
+            * self._sr()
+        )
 
 
 class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):

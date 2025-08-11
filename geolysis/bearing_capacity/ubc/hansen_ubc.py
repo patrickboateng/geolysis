@@ -15,8 +15,7 @@ def n_c(friction_angle: float) -> float:
 
 @round_(ndigits=2)
 def n_q(friction_angle: float) -> float:
-    return (tan(45.0 + friction_angle / 2.0) ** 2.0
-            * exp(pi * tan(friction_angle)))
+    return tan(45.0 + friction_angle / 2.0) ** 2.0 * exp(pi * tan(friction_angle))
 
 
 @round_(ndigits=2)
@@ -72,10 +71,7 @@ def d_gamma() -> float:
 
 
 @round_(ndigits=2)
-def i_c(cohesion: float,
-        load_angle: float,
-        f_width: float,
-        f_length: float) -> float:
+def i_c(cohesion: float, load_angle: float, f_width: float, f_length: float) -> float:
     return 1.0 - sin(load_angle) / (2.0 * cohesion * f_width * f_length)
 
 

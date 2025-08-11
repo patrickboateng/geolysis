@@ -1,25 +1,42 @@
 import functools
 import math
+from enum import StrEnum
 from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
 from typing import Callable
 
-__all__ = ["enum_repr",
-           "inf",
-           "pi",
-           "deg2rad",
-           "rad2deg",
-           "tan",
-           "cot",
-           "sin",
-           "cos",
-           "arctan",
-           "round_",
-           "mean",
-           "exp",
-           "isclose",
-           "log10",
-           "sqrt", ]
+__all__ = [
+    "AbstractStrEnum",
+    "enum_repr",
+    "inf",
+    "pi",
+    "deg2rad",
+    "rad2deg",
+    "tan",
+    "cot",
+    "sin",
+    "cos",
+    "arctan",
+    "round_",
+    "mean",
+    "exp",
+    "isclose",
+    "log10",
+    "sqrt",
+]
+
+
+class AbstractStrEnum(StrEnum):
+    """An abstract string enumeration class that inherits from StrEnum.
+
+    This class can be used as a base class for creating string enumerations.
+    """
+
+    # def __contains__(self, item: str) -> bool:
+    #     return item.casefold() in (member.value for member in self.__class__)
+
+    def __repr__(self):
+        return f"{self.value}"
 
 
 def deg2rad(x: float, /) -> float:

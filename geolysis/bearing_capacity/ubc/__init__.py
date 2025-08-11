@@ -1,54 +1,62 @@
-""" 
-This package provides a factory function and utilities for creating ultimate 
-bearing capacity calculations using methods like Hansen, Terzaghi, and Vesic 
+"""
+This package provides a factory function and utilities for creating ultimate
+bearing capacity calculations using methods like Hansen, Terzaghi, and Vesic
 for various foundation shapes.
 """
+
 import enum
-from typing import Optional
+from typing import Optional, Annotated
+
+from func_validator import MustBeIn, validate
 
 from geolysis.foundation import Shape, create_foundation
-from geolysis.utils import enum_repr
-from geolysis.utils.exceptions import ErrorMsg, ValidationError
+from geolysis.utils import AbstractStrEnum
 
 from ._core import UltimateBearingCapacity
 from .hansen_ubc import HansenUltimateBearingCapacity
-from .terzaghi_ubc import (TerzaghiUBC4CircularFooting,
-                           TerzaghiUBC4RectangularFooting,
-                           TerzaghiUBC4SquareFooting, TerzaghiUBC4StripFooting)
+from .terzaghi_ubc import (
+    TerzaghiUBC4CircularFooting,
+    TerzaghiUBC4RectangularFooting,
+    TerzaghiUBC4SquareFooting,
+    TerzaghiUBC4StripFooting,
+)
 from .vesic_ubc import VesicUltimateBearingCapacity
 
-__all__ = ["UBCType",
-           "TerzaghiUBC4StripFooting",
-           "TerzaghiUBC4CircularFooting",
-           "TerzaghiUBC4RectangularFooting",
-           "TerzaghiUBC4SquareFooting",
-           "HansenUltimateBearingCapacity",
-           "VesicUltimateBearingCapacity",
-           "create_ultimate_bearing_capacity"]
+__all__ = [
+    "UBCType",
+    "TerzaghiUBC4StripFooting",
+    "TerzaghiUBC4CircularFooting",
+    "TerzaghiUBC4RectangularFooting",
+    "TerzaghiUBC4SquareFooting",
+    "HansenUltimateBearingCapacity",
+    "VesicUltimateBearingCapacity",
+    "create_ultimate_bearing_capacity",
+]
 
 
-@enum_repr
-class UBCType(enum.StrEnum):
+class UBCType(AbstractStrEnum):
     """Enumeration of available ultimate bearing capacity types."""
+
     HANSEN = enum.auto()
     TERZAGHI = enum.auto()
     VESIC = enum.auto()
 
 
-def create_ultimate_bearing_capacity(friction_angle: float,
-                                     cohesion: float,
-                                     moist_unit_wgt: float,
-                                     depth: float,
-                                     width: float,
-                                     length: Optional[float] = None,
-                                     eccentricity: float = 0.0,
-                                     ground_water_level: Optional[
-                                         float] = None,
-                                     load_angle: float = 0.0,
-                                     apply_local_shear: bool = False,
-                                     shape: Shape | str = Shape.SQUARE,
-                                     ubc_type: Optional[UBCType | str] = None,
-                                     ) -> UltimateBearingCapacity:
+@validate
+def create_ultimate_bearing_capacity(
+    friction_angle: float,
+    cohesion: float,
+    moist_unit_wgt: float,
+    depth: float,
+    width: float,
+    length: Optional[float] = None,
+    eccentricity: float = 0.0,
+    ground_water_level: Optional[float] = None,
+    load_angle: float = 0.0,
+    apply_local_shear: bool = False,
+    shape: Shape | str = "square",
+    ubc_type: Annotated[UBCType | str, MustBeIn(UBCType)] = "hansen",
+) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate bearing
     capacity.
 
@@ -105,47 +113,40 @@ def create_ultimate_bearing_capacity(friction_angle: float,
                         footing.
     :raises ValueError: Raised if an invalid footing shape is provided.
     """
-
-    msg = ErrorMsg(param_name="ubc_type",
-                   param_value=ubc_type,
-                   symbol="in",
-                   param_value_bound=list(UBCType))
-
-    if ubc_type is None:
-        raise ValidationError(msg)
-
-    try:
-        ubc_type = UBCType(str(ubc_type).casefold())
-    except ValueError as e:
-        raise ValidationError(msg) from e
+    ubc_type = UBCType(ubc_type)
 
     # exception from create_foundation will automatically propagate
     # no need to catch and handle it.
-    fnd_size = create_foundation(depth=depth,
-                                 width=width,
-                                 length=length,
-                                 eccentricity=eccentricity,
-                                 load_angle=load_angle,
-                                 ground_water_level=ground_water_level,
-                                 shape=shape)
+    fnd_size = create_foundation(
+        depth=depth,
+        width=width,
+        length=length,
+        eccentricity=eccentricity,
+        load_angle=load_angle,
+        ground_water_level=ground_water_level,
+        shape=shape,
+    )
 
-    ubc_class = _get_ultimate_bearing_capacity(ubc_type,
-                                               fnd_size.footing_shape)
+    ubc_class = _get_ultimate_bearing_capacity(ubc_type, fnd_size.footing_shape)
 
-    return ubc_class(friction_angle=friction_angle,
-                     cohesion=cohesion,
-                     moist_unit_wgt=moist_unit_wgt,
-                     foundation_size=fnd_size,
-                     apply_local_shear=apply_local_shear)
+    return ubc_class(
+        friction_angle=friction_angle,
+        cohesion=cohesion,
+        moist_unit_wgt=moist_unit_wgt,
+        foundation_size=fnd_size,
+        apply_local_shear=apply_local_shear,
+    )
 
 
 def _get_ultimate_bearing_capacity(ubc_type: UBCType, foundation_shape: Shape):
     ubc_classes = {
         UBCType.HANSEN: HansenUltimateBearingCapacity,
-        UBCType.TERZAGHI: {Shape.STRIP: TerzaghiUBC4StripFooting,
-                           Shape.CIRCLE: TerzaghiUBC4CircularFooting,
-                           Shape.SQUARE: TerzaghiUBC4SquareFooting,
-                           Shape.RECTANGLE: TerzaghiUBC4RectangularFooting},
+        UBCType.TERZAGHI: {
+            Shape.STRIP: TerzaghiUBC4StripFooting,
+            Shape.CIRCLE: TerzaghiUBC4CircularFooting,
+            Shape.SQUARE: TerzaghiUBC4SquareFooting,
+            Shape.RECTANGLE: TerzaghiUBC4RectangularFooting,
+        },
         UBCType.VESIC: VesicUltimateBearingCapacity,
     }
     if ubc_type == UBCType.TERZAGHI:

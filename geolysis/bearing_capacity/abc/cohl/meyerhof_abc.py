@@ -31,13 +31,16 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     ===================  ======================================  ===========
     """
 
-    def __init__(self, corrected_spt_n_value: float,
-                 tol_settlement: float,
-                 foundation_size: Foundation):
+    def __init__(
+        self,
+        corrected_spt_n_value: float,
+        tol_settlement: float,
+        foundation_size: Foundation,
+    ):
         """
-        :param corrected_spt_n_value: Average uncorrected SPT N-value (60% 
-                                      energy with dilatancy (water) correction 
-                                      if applicable) within the foundation 
+        :param corrected_spt_n_value: Average uncorrected SPT N-value (60%
+                                      energy with dilatancy (water) correction
+                                      if applicable) within the foundation
                                       influence  zone i.e :math:`D_f` to
                                       :math:`D_f + 2B`.
         :type corrected_spt_n_value: float
@@ -48,9 +51,11 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         :param foundation_size: Size of the foundation.
         :type foundation_size: Foundation
         """
-        super().__init__(corrected_spt_n_value=corrected_spt_n_value,
-                         tol_settlement=tol_settlement,
-                         foundation_size=foundation_size)
+        super().__init__(
+            corrected_spt_n_value=corrected_spt_n_value,
+            tol_settlement=tol_settlement,
+            foundation_size=foundation_size,
+        )
 
     @round_(ndigits=2)
     def bearing_capacity(self):
@@ -61,8 +66,13 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         if width <= 1.2:
             return 12 * n_corr * self._fd() * self._sr()
 
-        return (8 * n_corr * ((3.28 * width + 1) / (3.28 * width)) ** 2
-                * self._fd() * self._sr())
+        return (
+            8
+            * n_corr
+            * ((3.28 * width + 1) / (3.28 * width)) ** 2
+            * self._fd()
+            * self._sr()
+        )
 
 
 class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):

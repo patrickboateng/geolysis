@@ -8,13 +8,16 @@ from geolysis.utils import arctan, round_, tan
 
 
 class UltimateBearingCapacity(ABC):
-    def __init__(self, friction_angle: float,
-                 cohesion: float,
-                 moist_unit_wgt: float,
-                 foundation_size: Foundation,
-                 apply_local_shear: bool = False) -> None:
+    def __init__(
+        self,
+        friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        foundation_size: Foundation,
+        apply_local_shear: bool = False,
+    ) -> None:
         r"""
-        :param friction_angle: Internal angle of friction for general shear 
+        :param friction_angle: Internal angle of friction for general shear
                                failure (degrees).
         :type friction_angle: float
 
@@ -174,27 +177,34 @@ class UltimateBearingCapacity(ABC):
             b = max(water_level - depth, 0)
             water_corr = min(0.5 + 0.5 * b / width, 1)
 
-        return (coef * self.moist_unit_wgt * width * self.n_gamma
-                * self.s_gamma * self.d_gamma * self.i_gamma * water_corr)
+        return (
+            coef
+            * self.moist_unit_wgt
+            * width
+            * self.n_gamma
+            * self.s_gamma
+            * self.d_gamma
+            * self.i_gamma
+            * water_corr
+        )
 
     @round_(ndigits=2)
     def bearing_capacity(self) -> float:
         """Calculates the ultimate bearing capacity."""
-        return (self._cohesion_term(1.0)
-                + self._surcharge_term()
-                + self._embedment_term(0.5))
+        return (
+            self._cohesion_term(1.0)
+            + self._surcharge_term()
+            + self._embedment_term(0.5)
+        )
 
     @property
     @abstractmethod
-    def n_c(self) -> float:
-        ...
+    def n_c(self) -> float: ...
 
     @property
     @abstractmethod
-    def n_q(self) -> float:
-        ...
+    def n_q(self) -> float: ...
 
     @property
     @abstractmethod
-    def n_gamma(self) -> float:
-        ...
+    def n_gamma(self) -> float: ...
