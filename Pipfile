@@ -25,6 +25,7 @@ pydata-sphinx-theme = "*"
 enum-tools = { extras = ["sphinx"], version = "*" }
 nbsphinx = "*"
 ipython = "*"
+black = "*"
 
 [requires]
 python_version = "3.11"
