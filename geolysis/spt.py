@@ -8,7 +8,7 @@ from abc import abstractmethod
 from typing import Annotated, Final, Sequence
 
 from func_validator import (
-    validate,
+    validate_func_args_at_runtime,
     MustBeBetween,
     MustBePositive,
     MustBeIn,
@@ -73,7 +73,7 @@ class SPT:
         return self._corrected_spt_n_values
 
     @corrected_spt_n_values.setter
-    @validate(min_length=1, check_iterable_values=True)
+    @validate_func_args_at_runtime(min_length=1, check_iterable_values=True)
     def corrected_spt_n_values(
         self,
         val: Annotated[Sequence[float], MustBeBetween(min_value=1.0, max_value=100.0)],
@@ -85,7 +85,7 @@ class SPT:
         return self._method
 
     @method.setter
-    @validate
+    @validate_func_args_at_runtime
     def method(self, val: Annotated[str, MustBeIn(SPTDesignMethod)]):
         self._method = val
 
@@ -225,7 +225,7 @@ class EnergyCorrection:
         return self._recorded_spt_value
 
     @recorded_spt_n_value.setter
-    @validate
+    @validate_func_args_at_runtime
     def recorded_spt_n_value(
         self, val: Annotated[int, MustBeBetween(min_value=0, max_value=100)]
     ) -> None:
@@ -237,7 +237,7 @@ class EnergyCorrection:
         return self._energy_percentage
 
     @energy_percentage.setter
-    @validate
+    @validate_func_args_at_runtime
     def energy_percentage(
         self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=1.0)]
     ) -> None:
@@ -249,7 +249,7 @@ class EnergyCorrection:
         return self._borehole_diameter
 
     @borehole_diameter.setter
-    @validate
+    @validate_func_args_at_runtime
     def borehole_diameter(
         self, val: Annotated[float, MustBeBetween(min_value=65.0, max_value=200.0)]
     ) -> None:
@@ -261,7 +261,7 @@ class EnergyCorrection:
         return self._rod_length
 
     @rod_length.setter
-    @validate
+    @validate_func_args_at_runtime
     def rod_length(self, val: Annotated[float, MustBePositive]):
         self._rod_length = val
 
@@ -270,7 +270,7 @@ class EnergyCorrection:
         return self._hammer_type
 
     @hammer_type.setter
-    @validate
+    @validate_func_args_at_runtime
     def hammer_type(self, val: Annotated[HammerType, MustBeIn(HammerType)]):
         self._hammer_type = val
 
@@ -279,7 +279,7 @@ class EnergyCorrection:
         return self._sampler_type
 
     @sampler_type.setter
-    @validate
+    @validate_func_args_at_runtime
     def sampler_type(self, val: Annotated[SamplerType, MustBeIn(SamplerType)]):
         self._sampler_type = val
 
@@ -362,7 +362,7 @@ class OPC:
         return self._eop
 
     @eop.setter
-    @validate
+    @validate_func_args_at_runtime
     def eop(self, val: Annotated[float, MustBeNonNegative]):
         """Effective overburden pressure (:math:`kPa`)."""
         self._eop = val
@@ -373,7 +373,7 @@ class OPC:
         return self._std_spt_n_value
 
     @std_spt_n_value.setter
-    @validate
+    @validate_func_args_at_runtime
     def std_spt_n_value(
         self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
     ):
@@ -412,7 +412,7 @@ class GibbsHoltzOPC(OPC):
         return self._eop
 
     @eop.setter
-    @validate
+    @validate_func_args_at_runtime
     def eop(self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=280.0)]):
         self._eop = val
 
@@ -472,7 +472,7 @@ class PeckOPC(OPC):
         return self._eop
 
     @eop.setter
-    @validate
+    @validate_func_args_at_runtime
     def eop(self, val: Annotated[float, MustBeGreaterThanOrEqual(24.0)]):
         self._eop = val
 
@@ -536,7 +536,7 @@ class DilatancyCorrection:
         return self._corr_spt_n_value
 
     @corr_spt_n_value.setter
-    @validate
+    @validate_func_args_at_runtime
     def corr_spt_n_value(
         self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
     ):
@@ -580,7 +580,7 @@ _opctypes = {
 }
 
 
-@validate
+@validate_func_args_at_runtime
 def create_overburden_pressure_correction(
     std_spt_n_value: float,
     eop: float,

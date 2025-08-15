@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Annotated
 
 from func_validator import (
-    validate,
+    validate_func_args_at_runtime,
     MustBePositive,
     MustBeNonNegative,
     MustBeBetween,
@@ -96,7 +96,7 @@ class StripFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validate
+    @validate_func_args_at_runtime
     def width(self, val: Annotated[float, MustBePositive]) -> None:
         self._width = val
 
@@ -106,7 +106,7 @@ class StripFooting(FootingSize):
         return self._length
 
     @length.setter
-    @validate
+    @validate_func_args_at_runtime
     def length(self, val: Annotated[float, MustBePositive]) -> None:
         self._length = val
 
@@ -135,7 +135,7 @@ class CircularFooting(FootingSize):
         return self._diameter
 
     @diameter.setter
-    @validate
+    @validate_func_args_at_runtime
     def diameter(self, val: Annotated[float, MustBePositive]) -> None:
         self._diameter = val
 
@@ -177,7 +177,7 @@ class SquareFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validate
+    @validate_func_args_at_runtime
     def width(self, val: Annotated[float, MustBePositive]) -> None:
         self._width = val
 
@@ -214,7 +214,7 @@ class RectangularFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validate
+    @validate_func_args_at_runtime
     def width(self, val: Annotated[float, MustBePositive]) -> None:
         self._width = val
 
@@ -224,7 +224,7 @@ class RectangularFooting(FootingSize):
         return self._length
 
     @length.setter
-    @validate
+    @validate_func_args_at_runtime
     def length(self, val: Annotated[float, MustBePositive]) -> None:
         self._length = val
 
@@ -281,7 +281,7 @@ class Foundation:
         return self._depth
 
     @depth.setter
-    @validate
+    @validate_func_args_at_runtime
     def depth(self, val: Annotated[float, MustBePositive]) -> None:
         self._depth = val
 
@@ -316,7 +316,7 @@ class Foundation:
         return self._eccentricity
 
     @eccentricity.setter
-    @validate
+    @validate_func_args_at_runtime
     def eccentricity(self, val: Annotated[float, MustBeNonNegative]) -> None:
         self._eccentricity = val
 
@@ -326,7 +326,7 @@ class Foundation:
         return self._load_angle
 
     @load_angle.setter
-    @validate
+    @validate_func_args_at_runtime
     def load_angle(
         self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
     ) -> None:
@@ -338,7 +338,7 @@ class Foundation:
         return self._ground_water_level
 
     @ground_water_level.setter
-    @validate
+    @validate_func_args_at_runtime
     def ground_water_level(self, val: Annotated[float, MustBePositive]):
         self._ground_water_level = val
 
@@ -348,7 +348,7 @@ class Foundation:
         return self._foundation_type
 
     @foundation_type.setter
-    @validate
+    @validate_func_args_at_runtime
     def foundation_type(self, val: Annotated[FoundationType, MustBeIn(FoundationType)]):
         self._foundation_type = val
 
@@ -369,7 +369,7 @@ class Foundation:
         return width, length, shape
 
 
-@validate
+@validate_func_args_at_runtime
 def create_foundation(
     depth: float,
     width: float,

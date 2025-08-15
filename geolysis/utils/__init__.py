@@ -7,7 +7,6 @@ from typing import Callable
 
 __all__ = [
     "AbstractStrEnum",
-    "enum_repr",
     "inf",
     "pi",
     "deg2rad",
@@ -72,11 +71,6 @@ def cos(x: float, /) -> float:
 def arctan(x: float, /) -> float:
     """Return the arc tangent (measured in degrees) of x."""
     return rad2deg(math.atan(x))
-
-
-def enum_repr(cls):
-    cls.__repr__ = lambda self: f"{self.value}"
-    return cls
 
 
 def round_(ndigits: int) -> Callable:

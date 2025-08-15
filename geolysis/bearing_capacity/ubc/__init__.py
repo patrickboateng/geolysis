@@ -7,7 +7,7 @@ for various foundation shapes.
 import enum
 from typing import Optional, Annotated
 
-from func_validator import MustBeIn, validate
+from func_validator import MustBeIn, validate_func_args_at_runtime
 
 from geolysis.foundation import Shape, create_foundation
 from geolysis.utils import AbstractStrEnum
@@ -42,7 +42,7 @@ class UBCType(AbstractStrEnum):
     VESIC = enum.auto()
 
 
-@validate
+@validate_func_args_at_runtime
 def create_ultimate_bearing_capacity(
     friction_angle: float,
     cohesion: float,

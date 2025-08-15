@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Annotated
 
-from func_validator import validate, MustBeNonNegative, MustBeLessThanOrEqual
+from func_validator import (
+    validate_func_args_at_runtime,
+    MustBeNonNegative,
+    MustBeLessThanOrEqual,
+)
 
 from geolysis.foundation import Foundation
 
@@ -11,10 +15,10 @@ class AllowableBearingCapacity(ABC):
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
@@ -26,7 +30,7 @@ class AllowableBearingCapacity(ABC):
         return self._corrected_spt_n_value
 
     @corrected_spt_n_value.setter
-    @validate
+    @validate_func_args_at_runtime
     def corrected_spt_n_value(self, val: Annotated[float, MustBeNonNegative]):
         self._corrected_spt_n_value = val
 
@@ -36,9 +40,9 @@ class AllowableBearingCapacity(ABC):
         return self._tol_settlement
 
     @tol_settlement.setter
-    @validate
+    @validate_func_args_at_runtime
     def tol_settlement(
-        self, tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)]
+            self, tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)]
     ):
         self._tol_settlement = tol_settlement
 

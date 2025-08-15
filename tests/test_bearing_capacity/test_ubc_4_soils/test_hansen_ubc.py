@@ -23,15 +23,15 @@ class TestHansenUBC:
         ],
     )
     def test_bearing_capacity(
-            self,
-            friction_angle,
-            cohesion,
-            moist_unit_wgt,
-            depth,
-            width,
-            length,
-            shape,
-            expected,
+        self,
+        friction_angle,
+        cohesion,
+        moist_unit_wgt,
+        depth,
+        width,
+        length,
+        shape,
+        expected,
     ):
         ubc = create_ultimate_bearing_capacity(
             friction_angle=friction_angle,

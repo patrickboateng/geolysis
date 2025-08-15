@@ -165,7 +165,7 @@
         "func-validator": {
             "git": "https://github.com/patrickboateng/func-validator.git",
             "markers": "python_version >= '3.10'",
-            "ref": "2d0aae9396f26e5f091c2342e9abd909a16b5f01"
+            "ref": "5e5ec79fd20768184e42902aef2a5e49a02e9a87"
         },
         "idna": {
             "hashes": [

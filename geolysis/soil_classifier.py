@@ -6,7 +6,7 @@ import enum
 from dataclasses import dataclass
 from typing import Annotated, Sequence
 
-from func_validator import validate, MustBeNonNegative
+from func_validator import validate_func_args_at_runtime, MustBeNonNegative
 
 from .utils import isclose, round_
 
@@ -132,7 +132,7 @@ class AtterbergLimits:
         return self._liquid_limit
 
     @liquid_limit.setter
-    @validate
+    @validate_func_args_at_runtime
     def liquid_limit(self, val: Annotated[float, MustBeNonNegative]):
         self._liquid_limit = val
 
@@ -142,7 +142,7 @@ class AtterbergLimits:
         return self._plastic_limit
 
     @plastic_limit.setter
-    @validate
+    @validate_func_args_at_runtime
     def plastic_limit(self, val: Annotated[float, MustBeNonNegative]):
         if self.liquid_limit < val:
             msg = (
@@ -421,7 +421,7 @@ class AASHTO:
         return self._fines
 
     @fines.setter
-    @validate
+    @validate_func_args_at_runtime
     def fines(self, val: Annotated[float, MustBeNonNegative]):
         self._fines = val
 
