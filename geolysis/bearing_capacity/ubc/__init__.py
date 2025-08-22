@@ -7,7 +7,7 @@ for various foundation shapes.
 import enum
 from typing import Optional, Annotated
 
-from func_validator import MustBeIn, validate_func_args_at_runtime
+from func_validator import MustBeIn, validate_func_args
 
 from geolysis.foundation import Shape, create_foundation
 from geolysis.utils import AbstractStrEnum
@@ -42,20 +42,20 @@ class UBCType(AbstractStrEnum):
     VESIC = enum.auto()
 
 
-@validate_func_args_at_runtime
+@validate_func_args
 def create_ultimate_bearing_capacity(
-    friction_angle: float,
-    cohesion: float,
-    moist_unit_wgt: float,
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    eccentricity: float = 0.0,
-    ground_water_level: Optional[float] = None,
-    load_angle: float = 0.0,
-    apply_local_shear: bool = False,
-    shape: Shape | str = "square",
-    ubc_type: Annotated[UBCType | str, MustBeIn(UBCType)] = "hansen",
+        friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        depth: float,
+        width: float,
+        length: Optional[float] = None,
+        eccentricity: float = 0.0,
+        ground_water_level: Optional[float] = None,
+        load_angle: float = 0.0,
+        apply_local_shear: bool = False,
+        shape: Shape | str = "square",
+        ubc_type: Annotated[UBCType | str, MustBeIn(UBCType)] = "hansen",
 ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate bearing
     capacity.
@@ -127,7 +127,8 @@ def create_ultimate_bearing_capacity(
         shape=shape,
     )
 
-    ubc_class = _get_ultimate_bearing_capacity(ubc_type, fnd_size.footing_shape)
+    ubc_class = _get_ultimate_bearing_capacity(ubc_type,
+                                               fnd_size.footing_shape)
 
     return ubc_class(
         friction_angle=friction_angle,

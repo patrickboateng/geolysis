@@ -6,7 +6,7 @@ import enum
 from dataclasses import dataclass
 from typing import Annotated, Sequence
 
-from func_validator import validate_func_args_at_runtime, MustBeNonNegative
+from func_validator import validate_func_args, MustBeNonNegative
 
 from .utils import isclose, round_
 
@@ -132,7 +132,7 @@ class AtterbergLimits:
         return self._liquid_limit
 
     @liquid_limit.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def liquid_limit(self, val: Annotated[float, MustBeNonNegative]):
         self._liquid_limit = val
 
@@ -142,7 +142,7 @@ class AtterbergLimits:
         return self._plastic_limit
 
     @plastic_limit.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def plastic_limit(self, val: Annotated[float, MustBeNonNegative]):
         if self.liquid_limit < val:
             msg = (
@@ -231,7 +231,8 @@ class _SizeDistribution:
     Features obtained from the Particle Size Distribution graph.
     """
 
-    def __init__(self, d_10: float = 0.0, d_30: float = 0.0, d_60: float = 0.0):
+    def __init__(self, d_10: float = 0.0, d_30: float = 0.0,
+                 d_60: float = 0.0):
         self.d_10 = d_10
         self.d_30 = d_30
         self.d_60 = d_60
@@ -241,7 +242,7 @@ class _SizeDistribution:
 
     @property
     def coeff_of_curvature(self) -> float:
-        return (self.d_30**2.0) / (self.d_60 * self.d_10)
+        return (self.d_30 ** 2.0) / (self.d_60 * self.d_10)
 
     @property
     def coeff_of_uniformity(self) -> float:
@@ -276,12 +277,12 @@ class PSD:
     """
 
     def __init__(
-        self,
-        fines: float,
-        sand: float,
-        d_10: float = 0,
-        d_30: float = 0,
-        d_60: float = 0,
+            self,
+            fines: float,
+            sand: float,
+            d_10: float = 0,
+            d_30: float = 0,
+            d_60: float = 0,
     ):
         """
         :param fines: Percentage of fines in soil sample (%) i.e. The
@@ -421,7 +422,7 @@ class AASHTO:
         return self._fines
 
     @fines.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def fines(self, val: Annotated[float, MustBeNonNegative]):
         self._fines = val
 
@@ -541,7 +542,8 @@ class USCS:
     termed as Peat. (:math:`P_t`)
     """
 
-    def __init__(self, atterberg_limits: AtterbergLimits, psd: PSD, organic=False):
+    def __init__(self, atterberg_limits: AtterbergLimits, psd: PSD,
+                 organic=False):
         """
         :param atterberg_limits: Atterberg limits of the soil.
         :type atterberg_limits: AtterbergLimits
@@ -673,7 +675,7 @@ class USCS:
 
 
 def create_aashto_classifier(
-    liquid_limit: float, plastic_limit: float, fines: float
+        liquid_limit: float, plastic_limit: float, fines: float
 ) -> AASHTO:
     """A helper function that encapsulates the creation of a AASHTO
     classifier.
@@ -699,14 +701,14 @@ def create_aashto_classifier(
 
 
 def create_uscs_classifier(
-    liquid_limit: float,
-    plastic_limit: float,
-    fines: float,
-    sand: float,
-    d_10: float = 0,
-    d_30: float = 0,
-    d_60: float = 0,
-    organic: bool = False,
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
+        sand: float,
+        d_10: float = 0,
+        d_30: float = 0,
+        d_60: float = 0,
+        organic: bool = False,
 ):
     """A helper function that encapsulates the creation of a USCS
     classifier.

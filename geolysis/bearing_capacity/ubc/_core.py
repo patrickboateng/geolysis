@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Annotated
 
 from func_validator import (
-    validate_func_args_at_runtime,
+    validate_func_args,
     MustBeNonNegative,
     MustBePositive,
 )
@@ -64,7 +64,7 @@ class UltimateBearingCapacity(ABC):
         return self._friction_angle
 
     @friction_angle.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def friction_angle(self, val: Annotated[float, MustBeNonNegative]):
         self._friction_angle = val
 
@@ -86,7 +86,7 @@ class UltimateBearingCapacity(ABC):
         return self._cohesion
 
     @cohesion.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def cohesion(self, val: Annotated[float, MustBeNonNegative]):
         self._cohesion = val
 
@@ -96,7 +96,7 @@ class UltimateBearingCapacity(ABC):
         return self._moist_unit_wgt
 
     @moist_unit_wgt.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def moist_unit_wgt(self, val: Annotated[float, MustBePositive]):
         self._moist_unit_wgt = val
 

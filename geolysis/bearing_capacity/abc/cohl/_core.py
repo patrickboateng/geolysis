@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Annotated
 
 from func_validator import (
-    validate_func_args_at_runtime,
+    validate_func_args,
     MustBeNonNegative,
     MustBeLessThanOrEqual,
 )
@@ -30,7 +30,7 @@ class AllowableBearingCapacity(ABC):
         return self._corrected_spt_n_value
 
     @corrected_spt_n_value.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def corrected_spt_n_value(self, val: Annotated[float, MustBeNonNegative]):
         self._corrected_spt_n_value = val
 
@@ -40,7 +40,7 @@ class AllowableBearingCapacity(ABC):
         return self._tol_settlement
 
     @tol_settlement.setter
-    @validate_func_args_at_runtime
+    @validate_func_args
     def tol_settlement(
             self, tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)]
     ):

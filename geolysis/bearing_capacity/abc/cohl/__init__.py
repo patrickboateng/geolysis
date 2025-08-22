@@ -6,7 +6,7 @@ and Terzaghi for various foundation types and shapes.
 import enum
 from typing import Optional, Annotated
 
-from func_validator import MustBeIn, validate_func_args_at_runtime
+from func_validator import MustBeIn, validate_func_args
 
 from geolysis.foundation import FoundationType, Shape, create_foundation
 from geolysis.utils import AbstractStrEnum, inf
@@ -25,7 +25,7 @@ class ABCType(AbstractStrEnum):
     TERZAGHI = enum.auto()
 
 
-@validate_func_args_at_runtime
+@validate_func_args
 def create_allowable_bearing_capacity(
         corrected_spt_n_value: float,
         tol_settlement: float,
