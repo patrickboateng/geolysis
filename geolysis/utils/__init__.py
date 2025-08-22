@@ -1,6 +1,6 @@
 import functools
 import math
-from enum import StrEnum
+import enum
 from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
 from typing import Callable
@@ -25,20 +25,21 @@ __all__ = [
 ]
 
 
-class AbstractStrEnum(StrEnum):
+class StrEnumMeta(enum.EnumMeta):
+    def __contains__(cls, item):
+        if isinstance(item, str):
+            return item in (member.value for member in cls)
+        return item in cls.__members__
+
+
+class AbstractStrEnum(enum.StrEnum, metaclass=StrEnumMeta):
     """An abstract string enumeration class that inherits from StrEnum.
 
     This class can be used as a base class for creating string enumerations.
     """
 
-    # def __contains__(self, item: str) -> bool:
-    #     return item.casefold() in (member.value for member in self.__class__)
-
     def __repr__(self):
         return f"{self.value}"
-
-    def __contains__(self, item):
-        return item in (member.value for member in self.__class__)
 
 
 def deg2rad(x: float, /) -> float:
