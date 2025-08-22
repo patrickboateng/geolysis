@@ -37,6 +37,9 @@ class AbstractStrEnum(StrEnum):
     def __repr__(self):
         return f"{self.value}"
 
+    def __contains__(self, item):
+        return item in (member.value for member in self.__class__)
+
 
 def deg2rad(x: float, /) -> float:
     """Convert angle x from degrees to radians."""
