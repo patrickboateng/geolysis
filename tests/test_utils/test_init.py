@@ -1,7 +1,6 @@
 import pytest
 
-from geolysis.utils import (cos, cot, deg2rad, log10, pi, rad2deg, round_, sin,
-                            sqrt, tan)
+from geolysis.utils import cos, cot, deg2rad, log10, pi, rad2deg, round_, sin, sqrt, tan
 
 
 def test_deg2rad():
