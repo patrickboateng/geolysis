@@ -233,13 +233,13 @@ class Foundation:
     """A simple class representing a foundation structure."""
 
     def __init__(
-            self,
-            depth: float,
-            footing_size: FootingSize,
-            eccentricity: float = 0.0,
-            load_angle: float = 0.0,
-            ground_water_level: Optional[float] = None,
-            foundation_type: FoundationType = FoundationType.PAD,
+        self,
+        depth: float,
+        footing_size: FootingSize,
+        eccentricity: float = 0.0,
+        load_angle: float = 0.0,
+        ground_water_level: Optional[float] = None,
+        foundation_type: FoundationType = FoundationType.PAD,
     ) -> None:
         r"""
         :param depth: Depth of foundation (m).
@@ -328,8 +328,7 @@ class Foundation:
     @load_angle.setter
     @validate_func_args
     def load_angle(
-            self,
-            val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
+        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
     ) -> None:
         self._load_angle = val
 
@@ -350,8 +349,7 @@ class Foundation:
 
     @foundation_type.setter
     @validate_func_args
-    def foundation_type(self, val: Annotated[
-        FoundationType, MustBeIn(FoundationType)]):
+    def foundation_type(self, val: Annotated[FoundationType, MustBeIn(FoundationType)]):
         self._foundation_type = val
 
     @property
@@ -363,8 +361,7 @@ class Foundation:
         """Returns the :attr:`effective_width`, :attr:`length`, and
         :attr:`footing_shape` of the foundation footing.
         """
-        width, length, shape = (
-        self.effective_width, self.length, self.footing_shape)
+        width, length, shape = (self.effective_width, self.length, self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -374,14 +371,14 @@ class Foundation:
 
 @validate_func_args
 def create_foundation(
-        depth: float,
-        width: float,
-        length: Optional[float] = None,
-        eccentricity: float = 0.0,
-        load_angle: float = 0.0,
-        ground_water_level: Optional[float] = None,
-        foundation_type: FoundationType = "pad",
-        shape: Annotated[Shape | str, MustBeIn(Shape)] = "square",
+    depth: float,
+    width: float,
+    length: Optional[float] = None,
+    eccentricity: float = 0.0,
+    load_angle: float = 0.0,
+    ground_water_level: Optional[float] = None,
+    foundation_type: FoundationType = "pad",
+    shape: Annotated[Shape | str, MustBeIn(Shape)] = "square",
 ) -> Foundation:
     r"""A factory function that encapsulate the creation of a foundation.
 
