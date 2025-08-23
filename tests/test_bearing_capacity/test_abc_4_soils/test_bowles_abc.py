@@ -1,9 +1,7 @@
 import pytest
 
-from geolysis.bearing_capacity.abc.cohl import (
-    create_allowable_bearing_capacity,
-    ABCType,
-)
+from geolysis.bearing_capacity.abc.cohl import \
+    create_allowable_bearing_capacity
 
 
 class TestBowlesABC:
