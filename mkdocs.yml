@@ -1,0 +1,60 @@
+site_name: geolysis
+site_url: https://docs.geolysis.io/
+repo_name: geolysis
+repo_url: https://github.com/patrickboateng/geolysis
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - Getting Started: usage.md
+  - API Reference:
+      - Introduction: api/index.md
+      - Bearing Capacity: api/bearing_capacity.md
+      - Foundation: api/foundation.md
+      - Soil Classification: api/soil_classifier.md
+      - SPT: api/spt.md
+      - Utils: api/utils.md
+  - Contributing:
+      - Introduction: dev_guide/index.md
+      - Guidelines: dev_guide/contributing.md
+      - Style Guide: dev_guide/style_guide.md
+      - Code of Conduct: dev_guide/code_of_conduct.md
+  - Release Notes:
+      - Introduction: release_notes/index.md
+      - 0.9.0 notes: release_notes/0.9.0-notes.md
+      - 0.8.0 notes: release_notes/0.8.0-notes.md
+      - 0.7.0 notes: release_notes/0.7.0-notes.md
+      - 0.6.0 notes: release_notes/0.6.0-notes.md
+      - 0.5.0 notes: release_notes/0.5.0-notes.md
+      - 0.4.4 notes: release_notes/0.4.4-notes.md
+      - 0.4.3 notes: release_notes/0.4.3-notes.md
+      - 0.4.2 notes: release_notes/0.4.2-notes.md
+      - 0.3.0 notes: release_notes/0.3.0-notes.md
+      - 0.2.0 notes: release_notes/0.2.0-notes.md
+theme:
+  name: material
+  logo: assets/pkg-logo.svg
+  favicon: assets/favicon.ico
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: sphinx
+            show_source: false
+            show_signature: true
+            members_order: source
+            merge_init_into_class: true
+            docstring_section_style: spacy
+            show_root_heading: false
+            show_root_toc_entry: false
+            summary: true
+            filters:
+              - "!^_"
+
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      pygments_lang_class: true
+  - tables
