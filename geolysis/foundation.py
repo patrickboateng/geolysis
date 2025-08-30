@@ -10,7 +10,7 @@ from func_validator import (
     MustBePositive,
     MustBeNonNegative,
     MustBeBetween,
-    MustBeIn,
+    MustBeMemberOf,
 )
 
 from .utils import AbstractStrEnum, inf, isclose
@@ -82,10 +82,8 @@ class StripFooting(FootingSize):
     def __init__(self, width: float, length: float = inf):
         """
         :param width: Width of foundation footing (m).
-        :type width: float
 
-        :param float length: Length of foundation footing, defaults to inf (m).
-        :type length: float
+        :param length: Length of foundation footing (m).
         """
         self.width = width
         self.length = length
@@ -114,9 +112,9 @@ class StripFooting(FootingSize):
 class CircularFooting(FootingSize):
     """A class representation of circular footing.
 
-    .. note::
+    !!! note
 
-        The ``width`` and ``length`` properties refer to the diameter of the
+        The `width` and `length` properties refer to the diameter of the
         circular footing. This is to make it compatible with the protocol
         square and rectangular footing follow.
     """
@@ -125,7 +123,7 @@ class CircularFooting(FootingSize):
 
     def __init__(self, diameter: float):
         """
-        :param float diameter: Diameter of foundation footing (m).
+        :param diameter: Diameter of foundation footing (m).
         """
         self.diameter = diameter
 
@@ -200,10 +198,8 @@ class RectangularFooting(FootingSize):
     def __init__(self, width: float, length: float):
         """
         :param width: Width of foundation footing (m).
-        :type width: float
 
         :param length: Length of foundation footing (m).
-        :type length: float
         """
         self.width = width
         self.length = length
@@ -233,39 +229,30 @@ class Foundation:
     """A simple class representing a foundation structure."""
 
     def __init__(
-        self,
-        depth: float,
-        footing_size: FootingSize,
-        eccentricity: float = 0.0,
-        load_angle: float = 0.0,
-        ground_water_level: Optional[float] = None,
-        foundation_type: FoundationType = FoundationType.PAD,
+            self,
+            depth: float,
+            footing_size: FootingSize,
+            eccentricity: float = 0.0,
+            load_angle: float = 0.0,
+            ground_water_level: Optional[float] = None,
+            foundation_type: FoundationType = FoundationType.PAD,
     ) -> None:
         r"""
         :param depth: Depth of foundation (m).
-        :type depth: float
 
         :param footing_size: Represents the size of the foundation footing.
-        :type footing_size: FootingSize
 
-        :param eccentricity: The deviation of the foundation load from the
-                             center of gravity of the foundation footing (m),
-                             defaults to 0.0. This means that the foundation
-                             load aligns with the center of gravity of the
-                             foundation footing.
-        :type eccentricity: float, optional
+        :param eccentricity: The deviation of the foundation load from
+                             the center of gravity of the foundation
+                             footing (m).
 
-        :param load_angle: Inclination of the applied load with the  vertical
-                           (:math:`\alpha^{\circ}`), defaults to 0.0.
-        :type load_angle: float, optional
+        :param load_angle: Inclination of the applied load with the
+                           vertical ($\alpha^{\circ}$)
 
         :param ground_water_level: Depth of the water below ground level (m),
                                    defaults to None.
-        :type ground_water_level: float, optional
 
-        :param foundation_type: Type of foundation, defaults to
-                                :py:enum:mem:`~FoundationType.PAD`
-        :type foundation_type: FoundationType, optional
+        :param foundation_type: Type of foundation.
         """
         self.depth = depth
         self.footing_size = footing_size
@@ -310,8 +297,8 @@ class Foundation:
 
     @property
     def eccentricity(self) -> float:
-        """The deviation of the foundation load from the center of gravity of
-        the foundation footing (m).
+        """The deviation of the foundation load from the center of
+        gravity of the foundation footing (m).
         """
         return self._eccentricity
 
@@ -328,7 +315,8 @@ class Foundation:
     @load_angle.setter
     @validate_func_args
     def load_angle(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
+            self,
+            val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
     ) -> None:
         self._load_angle = val
 
@@ -349,7 +337,10 @@ class Foundation:
 
     @foundation_type.setter
     @validate_func_args
-    def foundation_type(self, val: Annotated[FoundationType, MustBeIn(FoundationType)]):
+    def foundation_type(
+            self,
+            val: Annotated[FoundationType, MustBeMemberOf(FoundationType)]
+    ):
         self._foundation_type = val
 
     @property
@@ -358,10 +349,11 @@ class Foundation:
         return self.width - 2.0 * self.eccentricity
 
     def footing_params(self) -> tuple[float, float, Shape]:
-        """Returns the :attr:`effective_width`, :attr:`length`, and
-        :attr:`footing_shape` of the foundation footing.
+        """Returns the `effective_width`, `length`, and `footing_shape`
+        of the foundation footing.
         """
-        width, length, shape = (self.effective_width, self.length, self.footing_shape)
+        width, length, shape = (
+        self.effective_width, self.length, self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -371,53 +363,46 @@ class Foundation:
 
 @validate_func_args
 def create_foundation(
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    eccentricity: float = 0.0,
-    load_angle: float = 0.0,
-    ground_water_level: Optional[float] = None,
-    foundation_type: FoundationType = "pad",
-    shape: Annotated[Shape | str, MustBeIn(Shape)] = "square",
+        depth: float,
+        width: float,
+        length: Optional[float] = None,
+        eccentricity: float = 0.0,
+        load_angle: float = 0.0,
+        ground_water_level: Optional[float] = None,
+        foundation_type: FoundationType = "pad",
+        shape: Annotated[Shape | str, MustBeMemberOf(Shape)] = "square",
 ) -> Foundation:
     r"""A factory function that encapsulate the creation of a foundation.
 
     :param depth: Depth of foundation (m).
-    :type depth: float
 
     :param width: Width of foundation footing. In the case of a circular
                   footing, it refers to the footing diameter (m).
-    :type width: float
 
     :param length: Length of foundation footing (m), defaults to None.
-    :type length: float, optional
 
     :param eccentricity: The deviation of the foundation load from the
                          center of gravity of the foundation footing (m),
                          defaults to 0.0. This means that the foundation
                          load aligns with the center of gravity of the
                          foundation footing .
-    :type eccentricity: float, optional
 
     :param load_angle: Inclination of the applied load with the  vertical
                            (:math:`\alpha^{\circ}`), defaults to 0.0.
-    :type load_angle: float, optional
 
     :param ground_water_level: Depth of the water below ground level (m),
                                defaults to None.
-    :type ground_water_level: float, optional
 
     :param foundation_type: Type of foundation footing, defaults to
                             :py:enum:mem:`~FoundationType.PAD`.
-    :type foundation_type: FoundationType, optional
 
     :param shape: Shape of foundation footing, defaults to
                   :py:enum:mem:`~Shape.SQUARE`
-    :type shape: Shape | str, optional
 
-    :raises ValueError: Raised when length is not provided for a rectangular
-                        footing.
-    :raises ValueError: Raised if an invalid footing shape is provided.
+    :raises ValueError: Raised when length is not provided for a
+                        rectangular footing.
+    :raises ValidationError: Raised if an invalid footing shape is
+                             provided.
     """
 
     shape = Shape(str(shape).casefold())

@@ -11,7 +11,7 @@ from func_validator import (
     validate_func_args,
     MustBeBetween,
     MustBePositive,
-    MustBeIn,
+    MustBeMemberOf,
     MustBeNonNegative,
     MustBeGreaterThanOrEqual,
     MustHaveLengthGreaterThan,
@@ -47,44 +47,45 @@ class SPTDesignMethod(AbstractStrEnum):
 class SPT:
     """SPT Design Calculations.
 
-    Due to uncertainty in field procedure in standard penetration test and also
-    to consider all the N-value in the influence zone of a foundation, a method
-    was suggested to calculate the design N-value which should be used in
-    calculating the allowable bearing capacity of shallow foundation rather
-    than using a particular N-value. All the N-value from the influence zone is
-    taken under consideration by giving the highest weightage to the closest
-    N-value from the base.
+    Due to uncertainty in field procedure in standard penetration test
+    and also to consider all the N-value in the influence zone of a
+    foundation, a method was suggested to calculate the design N-value
+    which should be used in calculating the allowable bearing capacity
+    of shallow foundation rather than using a particular N-value. All
+    the N-value from the influence zone is taken under consideration by
+    giving the highest weightage to the closest N-value from the base.
     """
 
     def __init__(
-        self,
-        corrected_spt_n_values: Sequence[float],
-        method: SPTDesignMethod.WGT = "wgt",
+            self,
+            corrected_spt_n_values: Sequence[float],
+            method: SPTDesignMethod.WGT = "wgt",
     ):
         """
         :param corrected_spt_n_values: Corrected SPT N-values within the
                                        foundation influence zone.
-        :type corrected_spt_n_values: Sequence[float]
         """
         self.corrected_spt_n_values = corrected_spt_n_values
         self.method = method
 
     @property
     def corrected_spt_n_values(self) -> Sequence[float]:
-        """Corrected SPT N-values within the foundation influence zone."""
+        """
+        Corrected SPT N-values within the foundation influence zone.
+        """
         return self._corrected_spt_n_values
 
     @corrected_spt_n_values.setter
     @validate_func_args
     def corrected_spt_n_values(
-        self,
-        val: Annotated[
-            Sequence[float],
-            MustHaveLengthGreaterThan(1),
-            MustHaveValuesBetween(min_value=1.0, max_value=100.0),
-        ],
+            self,
+            corrected_spt_n_values: Annotated[
+                Sequence[float],
+                MustHaveLengthGreaterThan(1),
+                MustHaveValuesBetween(min_value=1.0, max_value=100.0),
+            ],
     ) -> None:
-        self._corrected_spt_n_values = val
+        self._corrected_spt_n_values = corrected_spt_n_values
 
     @property
     def method(self):
@@ -92,7 +93,7 @@ class SPT:
 
     @method.setter
     @validate_func_args
-    def method(self, val: Annotated[str, MustBeIn(SPTDesignMethod)]):
+    def method(self, val: Annotated[str, MustBeMemberOf(SPTDesignMethod)]):
         self._method = val
 
     @staticmethod
@@ -110,7 +111,7 @@ class SPT:
         sum_wgts = 0.0
 
         for i, corr_spt_n_val in enumerate(vals, start=1):
-            wgt = 1 / i**2
+            wgt = 1 / i ** 2
             sum_total += wgt * corr_spt_n_val
             sum_wgts += wgt
 
@@ -118,24 +119,24 @@ class SPT:
 
     @round_(ndigits=1)
     def n_design(self):
-        r"""Calculates the SPT N-design within the foundation influence zone.
+        r"""Calculates the SPT N-design within the foundation influence
+        zone.
 
-        If ``method="min"``, it returns the minimum N-value within the foundation
-        influence zone as the SPT N-design value. This approach was suggested
-        by ``Terzaghi & Peck (1948)``.
+        If `method="min"`, it returns the minimum N-value within the
+        foundation influence zone as the SPT N-design value. This
+        approach was suggested by `Terzaghi & Peck (1948)`.
 
-        if ``method="avg"``, it returns the average N-value within the foundation
-        influence zone as the SPT N-design value.
-
-        if ``method="wgt"``, it returns the weighted average N-value within the
+        if `method="avg"`, it returns the average N-value within the
         foundation influence zone as the SPT N-design value.
 
-        :Equation:
+        if `method="wgt"`, it returns the weighted average N-value
+        within the foundation influence zone as the SPT N-design value.
 
-        .. math::
 
+        $$
             N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
                          {\sum_{i=1}^{n}\frac{1}{i^2}}
+        $$
         """
         if self.method == "min":
             return self._min_spt_n_design(self.corrected_spt_n_values)
@@ -166,12 +167,13 @@ class SamplerType(AbstractStrEnum):
 class EnergyCorrection:
     r"""SPT N-value standardized for field procedures.
 
-    On the basis of field observations, it appears reasonable to standardize
-    the field SPT N-value as a function of the input driving energy and its
-    dissipation around the sampler around the surrounding soil. The variations
-    in testing procedures may be at least partially compensated by converting
-    the measured N-value to :math:`N_{60}` assuming 60% hammer energy being
-    transferred to the tip of the standard split spoon.
+    On the basis of field observations, it appears reasonable to
+    standardize the field SPT N-value as a function of the input driving
+    energy and its dissipation around the sampler around the surrounding
+    soil. The variations in testing procedures may be at least partially
+    compensated by converting the measured N-value to $N_{60}$
+    assuming 60% hammer energy being transferred to the tip of the
+    standard split spoon.
     """
 
     _HAMMER_EFFICIENCY_FACTORS = {
@@ -189,34 +191,24 @@ class EnergyCorrection:
     }
 
     def __init__(
-        self,
-        recorded_spt_n_value: int,
-        *,
-        energy_percentage=0.6,
-        borehole_diameter=65.0,
-        rod_length=3.0,
-        hammer_type=HammerType.DONUT_1,
-        sampler_type=SamplerType.STANDARD,
+            self,
+            recorded_spt_n_value: int,
+            *,
+            energy_percentage=0.6,
+            borehole_diameter=65.0,
+            rod_length=3.0,
+            hammer_type=HammerType.DONUT_1,
+            sampler_type=SamplerType.STANDARD,
     ):
         """
         :param recorded_spt_n_value: Recorded SPT N-value from field.
-        :type recorded_spt_n_value: int
 
-        :param energy_percentage: Energy percentage reaching the tip of the
-                                  sampler, defaults to 0.6
-        :type energy_percentage: float, optional
-
-        :param borehole_diameter: Borehole diameter (mm), defaults to 65.0.
-        :type borehole_diameter: float, optional
-
-        :param rod_length: Length of SPT rod, defaults to 3.0. (m)
-        :type rod_length: float, optional
-
-        :param hammer_type: Hammer type, defaults to :py:enum:mem:`~HammerType.DONUT_1`
-        :type hammer_type: HammerType, optional
-
-        :param sampler_type: Sampler type, defaults to :py:enum:mem:`~SamplerType.STANDARD`
-        :type sampler_type: SamplerType, optional
+        :param energy_percentage: Energy percentage reaching the tip of
+                                  the sampler.
+        :param borehole_diameter: Borehole diameter (mm).
+        :param rod_length: Length of SPT rod, defaults to 3.0 (m).
+        :param hammer_type: Hammer type.
+        :param sampler_type: Sampler type.
         """
         self.recorded_spt_n_value = int(recorded_spt_n_value)
         self.energy_percentage = energy_percentage
@@ -233,7 +225,8 @@ class EnergyCorrection:
     @recorded_spt_n_value.setter
     @validate_func_args
     def recorded_spt_n_value(
-        self, val: Annotated[int, MustBeBetween(min_value=0, max_value=100)]
+            self,
+            val: Annotated[int, MustBeBetween(min_value=0, max_value=100)]
     ) -> None:
         self._recorded_spt_value = val
 
@@ -245,7 +238,8 @@ class EnergyCorrection:
     @energy_percentage.setter
     @validate_func_args
     def energy_percentage(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=1.0)]
+            self,
+            val: Annotated[float, MustBeBetween(min_value=0.0, max_value=1.0)]
     ) -> None:
         self._energy_percentage = val
 
@@ -257,7 +251,8 @@ class EnergyCorrection:
     @borehole_diameter.setter
     @validate_func_args
     def borehole_diameter(
-        self, val: Annotated[float, MustBeBetween(min_value=65.0, max_value=200.0)]
+            self, val: Annotated[
+                float, MustBeBetween(min_value=65.0, max_value=200.0)]
     ) -> None:
         self._borehole_diameter = val
 
@@ -277,8 +272,11 @@ class EnergyCorrection:
 
     @hammer_type.setter
     @validate_func_args
-    def hammer_type(self, val: Annotated[HammerType, MustBeIn(HammerType)]):
-        self._hammer_type = val
+    def hammer_type(
+            self,
+            hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)]
+    ):
+        self._hammer_type = hammer_type
 
     @property
     def sampler_type(self) -> SamplerType:
@@ -286,7 +284,8 @@ class EnergyCorrection:
 
     @sampler_type.setter
     @validate_func_args
-    def sampler_type(self, val: Annotated[SamplerType, MustBeIn(SamplerType)]):
+    def sampler_type(self,
+                     val: Annotated[SamplerType, MustBeMemberOf(SamplerType)]):
         self._sampler_type = val
 
     @property
@@ -326,19 +325,17 @@ class EnergyCorrection:
     def correction(self) -> float:
         r"""Energy correction factor.
 
-        :Equation:
-
-        .. math::
-
+        $$
             N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{ENERGY}
+        $$
 
-        ``ENERGY``: 0.6, 0.55, etc
+        `ENERGY`: 0.6, 0.55, etc
         """
         numerator = (
-            self.hammer_efficiency
-            * self.borehole_diameter_correction
-            * self.sampler_correction
-            * self.rod_length_correction
+                self.hammer_efficiency
+                * self.borehole_diameter_correction
+                * self.sampler_correction
+                * self.rod_length_correction
         )
         return numerator / self.energy_percentage
 
@@ -353,24 +350,23 @@ class OPC:
 
     def __init__(self, std_spt_n_value: float, eop: float):
         """
-        :param std_spt_n_value: SPT N-value standardized for field procedures.
-        :type std_spt_n_value: float
+        :param std_spt_n_value: SPT N-value standardized for field
+                                procedures.
 
-        :param eop: Effective overburden pressure (:math:`kPa`).
-        :type eop: float
+        :param eop: Effective overburden pressure ($kPa$).
         """
         self.std_spt_n_value = std_spt_n_value
         self.eop = eop
 
     @property
     def eop(self) -> float:
-        """Effective overburden pressure (:math:`kPa`)."""
+        """Effective overburden pressure ($kPa$)."""
         return self._eop
 
     @eop.setter
     @validate_func_args
     def eop(self, val: Annotated[float, MustBeNonNegative]):
-        """Effective overburden pressure (:math:`kPa`)."""
+        """Effective overburden pressure ($kPa$)."""
         self._eop = val
 
     @property
@@ -381,7 +377,8 @@ class OPC:
     @std_spt_n_value.setter
     @validate_func_args
     def std_spt_n_value(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
+            self, val: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=100.0)]
     ):
         self._std_spt_n_value = val
 
@@ -389,15 +386,15 @@ class OPC:
     def corrected_spt_n_value(self) -> float:
         r"""Corrected SPT N-value.
 
-        :Equation:
+        $$
+        (N_1)_{60} = C_N \cdot N_{60}
+        $$
 
-        .. math:: (N_1)_{60} = C_N \cdot N_{60}
+        !!! note
 
-        .. note::
-
-            ``60`` is used in this case to represent ``60%`` hammer efficiency
-            and can be any percentage of hammer efficiency e.g :math:`N_{55}`
-            for ``55%`` hammer efficiency.
+            `60` is used in this case to represent `60%` hammer
+             efficiency and can be any percentage of hammer efficiency
+             e.g $N_{55}$ for `55%` hammer efficiency.
         """
         corrected_spt = self.correction() * self.std_spt_n_value
         # Corrected SPT should not be more
@@ -410,37 +407,40 @@ class OPC:
 
 
 class GibbsHoltzOPC(OPC):
-    """Overburden Pressure Correction according to ``Gibbs & Holtz (1957)``."""
+    """Overburden Pressure Correction according to
+    `Gibbs & Holtz (1957)`.
+    """
 
     @property
     def eop(self) -> float:
-        """Effective overburden pressure (:math:`kpa`)."""
+        """Effective overburden pressure ($kPa$)."""
         return self._eop
 
     @eop.setter
     @validate_func_args
-    def eop(self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=280.0)]):
+    def eop(self, val: Annotated[
+        float, MustBeBetween(min_value=0.0, max_value=280.0)]):
         self._eop = val
 
     def correction(self) -> float:
         r"""SPT Correction.
 
-        :Equation:
+        $$
+        C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
+        $$
 
-        .. math:: C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
-
-        :math:`\frac{N_c}{N_{60}}` should lie between 0.45 and 2.0, if
-        :math:`\frac{N_c}{N_{60}}` is greater than 2.0, :math:`N_c` should be
-        divided by 2.0 to obtain the design value used in finding the bearing
-        capacity of the soil.
+        $\frac{N_c}{N_{60}}$ should lie between 0.45 and 2.0, if
+        $\frac{N_c}{N_{60}}$ is greater than 2.0, :math:`N_c` should be
+        divided by 2.0 to obtain the design value used in finding the
+        bearing capacity of the soil.
         """
         corr = 350.0 / (self.eop + 70.0)
         return corr / 2.0 if corr > 2.0 else corr
 
 
 class BazaraaPeckOPC(OPC):
-    """Overburden Pressure Correction according to ``Bazaraa (1967)``, and
-    also by ``Peck and Bazaraa (1969)``.
+    """Overburden Pressure Correction according to `Bazaraa (1967)`, and
+    also by `Peck and Bazaraa (1969)`.
     """
 
     #: Maximum effective overburden pressure (:math:`kPa`).
@@ -449,16 +449,19 @@ class BazaraaPeckOPC(OPC):
     def correction(self) -> float:
         r"""SPT Correction.
 
-        :Equation:
+        $$
+        C_N = \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
+        $$
 
-        .. math::
+        $$
+        C_N = \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o},
+               \, \sigma_o \gt 71.8kN/m^2
+        $$
 
-            C_N &= \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
+        $$
+        C_N = 1 \, , \, \sigma_o = 71.8kN/m^2
+        $$
 
-            C_N &= \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o},
-                   \, \sigma_o \gt 71.8kN/m^2
-
-            C_N &= 1 \, , \, \sigma_o = 71.8kN/m^2
         """
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
@@ -470,11 +473,13 @@ class BazaraaPeckOPC(OPC):
 
 
 class PeckOPC(OPC):
-    """Overburden Pressure Correction according to ``Peck et al. (1974)``."""
+    """Overburden Pressure Correction according to
+    `Peck et al. (1974)`.
+    """
 
     @property
     def eop(self) -> float:
-        """Effective overburden pressure (:math:`kPa`)."""
+        """Effective overburden pressure ($kPa$)."""
         return self._eop
 
     @eop.setter
@@ -485,41 +490,43 @@ class PeckOPC(OPC):
     def correction(self) -> float:
         r"""SPT Correction.
 
-        :Equation:
-
-        .. math:: C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
+        $$
+        C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
+        $$
         """
         return 0.77 * log10(2000.0 / self.eop)
 
 
 class LiaoWhitmanOPC(OPC):
-    """Overburden Pressure Correction according to ``Liao & Whitman (1986)``."""
+    """Overburden Pressure Correction according to
+    `Liao & Whitman (1986)`.
+    """
 
     def correction(self) -> float:
         r"""SPT Correction.
 
-        :Equation:
-
-        .. math:: C_N = \sqrt{\dfrac{100}{\sigma_o}}
+        $$
+        C_N = \sqrt{\dfrac{100}{\sigma_o}}
+        $$
         """
         return sqrt(100.0 / self.eop)
 
 
 class SkemptonOPC(OPC):
-    """Overburden Pressure Correction according to ``Skempton (1986)``."""
+    """Overburden Pressure Correction according to `Skempton (1986)`."""
 
     def correction(self) -> float:
         r"""SPT Correction.
 
-        :Equation:
-
-        .. math:: C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
+        $$
+        C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
+        $$
         """
         return 2.0 / (1.0 + 0.01044 * self.eop)
 
 
 class DilatancyCorrection:
-    """Dilatancy SPT Correction according to ``Terzaghi & Peck (1948)``.
+    """Dilatancy SPT Correction according to `Terzaghi & Peck (1948)`.
 
     For coarse sand, this correction is not required. In applying this
     correction, overburden pressure correction is applied first and then
@@ -528,23 +535,24 @@ class DilatancyCorrection:
 
     def __init__(self, corr_spt_n_value: float):
         """
-        :param corr_spt_n_value: SPT N-value standardized for field procedures
-                                and/or corrected for overburden pressure.
-        :type corr_spt_n_value: float
+        :param corr_spt_n_value: SPT N-value standardized for field
+                                 procedures and/or corrected for
+                                 overburden pressure.
         """
         self.corr_spt_n_value = corr_spt_n_value
 
     @property
     def corr_spt_n_value(self) -> float:
-        """SPT N-value standardized for field procedures and/or corrected for
-        overburden pressure.
+        """SPT N-value standardized for field procedures and/or corrected
+        for overburden pressure.
         """
         return self._corr_spt_n_value
 
     @corr_spt_n_value.setter
     @validate_func_args
     def corr_spt_n_value(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
+            self, val: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=100.0)]
     ):
         self._corr_spt_n_value = val
 
@@ -552,14 +560,15 @@ class DilatancyCorrection:
     def corrected_spt_n_value(self) -> float:
         r"""Corrected SPT N-value.
 
-        :Equation:
+        $$
+        (N_1)_{60} = 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \,
+                     (N_1)_{60} \gt 15
+        $$
 
-        .. math::
+        $$
+        (N_1)_{60} = (N_1)_{60} \, , \, (N_1)_{60} \le 15
+        $$
 
-            (N_1)_{60} &= 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \,
-                          (N_1)_{60} \gt 15
-
-            (N_1)_{60} &= (N_1)_{60} \, , \, (N_1)_{60} \le 15
         """
         if self.corr_spt_n_value <= 15.0:
             return self.corr_spt_n_value
@@ -587,22 +596,19 @@ _opctypes = {
 
 @validate_func_args
 def create_overburden_pressure_correction(
-    std_spt_n_value: float,
-    eop: float,
-    opc_type: Annotated[OPCType | str, MustBeIn(OPCType)] = "gibbs",
+        std_spt_n_value: float,
+        eop: float,
+        opc_type: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
 ):
     """A factory function that encapsulates the creation of overburden
     pressure correction.
 
-    :param std_spt_n_value: SPT N-value standardized for field procedures.
-    :type std_spt_n_value: float
+    :param std_spt_n_value: SPT N-value standardized for field
+                            procedures.
 
-    :param eop: Effective overburden pressure (:math:`kPa`).
-    :type eop: float
+    :param eop: Effective overburden pressure ($kPa$).
 
-    :param opc_type: Overburden Pressure Correction type to apply,
-                    defaults to :py:enum:mem:`~OPCType.GIBBS`
-    :type opc_type: OPCType, optional
+    :param opc_type: Overburden Pressure Correction type to apply.
     """
     opc_type = OPCType(opc_type)
     opc_class = _opctypes[opc_type]

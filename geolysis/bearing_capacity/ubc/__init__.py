@@ -1,26 +1,19 @@
-"""
-This package provides a factory function and utilities for creating ultimate
-bearing capacity calculations using methods like Hansen, Terzaghi, and Vesic
-for various foundation shapes.
-"""
-
 import enum
 from typing import Optional, Annotated
 
-from func_validator import MustBeIn, validate_func_args
+from func_validator import MustBeMemberOf, validate_func_args
 
 from geolysis.foundation import Shape, create_foundation
 from geolysis.utils import AbstractStrEnum
-
 from ._core import UltimateBearingCapacity
-from .hansen_ubc import HansenUltimateBearingCapacity
-from .terzaghi_ubc import (
+from ._hansen_ubc import HansenUltimateBearingCapacity
+from ._terzaghi_ubc import (
     TerzaghiUBC4CircularFooting,
     TerzaghiUBC4RectangularFooting,
     TerzaghiUBC4SquareFooting,
     TerzaghiUBC4StripFooting,
 )
-from .vesic_ubc import VesicUltimateBearingCapacity
+from ._vesic_ubc import VesicUltimateBearingCapacity
 
 __all__ = [
     "UBCType",
@@ -30,7 +23,7 @@ __all__ = [
     "TerzaghiUBC4SquareFooting",
     "HansenUltimateBearingCapacity",
     "VesicUltimateBearingCapacity",
-    "create_ultimate_bearing_capacity",
+    "create_ubc_4_all_soil_types",
 ]
 
 
@@ -43,75 +36,47 @@ class UBCType(AbstractStrEnum):
 
 
 @validate_func_args
-def create_ultimate_bearing_capacity(
-    friction_angle: float,
-    cohesion: float,
-    moist_unit_wgt: float,
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    eccentricity: float = 0.0,
-    ground_water_level: Optional[float] = None,
-    load_angle: float = 0.0,
-    apply_local_shear: bool = False,
-    shape: Shape | str = "square",
-    ubc_type: Annotated[UBCType | str, MustBeIn(UBCType)] = "hansen",
+def create_ubc_4_all_soil_types(
+        friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        depth: float,
+        width: float,
+        length: Optional[float] = None,
+        eccentricity: float = 0.0,
+        ground_water_level: Optional[float] = None,
+        load_angle: float = 0.0,
+        apply_local_shear: bool = False,
+        shape: Shape | str = "square",
+        ubc_type: Annotated[UBCType | str, MustBeMemberOf(UBCType)] = "hansen",
 ) -> UltimateBearingCapacity:
-    r"""A factory function that encapsulate the creation of ultimate bearing
-    capacity.
+    r"""A factory function that encapsulate the creation of ultimate
+    bearing capacity.
 
     :param friction_angle: Internal angle of friction for general shear
                            failure (degree).
-    :type friction_angle: float
 
-    :param cohesion: Cohesion of soil (:math:`kPa`).
-    :type cohesion: float
-
-    :param moist_unit_wgt: Moist unit weight of soil (:math:`kN/m^3`).
-    :type moist_unit_wgt: float
-
+    :param cohesion: Cohesion of soil ($kPa$).
+    :param moist_unit_wgt: Moist unit weight of soil ($kN/m^3$).
     :param depth: Depth of foundation (m).
-    :type depth: float
-
     :param width: Width of foundation footing (m).
-    :type width: float
-
     :param length: Length of foundation footing (m).
-    :type length: float, optional
-
     :param eccentricity: The deviation of the foundation load from the
-                         center of gravity of the foundation footing,
-                         defaults to 0.0 (m). This means that the foundation
-                         load aligns with the center of gravity of the
-                         foundation footing.
-    :type eccentricity: float, optional
-
+                         center of gravity of the foundation footing.
     :param ground_water_level: Depth of water below ground level (m).
-    :type ground_water_level: float, optional
-
     :param load_angle: Inclination of the applied load with the  vertical
-                       (:math:`\alpha^{\circ}`), defaults to 0.0.
-    :type load_angle: float, optional
+                       ($\alpha^{\circ}$).
+    :param apply_local_shear: Indicate whether bearing capacity failure
+                              is general or local shear failure.
+    :param shape: Shape of foundation footing.
+    :param ubc_type: Type of allowable bearing capacity calculation to
+                     apply.
 
-    :param apply_local_shear: Indicate whether bearing capacity failure is
-                              general or local shear failure, defaults to
-                              False.
-    :type apply_local_shear: bool, optional
-
-    :param shape: Shape of foundation footing, defaults to
-                  :attr:`~geolysis.foundation.Shape.SQUARE`.
-    :type shape: Shape | str, optional
-
-    :param ubc_type: Type of allowable bearing capacity calculation to apply.
-                     Available values are: :attr:`~UBCType.HANSEN`,
-                     :attr:`~UBCType.TERZAGHI`, and :attr:`~UBCType.VESIC`
-                     defaults to None.
-    :type ubc_type:  UBCType | str, optional
-
-    :raises ValueError: Raised if ubc_type is not supported.
-    :raises ValueError: Raised when length is not provided for a rectangular
-                        footing.
-    :raises ValueError: Raised if an invalid footing shape is provided.
+    :raises ValidationError: Raised if ubc_type is not supported.
+    :raises ValidationError: Raised if an invalid footing shape is
+                             provided.
+    :raises ValueError: Raised when length is not provided for a
+                        rectangular footing.
     """
     ubc_type = UBCType(ubc_type)
 
@@ -127,7 +92,8 @@ def create_ultimate_bearing_capacity(
         shape=shape,
     )
 
-    ubc_class = _get_ultimate_bearing_capacity(ubc_type, fnd_size.footing_shape)
+    ubc_class = _get_ultimate_bearing_capacity(ubc_type,
+                                               fnd_size.footing_shape)
 
     return ubc_class(
         friction_angle=friction_angle,

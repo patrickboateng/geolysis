@@ -1,6 +1,6 @@
+import enum
 import functools
 import math
-import enum
 from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
 from typing import Callable
@@ -31,15 +31,16 @@ class StrEnumMeta(enum.EnumMeta):
             return item in (member.value for member in cls)
         return item in cls.__members__
 
+    def __repr__(cls):
+        return str([member.value for member in cls])
+
 
 class AbstractStrEnum(enum.StrEnum, metaclass=StrEnumMeta):
     """An abstract string enumeration class that inherits from StrEnum.
 
-    This class can be used as a base class for creating string enumerations.
+    This class can be used as a base class for creating string
+    enumerations.
     """
-
-    def __repr__(self):
-        return f"{self.value}"
 
 
 def deg2rad(x: float, /) -> float:
@@ -78,13 +79,13 @@ def arctan(x: float, /) -> float:
 
 
 def round_(ndigits: int) -> Callable:
-    """A decorator that rounds the result of a callable to a specified number
-    of decimal places.
+    """A decorator that rounds the result of a callable to a specified
+    number of decimal places.
 
-    The returned value of the callable should support the ``__round__`` dunder
-    method and should be a numeric value.
+    The returned value of the callable should support the `__round__`
+    dunder method and should be a numeric value.
 
-    TypeError is raised when ``ndigits`` is not an int.
+    TypeError is raised when `ndigits` is not an int.
     """
 
     if not isinstance(ndigits, int):

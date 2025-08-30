@@ -13,31 +13,40 @@ from geolysis.utils import arctan, round_, tan
 
 class UltimateBearingCapacity(ABC):
     def __init__(
-        self,
-        friction_angle: float,
-        cohesion: float,
-        moist_unit_wgt: float,
-        foundation_size: Foundation,
-        apply_local_shear: bool = False,
+            self,
+            friction_angle: float,
+            cohesion: float,
+            moist_unit_wgt: float,
+            foundation_size: Foundation,
+            apply_local_shear: bool = False,
     ) -> None:
         r"""
-        :param friction_angle: Internal angle of friction for general shear
-                               failure (degrees).
-        :type friction_angle: float
 
-        :param cohesion: Cohesion of soil (:math:`kPa`).
-        :type cohesion: float
+        $$
+        q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
+              + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma} i_{\gamma}
+        $$
 
-        :param moist_unit_wgt: Moist unit weight of soil (:math:`kN/m^3`).
-        :type moist_unit_wgt: float
+         | SYMBOL                          | DESCRIPTION                     | UNIT       |
+         |---------------------------------|---------------------------------|------------|
+         |$q_u$                           | Ultimate bearing capacity       | $kPa$     |
+         |$c$                             | Cohesion of soil                | $kPa$     |
+         |$q$                             | Overburden pressure of soil     | $kPa$     |
+         |$\gamma$                         | Unit weight of soil             | $kN/m^3$  |
+         |$B$                             | Width of foundation footing     | $m$       |
+         |$N_c$, $N_q$, $N_{\gamma}$      | Bearing capacity factors        | —          |
+         |$s_c$, $s_q$, $s_{\gamma}$      | Shape factors                   | —          |
+         |$d_c$, $d_q$, $d_{\gamma}$      | Depth factors                   | —          |
+         |$i_c$, $i_q$, $i_{\gamma}$      | Inclination factors             | —          |
 
+        :param friction_angle: Internal angle of friction for general
+                               shear failure (degrees).
+        :param cohesion: Cohesion of soil ($kPa$).
+        :param moist_unit_wgt: Moist unit weight of soil ($kN/m^3$).
         :param foundation_size: Size of the foundation.
-        :type foundation_size: Foundation
-
-        :param apply_local_shear: Indicate whether bearing capacity failure is
-                                  general shear or local shear failure,
-                                  defaults to False.
-        :type apply_local_shear: bool, optional
+        :param apply_local_shear: Indicate whether bearing capacity
+                                  failure is general shear or local
+                                  shear failure.
         """
         self.friction_angle = friction_angle
         self.cohesion = cohesion
@@ -50,13 +59,11 @@ class UltimateBearingCapacity(ABC):
         r"""Return friction angle for local shear in the case of local shear
         failure or general shear in the case of general shear failure.
 
-        :Equation:
-
         In the case of local shear failure:
 
-        .. math::
-
-           \phi' = \tan^{-1} \left(\frac{2}{3} \tan \phi\right)
+        $$
+        \phi' = \tan^{-1} \left(\frac{2}{3} \tan \phi\right)
+        $$
 
         """
         if self.apply_local_shear:
@@ -73,13 +80,11 @@ class UltimateBearingCapacity(ABC):
         r"""Return cohesion for local shear in the case of local shear failure
         or general shear in the case of general shear failure.
 
-        :Equation:
-
         In the case of local shear failure:
 
-        .. math::
-
-            C^{'} = \dfrac{2}{3} \cdot C
+        $$
+        C^{'} = \dfrac{2}{3} \cdot C
+        $$
         """
         if self.apply_local_shear:
             return (2.0 / 3.0) * self._cohesion
@@ -92,7 +97,7 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def moist_unit_wgt(self) -> float:
-        """Moist unit weight of soil (:math:`kN/m^3`)."""
+        """Moist unit weight of soil ($kN/m^3$)."""
         return self._moist_unit_wgt
 
     @moist_unit_wgt.setter
@@ -107,47 +112,38 @@ class UltimateBearingCapacity(ABC):
 
     @property
     def s_c(self) -> float:
-        """Shape factor :math:`S_c`"""
         return 1.0
 
     @property
     def s_q(self) -> float:
-        """Shape factor :math:`S_q`"""
         return 1.0
 
     @property
     def s_gamma(self) -> float:
-        r"""Shape factor :math:`S_{\gamma}`"""
         return 1.0
 
     @property
     def d_c(self) -> float:
-        """Depth factor :math:`d_c`"""
         return 1.0
 
     @property
     def d_q(self) -> float:
-        """Depth factor :math:`d_q`"""
         return 1.0
 
     @property
     def d_gamma(self) -> float:
-        r"""Depth factor :math:`d_{\gamma}`"""
         return 1.0
 
     @property
     def i_c(self) -> float:
-        """Inclination factor :math:`i_c`"""
         return 1.0
 
     @property
     def i_q(self) -> float:
-        """Inclination factor :math:`i_q`"""
         return 1.0
 
     @property
     def i_gamma(self) -> float:
-        r"""Inclination factor :math:`i_{\gamma}`"""
         return 1.0
 
     def _cohesion_term(self, coef: float = 1.0) -> float:
@@ -182,33 +178,36 @@ class UltimateBearingCapacity(ABC):
             water_corr = min(0.5 + 0.5 * b / width, 1)
 
         return (
-            coef
-            * self.moist_unit_wgt
-            * width
-            * self.n_gamma
-            * self.s_gamma
-            * self.d_gamma
-            * self.i_gamma
-            * water_corr
+                coef
+                * self.moist_unit_wgt
+                * width
+                * self.n_gamma
+                * self.s_gamma
+                * self.d_gamma
+                * self.i_gamma
+                * water_corr
         )
 
     @round_(ndigits=2)
     def bearing_capacity(self) -> float:
         """Calculates the ultimate bearing capacity."""
         return (
-            self._cohesion_term(1.0)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
+                self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5)
         )
 
     @property
     @abstractmethod
-    def n_c(self) -> float: ...
+    def n_c(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_q(self) -> float: ...
+    def n_q(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_gamma(self) -> float: ...
+    def n_gamma(self) -> float:
+        ...

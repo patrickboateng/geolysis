@@ -39,7 +39,9 @@ class _Clf(tuple, enum.Enum):
 
 
 class USCSSymbol(_Clf):
-    """Unified Soil Classification System (USCS) symbols and descriptions."""
+    """
+    Unified Soil Classification System (USCS) symbols and descriptions.
+    """
 
     G = GRAVEL = ("G", "Gravel")
     S = SAND = ("S", "Sand")
@@ -96,8 +98,8 @@ class AASHTOSymbol(_Clf):
 
 
 class AtterbergLimits:
-    """Represents the water contents at which soil changes from one state to
-    the other.
+    """Represents the water contents at which soil changes from one state
+    to the other.
     """
 
     class __A_LINE:
@@ -111,24 +113,26 @@ class AtterbergLimits:
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
         """
-        :param liquid_limit: Water content beyond which soils flows under their
-                             own weight (%). It can also be defined as the
-                             minimum moisture content at which a soil flows upon
-                             application of a very small shear force.
-        :type liquid_limit: float
+        :param liquid_limit: Water content beyond which soils flows
+                             under their own weight (%). It can also be
+                             defined as the minimum moisture content at
+                             which a soil flows upon application of a
+                             very small shear force.
 
-        :param plastic_limit: Water content at which plastic deformation can be
-                              initiated (%). It is also the minimum water
-                              content at which soil can be rolled into a thread
-                              3mm thick. (molded without breaking)
-        :type plastic_limit: float
+        :param plastic_limit: Water content at which plastic deformation
+                              can be initiated (%). It is also the
+                              minimum water content at which soil can be
+                              rolled into a thread 3mm thick (molded
+                              without breaking).
         """
         self.liquid_limit = liquid_limit
         self.plastic_limit = plastic_limit
 
     @property
     def liquid_limit(self) -> float:
-        """Water content beyond which soils flows under their own weight (%)."""
+        """
+        Water content beyond which soils flows under their own weight (%).
+        """
         return self._liquid_limit
 
     @liquid_limit.setter
@@ -138,7 +142,9 @@ class AtterbergLimits:
 
     @property
     def plastic_limit(self) -> float:
-        """Water content at which plastic deformation can be initiated (%)."""
+        """
+        Water content at which plastic deformation can be initiated (%).
+        """
         return self._plastic_limit
 
     @plastic_limit.setter
@@ -178,8 +184,8 @@ class AtterbergLimits:
         return self.plasticity_index > self.A_LINE
 
     def limit_plot_in_hatched_zone(self) -> bool:
-        """Checks if soil sample plot in the hatched zone on the atterberg
-        chart.
+        """Checks if soil sample plot in the hatched zone on the
+        atterberg chart.
         """
         return 4 <= self.plasticity_index <= 7 and 10 < self.liquid_limit < 30
 
@@ -187,17 +193,16 @@ class AtterbergLimits:
     def liquidity_index(self, nmc: float) -> float:
         r"""Return the liquidity index of the soil.
 
-        Liquidity index of a soil indicates the nearness of its ``natural water
-        content`` to its ``liquid limit``. When the soil is at the plastic
-        limit its liquidity index is zero. Negative values of the liquidity
-        index indicate that the soil is in a hard (desiccated) state. It is
-        also known as Water-Plasticity ratio.
+        Liquidity index of a soil indicates the nearness of its
+        `natural water content` to its `liquid limit`. When the soil
+        is at the plastic limit its liquidity index is zero. Negative
+        values of the liquidity index indicate that the soil is in a
+        hard (desiccated) state. It is also known as Water-Plasticity
+        ratio.
 
-        :param float nmc: Moisture contents of the soil in natural condition.
+        :param nmc: Moisture contents of the soil in natural condition.
 
-        :Equation:
-
-        .. math:: I_l = \dfrac{w - PL}{PI} \cdot 100
+        $$I_l = \dfrac{w - PL}{PI} \cdot 100$$
         """
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100.0
 
@@ -205,22 +210,21 @@ class AtterbergLimits:
     def consistency_index(self, nmc: float) -> float:
         r"""Return the consistency index of the soil.
 
-        Consistency index indicates the consistency (firmness) of soil. It
-        shows the nearness of the ``natural water content`` of the soil to its
-        ``plastic limit``. When the soil is at the liquid limit, the
-        consistency index is zero. The soil at consistency index of zero will
-        be extremely soft and has negligible shear strength. A soil at a water
-        content equal to the plastic limit has consistency index of 100%
-        indicating that the soil is relatively firm. A consistency index of
-        greater than 100% shows the soil is relatively strong
-        (semi-solid state). A negative value indicate the soil is in the liquid
-        state. It is also known as Relative Consistency.
+        Consistency index indicates the consistency (firmness) of soil.
+        It shows the nearness of the ``natural water content`` of the
+        soil to its `plastic limit`. When the soil is at the liquid
+        limit, the consistency index is zero. The soil at consistency
+        index of zero will be extremely soft and has negligible shear
+        strength. A soil at a water content equal to the plastic limit
+        has consistency index of 100% indicating that the soil is
+        relatively firm. A consistency index of greater than 100% shows
+        the soil is relatively strong (semi-solid state). A negative
+        value indicate the soil is in the liquid state. It is also known
+        as Relative Consistency.
 
-        :param float nmc: Moisture contents of the soil in natural condition.
+        :param nmc: Moisture contents of the soil in natural condition.
 
-        :Equation:
-
-        .. math:: I_c = \dfrac{LL - w}{PI} \cdot 100
+        $$I_c = \dfrac{LL - w}{PI} \cdot 100$$
         """
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
@@ -231,7 +235,8 @@ class _SizeDistribution:
     Features obtained from the Particle Size Distribution graph.
     """
 
-    def __init__(self, d_10: float = 0.0, d_30: float = 0.0, d_60: float = 0.0):
+    def __init__(self, d_10: float = 0.0, d_30: float = 0.0,
+                 d_60: float = 0.0):
         self.d_10 = d_10
         self.d_30 = d_30
         self.d_60 = d_60
@@ -241,19 +246,17 @@ class _SizeDistribution:
 
     @property
     def coeff_of_curvature(self) -> float:
-        return (self.d_30**2.0) / (self.d_60 * self.d_10)
+        return (self.d_30 ** 2.0) / (self.d_60 * self.d_10)
 
     @property
     def coeff_of_uniformity(self) -> float:
         return self.d_60 / self.d_10
 
     def grade(self, coarse_soil: USCSSymbol) -> USCSSymbol:
-        """Grade of soil sample. Soil grade can either be well graded or poorly
-        graded.
+        """Grade of soil sample. Soil grade can either be well graded or
+        poorly graded.
 
-        :param coarse_soil: Coarse fraction of the soil sample. Valid arguments
-                            are :py:enum:mem:`~USCSSymbol.GRAVEL` and
-                            :py:enum:mem:`~USCSSymbol.SAND`.
+        :param coarse_soil: Coarse fraction of the soil sample.
         """
         if coarse_soil is USCSSymbol.GRAVEL:
             if 1 < self.coeff_of_curvature < 3 and self.coeff_of_uniformity >= 4:
@@ -271,33 +274,30 @@ class _SizeDistribution:
 
 
 class PSD:
-    """Quantitative proportions by mass of various sizes of particles present
-    in a soil.
+    """Quantitative proportions by mass of various sizes of particles
+    present in a soil.
     """
 
     def __init__(
-        self,
-        fines: float,
-        sand: float,
-        d_10: float = 0,
-        d_30: float = 0,
-        d_60: float = 0,
+            self,
+            fines: float,
+            sand: float,
+            d_10: float = 0,
+            d_30: float = 0,
+            d_60: float = 0,
     ):
         """
         :param fines: Percentage of fines in soil sample (%) i.e. The
-                      percentage of soil sample passing through No. 200 sieve
-                      (0.075mm).
-        :type fines: float
+                      percentage of soil sample passing through No. 200
+                      sieve (0.075mm).
 
         :param sand: Percentage of sand in soil sample (%).
-        :type sand: float
 
         :param d_10: Diameter at which 10% of the soil by weight is finer.
-        :type d_10: float
+
         :param d_30: Diameter at which 30% of the soil by weight is finer.
-        :type d_30: float
+
         :param d_60: Diameter at which 60% of the soil by weight is finer.
-        :type d_60: float
         """
         self.fines = fines
         self.sand = sand
@@ -320,11 +320,9 @@ class PSD:
     def coeff_of_curvature(self) -> float:
         r"""Coefficient of curvature of soil sample.
 
-        :Equation:
+        $$C_c = \dfrac{D^2_{30}}{D_{60} \cdot D_{10}}$$
 
-        .. math:: C_c = \dfrac{D^2_{30}}{D_{60} \cdot D_{10}}
-
-        For the soil to be well graded, the value of :math:`C_c` must be
+        For the soil to be well graded, the value of $C_c$ must be
         between 1 and 3.
         """
         return self.size_dist.coeff_of_curvature
@@ -334,15 +332,14 @@ class PSD:
     def coeff_of_uniformity(self) -> float:
         r"""Coefficient of uniformity of soil sample.
 
-        :Equation:
+        $$C_u = \dfrac{D_{60}}{D_{10}}$$
 
-        .. math:: C_u = \dfrac{D_{60}}{D_{10}}
+        $C_u$ value greater than 4 to 6 classifies the soil as well
+        graded for gravels and sands respectively. When $C_u$ is less
+        than 4, it is classified as poorly graded or uniformly graded
+        soil.
 
-        :math:`C_u` value greater than 4 to 6 classifies the soil as well
-        graded for gravels and sands respectively. When :math:`C_u` is less
-        than 4, it is classified as poorly graded or uniformly graded soil.
-
-        Higher values of :math:`C_u` indicates that the soil mass consists of
+        Higher values of $C_u$ indicates that the soil mass consists of
         soil particles with different size ranges.
         """
         return self.size_dist.coeff_of_uniformity
@@ -352,15 +349,13 @@ class PSD:
         return any(self.size_dist)
 
     def grade(self) -> USCSSymbol:
-        r"""Return the grade of the soil sample, either well graded or poorly
-        graded.
+        r"""Return the grade of the soil sample, either well graded or
+        poorly graded.
 
         Conditions for a well-graded soil:
 
-        :Equation:
-
-        - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 4` (for gravels)
-        - :math:`1 \lt C_c \lt 3` and :math:`C_u \ge 6` (for sands)
+        - $1 \lt C_c \lt 3$ and $C_u \ge 4$ (for gravels)
+        - $1 \lt C_c \lt 3$ and $C_u \ge 6$ (for sands)
         """
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
 
@@ -368,49 +363,47 @@ class PSD:
 @dataclass
 class AASHTOResult:
     symbol: str
-    symbol_no_grp_idx: str
+    symbol_no_group_idx: str
     description: str
     group_index: str
 
 
 class AASHTO:
-    r"""American Association of State Highway and Transportation Officials
-    (AASHTO) classification system.
+    r"""American Association of State Highway and Transportation
+    Officials (AASHTO) classification system.
 
     The AASHTO classification system is useful for classifying soils for
-    highways. It categorizes soils for highways based on particle size analysis
-    and plasticity characteristics. It classifies both coarse-grained and
-    fine-grained soils into eight main groups (A1-A7) with subgroups, along with
-    a separate category (A8) for organic soils.
+    highways. It categorizes soils for highways based on particle size
+    analysis and plasticity characteristics. It classifies both
+    coarse-grained and fine-grained soils into eight main groups (A1-A7)
+    with subgroups, along with a separate category (A8) for organic
+    soils.
 
-    - ``A1 ~ A3`` (Granular Materials) :math:`\le` 35% pass No. 200 sieve
-    - ``A4 ~ A7`` (Silt-clay Materials) :math:`\ge` 36% pass No. 200 sieve
-    - ``A8`` (Organic Materials)
+    - `A1 ~ A3` (Granular Materials) $\le$ 35% pass No. 200 sieve
+    - `A4 ~ A7` (Silt-clay Materials) $\ge$ 36% pass No. 200 sieve
+    - `A8` (Organic Materials)
 
-    The Group Index ``(GI)`` is used to further evaluate soils within a group.
+    The Group Index `(GI)` is used to further evaluate soils within a
+    group.
 
-    .. note::
+    !!! note
 
-        The ``GI`` must be mentioned even when it is zero, to indicate that the
-        soil has been classified as per AASHTO system.
+        The `GI` must be mentioned even when it is zero, to indicate
+        that the soil has been classified as per AASHTO system.
 
-    :Equation:
 
-    .. math::
-
-        GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
+    $$
+    GI = (F_{200} - 35)[0.2 + 0.005(LL - 40)] + 0.01(F_{200} - 15)(PI - 10)
+    $$
     """
 
     def __init__(self, atterberg_limits: AtterbergLimits, fines: float):
         """
         :param atterberg_limits: Atterberg limits of soil sample.
-        :type atterberg_limits: AtterbergLimits
 
         :param fines: Percentage of fines in soil sample (%) i.e. The
                       percentage of soil sample passing through No. 200
                       sieve (0.075mm).
-        :type fines: float
-
         """
         self.atterberg_limits = atterberg_limits
         self.fines = fines
@@ -449,7 +442,7 @@ class AASHTO:
 
         return AASHTOResult(
             symbol=symbol,
-            symbol_no_grp_idx=symbol_no_grp_idx,
+            symbol_no_group_idx=symbol_no_grp_idx,
             description=description,
             group_index=group_idx,
         )
@@ -522,36 +515,37 @@ class USCSResult:
 class USCS:
     """Unified Soil Classification System (USCS).
 
-    The Unified Soil Classification System, initially developed by Casagrande
-    in 1948 and later modified in 1952, is widely utilized in engineering
-    projects involving soils. It is the most popular system for soil
-    classification and is similar to Casagrande's Classification System. The
-    system relies on particle size analysis and atterberg limits for
-    classification.
+    The Unified Soil Classification System, initially developed by
+    Casagrande in 1948 and later modified in 1952, is widely utilized in
+    engineering projects involving soils. It is the most popular system
+    for soil classification and is similar to Casagrande's
+    Classification System. The system relies on particle size analysis
+    and atterberg limits for classification.
 
     In this system, soils are first classified into two categories:
 
     - Coarse grained soils: If more than 50% of the soils is retained on
       No. 200 (0.075 mm) sieve, it is designated as coarse-grained soil.
 
-    - Fine grained soils: If more than 50% of the soil passes through No. 200
-      sieve, it is designated as fine-grained soil.
+    - Fine grained soils: If more than 50% of the soil passes through
+      No. 200 sieve, it is designated as fine-grained soil.
 
-    Highly Organic soils are identified by visual inspection. These soils are
-    termed as Peat. (:math:`P_t`)
+    Highly Organic soils are identified by visual inspection. These
+    soils are termed as Peat ($P_t$).
     """
 
-    def __init__(self, atterberg_limits: AtterbergLimits, psd: PSD, organic=False):
+    def __init__(
+            self,
+            atterberg_limits: AtterbergLimits,
+            psd: PSD,
+            organic=False,
+    ):
         """
         :param atterberg_limits: Atterberg limits of the soil.
-        :type atterberg_limits: AtterbergLimits
 
         :param psd: Particle size distribution of the soil.
-        :type psd: PSD
 
-        :param organic: Indicates whether soil is organic or not, defaults to
-                        False.
-        :type organic: bool, optional
+        :param organic: Indicates whether soil is organic or not.
         """
         self.atterberg_limits = atterberg_limits
         self.psd = psd
@@ -673,40 +667,39 @@ class USCS:
 
 
 def create_aashto_classifier(
-    liquid_limit: float, plastic_limit: float, fines: float
+        liquid_limit: float, plastic_limit: float, fines: float
 ) -> AASHTO:
     """A helper function that encapsulates the creation of a AASHTO
     classifier.
 
-    :param liquid_limit: Water content beyond which soils flows under their own
-                         weight (%). It can also be defined as the minimum
-                         moisture content at which a soil flows upon application
-                         of a very small shear force.
-    :type liquid_limit: float
+    :param liquid_limit: Water content beyond which soils flows under
+                         their own weight (%). It can also be defined as
+                         the minimum moisture content at which a soil
+                         flows upon application of a very small shear
+                         force.
 
-    :param plastic_limit: Water content at which plastic deformation can be
-                          initiated (%). It is also the minimum water content at
-                          which soil can be rolled into a thread 3mm thick.
-                          (molded without breaking)
-    :type plastic_limit: float
+    :param plastic_limit: Water content at which plastic deformation can
+                          be initiated (%). It is also the minimum water
+                          content at which soil can be rolled into a
+                          thread 3mm thick (molded without breaking).
 
-    :param fines: Percentage of fines in soil sample (%) i.e. The percentage of
-                  soil sample passing through No. 200 sieve (0.075mm).
-    :type fines: float
+    :param fines: Percentage of fines in soil sample (%) i.e. The
+                  percentage of soil sample passing through No. 200
+                  sieve (0.075mm).
     """
     atterberg_limits = AtterbergLimits(liquid_limit, plastic_limit)
     return AASHTO(atterberg_limits, fines)
 
 
 def create_uscs_classifier(
-    liquid_limit: float,
-    plastic_limit: float,
-    fines: float,
-    sand: float,
-    d_10: float = 0,
-    d_30: float = 0,
-    d_60: float = 0,
-    organic: bool = False,
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
+        sand: float,
+        d_10: float = 0,
+        d_30: float = 0,
+        d_60: float = 0,
+        organic: bool = False,
 ):
     """A helper function that encapsulates the creation of a USCS
     classifier.
@@ -716,35 +709,25 @@ def create_uscs_classifier(
                          the minimum moisture content at which a soil
                          flows upon application of a very small shear
                          force.
-    :type liquid_limit: float
 
     :param plastic_limit: Water content at which plastic deformation can
                           be initiated (%). It is also the minimum water
                           content at which soil can be rolled into a
                           thread 3mm thick. (molded without breaking)
-    :type plastic_limit: float
 
     :param fines: Percentage of fines in soil sample (%) i.e. The
                   percentage of soil sample passing through No. 200
                   sieve (0.075mm).
-    :type fines: float
 
-    :param sand: Percentage of sand in soil sample (%). This is optional
-                 for :class:`AASHTO` classification.
-    :type sand: float, optional
+    :param sand: Percentage of sand in soil sample (%).
 
     :param d_10: Diameter at which 10% of the soil by weight is finer.
-    :type d_10: float, optional
 
     :param d_30: Diameter at which 30% of the soil by weight is finer.
-    :type d_30: float, optional
 
     :param d_60: Diameter at which 60% of the soil by weight is finer.
-    :type d_60: float, optional
 
-    :param organic: Indicates whether soil is organic or not, defaults
-                    to False.
-    :type organic: bool, optional
+    :param organic: Indicates whether soil is organic or not.
     """
     atterberg_lmts = AtterbergLimits(liquid_limit, plastic_limit)
     psd = PSD(fines=fines, sand=sand, d_10=d_10, d_30=d_30, d_60=d_60)
