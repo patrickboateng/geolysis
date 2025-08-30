@@ -16,7 +16,8 @@ The `geolysis` python package is among three other projects, `geolysis.excel`,
 provided [here](https://github.com/geolysis-dev).
 
 -  [Python API](api/index.md)
-    - [bearing_capacity](api/bearing_capacity.md)
+    - [allowable_bearing_capacity](api/allowable_bearing_capacity.md)
+    - [ultimate_bearing_capacity](api/ultimate_bearing_capacity.md)
     - [foundation](api/foundation.md)
     - [soil_classifier](api/soil_classifier.md)
     - [spt](api/spt.md)
