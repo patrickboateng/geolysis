@@ -5,27 +5,20 @@ name = "pypi"
 
 [packages]
 sphinx-autoapi = "*"
-func-validator = {ref = "main", git = "https://github.com/patrickboateng/func-validator.git"}
+func-validator = { ref = "main", git = "https://github.com/patrickboateng/func-validator.git" }
 
 [dev-packages]
 pytest = "*"
 pre-commit = "*"
 build = "*"
 pytest-cov = "*"
-sphinx = "==7.2.6"
-sphinx-autobuild = "==2021.3.14"
-sphinx-autodoc-typehints = "==1.25.2"
-sphinx-copybutton = "==0.5.2"
-sphinx-design = "==0.5.0"
-sphinxcontrib-bibtex = "==2.6.1"
-myst-parser = "==2.0.0"
-sphinx-notfound-page = "==1.0.0"
 isort = { extras = ["pipfile_deprecated_finder"], version = "*" }
-pydata-sphinx-theme = "*"
 enum-tools = { extras = ["sphinx"], version = "*" }
-nbsphinx = "*"
 ipython = "*"
 black = "*"
+mkdocs = "*"
+mkdocstrings = { extras = ["python"], version = "*" }
+mkdocs-material = "*"
 
 [requires]
 python_version = "3.11"
