@@ -10,10 +10,10 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     """
 
     def __init__(
-            self,
-            corrected_spt_n_value: float,
-            tol_settlement: float,
-            foundation_size: Foundation,
+        self,
+        corrected_spt_n_value: float,
+        tol_settlement: float,
+        foundation_size: Foundation,
     ):
         """
         :param corrected_spt_n_value: Average uncorrected SPT N-value
@@ -42,11 +42,11 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
             return 12 * n_corr * self._fd() * self._sr()
 
         return (
-                8
-                * n_corr
-                * ((3.28 * width + 1) / (3.28 * width)) ** 2
-                * self._fd()
-                * self._sr()
+            8
+            * n_corr
+            * ((3.28 * width + 1) / (3.28 * width)) ** 2
+            * self._fd()
+            * self._sr()
         )
 
 

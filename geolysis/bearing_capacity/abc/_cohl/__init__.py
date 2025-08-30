@@ -26,18 +26,18 @@ class ABCType(AbstractStrEnum):
 
 @validate_func_args
 def create_abc_4_cohesionless_soils(
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        depth: float,
-        width: float,
-        length: Optional[float] = None,
-        eccentricity: float = 0.0,
-        ground_water_level: float = inf,
-        shape: Shape | str = "square",
-        foundation_type: Annotated[
-            FoundationType | str, MustBeMemberOf(FoundationType)
-        ] = "pad",
-        abc_type: Annotated[ABCType | str, MustBeMemberOf(ABCType)] = "bowles",
+    corrected_spt_n_value: float,
+    tol_settlement: float,
+    depth: float,
+    width: float,
+    length: Optional[float] = None,
+    eccentricity: float = 0.0,
+    ground_water_level: float = inf,
+    shape: Shape | str = "square",
+    foundation_type: Annotated[
+        FoundationType | str, MustBeMemberOf(FoundationType)
+    ] = "pad",
+    abc_type: Annotated[ABCType | str, MustBeMemberOf(ABCType)] = "bowles",
 ) -> AllowableBearingCapacity:
     r"""A factory function that encapsulate the creation of  allowable
      bearing capacities.
@@ -188,8 +188,7 @@ def create_abc_4_cohesionless_soils(
         shape=shape,
     )
 
-    abc_class = _get_allowable_bearing_capacity(abc_type,
-                                                fnd_size.foundation_type)
+    abc_class = _get_allowable_bearing_capacity(abc_type, fnd_size.foundation_type)
     return abc_class(
         corrected_spt_n_value=corrected_spt_n_value,
         tol_settlement=tol_settlement,
@@ -197,8 +196,7 @@ def create_abc_4_cohesionless_soils(
     )
 
 
-def _get_allowable_bearing_capacity(abc_type: ABCType,
-                                    foundation_type: FoundationType):
+def _get_allowable_bearing_capacity(abc_type: ABCType, foundation_type: FoundationType):
     abc_classes = {
         ABCType.BOWLES: {
             FoundationType.PAD: BowlesABC4PadFoundation,
