@@ -23,27 +23,32 @@ should be, imports from the **standard library**, followed by
 - **Bearing Capacity**
 
     - **Allowable Bearing Capacity (ABC)**
+     
       ```python
       >>> from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
       ```
         
     - **Ultimate Bearing Capacity (UBC)**
+     
       ```python
       >>> from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
       ```
 
 - **Foundation**
+ 
   ```python
   >>> from geolysis.foundation import create_foundation
   ```
   
 - **Soil Classification**
+ 
   ```python
   >>> from geolysis.soil_classifier import create_uscs_classifier
   >>> from geolysis.soil_classifier import create_aashto_classifier
   ```
  
 - **Standard Penetration Test (SPT) Analysis**
+ 
   ```python
   >>> from geolysis.spt import DilatancyCorrection
   >>> from geolysis.spt import EnergyCorrection
