@@ -4,8 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sphinx-autoapi = "*"
-func-validator = { ref = "main", git = "https://github.com/patrickboateng/func-validator.git" }
+func-validator = "*"
 
 [dev-packages]
 pytest = "*"
@@ -19,6 +18,8 @@ black = "*"
 mkdocs = "*"
 mkdocstrings = { extras = ["python"], version = "*" }
 mkdocs-material = "*"
+mkdocs-git-revision-date-localized-plugin = "*"
+mkdocs-git-committers-plugin-2 = "*"
 
 [requires]
 python_version = "3.11"
