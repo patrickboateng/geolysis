@@ -9,11 +9,12 @@ build:
   # https://docs.readthedocs.io/page/guides/reproducible-builds.html
   jobs:
     pre_install:
-      - pip install pipenv
-      - pipenv install --dev
       - pip install mkdocs-material
 
 mkdocs:
   configuration: mkdocs.yml
 
+python:
+  install:
+    - requirements: docs/doc-requirements.txt
 
