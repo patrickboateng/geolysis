@@ -49,10 +49,10 @@ namespaces = false
 dev = ["pytest", "pytest-cov", "coverage"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --verbose --strict-markers --doctest-modules"
+addopts = "-ra --verbose --strict-markers --doctest-plus --doctest-glob '*.md'"
 minversion = "6.0"
-testpaths = ["tests", "geolysis"]
-doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NUMBER"]
+testpaths = ["tests", "geolysis", "docs"]
+doctest_optionflags = ["IGNORE_EXCEPTION_DETAIL", "NORMALIZE_WHITESPACE", "ELLIPSIS", "FLOAT_CMP"]
 
 [tool.docformatter]
 style = "sphinx"
