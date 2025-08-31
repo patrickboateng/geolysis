@@ -15,7 +15,7 @@ pip install geolysis # "pip3 install geolysis" for unix systems
 ## Version Check
 
 To see whether ``geolysis`` is already installed or to check if an install has
-worked, run the following in a Python shell::
+worked, run the following in a Python shell:
 
 ```python
 
@@ -39,19 +39,19 @@ otherwise.
 
 ### Prerequisites
 
-You need to know `Python <https://docs.python.org/3/tutorial/>`_ and
-a little bit of soil mechanics in order to understand the following examples.
+You need to know [Python](https://docs.python.org/3/tutorial/) and a little
+bit of soil mechanics in order to understand the following examples.
 
 ### Learning Objective
 
 After reading, you should be able to:
 
-- Perform basic soil analysis such as soil classification, bearing
-  capacity analysis, and standard penetration test analysis.
+- Perform basic soil analysis such as **soil classification**, **bearing
+  capacity analysis**, and **standard penetration test analysis**.
 
 ### Soil Classification
 
-**AASHTO** classification example with **Group Index (GI)**:
+#### AASHTO classification 
 
 ```python
 
@@ -71,7 +71,9 @@ After reading, you should be able to:
 
 ```
 
-**USCS** classification example with soil grading:
+#### USCS classification
+
+Classification with soil grading
 
 ```python
 
@@ -91,7 +93,7 @@ After reading, you should be able to:
 
 ```
 
-**USCS** classification example without soil grading:
+Classification without soil grading
 
 ```python
 
@@ -130,8 +132,8 @@ correlation:
 
 
 Other available `shape` and `ubc_type` can be found in 
-`geolysis.foundation.Shape` and `geolysis.bearing_capacity.ubc.UBCType` 
-respectively.
+[Shape][geolysis.foundation.Shape] and 
+[UBCType][geolysis.bearing_capacity.ubc.UBCType] respectively.
 
 ### Allowable Bearing Capacity Estimation
 
@@ -154,12 +156,13 @@ Calculating the allowable bearing capacity of soil for pad foundations using
 ```
 
 Other available `shape`, `foundation_type`, and `abc_type` can be found
-in `geolysis.foundation.Shape`, `geolysis.foundation.FoundationType`, and 
-`geolysis.bearing_capacity.abc.cohl.ABCType` respectively.
+in [Shape][geolysis.foundation.Shape], 
+[FoundationType][geolysis.foundation.FoundationType], and
+[ABCType][geolysis.bearing_capacity.abc.ABCType] respectively.
 
 ### Standard Penetration Tests Analysis
 
-Calculating SPT `N_{design}` from a list of SPT N-values:
+#### SPT N-Design
 
 ```python
 
@@ -176,6 +179,8 @@ Calculating SPT `N_{design}` from a list of SPT N-values:
 
 ```
 
+#### Energy Correction
+
 ```python
 
 >>> from geolysis.spt import EnergyCorrection
@@ -188,8 +193,7 @@ Calculating SPT `N_{design}` from a list of SPT N-values:
 
 ```
 
-Correcting SPT N-values for overburden pressure influence using
-`Gibbs & Holtz (1957)` correlation:
+#### Overburden Pressure Correction
 
 ```python
 
@@ -202,9 +206,9 @@ Correcting SPT N-values for overburden pressure influence using
 
 ```
 
-Other available ``opc_type`` can be found in `geolysis.spt.OPCType`.
+Other available `opc_type` can be found in [OPCType][geolysis.spt.OPCType].
 
-Correcting SPT N-values for water (dilatancy) influence:
+#### Dilatancy Correction
 
 ```python
 

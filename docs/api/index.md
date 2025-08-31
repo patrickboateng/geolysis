@@ -1,5 +1,8 @@
-This reference manual details functions, modules, and objects included
-in the `geolysis` python package, describing what they are and what they do.
+# Reference
+
+This reference manual serves as a complete guide to the modules, classes, and 
+functions provided by the `geolysis` Python package, offering clear explanations 
+of their purpose, usage, and behavior.
 
 **_For learning how to use `geolysis`, check the 
 [usage documentation](../usage.md)_**
