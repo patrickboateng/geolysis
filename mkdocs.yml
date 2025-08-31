@@ -1,5 +1,5 @@
 site_name: geolysis
-site_url: https://docs.geolysis.io/
+site_url: !ENV READTHEDOCS_CANONICAL_URL
 repo_name: geolysis
 repo_url: https://github.com/patrickboateng/geolysis/
 edit_uri: edit/main/docs
