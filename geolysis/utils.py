@@ -26,12 +26,12 @@ __all__ = [
 
 
 class StrEnumMeta(enum.EnumMeta):
-    def __contains__(cls, item):
-        if isinstance(item, str):
-            return item in (member.value for member in cls)
-        return item in cls.__members__
+    def __contains__(cls, item) -> bool:
+        if isinstance(item, (str, cls)):
+            return str(item) in (member.value for member in cls)
+        return NotImplemented
 
-    def __repr__(cls):
+    def __repr__(cls) -> str:
         return str([member.value for member in cls])
 
 

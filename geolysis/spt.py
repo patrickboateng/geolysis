@@ -142,16 +142,13 @@ class SPT:
                       {\sum_{i=1}^{n}\frac{1}{i^2}}
         $$
         """
+        if self.method == "min":
+            _n_design = self._min_spt_n_design
+        elif self.method == "avg":
+            _n_design = self._avg_spt_n_design
+        else:
+            _n_design = self._wgt_spt_n_design
 
-        match self.method:
-            case "min":
-                _n_design = self._min_spt_n_design
-            case "avg":
-                _n_design = self._avg_spt_n_design
-            case "wgt":
-                _n_design = self._wgt_spt_n_design
-            case _:
-                raise ValueError("Invalid method")
         return _n_design(self.corrected_spt_n_values)
 
 
