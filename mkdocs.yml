@@ -125,7 +125,8 @@ extra:
       link: mailto:support@geolysis.io
 
 extra_javascript:
-  - javascripts/katex.js
+  - javascript/katex.js
+  - javascript/readthedocs.js
   - https://unpkg.com/katex@0/dist/katex.min.js
   - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
 
