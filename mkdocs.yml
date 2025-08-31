@@ -10,13 +10,13 @@ nav:
   - User Guide:
       - Getting Started: usage.md
   - API Reference:
-      - Introduction: api/index.md
-      - Allowable Bearing Capacity: api/allowable_bearing_capacity.md
-      - Ultimate Bearing Capacity: api/ultimate_bearing_capacity.md
-      - Foundation: api/foundation.md
-      - Soil Classification: api/soil_classifier.md
-      - SPT: api/spt.md
-      - Utils: api/utils.md
+      - Introduction: reference/index.md
+      - Allowable Bearing Capacity: reference/allowable_bearing_capacity.md
+      - Ultimate Bearing Capacity: reference/ultimate_bearing_capacity.md
+      - Foundation: reference/foundation.md
+      - Soil Classification: reference/soil_classifier.md
+      - SPT: reference/spt.md
+      - Utils: reference/utils.md
   - Contributing:
       - Introduction: dev_guide/index.md
       - Guidelines: dev_guide/contributing.md
