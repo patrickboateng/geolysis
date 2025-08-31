@@ -19,8 +19,8 @@ worked, run the following in a Python shell:
 
 ```python
 
->>> import geolysis as gl
->>> print(gl.__version__) # doctest: +SKIP
+import geolysis as gl
+print(gl.__version__) 
 
 ```
     
@@ -142,7 +142,7 @@ Calculating the allowable bearing capacity of soil for pad foundations using
 
 ```python
 
->>> from geolysis.bearing_capacity.abc.cohl import create_abc_4_cohesionless_soils
+>>> from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
 >>> bowles_abc = create_abc_4_cohesionless_soils(corrected_spt_n_value=17.0,
 ...                                              tol_settlement=20.0,
 ...                                              depth=1.5,
