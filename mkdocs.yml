@@ -1,7 +1,9 @@
 site_name: geolysis
 site_url: https://docs.geolysis.io/
 repo_name: geolysis
-repo_url: https://github.com/patrickboateng/geolysis
+repo_url: https://github.com/patrickboateng/geolysis/
+edit_uri: edit/main/docs
+copyright: Copyright &copy; 2023 - 2025 Geolysis
 
 nav:
   - Home: index.md
@@ -32,10 +34,47 @@ nav:
       - 0.4.2 notes: release_notes/0.4.2-notes.md
       - 0.3.0 notes: release_notes/0.3.0-notes.md
       - 0.2.0 notes: release_notes/0.2.0-notes.md
+
 theme:
   name: material
   logo: assets/pkg-logo.svg
   favicon: assets/favicon.ico
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    #    - content.action.add
+    - content.action.edit
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+    - navigation.footer
+    - toc.follow
+
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
 
 plugins:
   - mkdocstrings:
@@ -52,12 +91,18 @@ plugins:
             show_root_toc_entry: false
             unwrap_annotated: true
             preload_modules: [ "geolysis" ]
-            summary: true
+            #            summary: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true
             inherited_members: true
             filters:
               - "!^_"
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - git-committers:
+      repository: patrickboateng/geolysis
+      branch: main
 
 markdown_extensions:
   - admonition
@@ -67,6 +112,17 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
   - tables
+
+extra:
+  social:
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/geolysis
+    - icon: fontawesome/brands/github
+      link: https://github.com/patrickboateng/geolysis
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/company/geolysis-llc
+    - icon: fontawesome/solid/envelope
+      link: mailto:support@geolysis.io
 
 extra_javascript:
   - javascripts/katex.js
