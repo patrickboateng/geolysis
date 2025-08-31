@@ -9,7 +9,8 @@ nav:
       - Getting Started: usage.md
   - API Reference:
       - Introduction: api/index.md
-      - Bearing Capacity: api/bearing_capacity.md
+      - Allowable Bearing Capacity: api/allowable_bearing_capacity.md
+      - Ultimate Bearing Capacity: api/ultimate_bearing_capacity.md
       - Foundation: api/foundation.md
       - Soil Classification: api/soil_classifier.md
       - SPT: api/spt.md
@@ -54,6 +55,7 @@ plugins:
             summary: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true
+            inherited_members: true
             filters:
               - "!^_"
 
