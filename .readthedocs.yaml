@@ -9,6 +9,7 @@ build:
   # https://docs.readthedocs.io/page/guides/reproducible-builds.html
   jobs:
     pre_install:
+      - pip install -r docs/doc-requirements.txt
       - pip install mkdocs-material
 
 mkdocs:
