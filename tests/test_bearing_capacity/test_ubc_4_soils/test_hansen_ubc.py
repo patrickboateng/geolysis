@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.bearing_capacity.ubc import create_ultimate_bearing_capacity
+from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
 
 
 class TestHansenUBC:
@@ -33,7 +33,7 @@ class TestHansenUBC:
         shape,
         expected,
     ):
-        ubc = create_ultimate_bearing_capacity(
+        ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,

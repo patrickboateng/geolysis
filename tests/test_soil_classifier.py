@@ -94,7 +94,7 @@ class TestAASHTO:
     )
     def test_aashto_without_grp_idx(self, al, fines, expected):
         asshto_clf = create_aashto_classifier(*al, fines=fines)
-        assert asshto_clf.classify().symbol_no_grp_idx == expected
+        assert asshto_clf.classify().symbol_no_group_idx == expected
 
 
 class TestUSCS:

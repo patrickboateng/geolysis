@@ -1,4 +1,5 @@
 import pytest
+from func_validator import ValidationError
 
 from geolysis.spt import (
     DilatancyCorrection,
@@ -11,7 +12,7 @@ from geolysis.spt import (
 
 
 def test_create_spt_correction_errors():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         create_overburden_pressure_correction(
             std_spt_n_value=34, eop=100, opc_type="TERZAGHI"
         )
@@ -30,23 +31,23 @@ class TestSPTNDesign:
 
     def test_errors(self):
         # Provided an empty value for corrected_spt_n_values
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             SPT(corrected_spt_n_values=[])
 
         # Provided an invalid method
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             SPT(corrected_spt_n_values=[7.0, 15.0, 18], method="max")
 
         # corrected_spt_n_values is greater than 100
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             SPT(corrected_spt_n_values=[22, 44, 120])
 
         # corrected_spt_n_values is 0.0
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             SPT(corrected_spt_n_values=[0.0, 15.0, 18])
 
         # corrected_spt_n_values is less than 0.0
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             SPT(corrected_spt_n_values=[-10, 15.0, 18])
 
 
@@ -92,11 +93,11 @@ class TestEnergyCorrection:
 
     def test_errors(self):
         # Provided an invalid value for hammer_type
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             EnergyCorrection(recorded_spt_n_value=22, hammer_type="manual")
 
         # Provided an invalid value for sampler_type
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             EnergyCorrection(recorded_spt_n_value=22, sampler_type="std")
 
 

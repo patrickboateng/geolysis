@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.bearing_capacity.ubc import create_ultimate_bearing_capacity
+from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
 
 
 class TestTerzaghiUBC4StripFooting:
@@ -30,7 +30,7 @@ class TestTerzaghiUBC4StripFooting:
         water_level,
         expected,
     ):
-        ubc = create_ultimate_bearing_capacity(
+        ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,
@@ -69,7 +69,7 @@ class TestTerzaghiUBC4SquareFooting:
         apply_loc_shear,
         expected,
     ):
-        ubc = create_ultimate_bearing_capacity(
+        ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,
@@ -110,7 +110,7 @@ class TestTerzaghiUBC4CircFooting:
         apply_loc_shear,
         expected,
     ):
-        ubc = create_ultimate_bearing_capacity(
+        ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,
@@ -153,7 +153,7 @@ class TestTerzaghiUBC4RectFooting:
         apply_loc_shear,
         expected,
     ):
-        ubc = create_ultimate_bearing_capacity(
+        ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,

@@ -1,5 +1,7 @@
 import unittest
 
+from func_validator import ValidationError
+
 from geolysis.foundation import (
     CircularFooting,
     Foundation,
@@ -59,7 +61,8 @@ class TestFoundation(unittest.TestCase):
 
     def test_foundation_size(self):
         footing = StripFooting(width=2.0)
-        foundation = Foundation(depth=1.5, footing_size=footing, eccentricity=0.1)
+        foundation = Foundation(depth=1.5, footing_size=footing,
+                                eccentricity=0.1)
         self.assertEqual(foundation.depth, 1.5)
         self.assertEqual(foundation.width, 2.0)
         self.assertEqual(foundation.length, float("inf"))
@@ -83,14 +86,16 @@ class TestFoundation(unittest.TestCase):
         self.assertEqual(foundation.footing_shape, Shape.STRIP)
 
     def test_create_foundation_square(self):
-        foundation = create_foundation(depth=1.5, width=2.5, shape=Shape.SQUARE)
+        foundation = create_foundation(depth=1.5, width=2.5,
+                                       shape=Shape.SQUARE)
         self.assertEqual(foundation.depth, 1.5)
         self.assertEqual(foundation.width, 2.5)
         self.assertEqual(foundation.length, 2.5)
         self.assertEqual(foundation.footing_shape, Shape.SQUARE)
 
     def test_create_foundation_circle(self):
-        foundation = create_foundation(depth=1.5, width=3.0, shape=Shape.CIRCLE)
+        foundation = create_foundation(depth=1.5, width=3.0,
+                                       shape=Shape.CIRCLE)
         self.assertEqual(foundation.depth, 1.5)
         self.assertEqual(foundation.width, 3.0)
         self.assertEqual(foundation.length, 3.0)
@@ -106,7 +111,7 @@ class TestFoundation(unittest.TestCase):
         self.assertEqual(foundation.footing_shape, Shape.RECTANGLE)
 
     def test_create_foundation_invalid_shape(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             create_foundation(depth=1.5, width=2.0, shape="invalid_shape")
 
     def test_create_foundation_missing_length(self):

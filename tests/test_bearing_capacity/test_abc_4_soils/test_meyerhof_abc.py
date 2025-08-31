@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.bearing_capacity.abc.cohl import create_allowable_bearing_capacity
+from geolysis.bearing_capacity.abc._cohl import create_abc_4_cohesionless_soils
 
 
 class TestMeyerhofABC:
@@ -29,7 +29,7 @@ class TestMeyerhofABC:
         foundation_type,
         expected,
     ):
-        meyerhof = create_allowable_bearing_capacity(
+        meyerhof = create_abc_4_cohesionless_soils(
             corrected_spt_n_value=corrected_spt_n_value,
             tol_settlement=tol_settlement,
             depth=depth,
@@ -62,7 +62,7 @@ class TestMeyerhofABC:
         foundation_type,
         expected,
     ):
-        meyerhof = create_allowable_bearing_capacity(
+        meyerhof = create_abc_4_cohesionless_soils(
             corrected_spt_n_value=corrected_spt_n_value,
             tol_settlement=tol_settlement,
             depth=depth,

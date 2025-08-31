@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.bearing_capacity.abc.cohl import create_allowable_bearing_capacity
+from geolysis.bearing_capacity.abc._cohl import create_abc_4_cohesionless_soils
 
 
 class TestTerzaghiABC:
@@ -33,7 +33,7 @@ class TestTerzaghiABC:
         foundation_type,
         expected,
     ):
-        terzaghi = create_allowable_bearing_capacity(
+        terzaghi = create_abc_4_cohesionless_soils(
             corrected_spt_n_value=corrected_spt_n_value,
             tol_settlement=tol_settlement,
             depth=depth,
@@ -70,7 +70,7 @@ class TestTerzaghiABC:
         foundation_type,
         expected,
     ):
-        terzaghi = create_allowable_bearing_capacity(
+        terzaghi = create_abc_4_cohesionless_soils(
             corrected_spt_n_value=corrected_spt_n_value,
             tol_settlement=tol_settlement,
             depth=depth,
