@@ -5,15 +5,37 @@ from ._core import AllowableBearingCapacity
 
 
 class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
-    """Allowable bearing capacity for pad foundation on cohesionless
+    r"""Allowable bearing capacity for pad foundation on cohesionless
     soils according to `Meyerhof (1956)`.
+
+    $$
+     q_a(kPa) = 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
+     $$
+
+     $$
+     q_a(kPa) = 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(
+                \dfrac{S}{25.4}\right), \ B \ \gt 1.2m
+     $$
+
+     $$
+     f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
+     $$
+
+    - $q_a$ (kPa): Allowable bearing capacity
+    - $N$: Corrected SPT N-value
+    - $f_d$: Depth factor
+    - $S$ (mm): Tolerable settlement
+    - $B$ (m): Width of foundation footing
+    - $D_f$ (m): Depth of foundation footing
+    - $D_w$ (m): Depth of water below ground level
+
     """
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ):
         """
         :param corrected_spt_n_value: Average uncorrected SPT N-value
@@ -42,17 +64,33 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
             return 12 * n_corr * self._fd() * self._sr()
 
         return (
-            8
-            * n_corr
-            * ((3.28 * width + 1) / (3.28 * width)) ** 2
-            * self._fd()
-            * self._sr()
+                8
+                * n_corr
+                * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * self._fd()
+                * self._sr()
         )
 
 
 class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
-    """Allowable bearing capacity for mat foundation on cohesionless
+    r"""Allowable bearing capacity for mat foundation on cohesionless
     soils according to `Meyerhof (1956)`.
+
+    $$
+     q_a(kPa) = 8 N f_d\left(\dfrac{S}{25.4}\right)
+    $$
+
+    $$
+     f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
+    $$
+
+    - $q_a$ (kPa): Allowable bearing capacity
+    - $N$: Corrected SPT N-value
+    - $f_d$: Depth factor
+    - $S$ (mm): Tolerable settlement
+    - $B$ (m): Width of foundation footing
+    - $D_f$ (m): Depth of foundation footing
+    - $D_w$ (m): Depth of water below ground level
     """
 
     @round_(ndigits=2)

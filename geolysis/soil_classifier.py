@@ -1,7 +1,3 @@
-"""This module provides classes for soil classification using systems like
-USCS and AASHTO, based on particle size distribution and  Atterberg limits.
-"""
-
 import enum
 from dataclasses import dataclass
 from typing import Annotated, Sequence
@@ -41,60 +37,184 @@ class _Clf(tuple, enum.Enum):
 class USCSSymbol(_Clf):
     """
     Unified Soil Classification System (USCS) symbols and descriptions.
+
+    Each member represents a USCS soil type, grading, or plasticity symbol.
+    Aliases are provided where applicable.
     """
 
-    G = GRAVEL = ("G", "Gravel")
-    S = SAND = ("S", "Sand")
-    M = SILT = ("M", "Silt")
-    C = CLAY = ("C", "Clay")
-    O = ORGANIC = ("O", "Organic")
-    W = WELL_GRADED = ("W", "Well graded")
-    P = POORLY_GRADED = ("P", "Poorly graded")
-    L = LOW_PLASTICITY = ("L", "Low plasticity")
-    H = HIGH_PLASTICITY = ("H", "High plasticity")
+    # General soil types
+    G = ("G", "Gravel")
+    """Gravel"""
+
+    GRAVEL = G
+
+    S = ("S", "Sand")
+    """Sand"""
+
+    SAND = S
+
+    M = ("M", "Silt")
+    """Silt"""
+
+    SILT = M
+
+    C = ("C", "Clay")
+    """Clay"""
+
+    CLAY = C
+
+    O = ("O", "Organic")
+    """Organic soil"""
+
+    ORGANIC = O
+
+    # Grading descriptors
+    W = ("W", "Well graded")
+    """Well graded"""
+
+    WELL_GRADED = W
+
+    P = ("P", "Poorly graded")
+    """Poorly graded"""
+
+    POORLY_GRADED = P
+
+    # Plasticity descriptors
+    L = ("L", "Low plasticity")
+    """Low plasticity"""
+
+    LOW_PLASTICITY = L
+
+    H = ("H", "High plasticity")
+    """High plasticity"""
+
+    HIGH_PLASTICITY = H
+
+    # Gravels
     GW = ("GW", "Well graded gravels")
+    """Well graded gravels"""
+
     GP = ("GP", "Poorly graded gravels")
+    """Poorly graded gravels"""
+
     GM = ("GM", "Silty gravels")
+    """Silty gravels"""
+
     GC = ("GC", "Clayey gravels")
+    """Clayey gravels"""
+
     GM_GC = ("GM-GC", "Gravelly clayey silt")
+    """Gravelly clayey silt"""
+
     GW_GM = ("GW-GM", "Well graded gravel with silt")
+    """Well graded gravel with silt"""
+
     GP_GM = ("GP-GM", "Poorly graded gravel with silt")
+    """Poorly graded gravel with silt"""
+
     GW_GC = ("GW-GC", "Well graded gravel with clay")
+    """Well graded gravel with clay"""
+
     GP_GC = ("GP-GC", "Poorly graded gravel with clay")
+    """Poorly graded gravel with clay"""
+
+    # Sands
     SW = ("SW", "Well graded sands")
+    """Well graded sands"""
+
     SP = ("SP", "Poorly graded sands")
+    """Poorly graded sands"""
+
     SM = ("SM", "Silty sands")
+    """Silty sands"""
+
     SC = ("SC", "Clayey sands")
+    """Clayey sands"""
+
     SM_SC = ("SM-SC", "Sandy clayey silt")
+    """Sandy clayey silt"""
+
     SW_SM = ("SW-SM", "Well graded sand with silt")
+    """Well graded sand with silt"""
+
     SP_SM = ("SP-SM", "Poorly graded sand with silt")
+    """Poorly graded sand with silt"""
+
     SW_SC = ("SW-SC", "Well graded sand with clay")
+    """Well graded sand with clay"""
+
     SP_SC = ("SP-SC", "Poorly graded sand with clay")
+    """Poorly graded sand with clay"""
+
+    # Silts and clays
     ML = ("ML", "Inorganic silts with low plasticity")
+    """Inorganic silts with low plasticity"""
+
     CL = ("CL", "Inorganic clays with low plasticity")
+    """Inorganic clays with low plasticity"""
+
     ML_CL = ("ML-CL", "Clayey silt with low plasticity")
+    """Clayey silt with low plasticity"""
+
     OL = ("OL", "Organic clays with low plasticity")
+    """Organic clays with low plasticity"""
+
     MH = ("MH", "Inorganic silts with high plasticity")
+    """Inorganic silts with high plasticity"""
+
     CH = ("CH", "Inorganic clays with high plasticity")
+    """Inorganic clays with high plasticity"""
+
     OH = ("OH", "Organic silts with high plasticity")
+    """Organic silts with high plasticity"""
+
     Pt = ("Pt", "Highly organic soils")
+    """Highly organic soils"""
 
 
 class AASHTOSymbol(_Clf):
-    """AASHTO soil classification symbols and descriptions."""
+    """
+    AASHTO soil classification symbols and descriptions.
+
+    Each member represents a standard AASHTO soil class used in
+    pavement and highway engineering.
+    """
 
     A_1_a = ("A-1-a", "Stone fragments, gravel, and sand")
+    """Stone fragments, gravel, and sand"""
+
     A_1_b = ("A-1-b", "Stone fragments, gravel, and sand")
+    """Stone fragments, gravel, and sand"""
+
     A_3 = ("A-3", "Fine sand")
+    """Fine sand"""
+
     A_2_4 = ("A-2-4", "Silty or clayey gravel and sand")
+    """Silty or clayey gravel and sand"""
+
     A_2_5 = ("A-2-5", "Silty or clayey gravel and sand")
+    """Silty or clayey gravel and sand"""
+
     A_2_6 = ("A-2-6", "Silty or clayey gravel and sand")
+    """Silty or clayey gravel and sand"""
+
     A_2_7 = ("A-2-7", "Silty or clayey gravel and sand")
+    """Silty or clayey gravel and sand"""
+
     A_4 = ("A-4", "Silty soils")
+    """Silty soils"""
+
     A_5 = ("A-5", "Silty soils")
+    """Silty soils"""
+
     A_6 = ("A-6", "Clayey soils")
+    """Clayey soils"""
+
     A_7_5 = ("A-7-5", "Clayey soils")
+    """Clayey soils"""
+
     A_7_6 = ("A-7-6", "Clayey soils")
+    """Clayey soils"""
 
 
 class AtterbergLimits:
@@ -107,9 +227,11 @@ class AtterbergLimits:
         def __get__(self, obj, objtype=None) -> float:
             return 0.73 * (obj.liquid_limit - 20.0)
 
-    #:  The ``A-line`` determines if a soil is clayey or silty.
-    #:  :math:`A = 0.73(LL - 20.0)`
     A_LINE = __A_LINE()
+    """The ``A-line`` determines if a soil is clayey or silty.
+    
+    $A = 0.73(LL - 20.0)$
+    """
 
     def __init__(self, liquid_limit: float, plastic_limit: float):
         """
@@ -118,7 +240,6 @@ class AtterbergLimits:
                              defined as the minimum moisture content at
                              which a soil flows upon application of a
                              very small shear force.
-
         :param plastic_limit: Water content at which plastic deformation
                               can be initiated (%). It is also the
                               minimum water content at which soil can be
@@ -168,9 +289,7 @@ class AtterbergLimits:
         It is also the numerical difference between the liquid limit and
         plastic limit of the soil.
 
-        :Equation:
-
-        .. math:: PI = LL - PL
+        $$PI = LL - PL$$
         """
         return self.liquid_limit - self.plastic_limit
 
@@ -193,6 +312,8 @@ class AtterbergLimits:
     def liquidity_index(self, nmc: float) -> float:
         r"""Return the liquidity index of the soil.
 
+        $$I_l = \dfrac{w - PL}{PI} \cdot 100$$
+
         Liquidity index of a soil indicates the nearness of its
         `natural water content` to its `liquid limit`. When the soil
         is at the plastic limit its liquidity index is zero. Negative
@@ -201,14 +322,14 @@ class AtterbergLimits:
         ratio.
 
         :param nmc: Moisture contents of the soil in natural condition.
-
-        $$I_l = \dfrac{w - PL}{PI} \cdot 100$$
         """
         return ((nmc - self.plastic_limit) / self.plasticity_index) * 100.0
 
     @round_(2)
     def consistency_index(self, nmc: float) -> float:
         r"""Return the consistency index of the soil.
+
+        $$I_c = \dfrac{LL - w}{PI} \cdot 100$$
 
         Consistency index indicates the consistency (firmness) of soil.
         It shows the nearness of the ``natural water content`` of the
@@ -223,8 +344,6 @@ class AtterbergLimits:
         as Relative Consistency.
 
         :param nmc: Moisture contents of the soil in natural condition.
-
-        $$I_c = \dfrac{LL - w}{PI} \cdot 100$$
         """
         return ((self.liquid_limit - nmc) / self.plasticity_index) * 100.0
 
@@ -290,13 +409,9 @@ class PSD:
         :param fines: Percentage of fines in soil sample (%) i.e. The
                       percentage of soil sample passing through No. 200
                       sieve (0.075mm).
-
         :param sand: Percentage of sand in soil sample (%).
-
         :param d_10: Diameter at which 10% of the soil by weight is finer.
-
         :param d_30: Diameter at which 30% of the soil by weight is finer.
-
         :param d_60: Diameter at which 60% of the soil by weight is finer.
         """
         self.fines = fines

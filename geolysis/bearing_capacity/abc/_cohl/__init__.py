@@ -1,8 +1,3 @@
-"""This package provides a factory function and utilities for creating
-allowable bearing capacity calculations using methods like Bowles, Meyerhof,
-and Terzaghi for various foundation types and shapes.
-"""
-
 import enum
 from typing import Optional, Annotated
 
@@ -17,141 +12,39 @@ from .terzaghi_abc import TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation
 
 
 class ABCType(AbstractStrEnum):
-    """Enumeration of available allowable bearing capacity types."""
+    """Enumeration of allowable bearing capacity calculation methods.
+
+    Each member represents a different method for determining
+    the allowable bearing capacity of soil.
+   """
 
     BOWLES = enum.auto()
+    """Bowles's method for calculating allowable bearing capacity"""
+
     MEYERHOF = enum.auto()
+    """Meyerhof's method for calculating allowable bearing capacity"""
+
     TERZAGHI = enum.auto()
+    """Terzaghi's method for calculating allowable bearing capacity"""
 
 
 @validate_func_args
 def create_abc_4_cohesionless_soils(
-    corrected_spt_n_value: float,
-    tol_settlement: float,
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    eccentricity: float = 0.0,
-    ground_water_level: float = inf,
-    shape: Shape | str = "square",
-    foundation_type: Annotated[
-        FoundationType | str, MustBeMemberOf(FoundationType)
-    ] = "pad",
-    abc_type: Annotated[ABCType | str, MustBeMemberOf(ABCType)] = "bowles",
+        corrected_spt_n_value: float,
+        tol_settlement: float,
+        depth: float,
+        width: float,
+        length: Optional[float] = None,
+        eccentricity: float = 0.0,
+        ground_water_level: float = inf,
+        shape: Shape | str = "square",
+        foundation_type: Annotated[
+            FoundationType | str, MustBeMemberOf(FoundationType)
+        ] = "pad",
+        abc_type: Annotated[ABCType | str, MustBeMemberOf(ABCType)] = "bowles",
 ) -> AllowableBearingCapacity:
     r"""A factory function that encapsulate the creation of  allowable
      bearing capacities.
-
-     **Bowles allowable bearing capacity for pad foundation equation is
-     found below**:
-
-     $$
-     q_a(kPa) = 19.16(N_1)_{55} f_d\left(\dfrac{S}{25.4}\right),
-                \ B \ \le \ 1.2m
-     $$
-
-     $$
-     q_a(kPa) = 11.98(N_1)_{55}\left(\dfrac{3.28B + 1}{3.28B} \right)^2
-                     f_d \left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-     $$
-
-     $$
-     f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-     $$
-
-     **Bowles allowable bearing capacity for mat foundation equation is
-     found below**:
-
-     $$
-     q_a(kPa) = 11.98(N_1)_{55}f_d\left(\dfrac{S}{25.4}\right)
-     $$
-
-     $$
-     f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-     $$
-
-     **Meyerhof allowable bearing capacity for pad foundation equation is
-     found below**:
-
-     $$
-     q_a(kPa) = 12N f_d\left(\dfrac{S}{25.4}\right), \ B \ \le 1.2m
-     $$
-
-     $$
-     q_a(kPa) = 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2 f_d\left(
-                \dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-     $$
-
-     $$
-     f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-     $$
-
-     **Meyerhof allowable bearing capacity for mat foundation equation is
-     found below**:
-
-     $$
-     q_a(kPa) = 8 N f_d\left(\dfrac{S}{25.4}\right)
-     $$
-
-     $$
-     f_d = 1 + 0.33 \cdot \frac{D_f}{B} \le 1.33
-     $$
-
-     **Terzaghi allowable bearing capacity for pad foundation equation is
-     found below**:
-
-     $$
-     q_a(kPa) = 12N \dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right),
-                 \ B \ \le 1.2m
-     $$
-
-     $$
-     q_a(kPa) = 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2\dfrac{1}
-                 {c_w f_d}\left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-     $$
-
-     $$
-     f_d = 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
-     $$
-
-     $$
-     c_w = 2 - \frac{D_w}{2B} \le 2, D_w \gt D_f
-     $$
-
-     $$
-     c_w = 2 - \frac{D_f}{2B} \le 2, D_w \le D_f
-     $$
-
-     **Terzaghi allowable bearing capacity for mat foundation equation is
-     found below**:
-
-     $$
-     q_a(kPa) = 8N\dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right)
-     $$
-
-     $$
-     f_d = 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
-     $$
-
-     $$
-     c_w = 2 - \frac{D_w}{2B} \le 2, D_w \gt D_f
-     $$
-
-     $$
-     c_w = 2 - \frac{D_f}{2B} \le 2, D_w \le D_f
-     $$
-
-    | SYMBOL      | DESCRIPTION                               | UNIT    |
-    |-------------|-------------------------------------------|---------|
-    | $q_a$     | Allowable bearing capacity                | $kPa$ |
-    | $N$       | Corrected SPT N-value                     | —       |
-    | $f_d$     | Depth factor                              | —       |
-    | $c_w$     | Water correction factor                   | —       |
-    | $S$       | Tolerable settlement                      | $mm$  |
-    | $B$       | Width of foundation footing               | $m$   |
-    | $D_f$     | Depth of foundation footing               | $m$   |
-    | $D_w$     | Depth of water below ground level         | $m$   |
-
 
     :param corrected_spt_n_value: The corrected SPT N-value.
     :param tol_settlement: Tolerable settlement of foundation (mm).
@@ -188,7 +81,8 @@ def create_abc_4_cohesionless_soils(
         shape=shape,
     )
 
-    abc_class = _get_allowable_bearing_capacity(abc_type, fnd_size.foundation_type)
+    abc_class = _get_allowable_bearing_capacity(abc_type,
+                                                fnd_size.foundation_type)
     return abc_class(
         corrected_spt_n_value=corrected_spt_n_value,
         tol_settlement=tol_settlement,
@@ -196,7 +90,8 @@ def create_abc_4_cohesionless_soils(
     )
 
 
-def _get_allowable_bearing_capacity(abc_type: ABCType, foundation_type: FoundationType):
+def _get_allowable_bearing_capacity(abc_type: ABCType,
+                                    foundation_type: FoundationType):
     abc_classes = {
         ABCType.BOWLES: {
             FoundationType.PAD: BowlesABC4PadFoundation,

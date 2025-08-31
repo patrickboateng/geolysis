@@ -1,6 +1,3 @@
-"""This module provides classes and utilities for modeling various foundation
-footing types, their dimensions, and properties."""
-
 import enum
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Annotated
@@ -30,21 +27,48 @@ T = TypeVar("T")
 
 
 class Shape(AbstractStrEnum):
-    """Enumeration of foundation shapes."""
+    """Enumeration of foundation shapes.
+
+     Each member represents a standard geometric shape commonly used
+     in foundation design, which can affect bearing capacity and
+     settlement calculations.
+     """
 
     STRIP = enum.auto()
+    """Strip (or continuous) foundation, typically long and narrow."""
+
     CIRCLE = enum.auto()
+    """Circular foundation, often used for columns or piers."""
+
     SQUARE = enum.auto()
+    """Square foundation, commonly used for isolated footings."""
+
     RECTANGLE = enum.auto()
+    """Rectangular foundation, used when length and width differ significantly."""
 
 
 class FoundationType(AbstractStrEnum):
-    """Enumeration of foundation types."""
+    """
+    Enumeration of foundation types.
+
+    Each member represents a common type of foundation used in
+    geotechnical engineering. Some members have aliases for
+    alternative naming conventions.
+    """
 
     PAD = enum.auto()
+    """Pad foundation, a small, isolated footing supporting a single column."""
+
     ISOLATED = PAD
+    """Alias for PAD foundation (isolated footing)."""
+
     MAT = enum.auto()
+    """Mat foundation, a large, continuous slab supporting multiple columns or 
+    walls.
+    """
+
     RAFT = MAT
+    """Alias for MAT foundation (raft foundation)."""
 
 
 class FootingSize(ABC):
@@ -82,7 +106,6 @@ class StripFooting(FootingSize):
     def __init__(self, width: float, length: float = inf):
         """
         :param width: Width of foundation footing (m).
-
         :param length: Length of foundation footing (m).
         """
         self.width = width
@@ -198,7 +221,6 @@ class RectangularFooting(FootingSize):
     def __init__(self, width: float, length: float):
         """
         :param width: Width of foundation footing (m).
-
         :param length: Length of foundation footing (m).
         """
         self.width = width
@@ -239,19 +261,14 @@ class Foundation:
     ) -> None:
         r"""
         :param depth: Depth of foundation (m).
-
         :param footing_size: Represents the size of the foundation footing.
-
         :param eccentricity: The deviation of the foundation load from
                              the center of gravity of the foundation
                              footing (m).
-
         :param load_angle: Inclination of the applied load with the
                            vertical ($\alpha^{\circ}$)
-
-        :param ground_water_level: Depth of the water below ground level (m),
-                                   defaults to None.
-
+        :param ground_water_level: Depth of the water below ground level
+                                   (m).
         :param foundation_type: Type of foundation.
         """
         self.depth = depth
@@ -353,7 +370,7 @@ class Foundation:
         of the foundation footing.
         """
         width, length, shape = (
-        self.effective_width, self.length, self.footing_shape)
+            self.effective_width, self.length, self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -375,30 +392,22 @@ def create_foundation(
     r"""A factory function that encapsulate the creation of a foundation.
 
     :param depth: Depth of foundation (m).
-
     :param width: Width of foundation footing. In the case of a circular
                   footing, it refers to the footing diameter (m).
-
     :param length: Length of foundation footing (m), defaults to None.
-
     :param eccentricity: The deviation of the foundation load from the
                          center of gravity of the foundation footing (m),
                          defaults to 0.0. This means that the foundation
                          load aligns with the center of gravity of the
                          foundation footing .
-
     :param load_angle: Inclination of the applied load with the  vertical
                            (:math:`\alpha^{\circ}`), defaults to 0.0.
-
     :param ground_water_level: Depth of the water below ground level (m),
                                defaults to None.
-
     :param foundation_type: Type of foundation footing, defaults to
                             :py:enum:mem:`~FoundationType.PAD`.
-
     :param shape: Shape of foundation footing, defaults to
                   :py:enum:mem:`~Shape.SQUARE`
-
     :raises ValueError: Raised when length is not provided for a
                         rectangular footing.
     :raises ValidationError: Raised if an invalid footing shape is

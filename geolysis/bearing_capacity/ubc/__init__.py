@@ -28,11 +28,20 @@ __all__ = [
 
 
 class UBCType(AbstractStrEnum):
-    """Enumeration of available ultimate bearing capacity types."""
+    """Enumeration of available ultimate bearing capacity methods.
+
+    Each member represents a different method for determining
+    the ultimate bearing capacity of soil.
+    """
 
     HANSEN = enum.auto()
+    """Hansen's method for calculating ultimate bearing capacity."""
+
     TERZAGHI = enum.auto()
+    """Terzaghi's method for calculating ultimate bearing capacity."""
+
     VESIC = enum.auto()
+    """Vesic's method for calculating ultimate bearing capacity."""
 
 
 @validate_func_args

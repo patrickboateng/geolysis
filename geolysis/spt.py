@@ -1,8 +1,3 @@
-"""This module provides classes for performing Standard Penetration Test (SPT)
-corrections, including energy, overburden pressure, and dilatancy corrections,
-as well as calculating design N-values.
-"""
-
 import enum
 from abc import abstractmethod
 from typing import Annotated, Final, Sequence
@@ -37,11 +32,20 @@ __all__ = [
 
 
 class SPTDesignMethod(AbstractStrEnum):
-    """Enumeration of SPT design methods."""
+    """Enumeration of Standard Penetration Test (SPT) design methods.
 
-    MIN = enum.auto()
-    AVG = enum.auto()
-    WGT = enum.auto()
+    Each member represents a different method for interpreting SPT
+    results in geotechnical design calculations.
+    """
+
+    MINIMUM = "min"
+    """Use the minimum SPT value."""
+
+    AVERAGE = "avg"
+    """Use the average SPT value."""
+
+    WEIGHTED = "wgt"
+    """Use the weighted SPT value."""
 
 
 class SPT:
@@ -57,9 +61,9 @@ class SPT:
     """
 
     def __init__(
-        self,
-        corrected_spt_n_values: Sequence[float],
-        method: SPTDesignMethod.WGT = "wgt",
+            self,
+            corrected_spt_n_values: Sequence[float],
+            method: SPTDesignMethod.WEIGHTED = "wgt",
     ):
         """
         :param corrected_spt_n_values: Corrected SPT N-values within the
@@ -78,12 +82,12 @@ class SPT:
     @corrected_spt_n_values.setter
     @validate_func_args
     def corrected_spt_n_values(
-        self,
-        corrected_spt_n_values: Annotated[
-            Sequence[float],
-            MustHaveLengthGreaterThan(1),
-            MustHaveValuesBetween(min_value=1.0, max_value=100.0),
-        ],
+            self,
+            corrected_spt_n_values: Annotated[
+                Sequence[float],
+                MustHaveLengthGreaterThan(1),
+                MustHaveValuesBetween(min_value=1.0, max_value=100.0),
+            ],
     ) -> None:
         self._corrected_spt_n_values = corrected_spt_n_values
 
@@ -111,7 +115,7 @@ class SPT:
         sum_wgts = 0.0
 
         for i, corr_spt_n_val in enumerate(vals, start=1):
-            wgt = 1 / i**2
+            wgt = 1 / i ** 2
             sum_total += wgt * corr_spt_n_val
             sum_wgts += wgt
 
@@ -134,34 +138,62 @@ class SPT:
 
 
         $$
-            N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
-                         {\sum_{i=1}^{n}\frac{1}{i^2}}
+        N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
+                      {\sum_{i=1}^{n}\frac{1}{i^2}}
         $$
         """
-        if self.method == "min":
-            return self._min_spt_n_design(self.corrected_spt_n_values)
-        elif self.method == "avg":
-            return self._avg_spt_n_design(self.corrected_spt_n_values)
-        else:  # method="wgt"
-            return self._wgt_spt_n_design(self.corrected_spt_n_values)
+
+        match self.method:
+            case "min":
+                _n_design = self._min_spt_n_design
+            case "avg":
+                _n_design = self._avg_spt_n_design
+            case "wgt":
+                _n_design = self._wgt_spt_n_design
+            case _:
+                raise ValueError("Invalid method")
+        return _n_design(self.corrected_spt_n_values)
 
 
 class HammerType(AbstractStrEnum):
-    """Enumeration of hammer types."""
+    """Enumeration of hammer types used in geotechnical testing.
+
+    Each member represents a different type of hammer used for
+    Standard Penetration Test (SPT) or other soil testing methods.
+    """
 
     AUTOMATIC = enum.auto()
+    """Automatic hammer."""
+
     DONUT_1 = enum.auto()
+    """Donut-type hammer, variant 1."""
+
     DONUT_2 = enum.auto()
+    """Donut-type hammer, variant 2."""
+
     SAFETY = enum.auto()
+    """Safety hammer."""
+
     DROP = enum.auto()
+    """Drop hammer."""
+
     PIN = enum.auto()
+    """Pin-type hammer."""
 
 
 class SamplerType(AbstractStrEnum):
-    """Enumeration of sampler types."""
+    """Enumeration of soil sampler types.
+
+    Each member represents a different type of sampler used in
+    Standard Penetration Tests (SPT) or other geotechnical sampling
+    methods.
+    """
 
     STANDARD = enum.auto()
+    """Standard sampler."""
+
     NON_STANDARD = enum.auto()
+    """Non-standard sampler."""
 
 
 class EnergyCorrection:
@@ -191,14 +223,14 @@ class EnergyCorrection:
     }
 
     def __init__(
-        self,
-        recorded_spt_n_value: int,
-        *,
-        energy_percentage=0.6,
-        borehole_diameter=65.0,
-        rod_length=3.0,
-        hammer_type=HammerType.DONUT_1,
-        sampler_type=SamplerType.STANDARD,
+            self,
+            recorded_spt_n_value: int,
+            *,
+            energy_percentage=0.6,
+            borehole_diameter=65.0,
+            rod_length=3.0,
+            hammer_type=HammerType.DONUT_1,
+            sampler_type=SamplerType.STANDARD,
     ):
         """
         :param recorded_spt_n_value: Recorded SPT N-value from field.
@@ -225,7 +257,8 @@ class EnergyCorrection:
     @recorded_spt_n_value.setter
     @validate_func_args
     def recorded_spt_n_value(
-        self, val: Annotated[int, MustBeBetween(min_value=0, max_value=100)]
+            self,
+            val: Annotated[int, MustBeBetween(min_value=0, max_value=100)]
     ) -> None:
         self._recorded_spt_value = val
 
@@ -237,7 +270,8 @@ class EnergyCorrection:
     @energy_percentage.setter
     @validate_func_args
     def energy_percentage(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=1.0)]
+            self,
+            val: Annotated[float, MustBeBetween(min_value=0.0, max_value=1.0)]
     ) -> None:
         self._energy_percentage = val
 
@@ -249,7 +283,8 @@ class EnergyCorrection:
     @borehole_diameter.setter
     @validate_func_args
     def borehole_diameter(
-        self, val: Annotated[float, MustBeBetween(min_value=65.0, max_value=200.0)]
+            self, val: Annotated[
+                float, MustBeBetween(min_value=65.0, max_value=200.0)]
     ) -> None:
         self._borehole_diameter = val
 
@@ -270,7 +305,8 @@ class EnergyCorrection:
     @hammer_type.setter
     @validate_func_args
     def hammer_type(
-        self, hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)]
+            self,
+            hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)]
     ):
         self._hammer_type = hammer_type
 
@@ -280,7 +316,8 @@ class EnergyCorrection:
 
     @sampler_type.setter
     @validate_func_args
-    def sampler_type(self, val: Annotated[SamplerType, MustBeMemberOf(SamplerType)]):
+    def sampler_type(self,
+                     val: Annotated[SamplerType, MustBeMemberOf(SamplerType)]):
         self._sampler_type = val
 
     @property
@@ -321,16 +358,17 @@ class EnergyCorrection:
         r"""Energy correction factor.
 
         $$
-            N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S \cdot C_R \cdot N}{ENERGY}
+        N_{ENERGY} = \dfrac{E_H \cdot C_B \cdot C_S
+                     \cdot C_R \cdot N}{ENERGY}
         $$
 
         `ENERGY`: 0.6, 0.55, etc
         """
         numerator = (
-            self.hammer_efficiency
-            * self.borehole_diameter_correction
-            * self.sampler_correction
-            * self.rod_length_correction
+                self.hammer_efficiency
+                * self.borehole_diameter_correction
+                * self.sampler_correction
+                * self.rod_length_correction
         )
         return numerator / self.energy_percentage
 
@@ -347,7 +385,6 @@ class OPC:
         """
         :param std_spt_n_value: SPT N-value standardized for field
                                 procedures.
-
         :param eop: Effective overburden pressure ($kPa$).
         """
         self.std_spt_n_value = std_spt_n_value
@@ -372,7 +409,8 @@ class OPC:
     @std_spt_n_value.setter
     @validate_func_args
     def std_spt_n_value(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
+            self, val: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=100.0)]
     ):
         self._std_spt_n_value = val
 
@@ -388,7 +426,7 @@ class OPC:
 
             `60` is used in this case to represent `60%` hammer
              efficiency and can be any percentage of hammer efficiency
-             e.g $N_{55}$ for `55%` hammer efficiency.
+             e.g. $N_{55}$ for `55%` hammer efficiency.
         """
         corrected_spt = self.correction() * self.std_spt_n_value
         # Corrected SPT should not be more
@@ -412,7 +450,8 @@ class GibbsHoltzOPC(OPC):
 
     @eop.setter
     @validate_func_args
-    def eop(self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=280.0)]):
+    def eop(self, val: Annotated[
+        float, MustBeBetween(min_value=0.0, max_value=280.0)]):
         self._eop = val
 
     def correction(self) -> float:
@@ -443,7 +482,8 @@ class BazaraaPeckOPC(OPC):
         r"""SPT Correction.
 
         $$
-        C_N = \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \, \sigma_o \lt 71.8kN/m^2
+        C_N = \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \,
+              \sigma_o \lt 71.8kN/m^2
         $$
 
         $$
@@ -454,7 +494,6 @@ class BazaraaPeckOPC(OPC):
         $$
         C_N = 1 \, , \, \sigma_o = 71.8kN/m^2
         $$
-
         """
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
@@ -544,7 +583,8 @@ class DilatancyCorrection:
     @corr_spt_n_value.setter
     @validate_func_args
     def corr_spt_n_value(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
+            self, val: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=100.0)]
     ):
         self._corr_spt_n_value = val
 
@@ -560,7 +600,6 @@ class DilatancyCorrection:
         $$
         (N_1)_{60} = (N_1)_{60} \, , \, (N_1)_{60} \le 15
         $$
-
         """
         if self.corr_spt_n_value <= 15.0:
             return self.corr_spt_n_value
@@ -568,13 +607,27 @@ class DilatancyCorrection:
 
 
 class OPCType(AbstractStrEnum):
-    """Enumeration of overburden pressure correction types."""
+    """
+    Enumeration of overburden pressure correction (OPC) methods.
+
+    Each member represents a method used to correct SPT results
+    for the effects of overburden pressure in geotechnical design.
+    """
 
     GIBBS = enum.auto()
+    """Gibbs method for overburden pressure correction."""
+
     BAZARAA = enum.auto()
+    """Bazaraa method for overburden pressure correction."""
+
     PECK = enum.auto()
+    """Peck method for overburden pressure correction."""
+
     LIAO = enum.auto()
+    """Liao method for overburden pressure correction."""
+
     SKEMPTON = enum.auto()
+    """Skempton method for overburden pressure correction."""
 
 
 _opctypes = {
@@ -588,9 +641,9 @@ _opctypes = {
 
 @validate_func_args
 def create_overburden_pressure_correction(
-    std_spt_n_value: float,
-    eop: float,
-    opc_type: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
+        std_spt_n_value: float,
+        eop: float,
+        opc_type: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
 ):
     """A factory function that encapsulates the creation of overburden
     pressure correction.

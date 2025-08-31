@@ -27,17 +27,15 @@ class UltimateBearingCapacity(ABC):
               + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma} i_{\gamma}
         $$
 
-         | SYMBOL                          | DESCRIPTION                     | UNIT       |
-         |---------------------------------|---------------------------------|------------|
-         |$q_u$                           | Ultimate bearing capacity       | $kPa$     |
-         |$c$                             | Cohesion of soil                | $kPa$     |
-         |$q$                             | Overburden pressure of soil     | $kPa$     |
-         |$\gamma$                         | Unit weight of soil             | $kN/m^3$  |
-         |$B$                             | Width of foundation footing     | $m$       |
-         |$N_c$, $N_q$, $N_{\gamma}$      | Bearing capacity factors        | —          |
-         |$s_c$, $s_q$, $s_{\gamma}$      | Shape factors                   | —          |
-         |$d_c$, $d_q$, $d_{\gamma}$      | Depth factors                   | —          |
-         |$i_c$, $i_q$, $i_{\gamma}$      | Inclination factors             | —          |
+        - $q_u$ (kPa): Ultimate bearing capacity
+        - $c$ (kPa): Cohesion of soil
+        - $q$ (kPa): Overburden pressure of soil
+        - $\gamma$ (kN/m³): Unit weight of soil
+        - $B$ (m): Width of foundation footing
+        - $N_c$, $N_q$, $N_{\gamma}$: Bearing capacity factors
+        - $s_c$, $s_q$, $s_{\gamma}$: Shape factors
+        - $d_c$, $d_q$, $d_{\gamma}$: Depth factors
+        - $i_c$, $i_q$, $i_{\gamma}$: Inclination factors
 
         :param friction_angle: Internal angle of friction for general
                                shear failure (degrees).

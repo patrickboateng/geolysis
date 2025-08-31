@@ -53,15 +53,13 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
     ) -> None:
         r"""
 
-        | SYMBOL                        | DESCRIPTION                  | UNIT       |
-        |--------------------------------|------------------------------|------------|
-        | $q_u$                          | Ultimate bearing capacity    | $kPa$     |
-        | $c$                            | Cohesion of soil             | $kPa$     |
-        | $q$                            | Overburden pressure of soil  | $kPa$     |
-        | $\gamma$                        | Unit weight of soil          | $kN/m^3$  |
-        | $B$                            | Width of foundation footing  | $m$       |
-        |$L$                             | Length of foundation footing     | $m$       |
-        | $N_c$, $N_q$, $N_{\gamma}$     | Bearing capacity factors     | —          |
+        - $q_u$ (kPa): Ultimate bearing capacity
+        - $c$ (kPa): Cohesion of soil
+        - $q$ (kPa): Overburden pressure of soil
+        - $\gamma$ (kN/m³): Unit weight of soil
+        - $B$ (m): Width of foundation footing
+        - $L$ (m): Length of foundation footing
+        - $N_c$, $N_q$, $N_{\gamma}$: Bearing capacity factors
 
 
         :param friction_angle: Internal angle of friction for general
