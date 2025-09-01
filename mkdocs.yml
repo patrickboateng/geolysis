@@ -37,6 +37,7 @@ nav:
 
 theme:
   name: material
+  custom_dir: overrides
   logo: assets/pkg-logo.svg
   favicon: assets/favicon.ico
   icon:
