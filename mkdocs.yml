@@ -1,9 +1,13 @@
 site_name: geolysis
+site_description: >-
+  geolysis is an open-source python package (library) for geotechnical 
+  analysis and modeling
+site_author: Patrick Boateng
 site_url: !ENV READTHEDOCS_CANONICAL_URL
+copyright: Copyright &copy; 2023 - 2025 Geolysis
 repo_name: geolysis
 repo_url: https://github.com/patrickboateng/geolysis/
 edit_uri: edit/main/docs
-copyright: Copyright &copy; 2023 - 2025 Geolysis
 
 nav:
   - Home: index.md
@@ -24,6 +28,7 @@ nav:
       - Code of Conduct: dev_guide/code_of_conduct.md
   - Release Notes:
       - Introduction: release_notes/index.md
+      - 0.10.0 notes: release_notes/0.10.0-notes.md
       - 0.9.0 notes: release_notes/0.9.0-notes.md
       - 0.8.0 notes: release_notes/0.8.0-notes.md
       - 0.7.0 notes: release_notes/0.7.0-notes.md
@@ -40,6 +45,7 @@ theme:
   custom_dir: docs/overrides
   logo: assets/pkg-logo.svg
   favicon: assets/favicon.ico
+
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
@@ -48,7 +54,6 @@ theme:
     text: Roboto
     code: Roboto Mono
   features:
-    #    - content.action.add
     - content.action.edit
     - content.code.annotate
     - search.suggest
@@ -92,7 +97,6 @@ plugins:
             show_root_toc_entry: false
             unwrap_annotated: true
             preload_modules: [ "geolysis" ]
-            #            summary: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true
             inherited_members: true
@@ -101,6 +105,7 @@ plugins:
   - search
   - git-revision-date-localized:
       enable_creation_date: true
+      enable_git_follow: false
   - git-committers:
       repository: patrickboateng/geolysis
       branch: main
