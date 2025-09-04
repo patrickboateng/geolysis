@@ -11,11 +11,14 @@
 `geolysis` is an open-source python package (library) for geotechnical analysis
 and modeling.
 
-The `geolysis` python package is among three other projects, `geolysis.excel`,
-`geolysis.gui`, and `geolysis.ai`. More details about these projects are
-provided [here](https://github.com/geolysis-dev).
 
--  [Python API](reference/index.md)
+!!! info "Geotechnical Software Toolkit"
+
+      The `geolysis` python package is among three other projects, `geolysis.excel`,
+      `geolysis.gui`, and `geolysis.ai`. For me information on the full geotechnical
+      toolkit, click [here](https://github.com/geolysis-dev).
+
+- [Python API](reference/index.md)
     - [allowable_bearing_capacity](reference/allowable_bearing_capacity.md)
     - [ultimate_bearing_capacity](reference/ultimate_bearing_capacity.md)
     - [foundation](reference/foundation.md)
