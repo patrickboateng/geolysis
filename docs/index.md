@@ -14,9 +14,10 @@ and modeling.
 
 !!! info "Geotechnical Software Toolkit"
 
-      The `geolysis` python package is among three other projects, `geolysis.excel`,
-      `geolysis.gui`, and `geolysis.ai`. For me information on the full geotechnical
-      toolkit, click [here](https://github.com/geolysis-dev).
+    The `geolysis` python package is among three other projects, 
+    `geolysis.excel`, `geolysis.gui`, and `geolysis.ai`. For me information 
+    on the full geotechnical toolkit, 
+    click [here](https://github.com/geolysis-dev).
 
 - [Python API](reference/index.md)
     - [allowable_bearing_capacity](reference/allowable_bearing_capacity.md)
