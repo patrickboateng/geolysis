@@ -103,6 +103,11 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
                 * self._sr()
         )
 
+    def bearing_capacity_results(self) -> dict:
+        res = super().bearing_capacity_results()
+        res["water_correction_factor"] = self._cw()
+        return res
+
 
 class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
     r"""Allowable bearing capacity for mat foundation on cohesionless

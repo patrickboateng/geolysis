@@ -195,6 +195,23 @@ class UltimateBearingCapacity(ABC):
                 + self._embedment_term(0.5)
         )
 
+    def bearing_capacity_results(self) -> dict:
+        return {
+            "bearing_capacity": self.bearing_capacity(),
+            "n_c": self.n_c,
+            "n_q": self.n_q,
+            "n_gamma": self.n_gamma,
+            "s_c": self.s_c,
+            "s_q": self.s_q,
+            "s_gamma": self.s_gamma,
+            "d_c": self.d_c,
+            "d_q": self.d_q,
+            "d_gamma": self.d_gamma,
+            "i_c": self.i_c,
+            "i_q": self.i_q,
+            "i_gamma": self.i_gamma,
+        }
+
     @property
     @abstractmethod
     def n_c(self) -> float:
