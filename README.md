@@ -24,6 +24,9 @@ The `geolysis` python package is among three other projects, `geolysis.excel`,
 `geolysis.gui`, and `geolysis.ai`. More details about these projects are
 provided [here](https://github.com/geolysis-dev).
 
+`geolysis` has only one project dependency which is [func-validator](https://github.com/patrickboateng/func-validator/)
+for validating `function` (and `method`) arguments.
+
 The rest of this **README** provides an overview of the `geolysis` python
 package.
 
