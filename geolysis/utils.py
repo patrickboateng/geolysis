@@ -5,8 +5,11 @@ from math import exp, inf, isclose, log10, pi, sqrt
 from statistics import fmean as mean
 from typing import Callable
 
+from func_validator import ValidationError
+
 __all__ = [
     "AbstractStrEnum",
+    "ValidationError",
     "inf",
     "pi",
     "deg2rad",
