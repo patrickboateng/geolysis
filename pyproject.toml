@@ -15,7 +15,7 @@ keywords = [
     "standard-penetration-test-analysis",
 ]
 authors = [{ name = "Patrick Boateng", email = "boatengpato.pb@gmail.com" }]
-dependencies = []
+dependencies = ["func-validator"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
