@@ -657,9 +657,7 @@ class USCS:
     ):
         """
         :param atterberg_limits: Atterberg limits of the soil.
-
         :param psd: Particle size distribution of the soil.
-
         :param organic: Indicates whether soil is organic or not.
         """
         self.atterberg_limits = atterberg_limits
@@ -782,7 +780,9 @@ class USCS:
 
 
 def create_aashto_classifier(
-        liquid_limit: float, plastic_limit: float, fines: float
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
 ) -> AASHTO:
     """A helper function that encapsulates the creation of a AASHTO
     classifier.
