@@ -60,6 +60,7 @@ theme:
     - search.suggest
     - search.highlight
     - navigation.footer
+    - navigation.indexes
     - toc.follow
 
   palette:
