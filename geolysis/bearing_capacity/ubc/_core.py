@@ -183,7 +183,7 @@ class UltimateBearingCapacity(ABC):
         """Return a dictionary of bearing capacity results with
         intermediate calculations.
 
-        !!! info "Added in v0.10.4"
+        !!! info "Added in v0.11.0"
 
         """
         return {
