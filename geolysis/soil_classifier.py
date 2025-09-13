@@ -35,8 +35,7 @@ class _Clf(tuple, enum.Enum):
 
 
 class USCSSymbol(_Clf):
-    """
-    Unified Soil Classification System (USCS) symbols and descriptions.
+    """Unified Soil Classification System (USCS) symbols and descriptions.
 
     Each member represents a USCS soil type, grading, or plasticity symbol.
     Aliases are provided where applicable.

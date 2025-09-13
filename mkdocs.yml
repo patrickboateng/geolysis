@@ -94,6 +94,7 @@ plugins:
       handlers:
         python:
           options:
+            preload_modules: [ "geolysis" ]
             docstring_style: sphinx
             show_source: false
             show_signature: true
@@ -103,7 +104,6 @@ plugins:
             show_root_heading: false
             show_root_toc_entry: false
             unwrap_annotated: true
-            preload_modules: [ "geolysis" ]
             show_symbol_type_heading: true
             show_symbol_type_toc: true
             inherited_members: true
