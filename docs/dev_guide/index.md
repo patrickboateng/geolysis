@@ -12,8 +12,10 @@ the root (main package namespace) of the project.
   capacity analysis.
 - `foundation.py` module (file) contains classes for representing a foundation.
 - `soil_classifier.py` module (file) contains classes for soil classification.
-- `spt.py` module (file) contains classes for Standard Penetration Test Analysis.
-- `utils.py` module (file) contains useful objects (functions, decorators, etc.) 
+- `spt.py` module (file) contains classes for Standard Penetration Test
+  Analysis.
+- `utils.py` module (file) contains useful objects (functions, decorators,
+  etc.)
   that are used across the project.
 
 ## Layout of Project's Documentation
@@ -23,6 +25,8 @@ The `docs` folder contains all the documentation files for the project.
 - `api/` folder contains the API (code) reference for `geolysis`.
 - `assets/` folder contain images used for the docs website (e.g. logo).
 - `dev_guide/` folder contains information for contributors.
+- `formulas/` folder contains explanations of the geotechnical
+  formulas used in `geolysis`.
 - `javascripts/` folder contains extra javascript files.
 - `release_notes/` folder contains all the release notes for `geolysis`.
 - `index.md` is the landing page for the documentation.
