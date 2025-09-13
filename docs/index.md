@@ -11,7 +11,6 @@
 `geolysis` is an open-source python package (library) for geotechnical analysis
 and modeling.
 
-
 !!! info "Geotechnical Software Toolkit"
 
     The `geolysis` python package is among three other projects, 
@@ -19,11 +18,49 @@ and modeling.
     on the full geotechnical toolkit, 
     click [here](https://github.com/geolysis-dev).
 
-- [Python API](reference/index.md)
-    - [allowable_bearing_capacity](reference/allowable_bearing_capacity.md)
-    - [ultimate_bearing_capacity](reference/ultimate_bearing_capacity.md)
-    - [foundation](reference/foundation.md)
-    - [soil_classifier](reference/soil_classifier.md)
-    - [spt](reference/spt.md)
-    - [utils](reference/utils.md)
-     
+## [Python API](reference/index.md)
+
+- [allowable_bearing_capacity](reference/allowable-bearing-capacity.md)
+- [ultimate_bearing_capacity](reference/ultimate-bearing-capacity.md)
+- [foundation](reference/foundation.md)
+- [soil_classifier](reference/soil-classifier.md)
+- [spt](reference/spt.md)
+- [utils](reference/utils.md)
+
+## Imports
+
+### Bearing Capacity
+
+#### Allowable Bearing Capacity (ABC)
+
+```python
+from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
+```
+
+#### Ultimate Bearing Capacity (UBC)
+
+```python
+from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
+```
+
+### Foundation
+
+```python
+from geolysis.foundation import create_foundation
+```
+
+### Soil Classification
+
+```python
+from geolysis.soil_classifier import create_uscs_classifier
+from geolysis.soil_classifier import create_aashto_classifier
+```
+
+### Standard Penetration Test (SPT) Analysis
+
+```python
+from geolysis.spt import DilatancyCorrection
+from geolysis.spt import EnergyCorrection
+from geolysis.spt import SPT
+from geolysis.spt import create_overburden_pressure_correction
+``` 
