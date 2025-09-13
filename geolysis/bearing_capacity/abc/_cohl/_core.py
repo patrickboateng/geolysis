@@ -15,10 +15,10 @@ class AllowableBearingCapacity(ABC):
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(
-            self,
-            corrected_spt_n_value: float,
-            tol_settlement: float,
-            foundation_size: Foundation,
+        self,
+        corrected_spt_n_value: float,
+        tol_settlement: float,
+        foundation_size: Foundation,
     ) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
@@ -42,7 +42,8 @@ class AllowableBearingCapacity(ABC):
     @tol_settlement.setter
     @validate_func_args
     def tol_settlement(
-            self, tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)]
+        self,
+        tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)],
     ):
         self._tol_settlement = tol_settlement
 
@@ -57,6 +58,12 @@ class AllowableBearingCapacity(ABC):
         return min(1.0 + 0.33 * depth / width, 1.33)
 
     def bearing_capacity_results(self) -> dict:
+        """Return a dictionary of bearing capacity results with
+        intermediate calculations.
+
+        !!! info "Added in v0.10.4"
+
+        """
         return {
             "bearing_capacity": self.bearing_capacity(),
             "depth_factor": self._fd(),

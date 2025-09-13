@@ -413,22 +413,11 @@ class OPC:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
-        r"""Corrected SPT N-value.
-
-        $$
-        (N_1)_{60} = C_N \cdot N_{60}
-        $$
-
-        !!! note
-
-            `60` is used in this case to represent `60%` hammer
-             efficiency and can be any percentage of hammer efficiency
-             e.g. $N_{55}$ for `55%` hammer efficiency.
-        """
-        corrected_spt = self.correction() * self.std_spt_n_value
+        r"""Corrected SPT N-value."""
         # Corrected SPT should not be more
         # than 2 times the Standardized SPT
-        return min(corrected_spt, 2 * self.std_spt_n_value)
+        correction = min(self.correction(), 2.0)
+        return correction * self.std_spt_n_value
 
     @abstractmethod
     def correction(self) -> float:
@@ -452,17 +441,7 @@ class GibbsHoltzOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        r"""SPT Correction.
-
-        $$
-        C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2
-        $$
-
-        $\frac{N_c}{N_{60}}$ should lie between 0.45 and 2.0, if
-        $\frac{N_c}{N_{60}}$ is greater than 2.0, :math:`N_c` should be
-        divided by 2.0 to obtain the design value used in finding the
-        bearing capacity of the soil.
-        """
+        r"""SPT Correction."""
         corr = 350.0 / (self.eop + 70.0)
         return corr / 2.0 if corr > 2.0 else corr
 
@@ -476,22 +455,7 @@ class BazaraaPeckOPC(OPC):
     STD_PRESSURE: Final = 71.8
 
     def correction(self) -> float:
-        r"""SPT Correction.
-
-        $$
-        C_N = \dfrac{4}{1 + 0.0418 \cdot \sigma_o}, \,
-              \sigma_o \lt 71.8kN/m^2
-        $$
-
-        $$
-        C_N = \dfrac{4}{3.25 + 0.0104 \cdot \sigma_o},
-               \, \sigma_o \gt 71.8kN/m^2
-        $$
-
-        $$
-        C_N = 1 \, , \, \sigma_o = 71.8kN/m^2
-        $$
-        """
+        r"""SPT Correction."""
         if isclose(self.eop, self.STD_PRESSURE, rel_tol=0.01):
             corr = 1.0
         elif self.eop < self.STD_PRESSURE:
@@ -517,12 +481,7 @@ class PeckOPC(OPC):
         self._eop = val
 
     def correction(self) -> float:
-        r"""SPT Correction.
-
-        $$
-        C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)
-        $$
-        """
+        r"""SPT Correction."""
         return 0.77 * log10(2000.0 / self.eop)
 
 
@@ -532,12 +491,7 @@ class LiaoWhitmanOPC(OPC):
     """
 
     def correction(self) -> float:
-        r"""SPT Correction.
-
-        $$
-        C_N = \sqrt{\dfrac{100}{\sigma_o}}
-        $$
-        """
+        r"""SPT Correction."""
         return sqrt(100.0 / self.eop)
 
 
@@ -545,12 +499,7 @@ class SkemptonOPC(OPC):
     """Overburden Pressure Correction according to `Skempton (1986)`."""
 
     def correction(self) -> float:
-        r"""SPT Correction.
-
-        $$
-        C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}
-        $$
-        """
+        r"""SPT Correction."""
         return 2.0 / (1.0 + 0.01044 * self.eop)
 
 
@@ -587,25 +536,14 @@ class DilatancyCorrection:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
-        r"""Corrected SPT N-value.
-
-        $$
-        (N_1)_{60} = 15 + \dfrac{1}{2}((N_1)_{60} - 15) \, , \,
-                     (N_1)_{60} \gt 15
-        $$
-
-        $$
-        (N_1)_{60} = (N_1)_{60} \, , \, (N_1)_{60} \le 15
-        $$
-        """
+        r"""Corrected SPT N-value."""
         if self.corr_spt_n_value <= 15.0:
             return self.corr_spt_n_value
         return 15.0 + 0.5 * (self.corr_spt_n_value - 15.0)
 
 
 class OPCType(AbstractStrEnum):
-    """
-    Enumeration of overburden pressure correction (OPC) methods.
+    """Enumeration of overburden pressure correction (OPC) methods.
 
     Each member represents a method used to correct SPT results
     for the effects of overburden pressure in geotechnical design.
@@ -647,9 +585,7 @@ def create_overburden_pressure_correction(
 
     :param std_spt_n_value: SPT N-value standardized for field
                             procedures.
-
     :param eop: Effective overburden pressure ($kPa$).
-
     :param opc_type: Overburden Pressure Correction type to apply.
     """
     opc_type = OPCType(opc_type)

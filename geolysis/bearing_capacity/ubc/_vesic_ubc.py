@@ -22,9 +22,9 @@ class VesicBearingCapacityFactors:
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
         return (
-            2.0
-            * (VesicBearingCapacityFactors.n_q(friction_angle) + 1.0)
-            * tan(friction_angle)
+                2.0
+                * (VesicBearingCapacityFactors.n_q(friction_angle) + 1.0)
+                * tan(friction_angle)
         )
 
 
@@ -32,10 +32,10 @@ class VesicShapeFactors:
     @staticmethod
     @round_(ndigits=2)
     def s_c(
-        friction_angle: float,
-        f_width: float,
-        f_length: float,
-        f_shape: Shape,
+            friction_angle: float,
+            f_width: float,
+            f_length: float,
+            f_shape: Shape,
     ) -> float:
         _n_q = VesicBearingCapacityFactors.n_q(friction_angle)
         _n_c = VesicBearingCapacityFactors.n_c(friction_angle)
@@ -50,10 +50,10 @@ class VesicShapeFactors:
     @staticmethod
     @round_(ndigits=2)
     def s_q(
-        friction_angle: float,
-        f_width: float,
-        f_length: float,
-        f_shape: Shape,
+            friction_angle: float,
+            f_width: float,
+            f_length: float,
+            f_shape: Shape,
     ) -> float:
         if f_shape == Shape.STRIP:
             return 1.0
@@ -83,8 +83,9 @@ class VesicDepthFactors:
     @staticmethod
     @round_(ndigits=2)
     def d_q(friction_angle: float, f_depth: float, f_width: float) -> float:
-        return 1.0 + 2.0 * tan(friction_angle) * (1.0 - sin(friction_angle)) ** 2.0 * (
-            f_depth / f_width
+        return 1.0 + 2.0 * tan(friction_angle) * (
+                    1.0 - sin(friction_angle)) ** 2.0 * (
+                f_depth / f_width
         )
 
     @staticmethod
@@ -114,140 +115,74 @@ class VesicInclinationFactors:
 
 
 class VesicUltimateBearingCapacity(UltimateBearingCapacity):
-    """Ultimate bearing capacity for soils according to `Vesic (1973)`."""
+    """Ultimate bearing capacity for soils according to `Vesic (1973)`.
+
+    See [implementation](../formulas/ultimate-bearing-capacity.md/#vesic-bearing-capacity)
+    for more details on bearing capacity equation used.
+    """
 
     @property
     def n_c(self) -> float:
-        r"""Bearing capacity factor $N_c$.
-
-        $$N_c = \cot(\phi) \left(N_q - 1\right)$$
-        """
+        r"""Bearing capacity factor $N_c$."""
         return VesicBearingCapacityFactors.n_c(self.friction_angle)
 
     @property
     def n_q(self) -> float:
-        r"""Bearing capacity factor $N_q$.
-
-        $$
-        N_q = \tan^2\left(45 + \frac{\phi}{2}\right) \cdot
-               e^{\pi \tan(\phi)}
-        $$
-        """
+        r"""Bearing capacity factor $N_q$."""
         return VesicBearingCapacityFactors.n_q(self.friction_angle)
 
     @property
     def n_gamma(self) -> float:
-        r"""Bearing capacity factor $N_{\gamma}$.
-
-        $$N_{\gamma} = 2(N_q + 1) \tan(\phi)$$
-        """
+        r"""Bearing capacity factor $N_{\gamma}$."""
         return VesicBearingCapacityFactors.n_gamma(self.friction_angle)
 
     @property
     def s_c(self) -> float:
-        r"""Shape factor $S_c$.
-
-        $$s_c = 1.0 \rightarrow \text{Strip footing}$$
-
-        $$
-        s_c = 1 + \dfrac{B}{L} \cdot \dfrac{N_q}{N_c} \rightarrow
-                 \text{Rectangular footing}
-        $$
-
-        $$
-        s_c &= 1 + \dfrac{N_q}{N_c} \rightarrow
-                \text{Square or circular footing}
-        $$
-        """
+        r"""Shape factor $S_c$."""
         width, length, shape = self.foundation_size.footing_params()
         return VesicShapeFactors.s_c(self.friction_angle, width, length, shape)
 
     @property
     def s_q(self) -> float:
-        r"""Shape factor $S_q$.
-
-
-        $$s_q = 1.0 \rightarrow \text{Strip footing}$$
-
-        $$
-        s_q = 1 + \dfrac{B}{L} \cdot \tan(\phi) \rightarrow
-                     \text{Rectangular footing}
-        $$
-
-        $$
-        s_q = 1 + \tan(\phi) \rightarrow \text{Square or circular footing}
-        $$
-        """
+        r"""Shape factor $S_q$."""
         width, length, shape = self.foundation_size.footing_params()
         return VesicShapeFactors.s_q(self.friction_angle, width, length, shape)
 
     @property
     def s_gamma(self) -> float:
-        r"""Shape factor $S_{\gamma}$.
-
-        $$s_{\gamma} = 1.0 \rightarrow \text{Strip footing}$$
-
-        $$
-        s_{\gamma} = 1.0 - 0.4 \dfrac{B}{L} \rightarrow
-                        \text{Rectangular footing}
-        $$
-
-        $$
-        s_{\gamma} = 0.6 \rightarrow \text{Square or circular footing}
-        $$
-        """
+        r"""Shape factor $S_{\gamma}$."""
         width, length, shape = self.foundation_size.footing_params()
         return VesicShapeFactors.s_gamma(width, length, shape)
 
     @property
     def d_c(self) -> float:
-        r"""Depth factor $D_c$.
-
-        $$d_c = 1 + 0.4 \dfrac{D_f}{B}$$
-        """
+        r"""Depth factor $D_c$."""
         depth, width = self.foundation_size.depth, self.foundation_size.width
         return VesicDepthFactors.d_c(depth, width)
 
     @property
     def d_q(self) -> float:
-        r"""Depth factor $D_q$.
-
-        $$
-        d_q = 1 + 2 \tan(\phi) \cdot (1 - \sin(\phi))^2
-              \cdot \dfrac{D_f}{B}
-        $$
-        """
+        r"""Depth factor $D_q$."""
         depth, width = self.foundation_size.depth, self.foundation_size.width
         return VesicDepthFactors.d_q(self.friction_angle, depth, width)
 
     @property
     def d_gamma(self) -> float:
-        r"""Depth factor $D_{\gamma}$.
-
-        $$d_{\gamma} = 1.0$$
-        """
+        r"""Depth factor $D_{\gamma}$."""
         return VesicDepthFactors.d_gamma()
 
     @property
     def i_c(self) -> float:
-        r"""Inclination factor $I_c$.
-
-        $$i_c = (1 - \dfrac{\alpha}{90})^2$$
-        """
+        r"""Inclination factor $I_c$."""
         return VesicInclinationFactors.i_c(self.load_angle)
 
     @property
     def i_q(self) -> float:
-        r"""Inclination factor $I_q$.
-
-        $$i_q = (1 - \dfrac{\alpha}{90})^2$$
-        """
+        r"""Inclination factor $I_q$."""
         return VesicInclinationFactors.i_q(self.load_angle)
 
     @property
     def i_gamma(self) -> float:
-        r"""Inclination factor $I_{\gamma}$.
-
-        $$i_{\gamma} = \left(1 - \dfrac{\alpha}{\phi} \right)^2$$
-        """
-        return VesicInclinationFactors.i_gamma(self.friction_angle, self.load_angle)
+        r"""Inclination factor $I_{\gamma}$."""
+        return VesicInclinationFactors.i_gamma(self.friction_angle,
+                                               self.load_angle)

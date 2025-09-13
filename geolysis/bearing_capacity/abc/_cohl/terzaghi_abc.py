@@ -5,39 +5,11 @@ from ._core import AllowableBearingCapacity
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
-    r"""Allowable bearing capacity for pad foundation on cohesionless
+    """Allowable bearing capacity for pad foundation on cohesionless
     soils according to `Terzaghi & Peck (1948)`.
 
-    $$
-     q_a(kPa) = 12N \dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right),
-                 \ B \ \le 1.2m
-    $$
-
-    $$
-     q_a(kPa) = 8N\left(\dfrac{3.28B + 1}{3.28B} \right)^2\dfrac{1}
-                 {c_w f_d}\left(\dfrac{S}{25.4}\right), \ B \ \gt 1.2m
-    $$
-
-    $$
-     f_d = 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
-    $$
-
-    $$
-     c_w = 2 - \frac{D_w}{2B} \le 2, D_w \gt D_f
-    $$
-
-    $$
-     c_w = 2 - \frac{D_f}{2B} \le 2, D_w \le D_f
-    $$
-
-    - $q_a$ (kPa): Allowable bearing capacity
-    - $N$: Corrected SPT N-value
-    - $f_d$: Depth factor
-    - $c_w$: Water correction factor
-    - $S$ (mm): Tolerable settlement
-    - $B$ (m): Width of foundation footing
-    - $D_f$ (m): Depth of foundation footing
-    - $D_w$ (m): Depth of water below ground level
+    See [implementation](../formulas/allowable-bearing-capacity.md/#terzaghi-bearing-capacity-for-pad-foundation)
+    for more details on bearing capacity equation used.
 
     """
 
@@ -110,33 +82,12 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
 
 
 class TerzaghiABC4MatFoundation(TerzaghiABC4PadFoundation):
-    r"""Allowable bearing capacity for mat foundation on cohesionless
+    """Allowable bearing capacity for mat foundation on cohesionless
     soils according to `Terzaghi & Peck (1948)`.
 
-    $$
-     q_a(kPa) = 8N\dfrac{1}{c_w f_d}\left(\dfrac{S}{25.4}\right)
-    $$
+    See [implementation](../formulas/allowable-bearing-capacity.md/#terzaghi-bearing-capacity-for-mat-foundation)
+    for more details on bearing capacity equation used.
 
-    $$
-     f_d = 1 + 0.25 \cdot \frac{D_f}{B} \le 1.25
-    $$
-
-    $$
-     c_w = 2 - \frac{D_w}{2B} \le 2, D_w \gt D_f
-    $$
-
-    $$
-     c_w = 2 - \frac{D_f}{2B} \le 2, D_w \le D_f
-    $$
-
-    - $q_a$ (kPa): Allowable bearing capacity
-    - $N$: Corrected SPT N-value
-    - $f_d$: Depth factor
-    - $c_w$: Water correction factor
-    - $S$ (mm): Tolerable settlement
-    - $B$ (m): Width of foundation footing
-    - $D_f$ (m): Depth of foundation footing
-    - $D_w$ (m): Depth of water below ground level
     """
 
     @round_(ndigits=2)

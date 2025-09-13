@@ -52,16 +52,6 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
             apply_local_shear: bool = False,
     ) -> None:
         r"""
-
-        - $q_u$ (kPa): Ultimate bearing capacity
-        - $c$ (kPa): Cohesion of soil
-        - $q$ (kPa): Overburden pressure of soil
-        - $\gamma$ (kN/m³): Unit weight of soil
-        - $B$ (m): Width of foundation footing
-        - $L$ (m): Length of foundation footing
-        - $N_c$, $N_q$, $N_{\gamma}$: Bearing capacity factors
-
-
         :param friction_angle: Internal angle of friction for general
                                shear failure (degrees).
         :param cohesion: Cohesion of soil ($kPa$).
@@ -81,37 +71,26 @@ class TerzaghiUltimateBearingCapacity(UltimateBearingCapacity, ABC):
 
     @property
     def n_c(self) -> float:
-        r"""Bearing capacity factor $N_c$.
-
-        $$N_c = \cot(\phi) \cdot (N_q - 1)$$
-        """
+        r"""Bearing capacity factor $N_c$."""
         return TerzaghiBearingCapacityFactors.n_c(self.friction_angle)
 
     @property
     def n_q(self) -> float:
-        r"""Bearing capacity factor $N_q$.
-
-        $$
-        N_q = \dfrac{e^{(\frac{3\pi}{2} - \phi)\tan\phi}}
-                    {2\cos^2(45 + \frac{\phi}{2})}
-        $$
-        """
+        r"""Bearing capacity factor $N_q$."""
         return TerzaghiBearingCapacityFactors.n_q(self.friction_angle)
 
     @property
     def n_gamma(self) -> float:
-        r"""Bearing capacity factor $N_{\gamma}$.
-
-        $$N_{\gamma} =  (N_q - 1) \cdot \tan(1.4\phi)$$
-        """
+        r"""Bearing capacity factor $N_{\gamma}$."""
         return TerzaghiBearingCapacityFactors.n_gamma(self.friction_angle)
 
 
 class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
-    r"""Ultimate bearing capacity for strip footing according to
+    """Ultimate bearing capacity for strip footing according to
     `Terzaghi 1943`.
 
-    $$q_u = cN_c + qN_q + 0.5 \gamma BN_{\gamma}$$
+    See [implementation](../formulas/ultimate-bearing-capacity.md/#terzaghi-bearing-capacity-for-strip-footing)
+    for more details on bearing capacity equation used.
     """
 
     @round_(ndigits=2)
@@ -125,10 +104,11 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
 
 
 class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
-    r"""Ultimate bearing capacity for circular footing according to
+    """Ultimate bearing capacity for circular footing according to
     `Terzaghi 1943`.
 
-    $$q_u = 1.3cN_c + qN_q + 0.3 \gamma BN_{\gamma}$$
+    See [implementation](../formulas/ultimate-bearing-capacity.md/#terzaghi-bearing-capacity-for-circular-footing)
+    for more details on bearing capacity equation used.
     """
 
     @round_(ndigits=2)
@@ -145,10 +125,8 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
     r"""Ultimate bearing capacity for rectangular footing according to
     `Terzaghi 1943`.
 
-    $$
-    q_u = \left(1 + 0.3 \dfrac{B}{L} \right) c N_c + qN_q
-          + \left(1 - 0.2 \dfrac{B}{L} \right) 0.5 B \gamma N_{\gamma}
-    $$
+    See [implementation](../formulas/ultimate-bearing-capacity.md/#terzaghi-bearing-capacity-for-rectangular-footing)
+    for more details on bearing capacity equation used.
     """
 
     @round_(ndigits=2)
@@ -167,10 +145,11 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
 
 
 class TerzaghiUBC4SquareFooting(TerzaghiUBC4RectangularFooting):
-    r"""Ultimate bearing capacity for square footing according to
+    """Ultimate bearing capacity for square footing according to
     `Terzaghi 1943``.
 
-    $$q_u = 1.3cN_c + qN_q + 0.4 \gamma BN_{\gamma}$$
+    See [implementation](../formulas/ultimate-bearing-capacity.md/#terzaghi-bearing-capacity-for-square-footing)
+    for more details on bearing capacity equation used.
     """
 
     def bearing_capacity(self):

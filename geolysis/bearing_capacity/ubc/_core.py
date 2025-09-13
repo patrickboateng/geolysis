@@ -21,22 +21,6 @@ class UltimateBearingCapacity(ABC):
             apply_local_shear: bool = False,
     ) -> None:
         r"""
-
-        $$
-        q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q
-              + 0.5 \gamma B N_{\gamma} s_{\gamma} d_{\gamma} i_{\gamma}
-        $$
-
-        - $q_u$ (kPa): Ultimate bearing capacity
-        - $c$ (kPa): Cohesion of soil
-        - $q$ (kPa): Overburden pressure of soil
-        - $\gamma$ (kN/m³): Unit weight of soil
-        - $B$ (m): Width of foundation footing
-        - $N_c$, $N_q$, $N_{\gamma}$: Bearing capacity factors
-        - $s_c$, $s_q$, $s_{\gamma}$: Shape factors
-        - $d_c$, $d_q$, $d_{\gamma}$: Depth factors
-        - $i_c$, $i_q$, $i_{\gamma}$: Inclination factors
-
         :param friction_angle: Internal angle of friction for general
                                shear failure (degrees).
         :param cohesion: Cohesion of soil ($kPa$).
@@ -196,6 +180,12 @@ class UltimateBearingCapacity(ABC):
         )
 
     def bearing_capacity_results(self) -> dict:
+        """Return a dictionary of bearing capacity results with
+        intermediate calculations.
+
+        !!! info "Added in v0.10.4"
+
+        """
         return {
             "bearing_capacity": self.bearing_capacity(),
             "n_c": self.n_c,
