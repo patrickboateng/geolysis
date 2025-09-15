@@ -18,6 +18,43 @@ and modeling.
     on the full geotechnical toolkit, 
     click [here](https://github.com/geolysis-dev).
 
+## Installation
+
+`geolysis` supports Python 3.11 - 3.12. We also recommend using a
+[virtual environment](https://packaging.python.org/en/latest/tutorials/installing-packages/#creating-virtual-environments)
+in order to isolate your project dependencies from other projects and the
+system.
+
+`geolysis` can be installed via [pip](https://pypi.org/project/geolysis) as
+follows for the supported operating systems.
+
+```shell
+pip install geolysis # "pip3 install geolysis" for unix systems
+```
+
+## Version Check
+
+To see whether ``geolysis`` is already installed or to check if an install has
+worked, run the following in a Python shell:
+
+```python
+
+import geolysis as gl
+print(gl.__version__) 
+
+```
+
+or from the command line:
+
+```shell
+
+python -c "import geolysis; print(geolysis.__version__)" # python3 for unix systems
+
+```
+
+You'll see the version number if ``geolysis`` is installed and an error message
+otherwise.
+
 ## [Python API](reference/index.md)
 
 - [allowable_bearing_capacity](reference/allowable-bearing-capacity.md)
