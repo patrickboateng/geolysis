@@ -12,7 +12,11 @@ edit_uri: edit/main/docs
 nav:
   - Home: index.md
   - User Guide:
-      - Getting Started: usage.md
+      - user_guide/index.md
+      - Allowable Bearing Capacity: user_guide/allowable-bearing-capacity.md
+      - Ultimate Bearing Capacity: user_guide/ultimate-bearing-capacity.md
+      - Soil Classification: user_guide/soil-classifier.md
+      - SPT: user_guide/spt.md
   - API Reference:
       - reference/index.md
       - Allowable Bearing Capacity: reference/allowable-bearing-capacity.md
