@@ -30,25 +30,6 @@ nav:
       - Allowable Bearing Capacity: formulas/allowable-bearing-capacity.md
       - Ultimate Bearing Capacity: formulas/ultimate-bearing-capacity.md
       - SPT: formulas/spt.md
-  - Contributing:
-      - dev_guide/index.md
-      - Guidelines: dev_guide/contributing.md
-      - Style Guide: dev_guide/style_guide.md
-      - Code of Conduct: dev_guide/code_of_conduct.md
-  - Release Notes:
-      - release_notes/index.md
-      - 0.11.0 notes: release_notes/0.11.0-notes.md
-      - 0.10.0 notes: release_notes/0.10.0-notes.md
-      - 0.9.0 notes: release_notes/0.9.0-notes.md
-      - 0.8.0 notes: release_notes/0.8.0-notes.md
-      - 0.7.0 notes: release_notes/0.7.0-notes.md
-      - 0.6.0 notes: release_notes/0.6.0-notes.md
-      - 0.5.0 notes: release_notes/0.5.0-notes.md
-      - 0.4.4 notes: release_notes/0.4.4-notes.md
-      - 0.4.3 notes: release_notes/0.4.3-notes.md
-      - 0.4.2 notes: release_notes/0.4.2-notes.md
-      - 0.3.0 notes: release_notes/0.3.0-notes.md
-      - 0.2.0 notes: release_notes/0.2.0-notes.md
 
 theme:
   name: material
