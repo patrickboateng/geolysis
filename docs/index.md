@@ -101,3 +101,13 @@ from geolysis.spt import EnergyCorrection
 from geolysis.spt import SPT
 from geolysis.spt import create_overburden_pressure_correction
 ``` 
+
+## Contributing
+
+Contributions are always welcome! Please check the
+[contributing guidelines](https://github.com/patrickboateng/geolysis/wiki)
+
+## Release Notes
+
+Please see
+the [release notes](https://github.com/patrickboateng/geolysis/wiki/Release-Notes)
