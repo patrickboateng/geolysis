@@ -24,7 +24,8 @@ The `geolysis` python package is among three other projects, `geolysis.excel`,
 `geolysis.gui`, and `geolysis.ai`. More details about these projects are
 provided [here](https://github.com/geolysis-dev).
 
-`geolysis` has only one project dependency which is [func-validator](https://github.com/patrickboateng/func-validator/)
+`geolysis` has only one project dependency which
+is [func-validator](https://github.com/patrickboateng/func-validator/)
 for validating `function` (and `method`) arguments.
 
 The rest of this **README** provides an overview of the `geolysis` python
@@ -50,57 +51,63 @@ $ pip install geolysis
 
 ## API Reference
 
-- [Python API](https://docs.geolysis.io/en/latest/reference/) 
-    - [geolysis.bearing_capacity.abc](https://docs.geolysis.io/en/latest/reference/allowable_bearing_capacity/) - _Allowable bearing capacity
+- [Python API](https://docs.geolysis.io/en/latest/reference/)
+    - [geolysis.bearing_capacity.abc](https://docs.geolysis.io/en/latest/reference/allowable_bearing_capacity/) -
+      _Allowable bearing capacity
       estimation_
-    - [geolysis.bearing_capacity.ubc](https://docs.geolysis.io/en/latest/reference/ultimate_bearing_capacity/) - _Ultimate bearing capacity
+    - [geolysis.bearing_capacity.ubc](https://docs.geolysis.io/en/latest/reference/ultimate_bearing_capacity/) -
+      _Ultimate bearing capacity
       estimation_
-    - [geolysis.foundation](https://docs.geolysis.io/en/latest/reference/foundation/) - _Foundation Representation_
-    - [geolysis.soil_classifier](https://docs.geolysis.io/en/latest/reference/soil_classifier/) - _Soil classification_
-    - [geolysis.spt](https://docs.geolysis.io/en/latest/reference/spt/) - _Standard Penetration Test (SPT) Analysis_
-    - [geolysis.utils](https://docs.geolysis.io/en/latest/reference/utils/) - _Utilities_
-
+    - [geolysis.foundation](https://docs.geolysis.io/en/latest/reference/foundation/) -
+      _Foundation Representation_
+    - [geolysis.soil_classifier](https://docs.geolysis.io/en/latest/reference/soil_classifier/) -
+      _Soil classification_
+    - [geolysis.spt](https://docs.geolysis.io/en/latest/reference/spt/) -
+      _Standard Penetration Test (SPT) Analysis_
+    - [geolysis.utils](https://docs.geolysis.io/en/latest/reference/utils/) -
+      _Utilities_
 
 ## Imports
 
-- **Bearing Capacity**
+### Bearing Capacity
 
-    - **Allowable Bearing Capacity (ABC)**
-     
-      ```python
-      from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
-      ```
-        
-    - **Ultimate Bearing Capacity (UBC)**
-     
-      ```python
-      from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
-      ```
+- **Allowable Bearing Capacity (ABC)**
 
-- **Foundation**
- 
+    ```python
+    from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
+    ```
+
+- **Ultimate Bearing Capacity (UBC)**
+
   ```python
-  from geolysis.foundation import create_foundation
+  from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
   ```
 
+### Foundation
 
-- **Soil Classification**
- 
-  ```python
-  from geolysis.soil_classifier import create_uscs_classifier
-  from geolysis.soil_classifier import create_aashto_classifier
-  ```
- 
-- **Standard Penetration Test (SPT) Analysis**
- 
+```python
+from geolysis.foundation import create_foundation
+```
+
+### Soil Classification
+
+```python
+from geolysis.soil_classifier import create_uscs_classifier
+from geolysis.soil_classifier import create_aashto_classifier
+```
+
+### Standard Penetration Test (SPT) Analysis
+
   ```python
   from geolysis.spt import DilatancyCorrection
   from geolysis.spt import EnergyCorrection
   from geolysis.spt import SPT
   from geolysis.spt import create_overburden_pressure_correction
   ```
-  
+
 ## Project Structure
+
+These are the main components of the project structure
 
     .
     ├── .github            # GitHub Actions
@@ -138,7 +145,8 @@ Check out the full [documentation](https://docs.geolysis.io/en/latest/).
 
 ## Contributing
 
-Check out the [contribution guidelines](https://docs.geolysis.io/en/latest/dev_guide/)
+Check out
+the [contribution guidelines](https://docs.geolysis.io/en/latest/dev_guide/)
 
 ## License
 
