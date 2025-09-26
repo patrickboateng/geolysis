@@ -1,4 +1,5 @@
 import enum
+import math
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Annotated
 
@@ -10,7 +11,7 @@ from func_validator import (
     MustBeMemberOf,
 )
 
-from .utils import AbstractStrEnum, inf, isclose
+from .utils import AbstractStrEnum, inf, isclose, pi, round_
 
 __all__ = [
     "create_foundation",
@@ -29,10 +30,10 @@ T = TypeVar("T")
 class Shape(AbstractStrEnum):
     """Enumeration of foundation shapes.
 
-     Each member represents a standard geometric shape commonly used
-     in foundation design, which can affect bearing capacity and
-     settlement calculations.
-     """
+    Each member represents a standard geometric shape commonly used
+    in foundation design, which can affect bearing capacity and
+    settlement calculations.
+    """
 
     STRIP = enum.auto()
     """Strip (or continuous) foundation, typically long and narrow."""
@@ -92,6 +93,9 @@ class FootingSize(ABC):
     def length(self, value: float):
         raise NotImplementedError
 
+    def area(self) -> float:
+        raise NotImplementedError
+
     @property
     def shape(self) -> Shape:
         """Return the shape of the foundation footing."""
@@ -130,6 +134,12 @@ class StripFooting(FootingSize):
     @validate_func_args
     def length(self, val: Annotated[float, MustBePositive]) -> None:
         self._length = val
+
+    def area(self) -> float:
+        """Area of strip footing ($m \text{or} m^2$)."""
+        if math.isinf(self.length):
+            return self.width
+        return self.width * self.length
 
 
 class CircularFooting(FootingSize):
@@ -180,6 +190,10 @@ class CircularFooting(FootingSize):
     def length(self, val: float):
         self.diameter = val
 
+    def area(self) -> float:
+        """Area of circular footing ($m^2$)."""
+        return pi * self.diameter ** 2 / 4
+
 
 class SquareFooting(FootingSize):
     """A class representation of square footing."""
@@ -211,6 +225,10 @@ class SquareFooting(FootingSize):
     @length.setter
     def length(self, val):
         self.width = val
+
+    def area(self) -> float:
+        """Area of square footing ($m^2$)."""
+        return self.width ** 2
 
 
 class RectangularFooting(FootingSize):
@@ -245,6 +263,10 @@ class RectangularFooting(FootingSize):
     @validate_func_args
     def length(self, val: Annotated[float, MustBePositive]) -> None:
         self._length = val
+
+    def area(self) -> float:
+        """Area of rectangular footing ($m^2$)."""
+        return self.width * self.length
 
 
 class Foundation:
@@ -360,6 +382,11 @@ class Foundation:
     ):
         self._foundation_type = val
 
+    @round_(2)
+    def foundation_area(self) -> float:
+        """Returns the area of the foundation footing ($m^2$)."""
+        return self.footing_size.area()
+
     @property
     def effective_width(self) -> float:
         """Returns the effective width of the foundation footing (m)."""
@@ -370,7 +397,7 @@ class Foundation:
         of the foundation footing.
         """
         width, length, shape = (
-            self.effective_width, self.length, self.footing_shape)
+        self.effective_width, self.length, self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
