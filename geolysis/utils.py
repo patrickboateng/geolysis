@@ -10,6 +10,7 @@ from func_validator import ValidationError
 __all__ = [
     "AbstractStrEnum",
     "ValidationError",
+    "add_repr",
     "inf",
     "pi",
     "deg2rad",
@@ -44,6 +45,23 @@ class AbstractStrEnum(enum.StrEnum, metaclass=StrEnumMeta):
     This class can be used as a base class for creating string
     enumerations.
     """
+
+
+def add_repr(cls):
+    """A class decorator that adds a __repr__ method to the class."""
+
+    def __repr__(self) -> str:
+        inst_attrs = self.__dict__
+        attrs = (f"{key.strip("_")}={val}" for key, val in inst_attrs.items())
+        return f"{type(self).__name__}({', '.join(attrs)})"
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    cls.__repr__ = __repr__
+    cls.__str__ = __str__
+
+    return cls
 
 
 def deg2rad(x: float, /) -> float:
