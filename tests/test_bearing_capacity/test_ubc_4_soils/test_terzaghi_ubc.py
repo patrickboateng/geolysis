@@ -21,14 +21,14 @@ class TestTerzaghiUBC4StripFooting:
         ],
     )
     def test_bearing_capacity(
-        self,
-        friction_angle,
-        cohesion,
-        moist_unit_wgt,
-        depth,
-        width,
-        water_level,
-        expected,
+            self,
+            friction_angle,
+            cohesion,
+            moist_unit_wgt,
+            depth,
+            width,
+            water_level,
+            expected,
     ):
         ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
@@ -40,7 +40,7 @@ class TestTerzaghiUBC4StripFooting:
             shape="strip",
             ubc_type="terzaghi",
         )
-        actual = ubc.bearing_capacity()
+        actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)
 
 
@@ -59,15 +59,15 @@ class TestTerzaghiUBC4SquareFooting:
         [(25.0, 15.0, 18.0, 1.0, 2.0, None, True, 323.01)],
     )
     def test_bearing_capacity(
-        self,
-        friction_angle,
-        cohesion,
-        moist_unit_wgt,
-        depth,
-        width,
-        water_level,
-        apply_loc_shear,
-        expected,
+            self,
+            friction_angle,
+            cohesion,
+            moist_unit_wgt,
+            depth,
+            width,
+            water_level,
+            apply_loc_shear,
+            expected,
     ):
         ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
@@ -80,7 +80,7 @@ class TestTerzaghiUBC4SquareFooting:
             apply_local_shear=apply_loc_shear,
             ubc_type="terzaghi",
         )
-        actual = ubc.bearing_capacity()
+        actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)
 
 
@@ -100,15 +100,15 @@ class TestTerzaghiUBC4CircFooting:
         [(25.0, 15.0, 18.0, 1.0, 2.3, None, True, 318.9)],
     )
     def test_bearing_capacity(
-        self,
-        friction_angle,
-        cohesion,
-        moist_unit_wgt,
-        depth,
-        width,
-        water_level,
-        apply_loc_shear,
-        expected,
+            self,
+            friction_angle,
+            cohesion,
+            moist_unit_wgt,
+            depth,
+            width,
+            water_level,
+            apply_loc_shear,
+            expected,
     ):
         ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
@@ -121,7 +121,7 @@ class TestTerzaghiUBC4CircFooting:
             apply_local_shear=apply_loc_shear,
             ubc_type="terzaghi",
         )
-        actual = ubc.bearing_capacity()
+        actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)
 
 
@@ -142,16 +142,16 @@ class TestTerzaghiUBC4RectFooting:
         [(25.0, 15.0, 18.0, 1.0, 1.5, 2.5, None, True, 300.03)],
     )
     def test_bearing_capacity(
-        self,
-        friction_angle,
-        cohesion,
-        moist_unit_wgt,
-        depth,
-        width,
-        length,
-        water_level,
-        apply_loc_shear,
-        expected,
+            self,
+            friction_angle,
+            cohesion,
+            moist_unit_wgt,
+            depth,
+            width,
+            length,
+            water_level,
+            apply_loc_shear,
+            expected,
     ):
         ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,
@@ -165,5 +165,5 @@ class TestTerzaghiUBC4RectFooting:
             apply_local_shear=apply_loc_shear,
             ubc_type="terzaghi",
         )
-        actual = ubc.bearing_capacity()
+        actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)

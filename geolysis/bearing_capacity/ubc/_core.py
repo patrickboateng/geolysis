@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Annotated
 
 from func_validator import (
@@ -11,14 +12,34 @@ from geolysis.foundation import Foundation
 from geolysis.utils import arctan, round_, tan
 
 
+@dataclass(frozen=True, slots=True)
+class UltimateBearingCapacityResult:
+    ultimate_bearing_capacity: float
+    allowable_bearing_capacity: float
+    allowable_applied_load: float
+    n_c: float
+    n_q: float
+    n_gamma: float
+    s_c: float
+    s_q: float
+    s_gamma: float
+    d_c: float
+    d_q: float
+    d_gamma: float
+    i_c: float
+    i_q: float
+    i_gamma: float
+
+
 class UltimateBearingCapacity(ABC):
     def __init__(
-        self,
-        friction_angle: float,
-        cohesion: float,
-        moist_unit_wgt: float,
-        foundation_size: Foundation,
-        apply_local_shear: bool = False,
+            self,
+            friction_angle: float,
+            cohesion: float,
+            moist_unit_wgt: float,
+            foundation_size: Foundation,
+            factor_of_safety: float = 3.0,
+            apply_local_shear: bool = False,
     ) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general
@@ -26,6 +47,8 @@ class UltimateBearingCapacity(ABC):
         :param cohesion: Cohesion of soil ($kPa$).
         :param moist_unit_wgt: Moist unit weight of soil ($kN/m^3$).
         :param foundation_size: Size of the foundation.
+        :param factor_of_safety: Factor of safety against bearing
+                                 capacity failure. Added in v0.12.0.
         :param apply_local_shear: Indicate whether bearing capacity
                                   failure is general shear or local
                                   shear failure.
@@ -34,6 +57,7 @@ class UltimateBearingCapacity(ABC):
         self.cohesion = cohesion
         self.moist_unit_wgt = moist_unit_wgt
         self.foundation_size = foundation_size
+        self.factor_of_safety = factor_of_safety
         self.apply_local_shear = apply_local_shear
 
     @property
@@ -64,9 +88,7 @@ class UltimateBearingCapacity(ABC):
 
         In the case of local shear failure:
 
-        $$
-        C^{'} = \dfrac{2}{3} \cdot C
-        $$
+        $$C^{'} = \dfrac{2}{3} \cdot C$$
         """
         if self.apply_local_shear:
             return (2.0 / 3.0) * self._cohesion
@@ -160,56 +182,84 @@ class UltimateBearingCapacity(ABC):
             water_corr = min(0.5 + 0.5 * b / width, 1)
 
         return (
-            coef
-            * self.moist_unit_wgt
-            * width
-            * self.n_gamma
-            * self.s_gamma
-            * self.d_gamma
-            * self.i_gamma
-            * water_corr
+                coef
+                * self.moist_unit_wgt
+                * width
+                * self.n_gamma
+                * self.s_gamma
+                * self.d_gamma
+                * self.i_gamma
+                * water_corr
         )
 
-    @round_(ndigits=2)
-    def bearing_capacity(self) -> float:
-        """Calculates the ultimate bearing capacity."""
+    def _bearing_capacity(self) -> float:
         return (
-            self._cohesion_term(1.0)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
+                self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5)
         )
 
-    def bearing_capacity_results(self) -> dict:
+    def bearing_capacity_results(self) -> UltimateBearingCapacityResult:
         """Return a dictionary of bearing capacity results with
         intermediate calculations.
 
         !!! info "Added in v0.11.0"
 
         """
-        return {
-            "bearing_capacity": self.bearing_capacity(),
-            "n_c": self.n_c,
-            "n_q": self.n_q,
-            "n_gamma": self.n_gamma,
-            "s_c": self.s_c,
-            "s_q": self.s_q,
-            "s_gamma": self.s_gamma,
-            "d_c": self.d_c,
-            "d_q": self.d_q,
-            "d_gamma": self.d_gamma,
-            "i_c": self.i_c,
-            "i_q": self.i_q,
-            "i_gamma": self.i_gamma,
-        }
+        return UltimateBearingCapacityResult(
+            ultimate_bearing_capacity=self.ultimate_bearing_capacity(),
+            allowable_bearing_capacity=self.allowable_bearing_capacity(),
+            allowable_applied_load=self.allowable_applied_load(),
+            n_c=self.n_c,
+            n_q=self.n_q,
+            n_gamma=self.n_gamma,
+            s_c=self.s_c,
+            s_q=self.s_q,
+            s_gamma=self.s_gamma,
+            d_c=self.d_c,
+            d_q=self.d_q,
+            d_gamma=self.d_gamma,
+            i_c=self.i_c,
+            i_q=self.i_q,
+            i_gamma=self.i_gamma,
+        )
+
+    @round_(ndigits=1)
+    def ultimate_bearing_capacity(self) -> float:
+        """Calculates the ultimate bearing capacity.
+
+        !!! info "Added in v0.12.0"
+        """
+        return self._bearing_capacity()
+
+    @round_(ndigits=1)
+    def allowable_bearing_capacity(self) -> float:
+        """Calculates the allowable bearing capacity.
+
+        !!! info "Added in v0.12.0"
+        """
+        return self._bearing_capacity() / self.factor_of_safety
+
+    @round_(ndigits=1)
+    def allowable_applied_load(self) -> float:
+        """Calculates the allowable applied load.
+
+        !!! info "Added in v0.12.0"
+        """
+        area = self.foundation_size.foundation_area()
+        return self.allowable_bearing_capacity() * area
 
     @property
     @abstractmethod
-    def n_c(self) -> float: ...
+    def n_c(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_q(self) -> float: ...
+    def n_q(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_gamma(self) -> float: ...
+    def n_gamma(self) -> float:
+        ...
