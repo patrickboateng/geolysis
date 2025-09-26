@@ -13,8 +13,8 @@ Calculating the allowable bearing capacity of soil for pad foundations using
 ...                                              shape="square",
 ...                                              foundation_type="pad",
 ...                                              abc_type="bowles")
->>> bowles_abc.bearing_capacity()
-341.11
+>>> bowles_abc.allowable_bearing_capacity()
+341.1
 
 ```
 

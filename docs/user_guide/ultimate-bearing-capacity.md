@@ -13,8 +13,8 @@ correlation:
 ...                                          width=2.0,
 ...                                          shape="square",
 ...                                          ubc_type="hansen")
->>> hansen_ubc.bearing_capacity()
-798.41
+>>> hansen_ubc.ultimate_bearing_capacity()
+798.4
 
 ```
 
