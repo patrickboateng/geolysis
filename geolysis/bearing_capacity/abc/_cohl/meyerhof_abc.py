@@ -14,10 +14,10 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
     """
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ):
         """
         :param corrected_spt_n_value: Average uncorrected SPT N-value
@@ -35,7 +35,7 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
         )
 
     @round_(ndigits=2)
-    def bearing_capacity(self):
+    def _bearing_capacity(self):
         """
         Calculates the allowable bearing capacity of the pad foundation.
         """
@@ -46,11 +46,11 @@ class MeyerhofABC4PadFoundation(AllowableBearingCapacity):
             return 12 * n_corr * self._fd() * self._sr()
 
         return (
-            8
-            * n_corr
-            * ((3.28 * width + 1) / (3.28 * width)) ** 2
-            * self._fd()
-            * self._sr()
+                8
+                * n_corr
+                * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * self._fd()
+                * self._sr()
         )
 
 
@@ -64,7 +64,7 @@ class MeyerhofABC4MatFoundation(MeyerhofABC4PadFoundation):
     """
 
     @round_(ndigits=2)
-    def bearing_capacity(self):
+    def _bearing_capacity(self):
         """Calculate the allowable bearing capacity of the mat foundation."""
         n_corr = self.corrected_spt_n_value
         return 8 * n_corr * self._fd() * self._sr()

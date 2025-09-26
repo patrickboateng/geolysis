@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Annotated
 
 from func_validator import (
@@ -8,17 +9,26 @@ from func_validator import (
 )
 
 from geolysis.foundation import Foundation
+from geolysis.utils import round_, add_repr
 
 
+@dataclass
+class AllowableBearingCapacityResult:
+    allowable_bearing_capacity: float
+    depth_factor: float
+    water_correction_factor: float = 1.0
+
+
+@add_repr
 class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement (mm).
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
@@ -42,8 +52,8 @@ class AllowableBearingCapacity(ABC):
     @tol_settlement.setter
     @validate_func_args
     def tol_settlement(
-        self,
-        tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)],
+            self,
+            tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)],
     ):
         self._tol_settlement = tol_settlement
 
@@ -57,17 +67,24 @@ class AllowableBearingCapacity(ABC):
         width = self.foundation_size.width
         return min(1.0 + 0.33 * depth / width, 1.33)
 
-    def bearing_capacity_results(self) -> dict:
+    def bearing_capacity_results(self) -> AllowableBearingCapacityResult:
         """Return a dictionary of bearing capacity results with
         intermediate calculations.
 
         !!! info "Added in v0.11.0"
-
         """
-        return {
-            "bearing_capacity": self.bearing_capacity(),
-            "depth_factor": self._fd(),
-        }
+        return AllowableBearingCapacityResult(
+            allowable_bearing_capacity=self.allowable_bearing_capacity(),
+            depth_factor=self._fd(),
+        )
+
+    @round_(ndigits=1)
+    def allowable_bearing_capacity(self):
+        """Calculates the allowable bearing capacity.
+
+        !!! info "Added in v0.12.0"
+        """
+        return self._bearing_capacity()
 
     @abstractmethod
-    def bearing_capacity(self): ...
+    def _bearing_capacity(self): ...

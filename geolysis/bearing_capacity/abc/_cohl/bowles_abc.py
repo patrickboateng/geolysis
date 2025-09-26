@@ -14,10 +14,10 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
     """
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ) -> None:
         """
         :param corrected_spt_n_value: Statistical average of corrected
@@ -35,7 +35,7 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
         )
 
     @round_(ndigits=2)
-    def bearing_capacity(self) -> float:
+    def _bearing_capacity(self) -> float:
         """
         Calculate the allowable bearing capacity of the pad foundation.
         """
@@ -46,11 +46,11 @@ class BowlesABC4PadFoundation(AllowableBearingCapacity):
             return 19.16 * n_corr * self._fd() * self._sr()
 
         return (
-            11.98
-            * n_corr
-            * ((3.28 * width + 1) / (3.28 * width)) ** 2
-            * self._fd()
-            * self._sr()
+                11.98
+                * n_corr
+                * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * self._fd()
+                * self._sr()
         )
 
 
@@ -64,7 +64,7 @@ class BowlesABC4MatFoundation(BowlesABC4PadFoundation):
     """
 
     @round_(ndigits=2)
-    def bearing_capacity(self) -> float:
+    def _bearing_capacity(self) -> float:
         """
         Calculate the allowable bearing capacity of the mat foundation.
         """
