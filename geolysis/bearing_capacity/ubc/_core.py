@@ -9,7 +9,7 @@ from func_validator import (
 )
 
 from geolysis.foundation import Foundation
-from geolysis.utils import arctan, round_, tan
+from geolysis.utils import arctandeg, round_, tandeg
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,7 +76,7 @@ class UltimateBearingCapacity(ABC):
 
         """
         if self.apply_local_shear:
-            return arctan((2.0 / 3.0) * tan(self._friction_angle))
+            return arctandeg((2.0 / 3.0) * tandeg(self._friction_angle))
         return self._friction_angle
 
     @friction_angle.setter

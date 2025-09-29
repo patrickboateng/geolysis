@@ -1,5 +1,15 @@
 from geolysis.foundation import Shape
-from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan, add_repr
+from geolysis.utils import (
+    cosdeg,
+    cotdeg,
+    exp,
+    isclose,
+    pi,
+    round_,
+    sindeg,
+    tandeg,
+    add_repr,
+)
 
 from ._core import UltimateBearingCapacity
 
@@ -13,22 +23,24 @@ class HansenBearingCapacityFactors:
     def n_c(friction_angle: float) -> float:
         if isclose(friction_angle, 0.0):
             return 5.14
-        return cot(friction_angle) * (
-            HansenBearingCapacityFactors.n_q(friction_angle) - 1.0
+        return cotdeg(friction_angle) * (
+                HansenBearingCapacityFactors.n_q(friction_angle) - 1.0
         )
 
     @staticmethod
     @round_(ndigits=2)
     def n_q(friction_angle: float) -> float:
-        return tan(45.0 + friction_angle / 2.0) ** 2.0 * exp(pi * tan(friction_angle))
+        return tandeg(45.0 + friction_angle / 2.0) ** 2.0 * exp(
+            pi * tandeg(friction_angle)
+        )
 
     @staticmethod
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
         return (
-            1.8
-            * (HansenBearingCapacityFactors.n_q(friction_angle) - 1.0)
-            * tan(friction_angle)
+                1.8
+                * (HansenBearingCapacityFactors.n_q(friction_angle) - 1.0)
+                * tandeg(friction_angle)
         )
 
 
@@ -90,17 +102,17 @@ class HansenInclinationFactors:
     @staticmethod
     @round_(ndigits=2)
     def i_c(
-        cohesion: float,
-        load_angle: float,
-        f_width: float,
-        f_length: float,
+            cohesion: float,
+            load_angle: float,
+            f_width: float,
+            f_length: float,
     ) -> float:
-        return 1.0 - sin(load_angle) / (2.0 * cohesion * f_width * f_length)
+        return 1.0 - sindeg(load_angle) / (2.0 * cohesion * f_width * f_length)
 
     @staticmethod
     @round_(ndigits=2)
     def i_q(load_angle: float) -> float:
-        return 1.0 - (1.5 * sin(load_angle)) / cos(load_angle)
+        return 1.0 - (1.5 * sindeg(load_angle)) / cosdeg(load_angle)
 
     @staticmethod
     @round_(ndigits=2)

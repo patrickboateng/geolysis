@@ -1,6 +1,17 @@
 import pytest
 
-from geolysis.utils import cos, cot, deg2rad, log10, pi, rad2deg, round_, sin, sqrt, tan
+from geolysis.utils import (
+    cosdeg,
+    cotdeg,
+    deg2rad,
+    log10,
+    pi,
+    rad2deg,
+    round_,
+    sindeg,
+    sqrt,
+    tandeg,
+)
 
 
 def test_deg2rad():
@@ -12,19 +23,19 @@ def test_rad2deg():
 
 
 def test_tan():
-    assert tan(45.0) == pytest.approx(1.0, 0.01)
+    assert tandeg(45.0) == pytest.approx(1.0, 0.01)
 
 
 def test_cot():
-    assert cot(60.0) == pytest.approx(0.577, 0.01)
+    assert cotdeg(60.0) == pytest.approx(0.577, 0.01)
 
 
 def test_sin():
-    assert sin(45.0) == pytest.approx(0.707, 0.01)
+    assert sindeg(45.0) == pytest.approx(0.707, 0.01)
 
 
 def test_cos():
-    assert cos(45.0) == pytest.approx(0.707, 0.01)
+    assert cosdeg(45.0) == pytest.approx(0.707, 0.01)
 
 
 def test_log():
