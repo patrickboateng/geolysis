@@ -1,6 +1,7 @@
 import enum
 import math
 from abc import ABC, abstractmethod
+from math import isinf
 from typing import Optional, TypeVar, Annotated
 
 from func_validator import (
@@ -11,7 +12,7 @@ from func_validator import (
     MustBeMemberOf,
 )
 
-from .utils import AbstractStrEnum, inf, isclose, pi, round_
+from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr
 
 __all__ = [
     "create_foundation",
@@ -102,6 +103,7 @@ class FootingSize(ABC):
         return self._SHAPE
 
 
+@add_repr
 class StripFooting(FootingSize):
     """A class representation of strip footing."""
 
@@ -142,6 +144,7 @@ class StripFooting(FootingSize):
         return self.width * self.length
 
 
+@add_repr
 class CircularFooting(FootingSize):
     """A class representation of circular footing.
 
@@ -192,9 +195,10 @@ class CircularFooting(FootingSize):
 
     def area(self) -> float:
         """Area of circular footing ($m^2$)."""
-        return pi * self.diameter**2 / 4
+        return pi * self.diameter ** 2 / 4
 
 
+@add_repr
 class SquareFooting(FootingSize):
     """A class representation of square footing."""
 
@@ -228,9 +232,10 @@ class SquareFooting(FootingSize):
 
     def area(self) -> float:
         """Area of square footing ($m^2$)."""
-        return self.width**2
+        return self.width ** 2
 
 
+@add_repr
 class RectangularFooting(FootingSize):
     """A class representation of rectangular footing."""
 
@@ -269,17 +274,18 @@ class RectangularFooting(FootingSize):
         return self.width * self.length
 
 
+@add_repr
 class Foundation:
     """A simple class representing a foundation structure."""
 
     def __init__(
-        self,
-        depth: float,
-        footing_size: FootingSize,
-        eccentricity: float = 0.0,
-        load_angle: float = 0.0,
-        ground_water_level: Optional[float] = None,
-        foundation_type: FoundationType = FoundationType.PAD,
+            self,
+            depth: float,
+            footing_size: FootingSize,
+            eccentricity: float = 0.0,
+            load_angle: float = 0.0,
+            ground_water_level: Optional[float] = None,
+            foundation_type: FoundationType = FoundationType.PAD,
     ) -> None:
         r"""
         :param depth: Depth of foundation (m).
@@ -354,7 +360,8 @@ class Foundation:
     @load_angle.setter
     @validate_func_args
     def load_angle(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
+            self,
+            val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
     ) -> None:
         self._load_angle = val
 
@@ -376,7 +383,8 @@ class Foundation:
     @foundation_type.setter
     @validate_func_args
     def foundation_type(
-        self, val: Annotated[FoundationType, MustBeMemberOf(FoundationType)]
+            self,
+            val: Annotated[FoundationType, MustBeMemberOf(FoundationType)]
     ):
         self._foundation_type = val
 
@@ -394,7 +402,8 @@ class Foundation:
         """Returns the `effective_width`, `length`, and `footing_shape`
         of the foundation footing.
         """
-        width, length, shape = (self.effective_width, self.length, self.footing_shape)
+        width, length, shape = (
+        self.effective_width, self.length, self.footing_shape)
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -404,14 +413,14 @@ class Foundation:
 
 @validate_func_args
 def create_foundation(
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    eccentricity: float = 0.0,
-    load_angle: float = 0.0,
-    ground_water_level: Optional[float] = None,
-    foundation_type: FoundationType = "pad",
-    shape: Annotated[Shape | str, MustBeMemberOf(Shape)] = "square",
+        depth: float,
+        width: float,
+        length: float = inf,
+        eccentricity: float = 0.0,
+        load_angle: float = 0.0,
+        ground_water_level: Optional[float] = inf,
+        foundation_type: FoundationType = "pad",
+        shape: Annotated[Shape | str, MustBeMemberOf(Shape)] = "square",
 ) -> Foundation:
     r"""A factory function that encapsulate the creation of a foundation.
 
@@ -447,7 +456,7 @@ def create_foundation(
     elif shape is Shape.CIRCLE:
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
-        if not length:
+        if isinf(length):
             msg = "Length of rectangular footing must be provided."
             raise ValueError(msg)
         footing_size = RectangularFooting(width=width, length=length)

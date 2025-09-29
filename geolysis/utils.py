@@ -1,7 +1,7 @@
 import enum
 import functools
 import math
-from math import exp, inf, isclose, log10, pi, sqrt
+from math import exp, inf, isclose, log10, pi, sqrt, isinf
 from statistics import fmean as mean
 from typing import Callable
 

@@ -46,18 +46,19 @@ class UBCType(AbstractStrEnum):
 
 @validate_func_args
 def create_ubc_4_all_soil_types(
-    friction_angle: float,
-    cohesion: float,
-    moist_unit_wgt: float,
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    eccentricity: float = 0.0,
-    ground_water_level: Optional[float] = None,
-    load_angle: float = 0.0,
-    apply_local_shear: bool = False,
-    shape: Shape | str = "square",
-    ubc_type: Annotated[UBCType | str, MustBeMemberOf(UBCType)] = "vesic",
+        friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        depth: float,
+        width: float,
+        length: Optional[float] = None,
+        saturated_unit_wgt: float = 20.5,
+        eccentricity: float = 0.0,
+        ground_water_level: Optional[float] = None,
+        load_angle: float = 0.0,
+        apply_local_shear: bool = False,
+        shape: Shape | str = "square",
+        ubc_type: Annotated[UBCType | str, MustBeMemberOf(UBCType)] = "vesic",
 ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate
     bearing capacity.
@@ -70,6 +71,7 @@ def create_ubc_4_all_soil_types(
     :param depth: Depth of foundation (m).
     :param width: Width of foundation footing (m).
     :param length: Length of foundation footing (m).
+    :param saturated_unit_wgt: Saturated unit weight of soil ($kN/m^3$).
     :param eccentricity: The deviation of the foundation load from the
                          center of gravity of the foundation footing.
     :param ground_water_level: Depth of water below ground level (m).
@@ -101,12 +103,14 @@ def create_ubc_4_all_soil_types(
         shape=shape,
     )
 
-    ubc_class = _get_ultimate_bearing_capacity(ubc_type, fnd_size.footing_shape)
+    ubc_class = _get_ultimate_bearing_capacity(ubc_type,
+                                               fnd_size.footing_shape)
 
     return ubc_class(
         friction_angle=friction_angle,
         cohesion=cohesion,
         moist_unit_wgt=moist_unit_wgt,
+        saturated_unit_wgt=saturated_unit_wgt,
         foundation_size=fnd_size,
         apply_local_shear=apply_local_shear,
     )

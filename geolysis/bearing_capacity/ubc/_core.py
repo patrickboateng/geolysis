@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Optional
 
 from func_validator import (
     validate_func_args,
@@ -33,13 +33,14 @@ class UltimateBearingCapacityResult:
 
 class UltimateBearingCapacity(ABC):
     def __init__(
-        self,
-        friction_angle: float,
-        cohesion: float,
-        moist_unit_wgt: float,
-        foundation_size: Foundation,
-        factor_of_safety: float = 3.0,
-        apply_local_shear: bool = False,
+            self,
+            friction_angle: float,
+            cohesion: float,
+            moist_unit_wgt: float,
+            foundation_size: Foundation,
+            saturated_unit_wgt: float = 20.5,
+            apply_local_shear: bool = False,
+            factor_of_safety: float = 3.0,
     ) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general
@@ -47,6 +48,7 @@ class UltimateBearingCapacity(ABC):
         :param cohesion: Cohesion of soil ($kPa$).
         :param moist_unit_wgt: Moist unit weight of soil ($kN/m^3$).
         :param foundation_size: Size of the foundation.
+        :param saturated_unit_wgt: Saturated unit weight of soil ($kN/m^3$).
         :param factor_of_safety: Factor of safety against bearing
                                  capacity failure. Added in v0.12.0.
         :param apply_local_shear: Indicate whether bearing capacity
@@ -57,6 +59,7 @@ class UltimateBearingCapacity(ABC):
         self.cohesion = cohesion
         self.moist_unit_wgt = moist_unit_wgt
         self.foundation_size = foundation_size
+        self.saturated_unit_wgt = saturated_unit_wgt
         self.factor_of_safety = factor_of_safety
         self.apply_local_shear = apply_local_shear
 
@@ -110,6 +113,16 @@ class UltimateBearingCapacity(ABC):
         self._moist_unit_wgt = val
 
     @property
+    def saturated_unit_wgt(self) -> float:
+        """Saturated unit weight of soil ($kN/m^3$)."""
+        return self._saturated_unit_wgt
+
+    @saturated_unit_wgt.setter
+    @validate_func_args
+    def saturated_unit_wgt(self, val: Annotated[float, MustBePositive]):
+        self._saturated_unit_wgt = val
+
+    @property
     def load_angle(self):
         """Inclination of the applied load with the  vertical."""
         return self.foundation_size.load_angle
@@ -157,46 +170,47 @@ class UltimateBearingCapacity(ABC):
         depth = self.foundation_size.depth
         water_level = self.foundation_size.ground_water_level
 
-        if water_level is None:
-            water_corr = 1.0  # water correction
-        else:
-            # water level above the base of the foundation
-            a = max(depth - water_level, 0.0)
-            water_corr = min(1 - 0.5 * a / depth, 1)
-
-        # effective overburden pressure (surcharge)
-        eop = self.moist_unit_wgt * depth
-        return eop * self.n_q * self.s_q * self.d_q * self.i_q * water_corr
+        unit_wgt = self.moist_unit_wgt
+        eop = unit_wgt * depth
+        if water_level is not None:
+            if water_level < depth:
+                d_1 = water_level
+                d_2 = depth - d_1
+                unit_wgt = self.saturated_unit_wgt - 9.81
+                eop = self.moist_unit_wgt * d_1 + unit_wgt * d_2
+        return eop * self.n_q * self.s_q * self.d_q * self.i_q
 
     def _embedment_term(self, coef: float = 0.5) -> float:
         depth = self.foundation_size.depth
         width = self.foundation_size.effective_width
         water_level = self.foundation_size.ground_water_level
 
-        if water_level is None:
-            # water correction
-            water_corr = 1.0
-        else:
-            #: b -> water level below the base of the foundation
-            b = max(water_level - depth, 0)
-            water_corr = min(0.5 + 0.5 * b / width, 1)
+        unit_wgt = self.moist_unit_wgt
+
+        if water_level is not None:
+            wgt = self.saturated_unit_wgt - 9.81
+            if water_level < depth:
+                unit_wgt = wgt
+            else:
+                d = water_level - depth
+                if d <= width:
+                    unit_wgt = wgt + (d / width) * (self.moist_unit_wgt - wgt)
 
         return (
-            coef
-            * self.moist_unit_wgt
-            * width
-            * self.n_gamma
-            * self.s_gamma
-            * self.d_gamma
-            * self.i_gamma
-            * water_corr
+                coef
+                * unit_wgt
+                * width
+                * self.n_gamma
+                * self.s_gamma
+                * self.d_gamma
+                * self.i_gamma
         )
 
     def _bearing_capacity(self) -> float:
         return (
-            self._cohesion_term(1.0)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
+                self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5)
         )
 
     def bearing_capacity_results(self) -> UltimateBearingCapacityResult:
@@ -251,12 +265,15 @@ class UltimateBearingCapacity(ABC):
 
     @property
     @abstractmethod
-    def n_c(self) -> float: ...
+    def n_c(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_q(self) -> float: ...
+    def n_q(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_gamma(self) -> float: ...
+    def n_gamma(self) -> float:
+        ...
