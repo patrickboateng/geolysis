@@ -23,16 +23,16 @@ class TestVesicUBC:
         ],
     )
     def test_bearing_capacity(
-            self,
-            friction_angle,
-            cohesion,
-            moist_unit_wgt,
-            depth,
-            width,
-            length,
-            eccentricity,
-            shape,
-            expected,
+        self,
+        friction_angle,
+        cohesion,
+        moist_unit_wgt,
+        depth,
+        width,
+        length,
+        eccentricity,
+        shape,
+        expected,
     ):
         ubc = create_ubc_4_all_soil_types(
             friction_angle=friction_angle,

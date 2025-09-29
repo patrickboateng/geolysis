@@ -1,6 +1,5 @@
 from geolysis.foundation import Shape
-from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan, \
-    add_repr
+from geolysis.utils import cos, cot, exp, isclose, pi, round_, sin, tan, add_repr
 
 from ._core import UltimateBearingCapacity
 
@@ -15,22 +14,21 @@ class HansenBearingCapacityFactors:
         if isclose(friction_angle, 0.0):
             return 5.14
         return cot(friction_angle) * (
-                HansenBearingCapacityFactors.n_q(friction_angle) - 1.0
+            HansenBearingCapacityFactors.n_q(friction_angle) - 1.0
         )
 
     @staticmethod
     @round_(ndigits=2)
     def n_q(friction_angle: float) -> float:
-        return tan(45.0 + friction_angle / 2.0) ** 2.0 * exp(
-            pi * tan(friction_angle))
+        return tan(45.0 + friction_angle / 2.0) ** 2.0 * exp(pi * tan(friction_angle))
 
     @staticmethod
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
         return (
-                1.8
-                * (HansenBearingCapacityFactors.n_q(friction_angle) - 1.0)
-                * tan(friction_angle)
+            1.8
+            * (HansenBearingCapacityFactors.n_q(friction_angle) - 1.0)
+            * tan(friction_angle)
         )
 
 
@@ -92,10 +90,10 @@ class HansenInclinationFactors:
     @staticmethod
     @round_(ndigits=2)
     def i_c(
-            cohesion: float,
-            load_angle: float,
-            f_width: float,
-            f_length: float,
+        cohesion: float,
+        load_angle: float,
+        f_width: float,
+        f_length: float,
     ) -> float:
         return 1.0 - sin(load_angle) / (2.0 * cohesion * f_width * f_length)
 

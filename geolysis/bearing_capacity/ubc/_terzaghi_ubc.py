@@ -1,5 +1,4 @@
-from geolysis.utils import cos, cot, deg2rad, exp, isclose, pi, round_, tan, \
-    add_repr
+from geolysis.utils import cos, cot, deg2rad, exp, isclose, pi, round_, tan, add_repr
 from ._core import UltimateBearingCapacity
 
 __all__ = [
@@ -18,22 +17,20 @@ class TerzaghiBearingCapacityFactors:
         if isclose(friction_angle, 0.0):
             return 5.7
         return cot(friction_angle) * (
-                TerzaghiBearingCapacityFactors.n_q(friction_angle) - 1.0
+            TerzaghiBearingCapacityFactors.n_q(friction_angle) - 1.0
         )
 
     @staticmethod
     @round_(ndigits=2)
     def n_q(friction_angle: float) -> float:
-        return exp((3.0 * pi / 2.0 - deg2rad(friction_angle)) * tan(
-            friction_angle)) / (
-                2.0 * (cos(45.0 + friction_angle / 2.0)) ** 2.0
+        return exp((3.0 * pi / 2.0 - deg2rad(friction_angle)) * tan(friction_angle)) / (
+            2.0 * (cos(45.0 + friction_angle / 2.0)) ** 2.0
         )
 
     @staticmethod
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
-        return (TerzaghiBearingCapacityFactors.n_q(
-            friction_angle) - 1.0) * tan(
+        return (TerzaghiBearingCapacityFactors.n_q(friction_angle) - 1.0) * tan(
             1.4 * friction_angle
         )
 
@@ -69,9 +66,9 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     def _bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for strip footing."""
         return (
-                self._cohesion_term(1.0)
-                + self._surcharge_term()
-                + self._embedment_term(0.5)
+            self._cohesion_term(1.0)
+            + self._surcharge_term()
+            + self._embedment_term(0.5)
         )
 
 
@@ -87,9 +84,9 @@ class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
     def _bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for circular footing."""
         return (
-                self._cohesion_term(1.3)
-                + self._surcharge_term()
-                + self._embedment_term(0.3)
+            self._cohesion_term(1.3)
+            + self._surcharge_term()
+            + self._embedment_term(0.3)
         )
 
 
@@ -110,9 +107,9 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
         emb_coef = (1.0 - 0.2 * (width / length)) / 2.0
 
         return (
-                self._cohesion_term(coh_coef)
-                + self._surcharge_term()
-                + self._embedment_term(emb_coef)
+            self._cohesion_term(coh_coef)
+            + self._surcharge_term()
+            + self._embedment_term(emb_coef)
         )
 
 

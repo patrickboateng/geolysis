@@ -52,7 +52,7 @@ def add_repr(cls):
 
     def __repr__(self) -> str:
         inst_attrs = self.__dict__
-        attrs = (f"{key.strip("_")}={val}" for key, val in inst_attrs.items())
+        attrs = (f"{key.strip('_')}={val}" for key, val in inst_attrs.items())
         return f"{type(self).__name__}({', '.join(attrs)})"
 
     def __str__(self) -> str:
