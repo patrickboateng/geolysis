@@ -1,32 +1,12 @@
 import enum
 import functools
-import math
-from math import exp, inf, isclose, log10, pi, sqrt, isinf
-from statistics import fmean as mean
 from typing import Callable
 
 from func_validator import ValidationError
 
-__all__ = [
-    "AbstractStrEnum",
-    "ValidationError",
-    "add_repr",
-    "inf",
-    "pi",
-    "deg2rad",
-    "rad2deg",
-    "tan",
-    "cot",
-    "sin",
-    "cos",
-    "arctan",
-    "round_",
-    "mean",
-    "exp",
-    "isclose",
-    "log10",
-    "sqrt",
-]
+from .math import *
+
+__all__ = ["AbstractStrEnum", "ValidationError", "add_repr", "round_"]
 
 
 class StrEnumMeta(enum.EnumMeta):
@@ -62,41 +42,6 @@ def add_repr(cls):
     cls.__str__ = __str__
 
     return cls
-
-
-def deg2rad(x: float, /) -> float:
-    """Convert angle x from degrees to radians."""
-    return math.radians(x)
-
-
-def rad2deg(x: float, /) -> float:
-    """Convert angle x from radians to degrees."""
-    return math.degrees(x)
-
-
-def tan(x: float, /) -> float:
-    """Return the tangent of x (measured in degrees)."""
-    return math.tan(deg2rad(x))
-
-
-def cot(x: float, /) -> float:
-    """Return the cotangent of x (measured in degrees)."""
-    return 1 / tan(x)
-
-
-def sin(x: float, /) -> float:
-    """Return the sine of x (measured in degrees)."""
-    return math.sin(deg2rad(x))
-
-
-def cos(x: float, /) -> float:
-    """Return the cosine of x (measured in degrees)."""
-    return math.cos(deg2rad(x))
-
-
-def arctan(x: float, /) -> float:
-    """Return the arc tangent (measured in degrees) of x."""
-    return rad2deg(math.atan(x))
 
 
 def round_(ndigits: int) -> Callable:
