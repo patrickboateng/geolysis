@@ -24,7 +24,7 @@ class HansenBearingCapacityFactors:
         if isclose(friction_angle, 0.0):
             return 5.14
         return cotdeg(friction_angle) * (
-                HansenBearingCapacityFactors.n_q(friction_angle) - 1.0
+            HansenBearingCapacityFactors.n_q(friction_angle) - 1.0
         )
 
     @staticmethod
@@ -38,9 +38,9 @@ class HansenBearingCapacityFactors:
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
         return (
-                1.8
-                * (HansenBearingCapacityFactors.n_q(friction_angle) - 1.0)
-                * tandeg(friction_angle)
+            1.8
+            * (HansenBearingCapacityFactors.n_q(friction_angle) - 1.0)
+            * tandeg(friction_angle)
         )
 
 
@@ -102,10 +102,10 @@ class HansenInclinationFactors:
     @staticmethod
     @round_(ndigits=2)
     def i_c(
-            cohesion: float,
-            load_angle: float,
-            f_width: float,
-            f_length: float,
+        cohesion: float,
+        load_angle: float,
+        f_width: float,
+        f_length: float,
     ) -> float:
         return 1.0 - sindeg(load_angle) / (2.0 * cohesion * f_width * f_length)
 
