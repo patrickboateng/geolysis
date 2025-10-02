@@ -5,8 +5,9 @@ from typing import Callable
 from func_validator import ValidationError
 
 from .math import *
+from . import math as m
 
-__all__ = ["AbstractStrEnum", "ValidationError", "add_repr", "round_"]
+__all__ = ["AbstractStrEnum", "ValidationError", "add_repr", "round_"] + m.__all__
 
 
 class StrEnumMeta(enum.EnumMeta):
