@@ -1,7 +1,16 @@
 from geolysis.foundation import Shape
-from geolysis.utils import isclose, round_, sindeg, tandeg, atan, add_repr
+from geolysis.utils import (
+    isclose,
+    round_,
+    sindeg,
+    tandeg,
+    atan,
+    add_repr,
+    cotdeg,
+    exp,
+    pi,
+)
 from ._core import UltimateBearingCapacity
-from ._hansen_ubc import HansenBearingCapacityFactors
 
 __all__ = ["VesicUltimateBearingCapacity"]
 
@@ -11,20 +20,26 @@ class VesicBearingCapacityFactors:
     @staticmethod
     @round_(ndigits=2)
     def n_c(friction_angle: float) -> float:
-        return HansenBearingCapacityFactors.n_c(friction_angle)
+        if isclose(friction_angle, 0.0):
+            return 5.14
+        return cotdeg(friction_angle) * (
+                VesicBearingCapacityFactors.n_q(friction_angle) - 1.0
+        )
 
     @staticmethod
     @round_(ndigits=2)
     def n_q(friction_angle: float) -> float:
-        return HansenBearingCapacityFactors.n_q(friction_angle)
+        return tandeg(45.0 + friction_angle / 2.0) ** 2.0 * exp(
+            pi * tandeg(friction_angle)
+        )
 
     @staticmethod
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
         return (
-            2.0
-            * (VesicBearingCapacityFactors.n_q(friction_angle) + 1.0)
-            * tandeg(friction_angle)
+                2.0
+                * (VesicBearingCapacityFactors.n_q(friction_angle) + 1.0)
+                * tandeg(friction_angle)
         )
 
 
@@ -32,10 +47,10 @@ class VesicShapeFactors:
     @staticmethod
     @round_(ndigits=3)
     def s_c(
-        friction_angle: float,
-        f_width: float,
-        f_length: float,
-        f_shape: Shape,
+            friction_angle: float,
+            f_width: float,
+            f_length: float,
+            f_shape: Shape,
     ) -> float:
         n_q = VesicBearingCapacityFactors.n_q(friction_angle)
         n_c = VesicBearingCapacityFactors.n_c(friction_angle)
@@ -48,10 +63,10 @@ class VesicShapeFactors:
     @staticmethod
     @round_(ndigits=3)
     def s_q(
-        friction_angle: float,
-        f_width: float,
-        f_length: float,
-        f_shape: Shape,
+            friction_angle: float,
+            f_width: float,
+            f_length: float,
+            f_shape: Shape,
     ) -> float:
         if f_shape == Shape.STRIP:
             return 1.0
@@ -103,18 +118,19 @@ class VesicDepthFactors:
                 _d_q = 1.0
             else:
                 _d_q = (
-                    1.0
-                    + 2
-                    * tandeg(friction_angle)
-                    * (1 - sindeg(friction_angle)) ** 2
-                    * d2w
+                        1.0
+                        + 2
+                        * tandeg(friction_angle)
+                        * (1 - sindeg(friction_angle)) ** 2
+                        * d2w
                 )
         else:
             if isclose(friction_angle, 0.0):
                 _d_q = 1.0
             else:
                 _d_q = 1.0 + (
-                    2.0 * tandeg(friction_angle) * (1 - sindeg(friction_angle)) ** 2
+                        2.0 * tandeg(friction_angle) * (
+                            1 - sindeg(friction_angle)) ** 2
                 ) * atan(d2w)
         return _d_q
 
@@ -214,4 +230,5 @@ class VesicUltimateBearingCapacity(UltimateBearingCapacity):
     @property
     def i_gamma(self) -> float:
         r"""Inclination factor $I_{\gamma}$."""
-        return VesicInclinationFactors.i_gamma(self.friction_angle, self.load_angle)
+        return VesicInclinationFactors.i_gamma(self.friction_angle,
+                                               self.load_angle)

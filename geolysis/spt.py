@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import Annotated, Final, Sequence
 
 from func_validator import (
-    validate_func_args,
+    validate_params,
     MustBeBetween,
     MustBePositive,
     MustBeMemberOf,
@@ -61,9 +61,9 @@ class SPT:
     """
 
     def __init__(
-        self,
-        corrected_spt_n_values: Sequence[float],
-        method: SPTDesignMethod.WEIGHTED = "wgt",
+            self,
+            corrected_spt_n_values: Sequence[float],
+            method: SPTDesignMethod.WEIGHTED = "wgt",
     ):
         """
         :param corrected_spt_n_values: Corrected SPT N-values within the
@@ -80,14 +80,14 @@ class SPT:
         return self._corrected_spt_n_values
 
     @corrected_spt_n_values.setter
-    @validate_func_args
+    @validate_params
     def corrected_spt_n_values(
-        self,
-        corrected_spt_n_values: Annotated[
-            Sequence[float],
-            MustHaveLengthGreaterThan(1),
-            MustHaveValuesBetween(min_value=1.0, max_value=100.0),
-        ],
+            self,
+            corrected_spt_n_values: Annotated[
+                Sequence[float],
+                MustHaveLengthGreaterThan(1),
+                MustHaveValuesBetween(min_value=1.0, max_value=100.0),
+            ],
     ) -> None:
         self._corrected_spt_n_values = corrected_spt_n_values
 
@@ -96,9 +96,9 @@ class SPT:
         return self._method
 
     @method.setter
-    @validate_func_args
-    def method(self, val: Annotated[str, MustBeMemberOf(SPTDesignMethod)]):
-        self._method = val
+    @validate_params
+    def method(self, method: Annotated[str, MustBeMemberOf(SPTDesignMethod)]):
+        self._method = method
 
     @staticmethod
     def _avg_spt_n_design(vals) -> float:
@@ -111,15 +111,15 @@ class SPT:
     @staticmethod
     def _wgt_spt_n_design(vals):
 
-        sum_total = 0.0
-        sum_wgts = 0.0
+        total_wgted_spt = 0.0
+        total_wgt = 0.0
 
         for i, corr_spt_n_val in enumerate(vals, start=1):
-            wgt = 1 / i**2
-            sum_total += wgt * corr_spt_n_val
-            sum_wgts += wgt
+            wgt = 1 / i ** 2
+            total_wgted_spt += wgt * corr_spt_n_val
+            total_wgt += wgt
 
-        return sum_total / sum_wgts
+        return total_wgted_spt / total_wgt
 
     @round_(ndigits=1)
     def n_design(self):
@@ -220,14 +220,14 @@ class EnergyCorrection:
     }
 
     def __init__(
-        self,
-        recorded_spt_n_value: int,
-        *,
-        energy_percentage=0.6,
-        borehole_diameter=65.0,
-        rod_length=3.0,
-        hammer_type=HammerType.DONUT_1,
-        sampler_type=SamplerType.STANDARD,
+            self,
+            recorded_spt_n_value: int,
+            *,
+            energy_percentage=0.6,
+            borehole_diameter=65.0,
+            rod_length=3.0,
+            hammer_type=HammerType.DONUT_1,
+            sampler_type=SamplerType.STANDARD,
     ):
         """
         :param recorded_spt_n_value: Recorded SPT N-value from field.
@@ -252,11 +252,13 @@ class EnergyCorrection:
         return self._recorded_spt_value
 
     @recorded_spt_n_value.setter
-    @validate_func_args
+    @validate_params
     def recorded_spt_n_value(
-        self, val: Annotated[int, MustBeBetween(min_value=0, max_value=100)]
+            self,
+            recorded_spt_n_value: Annotated[
+                int, MustBeBetween(min_value=0, max_value=100)],
     ) -> None:
-        self._recorded_spt_value = val
+        self._recorded_spt_value = recorded_spt_n_value
 
     @property
     def energy_percentage(self) -> float:
@@ -264,11 +266,14 @@ class EnergyCorrection:
         return self._energy_percentage
 
     @energy_percentage.setter
-    @validate_func_args
+    @validate_params
     def energy_percentage(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=1.0)]
+            self,
+            energy_percentage: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=1.0)
+            ],
     ) -> None:
-        self._energy_percentage = val
+        self._energy_percentage = energy_percentage
 
     @property
     def borehole_diameter(self) -> float:
@@ -276,11 +281,14 @@ class EnergyCorrection:
         return self._borehole_diameter
 
     @borehole_diameter.setter
-    @validate_func_args
+    @validate_params
     def borehole_diameter(
-        self, val: Annotated[float, MustBeBetween(min_value=65.0, max_value=200.0)]
+            self,
+            borehole_diameter: Annotated[
+                float, MustBeBetween(min_value=65.0, max_value=200.0)
+            ],
     ) -> None:
-        self._borehole_diameter = val
+        self._borehole_diameter = borehole_diameter
 
     @property
     def rod_length(self) -> float:
@@ -288,18 +296,19 @@ class EnergyCorrection:
         return self._rod_length
 
     @rod_length.setter
-    @validate_func_args
-    def rod_length(self, val: Annotated[float, MustBePositive]):
-        self._rod_length = val
+    @validate_params
+    def rod_length(self, rod_length: Annotated[float, MustBePositive]):
+        self._rod_length = rod_length
 
     @property
     def hammer_type(self) -> HammerType:
         return self._hammer_type
 
     @hammer_type.setter
-    @validate_func_args
+    @validate_params
     def hammer_type(
-        self, hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)]
+            self,
+            hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)],
     ):
         self._hammer_type = hammer_type
 
@@ -308,9 +317,12 @@ class EnergyCorrection:
         return self._sampler_type
 
     @sampler_type.setter
-    @validate_func_args
-    def sampler_type(self, val: Annotated[SamplerType, MustBeMemberOf(SamplerType)]):
-        self._sampler_type = val
+    @validate_params
+    def sampler_type(
+            self,
+            sampler_type: Annotated[SamplerType, MustBeMemberOf(SamplerType)]
+    ):
+        self._sampler_type = sampler_type
 
     @property
     def hammer_efficiency(self) -> float:
@@ -357,10 +369,10 @@ class EnergyCorrection:
         `ENERGY`: 0.6, 0.55, etc
         """
         numerator = (
-            self.hammer_efficiency
-            * self.borehole_diameter_correction
-            * self.sampler_correction
-            * self.rod_length_correction
+                self.hammer_efficiency
+                * self.borehole_diameter_correction
+                * self.sampler_correction
+                * self.rod_length_correction
         )
         return numerator / self.energy_percentage
 
@@ -388,10 +400,10 @@ class OPC:
         return self._eop
 
     @eop.setter
-    @validate_func_args
-    def eop(self, val: Annotated[float, MustBeNonNegative]):
+    @validate_params
+    def eop(self, eop: Annotated[float, MustBeNonNegative]):
         """Effective overburden pressure ($kPa$)."""
-        self._eop = val
+        self._eop = eop
 
     @property
     def std_spt_n_value(self) -> float:
@@ -399,11 +411,14 @@ class OPC:
         return self._std_spt_n_value
 
     @std_spt_n_value.setter
-    @validate_func_args
+    @validate_params
     def std_spt_n_value(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
+            self,
+            std_spt_n_value: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=100.0)
+            ],
     ):
-        self._std_spt_n_value = val
+        self._std_spt_n_value = std_spt_n_value
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
@@ -429,9 +444,13 @@ class GibbsHoltzOPC(OPC):
         return self._eop
 
     @eop.setter
-    @validate_func_args
-    def eop(self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=280.0)]):
-        self._eop = val
+    @validate_params
+    def eop(
+            self,
+            eop: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=280.0)],
+    ):
+        self._eop = eop
 
     def correction(self) -> float:
         r"""SPT Correction."""
@@ -469,9 +488,9 @@ class PeckOPC(OPC):
         return self._eop
 
     @eop.setter
-    @validate_func_args
-    def eop(self, val: Annotated[float, MustBeGreaterThanOrEqual(24.0)]):
-        self._eop = val
+    @validate_params
+    def eop(self, eop: Annotated[float, MustBeGreaterThanOrEqual(24.0)]):
+        self._eop = eop
 
     def correction(self) -> float:
         r"""SPT Correction."""
@@ -520,11 +539,14 @@ class DilatancyCorrection:
         return self._corr_spt_n_value
 
     @corr_spt_n_value.setter
-    @validate_func_args
+    @validate_params
     def corr_spt_n_value(
-        self, val: Annotated[float, MustBeBetween(min_value=0.0, max_value=100.0)]
+            self,
+            corr_spt_n_value: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=100.0)
+            ],
     ):
-        self._corr_spt_n_value = val
+        self._corr_spt_n_value = corr_spt_n_value
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
@@ -566,11 +588,11 @@ _opctypes = {
 }
 
 
-@validate_func_args
+@validate_params
 def create_overburden_pressure_correction(
-    std_spt_n_value: float,
-    eop: float,
-    opc_type: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
+        std_spt_n_value: float,
+        eop: float,
+        opc_type: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
 ):
     """A factory function that encapsulates the creation of overburden
     pressure correction.

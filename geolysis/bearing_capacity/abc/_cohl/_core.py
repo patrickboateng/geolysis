@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Annotated
 
 from func_validator import (
-    validate_func_args,
+    validate_params,
     MustBeNonNegative,
     MustBeLessThanOrEqual,
 )
@@ -25,10 +25,10 @@ class AllowableBearingCapacity(ABC):
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
@@ -40,9 +40,12 @@ class AllowableBearingCapacity(ABC):
         return self._corrected_spt_n_value
 
     @corrected_spt_n_value.setter
-    @validate_func_args
-    def corrected_spt_n_value(self, val: Annotated[float, MustBeNonNegative]):
-        self._corrected_spt_n_value = val
+    @validate_params
+    def corrected_spt_n_value(
+            self,
+            corrected_spt_n_value: Annotated[float, MustBeNonNegative],
+    ):
+        self._corrected_spt_n_value = corrected_spt_n_value
 
     @property
     def tol_settlement(self) -> float:
@@ -50,10 +53,10 @@ class AllowableBearingCapacity(ABC):
         return self._tol_settlement
 
     @tol_settlement.setter
-    @validate_func_args
+    @validate_params
     def tol_settlement(
-        self,
-        tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)],
+            self,
+            tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)],
     ):
         self._tol_settlement = tol_settlement
 
@@ -68,8 +71,7 @@ class AllowableBearingCapacity(ABC):
         return min(1.0 + 0.33 * depth / width, 1.33)
 
     def bearing_capacity_results(self) -> AllowableBearingCapacityResult:
-        """Return a dictionary of bearing capacity results with
-        intermediate calculations.
+        """Return bearing capacity results with intermediate calculations.
 
         !!! info "Added in v0.11.0"
         """
@@ -79,12 +81,16 @@ class AllowableBearingCapacity(ABC):
         )
 
     @round_(ndigits=1)
-    def allowable_bearing_capacity(self):
+    def allowable_bearing_capacity(self) -> float:
         """Calculates the allowable bearing capacity.
 
         !!! info "Added in v0.12.0"
         """
         return self._bearing_capacity()
 
+    def allowable_applied_load(self) -> float:
+        """Calculate the allowable applied load on the foundation."""
+        return self._bearing_capacity() * self.foundation_size.foundation_area()
+
     @abstractmethod
-    def _bearing_capacity(self): ...
+    def _bearing_capacity(self) -> float: ...

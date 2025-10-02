@@ -1,10 +1,10 @@
 import enum
-import math
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Annotated
 
 from func_validator import (
     validate_func_args,
+    validate_params,
     MustBePositive,
     MustBeNonNegative,
     MustBeBetween,
@@ -12,7 +12,8 @@ from func_validator import (
     DependsOn,
 )
 
-from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr, nan
+from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr, nan, \
+    isinf
 
 __all__ = [
     "create_foundation",
@@ -82,7 +83,7 @@ class FootingSize(ABC):
         raise NotImplementedError
 
     @width.setter
-    def width(self, value: float):
+    def width(self, width: float):
         raise NotImplementedError
 
     @property
@@ -91,7 +92,7 @@ class FootingSize(ABC):
         raise NotImplementedError
 
     @length.setter
-    def length(self, value: float):
+    def length(self, length: float):
         raise NotImplementedError
 
     def area(self) -> float:
@@ -123,9 +124,8 @@ class StripFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validate_func_args
-    def width(self, val: Annotated[float, MustBePositive]) -> None:
-        self._width = val
+    def width(self, width: float) -> None:
+        self._width = width
 
     @property
     def length(self) -> float:
@@ -133,13 +133,12 @@ class StripFooting(FootingSize):
         return self._length
 
     @length.setter
-    @validate_func_args
-    def length(self, val: Annotated[float, MustBePositive]) -> None:
-        self._length = val
+    def length(self, length: float) -> None:
+        self._length = length
 
     def area(self) -> float:
         """Area of strip footing ($m \text{or} m^2$)."""
-        if math.isinf(self.length):
+        if isinf(self.length):
             return self.width
         return self.width * self.length
 
@@ -169,9 +168,8 @@ class CircularFooting(FootingSize):
         return self._diameter
 
     @diameter.setter
-    @validate_func_args
-    def diameter(self, val: Annotated[float, MustBePositive]) -> None:
-        self._diameter = val
+    def diameter(self, diameter: float) -> None:
+        self._diameter = diameter
 
     @property
     def width(self):
@@ -180,8 +178,8 @@ class CircularFooting(FootingSize):
 
     # Not checking for positive as diameter setter already does that
     @width.setter
-    def width(self, val: float):
-        self.diameter = val
+    def width(self, width: float):
+        self.diameter = width
 
     # Not checking for positive as diameter setter already does that
     @property
@@ -190,8 +188,8 @@ class CircularFooting(FootingSize):
         return self.diameter
 
     @length.setter
-    def length(self, val: float):
-        self.diameter = val
+    def length(self, length: float):
+        self.diameter = length
 
     def area(self) -> float:
         """Area of circular footing ($m^2$)."""
@@ -216,9 +214,8 @@ class SquareFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validate_func_args
-    def width(self, val: Annotated[float, MustBePositive]) -> None:
-        self._width = val
+    def width(self, width: float) -> None:
+        self._width = width
 
     @property
     def length(self):
@@ -227,8 +224,8 @@ class SquareFooting(FootingSize):
 
     # Not checking for positive as width setter already does that
     @length.setter
-    def length(self, val):
-        self.width = val
+    def length(self, length: float):
+        self.width = length
 
     def area(self) -> float:
         """Area of square footing ($m^2$)."""
@@ -255,9 +252,8 @@ class RectangularFooting(FootingSize):
         return self._width
 
     @width.setter
-    @validate_func_args
-    def width(self, val: Annotated[float, MustBePositive]) -> None:
-        self._width = val
+    def width(self, width: float) -> None:
+        self._width = width
 
     @property
     def length(self) -> float:
@@ -265,9 +261,8 @@ class RectangularFooting(FootingSize):
         return self._length
 
     @length.setter
-    @validate_func_args
-    def length(self, val: Annotated[float, MustBePositive]) -> None:
-        self._length = val
+    def length(self, length: float) -> None:
+        self._length = length
 
     def area(self) -> float:
         """Area of rectangular footing ($m^2$)."""
@@ -284,7 +279,7 @@ class Foundation:
             footing_size: FootingSize,
             eccentricity: float = 0.0,
             load_angle: float = 0.0,
-            ground_water_level: Optional[float] = None,
+            ground_water_level: Optional[float] = inf,
             foundation_type: FoundationType = FoundationType.PAD,
     ) -> None:
         r"""
@@ -304,7 +299,7 @@ class Foundation:
         self.eccentricity = eccentricity
         self.load_angle = load_angle
 
-        self._ground_water_level = ground_water_level
+        self.ground_water_level = ground_water_level
         self.foundation_type = foundation_type
 
     @property
@@ -313,9 +308,9 @@ class Foundation:
         return self._depth
 
     @depth.setter
-    @validate_func_args
-    def depth(self, val: Annotated[float, MustBePositive]) -> None:
-        self._depth = val
+    @validate_params
+    def depth(self, depth: Annotated[float, MustBePositive]) -> None:
+        self._depth = depth
 
     @property
     def width(self) -> float:
@@ -323,8 +318,8 @@ class Foundation:
         return self.footing_size.width
 
     @width.setter
-    def width(self, val: Annotated[float, MustBePositive]):
-        self.footing_size.width = val
+    def width(self, width: Annotated[float, MustBePositive]):
+        self.footing_size.width = width
 
     @property
     def length(self) -> float:
@@ -332,8 +327,8 @@ class Foundation:
         return self.footing_size.length
 
     @length.setter
-    def length(self, val: Annotated[float, MustBePositive]):
-        self.footing_size.length = val
+    def length(self, length: Annotated[float, MustBePositive]):
+        self.footing_size.length = length
 
     @property
     def footing_shape(self) -> Shape:
@@ -348,9 +343,10 @@ class Foundation:
         return self._eccentricity
 
     @eccentricity.setter
-    @validate_func_args
-    def eccentricity(self, val: Annotated[float, MustBeNonNegative]) -> None:
-        self._eccentricity = val
+    @validate_params
+    def eccentricity(self, eccentricity: Annotated[
+        float, MustBeNonNegative]) -> None:
+        self._eccentricity = eccentricity
 
     @property
     def load_angle(self) -> float:
@@ -358,12 +354,13 @@ class Foundation:
         return self._load_angle
 
     @load_angle.setter
-    @validate_func_args
+    @validate_params
     def load_angle(
             self,
-            val: Annotated[float, MustBeBetween(min_value=0.0, max_value=90.0)]
+            load_angle: Annotated[
+                float, MustBeBetween(min_value=0.0, max_value=90.0)],
     ) -> None:
-        self._load_angle = val
+        self._load_angle = load_angle
 
     @property
     def ground_water_level(self) -> Optional[float]:
@@ -371,9 +368,12 @@ class Foundation:
         return self._ground_water_level
 
     @ground_water_level.setter
-    @validate_func_args
-    def ground_water_level(self, val: Annotated[float, MustBePositive]):
-        self._ground_water_level = val
+    @validate_params
+    def ground_water_level(
+            self,
+            ground_water_level: Annotated[float, MustBePositive],
+    ):
+        self._ground_water_level = ground_water_level
 
     @property
     def foundation_type(self) -> FoundationType:
@@ -381,12 +381,13 @@ class Foundation:
         return self._foundation_type
 
     @foundation_type.setter
-    @validate_func_args
+    @validate_params
     def foundation_type(
             self,
-            val: Annotated[FoundationType, MustBeMemberOf(FoundationType)]
+            foundation_type: Annotated[
+                FoundationType, MustBeMemberOf(FoundationType)],
     ):
-        self._foundation_type = val
+        self._foundation_type = foundation_type
 
     @round_(2)
     def foundation_area(self) -> float:
@@ -403,7 +404,10 @@ class Foundation:
         of the foundation footing.
         """
         width, length, shape = (
-        self.effective_width, self.length, self.footing_shape)
+            self.effective_width,
+            self.length,
+            self.footing_shape,
+        )
 
         if not isclose(width, length) and shape != Shape.STRIP:
             shape = Shape.RECTANGLE
@@ -411,7 +415,7 @@ class Foundation:
         return width, length, shape
 
 
-@validate_func_args
+@validate_params
 def create_foundation(
         depth: float,
         width: float,
@@ -434,26 +438,23 @@ def create_foundation(
                          load aligns with the center of gravity of the
                          foundation footing .
     :param load_angle: Inclination of the applied load with the  vertical
-                           (:math:`\alpha^{\circ}`), defaults to 0.0.
-    :param ground_water_level: Depth of the water below ground level (m),
-                               defaults to None.
-    :param foundation_type: Type of foundation footing, defaults to
-                            :py:enum:mem:`~FoundationType.PAD`.
-    :param shape: Shape of foundation footing, defaults to
-                  :py:enum:mem:`~Shape.SQUARE`
-    :raises ValueError: Raised when length is not provided for a
-                        rectangular footing.
-    :raises ValidationError: Raised if an invalid footing shape is
+                       (:math:`\alpha^{\circ}`).
+    :param ground_water_level: Depth of the water below ground level (m)
+    :param foundation_type: Type of foundation footing.
+    :param shape: Shape of foundation footing
+
+    :raises ValidationError: Raised when length is not provided for a
+                             rectangular footing or an invalid shape is
                              provided.
     """
 
     shape = Shape(str(shape).casefold())
 
-    if shape is Shape.STRIP:
+    if shape == Shape.STRIP:
         footing_size = StripFooting(width=width)
-    elif shape is Shape.SQUARE:
+    elif shape == Shape.SQUARE:
         footing_size = SquareFooting(width=width)
-    elif shape is Shape.CIRCLE:
+    elif shape == Shape.CIRCLE:
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
         footing_size = RectangularFooting(width=width, length=length)

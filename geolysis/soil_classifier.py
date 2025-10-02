@@ -2,9 +2,9 @@ import enum
 from dataclasses import dataclass
 from typing import Annotated, Sequence
 
-from func_validator import validate_func_args, MustBeNonNegative
+from func_validator import validate_params, MustBeNonNegative
 
-from .utils import isclose, round_
+from .utils import isclose, round_, nan, isnan
 
 __all__ = [
     "AtterbergLimits",
@@ -256,9 +256,9 @@ class AtterbergLimits:
         return self._liquid_limit
 
     @liquid_limit.setter
-    @validate_func_args
-    def liquid_limit(self, val: Annotated[float, MustBeNonNegative]):
-        self._liquid_limit = val
+    @validate_params
+    def liquid_limit(self, liquid_limit: Annotated[float, MustBeNonNegative]):
+        self._liquid_limit = liquid_limit
 
     @property
     def plastic_limit(self) -> float:
@@ -268,16 +268,17 @@ class AtterbergLimits:
         return self._plastic_limit
 
     @plastic_limit.setter
-    @validate_func_args
-    def plastic_limit(self, val: Annotated[float, MustBeNonNegative]):
-        if self.liquid_limit < val:
+    @validate_params
+    def plastic_limit(self,
+                      plastic_limit: Annotated[float, MustBeNonNegative]):
+        if self.liquid_limit < plastic_limit:
             msg = (
-                f"plastic_limit: {val} cannot be greater than "
+                f"plastic_limit: {plastic_limit} cannot be greater than "
                 f"liquid_limit: {self.liquid_limit}"
             )
             raise ValueError(msg)
 
-        self._plastic_limit = val
+        self._plastic_limit = plastic_limit
 
     @property
     @round_(2)
@@ -353,7 +354,7 @@ class _SizeDistribution:
     Features obtained from the Particle Size Distribution graph.
     """
 
-    def __init__(self, d_10: float = 0.0, d_30: float = 0.0, d_60: float = 0.0):
+    def __init__(self, d_10: float, d_30: float, d_60: float):
         self.d_10 = d_10
         self.d_30 = d_30
         self.d_60 = d_60
@@ -363,7 +364,7 @@ class _SizeDistribution:
 
     @property
     def coeff_of_curvature(self) -> float:
-        return (self.d_30**2.0) / (self.d_60 * self.d_10)
+        return (self.d_30 ** 2.0) / (self.d_60 * self.d_10)
 
     @property
     def coeff_of_uniformity(self) -> float:
@@ -389,6 +390,12 @@ class _SizeDistribution:
             grade = USCSSymbol.POORLY_GRADED
         return grade
 
+    def has_particle_sizes(self) -> bool:
+        """Checks if particle sizes are provided."""
+        if isnan(self.d_10) or isnan(self.d_30) or isnan(self.d_60):
+            return False
+        return True
+
 
 class PSD:
     """Quantitative proportions by mass of various sizes of particles
@@ -396,12 +403,12 @@ class PSD:
     """
 
     def __init__(
-        self,
-        fines: float,
-        sand: float,
-        d_10: float = 0,
-        d_30: float = 0,
-        d_60: float = 0,
+            self,
+            fines: float,
+            sand: float,
+            d_10: float = nan,
+            d_30: float = nan,
+            d_60: float = nan,
     ):
         """
         :param fines: Percentage of fines in soil sample (%) i.e. The
@@ -459,7 +466,7 @@ class PSD:
 
     def has_particle_sizes(self) -> bool:
         """Checks if soil sample has particle sizes."""
-        return any(self.size_dist)
+        return self.size_dist.has_particle_sizes()
 
     def grade(self) -> USCSSymbol:
         r"""Return the grade of the soil sample, either well graded or
@@ -473,7 +480,7 @@ class PSD:
         return self.size_dist.grade(coarse_soil=self.coarse_material_type)
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class AASHTOResult:
     symbol: str
     symbol_no_group_idx: str
@@ -527,9 +534,9 @@ class AASHTO:
         return self._fines
 
     @fines.setter
-    @validate_func_args
-    def fines(self, val: Annotated[float, MustBeNonNegative]):
-        self._fines = val
+    @validate_params
+    def fines(self, fines: Annotated[float, MustBeNonNegative]):
+        self._fines = fines
 
     @round_(ndigits=0)
     def group_index(self) -> float:
@@ -619,7 +626,7 @@ class AASHTO:
         return soil_clf
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class USCSResult:
     symbol: str
     description: str
@@ -648,10 +655,10 @@ class USCS:
     """
 
     def __init__(
-        self,
-        atterberg_limits: AtterbergLimits,
-        psd: PSD,
-        organic=False,
+            self,
+            atterberg_limits: AtterbergLimits,
+            psd: PSD,
+            organic=False,
     ):
         """
         :param atterberg_limits: Atterberg limits of the soil.
@@ -672,7 +679,8 @@ class USCS:
 
         if isinstance(soil_clf, USCSSymbol):
             soil_clf = USCSResult(
-                symbol=soil_clf.symbol, description=soil_clf.description
+                symbol=soil_clf.symbol,
+                description=soil_clf.description,
             )
         else:
             # Handling tuple or list case for dual classification
@@ -778,9 +786,9 @@ class USCS:
 
 
 def create_aashto_classifier(
-    liquid_limit: float,
-    plastic_limit: float,
-    fines: float,
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
 ) -> AASHTO:
     """A helper function that encapsulates the creation of a AASHTO
     classifier.
@@ -790,12 +798,10 @@ def create_aashto_classifier(
                          the minimum moisture content at which a soil
                          flows upon application of a very small shear
                          force.
-
     :param plastic_limit: Water content at which plastic deformation can
                           be initiated (%). It is also the minimum water
                           content at which soil can be rolled into a
                           thread 3mm thick (molded without breaking).
-
     :param fines: Percentage of fines in soil sample (%) i.e. The
                   percentage of soil sample passing through No. 200
                   sieve (0.075mm).
@@ -805,14 +811,14 @@ def create_aashto_classifier(
 
 
 def create_uscs_classifier(
-    liquid_limit: float,
-    plastic_limit: float,
-    fines: float,
-    sand: float,
-    d_10: float = 0,
-    d_30: float = 0,
-    d_60: float = 0,
-    organic: bool = False,
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
+        sand: float,
+        d_10: float = nan,
+        d_30: float = nan,
+        d_60: float = nan,
+        organic: bool = False,
 ):
     """A helper function that encapsulates the creation of a USCS
     classifier.
@@ -822,24 +828,17 @@ def create_uscs_classifier(
                          the minimum moisture content at which a soil
                          flows upon application of a very small shear
                          force.
-
     :param plastic_limit: Water content at which plastic deformation can
                           be initiated (%). It is also the minimum water
                           content at which soil can be rolled into a
                           thread 3mm thick. (molded without breaking)
-
     :param fines: Percentage of fines in soil sample (%) i.e. The
                   percentage of soil sample passing through No. 200
                   sieve (0.075mm).
-
     :param sand: Percentage of sand in soil sample (%).
-
     :param d_10: Diameter at which 10% of the soil by weight is finer.
-
     :param d_30: Diameter at which 30% of the soil by weight is finer.
-
     :param d_60: Diameter at which 60% of the soil by weight is finer.
-
     :param organic: Indicates whether soil is organic or not.
     """
     atterberg_lmts = AtterbergLimits(liquid_limit, plastic_limit)

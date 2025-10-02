@@ -1,7 +1,7 @@
 from geolysis.foundation import Foundation
-from geolysis.utils import round_
+from geolysis.utils import round_, isinf
 
-from ._core import AllowableBearingCapacity
+from ._core import AllowableBearingCapacity, AllowableBearingCapacityResult
 
 
 class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
@@ -14,10 +14,10 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
     """
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ) -> None:
         """
         :param corrected_spt_n_value: Lowest (or average) uncorrected
@@ -46,7 +46,7 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
         width = self.foundation_size.width
         water_level = self.foundation_size.ground_water_level
 
-        if water_level is None:
+        if isinf(water_level):
             return 2.0
 
         if water_level <= depth:
@@ -68,16 +68,16 @@ class TerzaghiABC4PadFoundation(AllowableBearingCapacity):
             return 12 * n_corr * (1 / (self._cw() * self._fd())) * self._sr()
 
         return (
-            8
-            * n_corr
-            * ((3.28 * width + 1) / (3.28 * width)) ** 2
-            * (1 / (self._cw() * self._fd()))
-            * self._sr()
+                8
+                * n_corr
+                * ((3.28 * width + 1) / (3.28 * width)) ** 2
+                * (1 / (self._cw() * self._fd()))
+                * self._sr()
         )
 
-    def bearing_capacity_results(self) -> dict:
+    def bearing_capacity_results(self) -> AllowableBearingCapacityResult:
         res = super().bearing_capacity_results()
-        res["water_correction_factor"] = self._cw()
+        res.water_correction_factor = self._cw()
         return res
 
 

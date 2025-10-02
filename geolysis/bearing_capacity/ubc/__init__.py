@@ -1,12 +1,12 @@
 import enum
 from typing import Optional, Annotated
 
-from func_validator import MustBeMemberOf, validate_func_args
+from func_validator import MustBeMemberOf, validate_params
 
 from geolysis.foundation import Shape, create_foundation
-from geolysis.utils import AbstractStrEnum
+from geolysis.utils import AbstractStrEnum, inf
+
 from ._core import UltimateBearingCapacity
-from ._hansen_ubc import HansenUltimateBearingCapacity
 from ._terzaghi_ubc import (
     TerzaghiUBC4CircularFooting,
     TerzaghiUBC4RectangularFooting,
@@ -20,7 +20,6 @@ __all__ = [
     "TerzaghiUBC4CircularFooting",
     "TerzaghiUBC4RectangularFooting",
     "TerzaghiUBC4SquareFooting",
-    "HansenUltimateBearingCapacity",
     "VesicUltimateBearingCapacity",
     "UBCType",
     "create_ubc_4_all_soil_types",
@@ -44,7 +43,18 @@ class UBCType(AbstractStrEnum):
     """Vesic's method for calculating ultimate bearing capacity."""
 
 
-@validate_func_args
+ubc_classes = {
+    UBCType.TERZAGHI: {
+        Shape.STRIP: TerzaghiUBC4StripFooting,
+        Shape.CIRCLE: TerzaghiUBC4CircularFooting,
+        Shape.SQUARE: TerzaghiUBC4SquareFooting,
+        Shape.RECTANGLE: TerzaghiUBC4RectangularFooting,
+    },
+    UBCType.VESIC: VesicUltimateBearingCapacity,
+}
+
+
+@validate_params
 def create_ubc_4_all_soil_types(
         friction_angle: float,
         cohesion: float,
@@ -54,7 +64,7 @@ def create_ubc_4_all_soil_types(
         length: Optional[float] = None,
         saturated_unit_wgt: float = 20.5,
         eccentricity: float = 0.0,
-        ground_water_level: Optional[float] = None,
+        ground_water_level: Optional[float] = inf,
         load_angle: float = 0.0,
         apply_local_shear: bool = False,
         shape: Shape | str = "square",
@@ -86,8 +96,8 @@ def create_ubc_4_all_soil_types(
     :raises ValidationError: Raised if ubc_type is not supported.
     :raises ValidationError: Raised if an invalid footing shape is
                              provided.
-    :raises ValueError: Raised when length is not provided for a
-                        rectangular footing.
+    :raises ValidationError: Raised when length is not provided for a
+                             rectangular footing.
     """
     ubc_type = UBCType(ubc_type)
 
@@ -102,9 +112,10 @@ def create_ubc_4_all_soil_types(
         ground_water_level=ground_water_level,
         shape=shape,
     )
+    ubc_class = ubc_classes[ubc_type]
 
-    ubc_class = _get_ultimate_bearing_capacity(ubc_type,
-                                               fnd_size.footing_shape)
+    if ubc_type == UBCType.TERZAGHI:
+        ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]
 
     return ubc_class(
         friction_angle=friction_angle,
@@ -114,21 +125,3 @@ def create_ubc_4_all_soil_types(
         foundation_size=fnd_size,
         apply_local_shear=apply_local_shear,
     )
-
-
-def _get_ultimate_bearing_capacity(ubc_type: UBCType, foundation_shape: Shape):
-    ubc_classes = {
-        UBCType.HANSEN: HansenUltimateBearingCapacity,
-        UBCType.TERZAGHI: {
-            Shape.STRIP: TerzaghiUBC4StripFooting,
-            Shape.CIRCLE: TerzaghiUBC4CircularFooting,
-            Shape.SQUARE: TerzaghiUBC4SquareFooting,
-            Shape.RECTANGLE: TerzaghiUBC4RectangularFooting,
-        },
-        UBCType.VESIC: VesicUltimateBearingCapacity,
-    }
-    if ubc_type == UBCType.TERZAGHI:
-        ubc_class = ubc_classes[ubc_type][foundation_shape]
-    else:
-        ubc_class = ubc_classes[ubc_type]
-    return ubc_class

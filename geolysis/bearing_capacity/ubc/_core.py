@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Annotated, Optional
+from typing import Annotated
 
 from func_validator import (
-    validate_func_args,
+    validate_params,
     MustBeNonNegative,
     MustBePositive,
 )
 
 from geolysis.foundation import Foundation
-from geolysis.utils import arctandeg, round_, tandeg
+from geolysis.utils import arctandeg, round_, tandeg, isinf
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,14 +33,14 @@ class UltimateBearingCapacityResult:
 
 class UltimateBearingCapacity(ABC):
     def __init__(
-        self,
-        friction_angle: float,
-        cohesion: float,
-        moist_unit_wgt: float,
-        foundation_size: Foundation,
-        saturated_unit_wgt: float = 20.5,
-        apply_local_shear: bool = False,
-        factor_of_safety: float = 3.0,
+            self,
+            friction_angle: float,
+            cohesion: float,
+            moist_unit_wgt: float,
+            foundation_size: Foundation,
+            saturated_unit_wgt: float = 20.5,
+            apply_local_shear: bool = False,
+            factor_of_safety: float = 3.0,
     ) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general
@@ -80,14 +80,17 @@ class UltimateBearingCapacity(ABC):
         return self._friction_angle
 
     @friction_angle.setter
-    @validate_func_args
-    def friction_angle(self, val: Annotated[float, MustBeNonNegative]):
-        self._friction_angle = val
+    @validate_params
+    def friction_angle(
+            self,
+            friction_angle: Annotated[float, MustBeNonNegative],
+    ):
+        self._friction_angle = friction_angle
 
     @property
     def cohesion(self) -> float:
-        r"""Return cohesion for local shear in the case of local shear failure
-        or general shear in the case of general shear failure.
+        r"""Return cohesion for local shear in the case of local shear
+        failure or general shear in the case of general shear failure.
 
         In the case of local shear failure:
 
@@ -98,9 +101,9 @@ class UltimateBearingCapacity(ABC):
         return self._cohesion
 
     @cohesion.setter
-    @validate_func_args
-    def cohesion(self, val: Annotated[float, MustBeNonNegative]):
-        self._cohesion = val
+    @validate_params
+    def cohesion(self, cohesion: Annotated[float, MustBeNonNegative]):
+        self._cohesion = cohesion
 
     @property
     def moist_unit_wgt(self) -> float:
@@ -108,9 +111,9 @@ class UltimateBearingCapacity(ABC):
         return self._moist_unit_wgt
 
     @moist_unit_wgt.setter
-    @validate_func_args
-    def moist_unit_wgt(self, val: Annotated[float, MustBePositive]):
-        self._moist_unit_wgt = val
+    @validate_params
+    def moist_unit_wgt(self, moist_unit_wgt: Annotated[float, MustBePositive]):
+        self._moist_unit_wgt = moist_unit_wgt
 
     @property
     def saturated_unit_wgt(self) -> float:
@@ -118,9 +121,12 @@ class UltimateBearingCapacity(ABC):
         return self._saturated_unit_wgt
 
     @saturated_unit_wgt.setter
-    @validate_func_args
-    def saturated_unit_wgt(self, val: Annotated[float, MustBePositive]):
-        self._saturated_unit_wgt = val
+    @validate_params
+    def saturated_unit_wgt(
+            self,
+            saturated_unit_wgt: Annotated[float, MustBePositive],
+    ):
+        self._saturated_unit_wgt = saturated_unit_wgt
 
     @property
     def load_angle(self):
@@ -169,10 +175,10 @@ class UltimateBearingCapacity(ABC):
     def _surcharge_term(self) -> float:
         depth = self.foundation_size.depth
         water_level = self.foundation_size.ground_water_level
-
         unit_wgt = self.moist_unit_wgt
         eop = unit_wgt * depth
-        if water_level is not None:
+
+        if not isinf(water_level):
             if water_level < depth:
                 d_1 = water_level
                 d_2 = depth - d_1
@@ -197,20 +203,20 @@ class UltimateBearingCapacity(ABC):
                     unit_wgt = wgt + (d / width) * (self.moist_unit_wgt - wgt)
 
         return (
-            coef
-            * unit_wgt
-            * width
-            * self.n_gamma
-            * self.s_gamma
-            * self.d_gamma
-            * self.i_gamma
+                coef
+                * unit_wgt
+                * width
+                * self.n_gamma
+                * self.s_gamma
+                * self.d_gamma
+                * self.i_gamma
         )
 
     def _bearing_capacity(self) -> float:
         return (
-            self._cohesion_term(1.0)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
+                self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5)
         )
 
     def bearing_capacity_results(self) -> UltimateBearingCapacityResult:
@@ -218,7 +224,6 @@ class UltimateBearingCapacity(ABC):
         intermediate calculations.
 
         !!! info "Added in v0.11.0"
-
         """
         return UltimateBearingCapacityResult(
             ultimate_bearing_capacity=self.ultimate_bearing_capacity(),
@@ -265,12 +270,15 @@ class UltimateBearingCapacity(ABC):
 
     @property
     @abstractmethod
-    def n_c(self) -> float: ...
+    def n_c(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_q(self) -> float: ...
+    def n_q(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_gamma(self) -> float: ...
+    def n_gamma(self) -> float:
+        ...
