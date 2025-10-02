@@ -1,6 +1,6 @@
 # Ultimate Bearing Capacity Estimation
 
-Calculating the ultimate bearing capacity of soil using ``Hansen's``
+Calculating the ultimate bearing capacity of soil using ``Vesic's``
 correlation:
 
 ```python
@@ -12,9 +12,9 @@ correlation:
 ...                                          depth=1.5,
 ...                                          width=2.0,
 ...                                          shape="square",
-...                                          ubc_type="hansen")
+...                                          ubc_type="vesic")
 >>> hansen_ubc.ultimate_bearing_capacity()
-798.4
+893.2
 
 ```
 
