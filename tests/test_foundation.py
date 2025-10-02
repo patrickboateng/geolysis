@@ -115,5 +115,5 @@ class TestFoundation(unittest.TestCase):
             create_foundation(depth=1.5, width=2.0, shape="invalid_shape")
 
     def test_create_foundation_missing_length(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             create_foundation(depth=1.5, width=2.0, shape=Shape.RECTANGLE)

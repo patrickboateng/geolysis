@@ -1,7 +1,6 @@
 import enum
 import math
 from abc import ABC, abstractmethod
-from math import isinf
 from typing import Optional, TypeVar, Annotated
 
 from func_validator import (
@@ -10,9 +9,10 @@ from func_validator import (
     MustBeNonNegative,
     MustBeBetween,
     MustBeMemberOf,
+    DependsOn,
 )
 
-from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr
+from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr, nan
 
 __all__ = [
     "create_foundation",
@@ -415,7 +415,7 @@ class Foundation:
 def create_foundation(
         depth: float,
         width: float,
-        length: float = inf,
+        length: Annotated[float, DependsOn(shape=Shape.RECTANGLE)] = None,
         eccentricity: float = 0.0,
         load_angle: float = 0.0,
         ground_water_level: Optional[float] = inf,
@@ -456,9 +456,6 @@ def create_foundation(
     elif shape is Shape.CIRCLE:
         footing_size = CircularFooting(diameter=width)
     else:  # RECTANGLE
-        if isinf(length):
-            msg = "Length of rectangular footing must be provided."
-            raise ValueError(msg)
         footing_size = RectangularFooting(width=width, length=length)
 
     return Foundation(
