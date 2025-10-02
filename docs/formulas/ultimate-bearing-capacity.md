@@ -1,6 +1,6 @@
 # Ultimate Bearing Capacity Formulas
 
-Bearing capacity equation used in `hansen` and `vesic` methods.
+## Vesic Bearing Capacity
 
 $$
 q_u = cN_c s_c d_c i_c + qN_q s_q d_q i_q +
@@ -9,49 +9,6 @@ $$
 
 See description of symbols
 [below](#description-of-symbols-used-in-bearing-capacity-equations).
-
-## Hansen Bearing Capacity
-
-### Bearing capacity factors
-
-- $N_c = \cot(\phi) \left(N_q - 1\right)$
-- $N_q = \tan^2\left(45 + \frac{\phi}{2}\right) \cdot e^{\pi \tan(\phi)}$
-- $N_{\gamma} = 1.8 \left(N_q - 1\right) \tan(\phi)$
-
-### Shape factors
-
-#### Shape factors for strip footing
-
-- $s_c = 1.0$
-- $s_q = 1.0$
-- $s_{\gamma} = 1.0$
-
-#### Shape factors rectangular footing
-
-- $s_c = 1.0 + 0.2 \cdot \dfrac{B}{L}$
-- $s_q = 1.0 + 0.2 \cdot \dfrac{B}{L}$
-- $s_{\gamma} = 1.0 - 0.4 \dfrac{B}{L}$
-
-#### Shape factors square or circular footing
-
-- $s_c = 1.3$
-- $s_q = 1.2$
-- $s_{\gamma} = 0.8 \rightarrow \text{Square footing}$
-- $s_{\gamma} = 0.6 \rightarrow \text{Circular footing}$
-
-### Depth factors
-
-- $d_c = 0.0 + 0.35 \cdot \dfrac{D_f}{B}$
-- $d_q = 1.0 + 0.35 \cdot \dfrac{D_f}{B}$
-- $d_{\gamma} = 1.0$
-
-### Inclination factors
-
-- $i_c = 1 - \dfrac{\sin(\alpha)}{2cBL}$
-- $i_q = 1 - \dfrac{1.5 \cdot \sin(\alpha)}{\cos(\alpha)}$
-- $i_{\gamma} = I_q^2$
-
-## Vesic Bearing Capacity
 
 ### Bearing capacity factors
 
