@@ -10,14 +10,14 @@ func-validator = "*"
 pytest = "==8.4.1"
 pytest-cov = "==6.2.1"
 isort = "==6.0.1"
-black = "==25.1.0"
 mkdocs = "==1.6.1"
-mkdocstrings = {extras = ["python"], version = "==0.30.0"}
+mkdocstrings = { extras = ["python"], version = "==0.30.0" }
 mkdocs-material = "==9.6.18"
 mkdocs-git-revision-date-localized-plugin = "==1.4.7"
 mkdocs-git-committers-plugin-2 = "==2.5.0"
 mktestdocs = "==0.2.5"
 pytest-doctestplus = "==1.4.0"
+black = "25.9.0"
 
 [requires]
 python_version = "3.13"
