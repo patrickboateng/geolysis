@@ -128,7 +128,7 @@ These are the main components of the project structure
 >>> clf = aashto_clf.classify()
 >>> clf.symbol
 'A-6(4)'
->>> clf.symbol_no_grp_idx
+>>> clf.symbol_no_group_idx
 'A-6'
 >>> clf.group_index
 '4'
