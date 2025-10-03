@@ -5,7 +5,7 @@ from typing import Callable
 from .math import *
 from . import math as m
 
-__all__ = ["AbstractStrEnum", "ValidationError", "add_repr", "round_"] + m.__all__
+__all__ = ["AbstractStrEnum", "add_repr", "round_"] + m.__all__
 
 
 class StrEnumMeta(enum.EnumMeta):

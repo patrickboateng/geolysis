@@ -1,5 +1,5 @@
 import pytest
-from func_validator import ValidationError
+from geolysis.exceptions import ValidationError
 
 from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
 

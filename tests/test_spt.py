@@ -1,5 +1,5 @@
 import pytest
-from func_validator import ValidationError
+from geolysis.exceptions import ValidationError
 
 from geolysis.spt import (
     DilatancyCorrection,
@@ -65,20 +65,22 @@ class TestEnergyCorrection:
         ],
         [
             (30, 0.6, 65.0, 3, HammerType.DONUT_1, SamplerType.STANDARD, 22.5),
-            (30, 0.6, 120.0, 5, HammerType.AUTOMATIC, SamplerType.NON_STANDARD, 37.5),
-            (30, 0.6, 170.0, 7, HammerType.DONUT_2, SamplerType.STANDARD, 27.3),
+            (30, 0.6, 120.0, 5, HammerType.AUTOMATIC, SamplerType.NON_STANDARD,
+             37.5),
+            (
+            30, 0.6, 170.0, 7, HammerType.DONUT_2, SamplerType.STANDARD, 27.3),
             (30, 0.6, 65.0, 12, HammerType.SAFETY, SamplerType.STANDARD, 27.5),
         ],
     )
     def test_energy_correction(
-        self,
-        rec_spt_n_val,
-        energy_percentage,
-        borehole_diameter,
-        rod_len,
-        hammer_type,
-        sampler_type,
-        expected,
+            self,
+            rec_spt_n_val,
+            energy_percentage,
+            borehole_diameter,
+            rod_len,
+            hammer_type,
+            sampler_type,
+            expected,
     ):
         energy_corr = EnergyCorrection(
             recorded_spt_n_value=rec_spt_n_val,
@@ -89,7 +91,8 @@ class TestEnergyCorrection:
             sampler_type=sampler_type,
         )
 
-        assert energy_corr.standardized_spt_n_value() == pytest.approx(expected)
+        assert energy_corr.standardized_spt_n_value() == pytest.approx(
+            expected)
 
     def test_errors(self):
         # Provided an invalid value for hammer_type

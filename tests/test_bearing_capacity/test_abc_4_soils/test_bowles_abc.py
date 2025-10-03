@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.bearing_capacity.abc._cohl import create_abc_4_cohesionless_soils
+from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
 
 
 class TestBowlesABC:
@@ -20,14 +20,14 @@ class TestBowlesABC:
         ],
     )
     def test_bowles_abc_4_pad_foundation(
-        self,
-        corrected_spt_n_value,
-        tol_settlement,
-        depth,
-        width,
-        footing_shape,
-        foundation_type,
-        expected,
+            self,
+            corrected_spt_n_value,
+            tol_settlement,
+            depth,
+            width,
+            footing_shape,
+            foundation_type,
+            expected,
     ):
         bowles = create_abc_4_cohesionless_soils(
             corrected_spt_n_value=corrected_spt_n_value,
@@ -55,14 +55,14 @@ class TestBowlesABC:
         [(12.0, 20.0, 1.5, 1.2, "square", "mat", 150.55)],
     )
     def test_bowles_abc_4_mat_foundation(
-        self,
-        corrected_spt_n_value,
-        tol_settlement,
-        depth,
-        width,
-        footing_shape,
-        foundation_type,
-        expected,
+            self,
+            corrected_spt_n_value,
+            tol_settlement,
+            depth,
+            width,
+            footing_shape,
+            foundation_type,
+            expected,
     ):
         bowles = create_abc_4_cohesionless_soils(
             corrected_spt_n_value=corrected_spt_n_value,

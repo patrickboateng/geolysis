@@ -1,5 +1,6 @@
 import pytest
-from func_validator import ValidationError
+
+from geolysis.exceptions import ValidationError
 
 from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
 
