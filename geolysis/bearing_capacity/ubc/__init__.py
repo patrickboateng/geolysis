@@ -33,9 +33,6 @@ class UBCType(AbstractStrEnum):
     the ultimate bearing capacity of soil.
     """
 
-    HANSEN = enum.auto()
-    """Hansen's method for calculating ultimate bearing capacity."""
-
     TERZAGHI = enum.auto()
     """Terzaghi's method for calculating ultimate bearing capacity."""
 
@@ -56,19 +53,19 @@ ubc_classes = {
 
 @validate_params
 def create_ubc_4_all_soil_types(
-    friction_angle: float,
-    cohesion: float,
-    moist_unit_wgt: float,
-    depth: float,
-    width: float,
-    length: Optional[float] = None,
-    saturated_unit_wgt: float = 20.5,
-    eccentricity: float = 0.0,
-    ground_water_level: Optional[float] = inf,
-    load_angle: float = 0.0,
-    apply_local_shear: bool = False,
-    shape: Shape | str = "square",
-    ubc_type: Annotated[UBCType | str, MustBeMemberOf(UBCType)] = "vesic",
+        friction_angle: float,
+        cohesion: float,
+        moist_unit_wgt: float,
+        depth: float,
+        width: float,
+        length: Optional[float] = None,
+        saturated_unit_wgt: float = 20.5,
+        eccentricity: float = 0.0,
+        ground_water_level: Optional[float] = inf,
+        load_angle: float = 0.0,
+        apply_local_shear: bool = False,
+        shape: Shape | str = "square",
+        ubc_type: Annotated[UBCType | str, MustBeMemberOf(UBCType)] = "vesic",
 ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate
     bearing capacity.
