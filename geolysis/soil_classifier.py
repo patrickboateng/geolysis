@@ -4,7 +4,7 @@ from typing import Annotated, Sequence
 
 from func_validator import validate_params, MustBeNonNegative
 
-from .utils import isclose, round_, nan, isnan
+from .utils import isclose, round_
 
 __all__ = [
     "AtterbergLimits",
@@ -269,7 +269,8 @@ class AtterbergLimits:
 
     @plastic_limit.setter
     @validate_params
-    def plastic_limit(self, plastic_limit: Annotated[float, MustBeNonNegative]):
+    def plastic_limit(self,
+                      plastic_limit: Annotated[float, MustBeNonNegative]):
         if self.liquid_limit < plastic_limit:
             msg = (
                 f"plastic_limit: {plastic_limit} cannot be greater than "
@@ -363,7 +364,7 @@ class _SizeDistribution:
 
     @property
     def coeff_of_curvature(self) -> float:
-        return (self.d_30**2.0) / (self.d_60 * self.d_10)
+        return (self.d_30 ** 2.0) / (self.d_60 * self.d_10)
 
     @property
     def coeff_of_uniformity(self) -> float:
@@ -391,9 +392,7 @@ class _SizeDistribution:
 
     def has_particle_sizes(self) -> bool:
         """Checks if particle sizes are provided."""
-        if isnan(self.d_10) or isnan(self.d_30) or isnan(self.d_60):
-            return False
-        return True
+        return all((self.d_10, self.d_30, self.d_60))
 
 
 class PSD:
@@ -402,12 +401,12 @@ class PSD:
     """
 
     def __init__(
-        self,
-        fines: float,
-        sand: float,
-        d_10: float = nan,
-        d_30: float = nan,
-        d_60: float = nan,
+            self,
+            fines: float,
+            sand: float,
+            d_10: float | None = None,
+            d_30: float | None = None,
+            d_60: float | None = None,
     ):
         """
         :param fines: Percentage of fines in soil sample (%) i.e. The
@@ -654,10 +653,10 @@ class USCS:
     """
 
     def __init__(
-        self,
-        atterberg_limits: AtterbergLimits,
-        psd: PSD,
-        organic=False,
+            self,
+            atterberg_limits: AtterbergLimits,
+            psd: PSD,
+            organic=False,
     ):
         """
         :param atterberg_limits: Atterberg limits of the soil.
@@ -785,9 +784,9 @@ class USCS:
 
 
 def create_aashto_classifier(
-    liquid_limit: float,
-    plastic_limit: float,
-    fines: float,
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
 ) -> AASHTO:
     """A helper function that encapsulates the creation of a AASHTO
     classifier.
@@ -810,14 +809,14 @@ def create_aashto_classifier(
 
 
 def create_uscs_classifier(
-    liquid_limit: float,
-    plastic_limit: float,
-    fines: float,
-    sand: float,
-    d_10: float = nan,
-    d_30: float = nan,
-    d_60: float = nan,
-    organic: bool = False,
+        liquid_limit: float,
+        plastic_limit: float,
+        fines: float,
+        sand: float,
+        d_10: float | None = None,
+        d_30: float | None = None,
+        d_60: float | None = None,
+        organic: bool = False,
 ):
     """A helper function that encapsulates the creation of a USCS
     classifier.
