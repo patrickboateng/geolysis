@@ -1,9 +1,8 @@
 import enum
 from abc import ABC, abstractmethod
-from typing import Optional, TypeVar, Annotated
+from typing import Optional, TypeAlias, TypeVar, Annotated
 
 from func_validator import (
-    validate_func_args,
     validate_params,
     MustBePositive,
     MustBeNonNegative,
@@ -12,8 +11,7 @@ from func_validator import (
     DependsOn,
 )
 
-from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr, nan, \
-    isinf
+from .utils import AbstractStrEnum, inf, isclose, pi, round_, add_repr, isinf
 
 __all__ = [
     "create_foundation",
@@ -447,7 +445,7 @@ def create_foundation(
                              rectangular footing or an invalid shape is
                              provided.
     """
-
+    footing_size: FootingSize
     shape = Shape(str(shape).casefold())
 
     if shape == Shape.STRIP:

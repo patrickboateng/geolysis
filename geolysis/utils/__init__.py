@@ -2,8 +2,6 @@ import enum
 import functools
 from typing import Callable
 
-from func_validator import ValidationError
-
 from .math import *
 from . import math as m
 
