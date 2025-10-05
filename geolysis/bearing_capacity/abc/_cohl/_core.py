@@ -4,7 +4,6 @@ from typing import Annotated
 
 from func_validator import (
     validate_params,
-    MustBePositive,
     MustBeNonNegative,
     MustBeLessThanOrEqual,
 )
@@ -58,7 +57,8 @@ class AllowableBearingCapacity(ABC):
     def tol_settlement(
             self,
             tol_settlement: Annotated[
-                float, MustBePositive, MustBeLessThanOrEqual(25.4)],
+                float, MustBeNonNegative, MustBeLessThanOrEqual(25.4)
+            ],
     ):
         self._tol_settlement = tol_settlement
 
