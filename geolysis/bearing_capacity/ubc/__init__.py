@@ -59,6 +59,7 @@ def create_ubc_4_all_soil_types(
         depth: float,
         width: float,
         length: Optional[float] = None,
+        factor_of_safety: float = 3.0,
         saturated_unit_wgt: float = 20.5,
         eccentricity: float = 0.0,
         ground_water_level: Optional[float] = inf,
@@ -78,6 +79,7 @@ def create_ubc_4_all_soil_types(
     :param depth: Depth of foundation (m).
     :param width: Width of foundation footing (m).
     :param length: Length of foundation footing (m).
+    :param factor_of_safety: Factor of safety.
     :param saturated_unit_wgt: Saturated unit weight of soil ($kN/m^3$).
     :param eccentricity: The deviation of the foundation load from the
                          center of gravity of the foundation footing.
@@ -118,6 +120,7 @@ def create_ubc_4_all_soil_types(
         friction_angle=friction_angle,
         cohesion=cohesion,
         moist_unit_wgt=moist_unit_wgt,
+        factor_of_safety=factor_of_safety,
         saturated_unit_wgt=saturated_unit_wgt,
         foundation_size=fnd_size,
         apply_local_shear=apply_local_shear,
