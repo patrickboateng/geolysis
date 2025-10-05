@@ -4,6 +4,7 @@ from typing import Annotated
 
 from func_validator import (
     validate_params,
+    MustBePositive,
     MustBeNonNegative,
     MustBeLessThanOrEqual,
 )
@@ -25,10 +26,10 @@ class AllowableBearingCapacity(ABC):
     MAX_TOL_SETTLEMENT = 25.4
 
     def __init__(
-        self,
-        corrected_spt_n_value: float,
-        tol_settlement: float,
-        foundation_size: Foundation,
+            self,
+            corrected_spt_n_value: float,
+            tol_settlement: float,
+            foundation_size: Foundation,
     ) -> None:
         self.corrected_spt_n_value = corrected_spt_n_value
         self.tol_settlement = tol_settlement
@@ -42,8 +43,8 @@ class AllowableBearingCapacity(ABC):
     @corrected_spt_n_value.setter
     @validate_params
     def corrected_spt_n_value(
-        self,
-        corrected_spt_n_value: Annotated[float, MustBeNonNegative],
+            self,
+            corrected_spt_n_value: Annotated[float, MustBeNonNegative],
     ):
         self._corrected_spt_n_value = corrected_spt_n_value
 
@@ -55,8 +56,9 @@ class AllowableBearingCapacity(ABC):
     @tol_settlement.setter
     @validate_params
     def tol_settlement(
-        self,
-        tol_settlement: Annotated[float, MustBeLessThanOrEqual(25.4)],
+            self,
+            tol_settlement: Annotated[
+                float, MustBePositive, MustBeLessThanOrEqual(25.4)],
     ):
         self._tol_settlement = tol_settlement
 
