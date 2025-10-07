@@ -18,12 +18,12 @@
     "default": {
         "func-validator": {
             "hashes": [
-                "sha256:33836f8b803f5d2ae0973bcfd93526395271c367215496d0efb0acf46496a7e7",
-                "sha256:96465f8e94d7029319a51c665b53ba133ff0345ac02f6e4e7ce34c49ad7e6be2"
+                "sha256:bbd3147be53afd1cea9debb87f58a9eb7a986a985485bbddfb7a824f0d8fc285",
+                "sha256:bbe11c174a8c324acf8da8b0a25b5049bfa8ee7232469b90dfef5d99e0bd2f9c"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==0.19.0"
+            "version": "==1.0.1"
         }
     },
     "develop": {
