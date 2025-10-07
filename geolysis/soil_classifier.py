@@ -1,8 +1,12 @@
 import enum
 from dataclasses import dataclass
-from typing import Annotated, Sequence
+from typing import Annotated, Sequence, Optional
 
-from func_validator import validate_params, MustBeNonNegative
+from func_validator import (
+    validate_params,
+    MustBeNonNegative,
+    MustBePositive,
+)
 
 from .utils import isclose, round_
 
@@ -257,7 +261,8 @@ class AtterbergLimits:
 
     @liquid_limit.setter
     @validate_params
-    def liquid_limit(self, liquid_limit: Annotated[float, MustBeNonNegative]):
+    def liquid_limit(self,
+                     liquid_limit: Annotated[float, MustBeNonNegative()]):
         self._liquid_limit = liquid_limit
 
     @property
@@ -270,7 +275,7 @@ class AtterbergLimits:
     @plastic_limit.setter
     @validate_params
     def plastic_limit(self,
-                      plastic_limit: Annotated[float, MustBeNonNegative]):
+                      plastic_limit: Annotated[float, MustBeNonNegative()]):
         if self.liquid_limit < plastic_limit:
             msg = (
                 f"plastic_limit: {plastic_limit} cannot be greater than "
@@ -533,7 +538,7 @@ class AASHTO:
 
     @fines.setter
     @validate_params
-    def fines(self, fines: Annotated[float, MustBeNonNegative]):
+    def fines(self, fines: Annotated[float, MustBeNonNegative()]):
         self._fines = fines
 
     @round_(ndigits=0)
@@ -808,14 +813,15 @@ def create_aashto_classifier(
     return AASHTO(atterberg_limits, fines)
 
 
+@validate_params
 def create_uscs_classifier(
         liquid_limit: float,
         plastic_limit: float,
         fines: float,
         sand: float,
-        d_10: float | None = None,
-        d_30: float | None = None,
-        d_60: float | None = None,
+        d_10: Annotated[Optional[float], MustBePositive()] = None,
+        d_30: Annotated[Optional[float], MustBePositive()] = None,
+        d_60: Annotated[Optional[float], MustBePositive()] = None,
         organic: bool = False,
 ):
     """A helper function that encapsulates the creation of a USCS

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Optional
 
 from func_validator import (
     validate_params,
@@ -9,17 +9,16 @@ from func_validator import (
 )
 
 from geolysis.foundation import Foundation
-from geolysis.utils import round_, add_repr
+from geolysis.utils import round_
 
 
 @dataclass
 class AllowableBearingCapacityResult:
     allowable_bearing_capacity: float
     depth_factor: float
-    water_correction_factor: float = 1.0
+    water_correction_factor: Optional[float] = None
 
 
-@add_repr
 class AllowableBearingCapacity(ABC):
     #: Maximum tolerable foundation settlement (mm).
     MAX_TOL_SETTLEMENT = 25.4
@@ -43,7 +42,7 @@ class AllowableBearingCapacity(ABC):
     @validate_params
     def corrected_spt_n_value(
             self,
-            corrected_spt_n_value: Annotated[float, MustBeNonNegative],
+            corrected_spt_n_value: Annotated[float, MustBeNonNegative()],
     ):
         self._corrected_spt_n_value = corrected_spt_n_value
 
@@ -57,7 +56,7 @@ class AllowableBearingCapacity(ABC):
     def tol_settlement(
             self,
             tol_settlement: Annotated[
-                float, MustBeNonNegative, MustBeLessThanOrEqual(25.4)
+                float, MustBeNonNegative(), MustBeLessThanOrEqual(25.4)
             ],
     ):
         self._tol_settlement = tol_settlement
@@ -90,6 +89,7 @@ class AllowableBearingCapacity(ABC):
         """
         return self._bearing_capacity()
 
+    @round_(ndigits=1)
     def allowable_applied_load(self) -> float:
         """Calculate the allowable applied load on the foundation."""
         return self._bearing_capacity() * self.foundation_size.foundation_area()

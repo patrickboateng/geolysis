@@ -15,8 +15,8 @@ class TestBowlesABC:
             "expected",
         ],
         [
-            (12.0, 20.0, 1.5, 1.2, "square", "pad", 240.78),
-            (12.0, 20.0, 1.5, 1.3, "square", "pad", 229.45),
+            (12.0, 20.0, 1.5, 1.2, "square", "pad", (240.78, 346.7)),
+            (12.0, 20.0, 1.5, 1.3, "square", "pad", (229.45, 387.8)),
         ],
     )
     def test_bowles_abc_4_pad_foundation(
@@ -38,9 +38,11 @@ class TestBowlesABC:
             foundation_type=foundation_type,
             abc_type="bowles",
         )
-        assert bowles.allowable_bearing_capacity() == pytest.approx(
-            expected=expected, rel=0.01
-        )
+        exp_abc, exp_load = expected
+        assert bowles.allowable_bearing_capacity() == pytest.approx(exp_abc,
+                                                                    rel=0.01)
+        assert bowles.allowable_applied_load() == pytest.approx(exp_load,
+                                                                rel=0.01)
 
     @pytest.mark.parametrize(
         [

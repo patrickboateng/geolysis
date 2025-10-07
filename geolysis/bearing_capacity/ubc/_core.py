@@ -33,14 +33,14 @@ class UltimateBearingCapacityResult:
 
 class UltimateBearingCapacity(ABC):
     def __init__(
-        self,
-        friction_angle: float,
-        cohesion: float,
-        moist_unit_wgt: float,
-        foundation_size: Foundation,
-        saturated_unit_wgt: float = 20.5,
-        apply_local_shear: bool = False,
-        factor_of_safety: float = 3.0,
+            self,
+            friction_angle: float,
+            cohesion: float,
+            moist_unit_wgt: float,
+            foundation_size: Foundation,
+            saturated_unit_wgt: float = 20.5,
+            apply_local_shear: bool = False,
+            factor_of_safety: float = 3.0,
     ) -> None:
         r"""
         :param friction_angle: Internal angle of friction for general
@@ -82,8 +82,8 @@ class UltimateBearingCapacity(ABC):
     @friction_angle.setter
     @validate_params
     def friction_angle(
-        self,
-        friction_angle: Annotated[float, MustBeNonNegative],
+            self,
+            friction_angle: Annotated[float, MustBeNonNegative()],
     ):
         self._friction_angle = friction_angle
 
@@ -102,7 +102,7 @@ class UltimateBearingCapacity(ABC):
 
     @cohesion.setter
     @validate_params
-    def cohesion(self, cohesion: Annotated[float, MustBeNonNegative]):
+    def cohesion(self, cohesion: Annotated[float, MustBeNonNegative()]):
         self._cohesion = cohesion
 
     @property
@@ -112,7 +112,8 @@ class UltimateBearingCapacity(ABC):
 
     @moist_unit_wgt.setter
     @validate_params
-    def moist_unit_wgt(self, moist_unit_wgt: Annotated[float, MustBePositive]):
+    def moist_unit_wgt(self,
+                       moist_unit_wgt: Annotated[float, MustBePositive()]):
         self._moist_unit_wgt = moist_unit_wgt
 
     @property
@@ -123,8 +124,8 @@ class UltimateBearingCapacity(ABC):
     @saturated_unit_wgt.setter
     @validate_params
     def saturated_unit_wgt(
-        self,
-        saturated_unit_wgt: Annotated[float, MustBePositive],
+            self,
+            saturated_unit_wgt: Annotated[float, MustBePositive()],
     ):
         self._saturated_unit_wgt = saturated_unit_wgt
 
@@ -184,6 +185,7 @@ class UltimateBearingCapacity(ABC):
                 d_2 = depth - d_1
                 unit_wgt = self.saturated_unit_wgt - 9.81
                 eop = self.moist_unit_wgt * d_1 + unit_wgt * d_2
+
         return eop * self.n_q * self.s_q * self.d_q * self.i_q
 
     def _embedment_term(self, coef: float = 0.5) -> float:
@@ -203,20 +205,20 @@ class UltimateBearingCapacity(ABC):
                     unit_wgt = wgt + (d / width) * (self.moist_unit_wgt - wgt)
 
         return (
-            coef
-            * unit_wgt
-            * width
-            * self.n_gamma
-            * self.s_gamma
-            * self.d_gamma
-            * self.i_gamma
+                coef
+                * unit_wgt
+                * width
+                * self.n_gamma
+                * self.s_gamma
+                * self.d_gamma
+                * self.i_gamma
         )
 
     def _bearing_capacity(self) -> float:
         return (
-            self._cohesion_term(1.0)
-            + self._surcharge_term()
-            + self._embedment_term(0.5)
+                self._cohesion_term(1.0)
+                + self._surcharge_term()
+                + self._embedment_term(0.5)
         )
 
     def bearing_capacity_results(self) -> UltimateBearingCapacityResult:
@@ -270,12 +272,15 @@ class UltimateBearingCapacity(ABC):
 
     @property
     @abstractmethod
-    def n_c(self) -> float: ...
+    def n_c(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_q(self) -> float: ...
+    def n_q(self) -> float:
+        ...
 
     @property
     @abstractmethod
-    def n_gamma(self) -> float: ...
+    def n_gamma(self) -> float:
+        ...

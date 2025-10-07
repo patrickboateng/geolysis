@@ -5,7 +5,7 @@ from typing import Callable
 from .math import *
 from . import math as m
 
-__all__ = ["AbstractStrEnum", "add_repr", "round_"] + m.__all__
+__all__ = ["AbstractStrEnum", "round_"] + m.__all__
 
 
 class StrEnumMeta(enum.EnumMeta):
@@ -24,23 +24,6 @@ class AbstractStrEnum(enum.StrEnum, metaclass=StrEnumMeta):
     This class can be used as a base class for creating string
     enumerations.
     """
-
-
-def add_repr(cls):
-    """A class decorator that adds a __repr__ method to the class."""
-
-    def __repr__(self) -> str:
-        inst_attrs = self.__dict__
-        attrs = (f"{key.strip('_')}={val}" for key, val in inst_attrs.items())
-        return f"{type(self).__name__}({', '.join(attrs)})"
-
-    def __str__(self) -> str:
-        return repr(self)
-
-    cls.__repr__ = __repr__
-    cls.__str__ = __str__
-
-    return cls
 
 
 def round_(ndigits: int) -> Callable:
