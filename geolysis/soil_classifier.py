@@ -6,6 +6,8 @@ from func_validator import (
     validate_params,
     MustBeNonNegative,
     MustBePositive,
+    DependsOn,
+    MustBeLessThanOrEqual,
 )
 
 from .utils import isclose, round_
@@ -261,8 +263,7 @@ class AtterbergLimits:
 
     @liquid_limit.setter
     @validate_params
-    def liquid_limit(self,
-                     liquid_limit: Annotated[float, MustBeNonNegative()]):
+    def liquid_limit(self, liquid_limit: Annotated[float, MustBeNonNegative()]):
         self._liquid_limit = liquid_limit
 
     @property
@@ -274,15 +275,14 @@ class AtterbergLimits:
 
     @plastic_limit.setter
     @validate_params
-    def plastic_limit(self,
-                      plastic_limit: Annotated[float, MustBeNonNegative()]):
-        if self.liquid_limit < plastic_limit:
-            msg = (
-                f"plastic_limit: {plastic_limit} cannot be greater than "
-                f"liquid_limit: {self.liquid_limit}"
-            )
-            raise ValueError(msg)
-
+    def plastic_limit(
+        self,
+        plastic_limit: Annotated[
+            float,
+            MustBeNonNegative(),
+            DependsOn("liquid_limit", args_strategy=MustBeLessThanOrEqual),
+        ],
+    ):
         self._plastic_limit = plastic_limit
 
     @property
@@ -369,7 +369,7 @@ class _SizeDistribution:
 
     @property
     def coeff_of_curvature(self) -> float:
-        return (self.d_30 ** 2.0) / (self.d_60 * self.d_10)
+        return (self.d_30**2.0) / (self.d_60 * self.d_10)
 
     @property
     def coeff_of_uniformity(self) -> float:
@@ -406,12 +406,12 @@ class PSD:
     """
 
     def __init__(
-            self,
-            fines: float,
-            sand: float,
-            d_10: float | None = None,
-            d_30: float | None = None,
-            d_60: float | None = None,
+        self,
+        fines: float,
+        sand: float,
+        d_10: float | None = None,
+        d_30: float | None = None,
+        d_60: float | None = None,
     ):
         """
         :param fines: Percentage of fines in soil sample (%) i.e. The
@@ -658,10 +658,10 @@ class USCS:
     """
 
     def __init__(
-            self,
-            atterberg_limits: AtterbergLimits,
-            psd: PSD,
-            organic=False,
+        self,
+        atterberg_limits: AtterbergLimits,
+        psd: PSD,
+        organic=False,
     ):
         """
         :param atterberg_limits: Atterberg limits of the soil.
@@ -789,9 +789,9 @@ class USCS:
 
 
 def create_aashto_classifier(
-        liquid_limit: float,
-        plastic_limit: float,
-        fines: float,
+    liquid_limit: float,
+    plastic_limit: float,
+    fines: float,
 ) -> AASHTO:
     """A helper function that encapsulates the creation of a AASHTO
     classifier.
@@ -815,14 +815,14 @@ def create_aashto_classifier(
 
 @validate_params
 def create_uscs_classifier(
-        liquid_limit: float,
-        plastic_limit: float,
-        fines: float,
-        sand: float,
-        d_10: Annotated[Optional[float], MustBePositive()] = None,
-        d_30: Annotated[Optional[float], MustBePositive()] = None,
-        d_60: Annotated[Optional[float], MustBePositive()] = None,
-        organic: bool = False,
+    liquid_limit: float,
+    plastic_limit: float,
+    fines: float,
+    sand: float,
+    d_10: Annotated[Optional[float], MustBePositive()] = None,
+    d_30: Annotated[Optional[float], MustBePositive()] = None,
+    d_60: Annotated[Optional[float], MustBePositive()] = None,
+    organic: bool = False,
 ):
     """A helper function that encapsulates the creation of a USCS
     classifier.

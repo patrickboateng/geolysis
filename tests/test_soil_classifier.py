@@ -6,6 +6,7 @@ from geolysis.soil_classifier import (
     create_aashto_classifier,
     create_uscs_classifier,
 )
+from geolysis.exceptions import ValidationError
 
 
 class TestAtterbergLimits:
@@ -38,7 +39,7 @@ class TestAtterbergLimits:
 
     def test_errors(self):
         # Plastic limit is greater than liquid limit
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             AtterbergLimits(liquid_limit=15.0, plastic_limit=25.0)
 
 
