@@ -1,5 +1,5 @@
 from . import bearing_capacity, foundation, soil_classifier, spt
 
-__version__ = "0.21.0"
+__version__ = "0.21.1"
 
 __all__ = ["foundation", "soil_classifier", "spt", "bearing_capacity"]
