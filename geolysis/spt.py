@@ -63,7 +63,7 @@ class SPT:
     def __init__(
             self,
             corrected_spt_n_values: Sequence[float],
-            method: SPTDesignMethod.WEIGHTED = "wgt",
+            method: SPTDesignMethod = "wgt",
     ):
         """
         :param corrected_spt_n_values: Corrected SPT N-values within the
