@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-func-validator = "*"
 mkdocs-gen-files = "*"
+func-validator = "*"
 
 [dev-packages]
 pytest = "==8.4.1"
