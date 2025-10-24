@@ -1,0 +1,404 @@
+{
+    "allowCustomDataForDataTypeAny": true,
+    "functions": [
+        {
+            "description": "Returns the AASHTO classification of the soil.",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/aashto",
+            "id": "AASHTO",
+            "name": "AASHTO",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Liquid limit of the soil (%). liquid_limit >= 0 and liquid_limit > plastic_limit",
+                    "name": "liquid_limit",
+                    "type": "number"
+                },
+                {
+                    "description": "Plastic limit of the soil (%). plastic_limit >= 0.",
+                    "name": "plastic_limit",
+                    "type": "number"
+                },
+                {
+                    "description": "Percentage of fines in the soil. fines >= 0.",
+                    "name": "fines",
+                    "type": "number"
+                },
+                {
+                    "description": "Indicates whether only the group index should be returned. It takes precedence\nover add_group_idx and description. If omitted, only_group_idx = false.",
+                    "name": "only_group_idx",
+                    "optional": true,
+                    "type": "boolean"
+                },
+                {
+                    "description": "Indicates whether the group index should be added to the\n classification.  If omitted, add_group_idx = true.",
+                    "name": "add_group_idx",
+                    "optional": true,
+                    "type": "boolean"
+                },
+                {
+                    "description": "Indicates whether to return the description of the\nclassification. If omitted, description = false. NB: If only_group_idx=true,then\ndescription won't be returned, intead the group index will be returned.",
+                    "name": "description",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Returns the USCS classification of the soil.",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/uscs",
+            "id": "USCS",
+            "name": "USCS",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Liquid limit of the soil (%). liquid_limit >= 0 and liquid_limit > plastic_limit",
+                    "name": "liquid_limit",
+                    "type": "number"
+                },
+                {
+                    "description": "Plastic limit of the soil (%). plastic_limit >= 0.",
+                    "name": "plastic_limit",
+                    "type": "number"
+                },
+                {
+                    "description": "Percentage of fines in the soil. fines >= 0.",
+                    "name": "fines",
+                    "type": "number"
+                },
+                {
+                    "description": "Percentage of sand in the soil. sand >= 0.",
+                    "name": "sand",
+                    "type": "number"
+                },
+                {
+                    "description": "Diameter at which 10% of soil is finer.",
+                    "name": "d_10",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Diameter at which 30% of soil is finer.",
+                    "name": "d_30",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Diameter at which 60% of soil is finer.",
+                    "name": "d_60",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Indicates whether the soil is organic. If omitted,\norganic = false.",
+                    "name": "organic",
+                    "optional": true,
+                    "type": "boolean"
+                },
+                {
+                    "description": "Indicates whether to return the description of the\nclassification. If omitted, description = false.",
+                    "name": "description",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "type": "string"
+            }
+        },
+        {
+            "description": "Returns the ultimate bearing capacity of the soil for shallow foundations (kN/m^2 or kPa).",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/ultimate-bearing-capacity",
+            "id": "ULTIMATE_BEARING_CAPACITY",
+            "name": "ULTIMATE_BEARING_CAPACITY",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Internal angle of friction for general shear failure (degrees).\nfriction_angle >= 0.",
+                    "name": "friction_angle",
+                    "type": "number"
+                },
+                {
+                    "description": "Cohesion of the soil (kN/m^2). cohesion >= 0.",
+                    "name": "cohesion",
+                    "type": "number"
+                },
+                {
+                    "description": "Unit weight of the soil (kN/m^3). moist_unit_wgt > 0.",
+                    "name": "moist_unit_wgt",
+                    "type": "number"
+                },
+                {
+                    "description": "Depth of the foundation (m).",
+                    "name": "depth",
+                    "type": "number"
+                },
+                {
+                    "description": "Width of the foundation footing (m). width > 0.0",
+                    "name": "width",
+                    "type": "number"
+                },
+                {
+                    "description": "Length of the foundation footing (m). length > 0.0",
+                    "name": "length",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Factor of safety. If omitted factor_of_safety = 3.",
+                    "name": "factor_of_safety",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Saturated unit weight of soil (kN/m^3). If omitted, saturated_unit_wgt = 20.5,",
+                    "name": "saturated_unit_wgt",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Depth of the ground water level (m). ground_water_level >= 0.",
+                    "name": "ground_water_level",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Eccentricity of applied load (m). eccentricity >= 0, If omitted,\neccentricity = 0.0.",
+                    "name": "eccentricity",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Inclination of applied load with the vertical (degrees). If omitted,\nload_angle = 0.0.",
+                    "name": "load_angle",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Indicates whether to apply local shear. If omitted,\napply_local_shear = false.",
+                    "name": "apply_local_shear",
+                    "optional": true,
+                    "type": "boolean"
+                },
+                {
+                    "description": "Shape of the foundation footing. If omitted, shape = \"square\".\nAvailable options are \"square\", \"rectangle\", \"circle\", and \"strip\".",
+                    "name": "shape",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Type of bearing capacity calculation. If omitted, ubc_type = \"vesic\".\nAvailable options are \"terzaghi\", and \"vesic\".",
+                    "name": "ubc_type",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Indicates whether to return the allowable bearing capacity of the soil or not.",
+                    "name": "allowable_bearing_capacity",
+                    "optional": true,
+                    "type": "boolean"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "Returns the allowable bearing capacity of the soil for shallow foundations (kN/m^2 or kPa).",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/allowable-bearing-capacity",
+            "id": "ALLOWABLE_BEARING_CAPACITY",
+            "name": "ALLOWABLE_BEARING_CAPACITY",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Corrected SPT N values. Valid values for\neach corrected_spt_n_value should be between\n(0 < corrected_spt_n_value <= 100)",
+                    "name": "corrected_spt_n_value",
+                    "type": "number"
+                },
+                {
+                    "description": "Tolerable settlement of foundation (mm). (0 <= tol_settlement <= 25.4)",
+                    "name": "tol_settlement",
+                    "type": "number"
+                },
+                {
+                    "description": "Depth of the foundation (m). depth > 0.0",
+                    "name": "depth",
+                    "type": "number"
+                },
+                {
+                    "description": "Width of the foundation footing (m). width > 0.0",
+                    "name": "width",
+                    "type": "number"
+                },
+                {
+                    "description": "Length of the foundation footing (m). length > 0.",
+                    "name": "length",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Eccentricity of applied load (m). eccentricity >= 0. If omitted,\neccentricity = 0.0.",
+                    "name": "eccentricity",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Depth of the ground water level (m). ground_water_level >= 0.0",
+                    "name": "ground_water_level",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Shape of the foundation footing.  If omitted, shape = \"square\".\nAvailable options are \"square\", \"rectangle\", \"circle\", and \"strip\".",
+                    "name": "shape",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Type of foundation. If omitted, foundation_type = \"pad\".\nAvailable options are \"pad\" and \"mat\".",
+                    "name": "foundation_type",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Type of bearing capacity calculation. If omitted, abc_type = \"bowles\".\nAvailable options are \"bowles\", \"meyerhof\", and \"terzaghi\".",
+                    "name": "abc_type",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "SPT N deisgn calculation using weighted average.",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/spt-n-design",
+            "id": "SPT_N_DESIGN",
+            "name": "SPT_N_DESIGN",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Corrected SPT N values. Valid value for each corrected_spt_n_value\nshould be between (0 < corrected_spt_n_value <= 100)",
+                    "dimensionality": "matrix",
+                    "name": "corrected_spt_n_values",
+                    "repeating": true,
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "Returns the SPT N-value corrected for field procedures.",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/spt-energy-correction",
+            "id": "SPT_ENERGY_CORRECTION",
+            "name": "SPT_ENERGY_CORRECTION",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Recorded SPT N value. Valid values are between\n(0 < recorded_spt_n_value <= 100)",
+                    "name": "recorded_spt_n_value",
+                    "type": "number"
+                },
+                {
+                    "description": "Percentage of energy reaching the tip of the sampler. Valid values\nare between (0.0 < energy_percentage <= 1.0). If omitted,\nenergy_percentage = 0.6.",
+                    "name": "energy_percentage",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Borehole diameter (mm). Valid values are between\n(65.0 <= borehole_diameter <= 200.0) If omitted, borehole_diameter = 65.0.",
+                    "name": "borehole_diameter",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Length of spt rod (m). Valid values are (rod_length > 0.0). If omitted,\nrod_length = 3.0.",
+                    "name": "rod_length",
+                    "optional": true,
+                    "type": "number"
+                },
+                {
+                    "description": "Hammer type. If omitted, hammer_type = \"donut_1\".\nAvailable options are \"automatic\", \"donut_1\", \"donut_2\", \"safety\",\n\"drop\" and \"pin\"",
+                    "name": "hammer_type",
+                    "optional": true,
+                    "type": "string"
+                },
+                {
+                    "description": "Sampler type. If omitted, sampler_type = \"standard\".\nAvailable options are \"standard\" and \"non_standard\".",
+                    "name": "sampler_type",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "Returns the SPT N-value corrected for overburden pressure.",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/spt-overburden-pressure-correction",
+            "id": "SPT_OVERBURDEN_PRESSURE_CORRECTION",
+            "name": "SPT_OVERBURDEN_PRESSURE_CORRECTION",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Standardized SPT N value. Valid values are between\n(0.0 < std_spt_n_value <= 100.0)",
+                    "name": "std_spt_n_value",
+                    "type": "number"
+                },
+                {
+                    "description": "Effective overburden pressure (kN/m^2).",
+                    "name": "eop",
+                    "type": "number"
+                },
+                {
+                    "description": "Overburden pressure correction type. If omitted, opc_type = \"gibbs\".\nAvailable options are \"gibbs\", \"bazaraa\", \"peck\", \"liao\", and \"skempton\".",
+                    "name": "opc_type",
+                    "optional": true,
+                    "type": "string"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        },
+        {
+            "description": "Returns the SPT N-value corrected for dilatancy.",
+            "helpUrl": "https://docs.geolysis.io/en/latest/excel/functions/spt-dilatancy-correction",
+            "id": "SPT_DILATANCY_CORRECTION",
+            "name": "SPT_DILATANCY_CORRECTION",
+            "options": {
+                "requiresAddress": true
+            },
+            "parameters": [
+                {
+                    "description": "Corrected SPT N value. Valid values are between\n(0.0 < corrected_spt_n_value <= 100.0)",
+                    "name": "corrected_spt_n_value",
+                    "type": "number"
+                }
+            ],
+            "result": {
+                "type": "number"
+            }
+        }
+    ]
+}
