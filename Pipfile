@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 func-validator = "*"
+mkdocs-gen-files = "*"
 
 [dev-packages]
 pytest = "==8.4.1"

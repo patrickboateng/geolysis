@@ -25,6 +25,16 @@ nav:
       - Soil Classification: reference/soil-classifier.md
       - SPT: reference/spt.md
       - Utils: reference/utils.md
+  - Excel Functions Reference:
+      - excel/functions/index.md
+      - GEOLYSIS.AASHTO: excel/functions/aashto.md
+      - GEOLYSIS.USCS: excel/functions/uscs.md
+      - GEOLYSIS.ALLOWABLE_BEARING_CAPACITY: excel/functions/allowable-bearing-capacity.md
+      - GEOLYSIS.ULTIMATE_BEARING_CAPACITY: excel/functions/ultimate-bearing-capacity.md
+      - GEOLYSIS.SPT_N_DESIGN: excel/functions/spt-n-design.md
+      - GEOLYSIS.SPT_ENERGY_CORRECTION: excel/functions/spt-energy-correction.md
+      - GEOLYSIS.SPT_OVERBURDEN_PRESSURE_CORRECTION: excel/functions/spt-overburden-pressure-correction.md
+      - GEOLYSIS.SPT_DILATANCY_CORRECTION: excel/functions/spt-dilatancy-correction.md
   - Formula Explanations:
       - formulas/index.md
       - Allowable Bearing Capacity: formulas/allowable-bearing-capacity.md

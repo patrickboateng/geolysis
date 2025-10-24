@@ -1,6 +1,6 @@
 import enum
-from abc import abstractmethod
-from typing import Annotated, Final, Sequence
+from abc import ABC, abstractmethod
+from typing import Annotated, Final, Sequence, Optional, Final
 
 from func_validator import (
     validate_params,
@@ -11,9 +11,11 @@ from func_validator import (
     MustBeGreaterThanOrEqual,
     MustHaveLengthGreaterThan,
     MustHaveValuesBetween,
+    DependsOn,
 )
 
-from .utils import AbstractStrEnum, isclose, log10, mean, round_, sqrt
+from .utils import AbstractStrEnum, isclose, log10, mean, round_, sqrt, isinf
+from .foundation import Foundation
 
 __all__ = [
     "SPT",
@@ -136,7 +138,6 @@ class SPT:
         if `method="wgt"`, it returns the weighted average N-value
         within the foundation influence zone as the SPT N-design value.
 
-
         $$
         N_{design} = \dfrac{\sum_{i=1}^{n} \frac{N_i}{i^2}}
                       {\sum_{i=1}^{n}\frac{1}{i^2}}
@@ -192,6 +193,12 @@ class SamplerType(AbstractStrEnum):
     NON_STANDARD = enum.auto()
     """Non-standard sampler."""
 
+    LINER_4_DENSE_SAND_AND_CLAY = enum.auto()
+    """Liner sampler for dense sand and clay."""
+
+    LINER_4_LOOSE_SAND = enum.auto()
+    """Liner sampler for loose sand."""
+
 
 class EnergyCorrection:
     r"""SPT N-value standardized for field procedures.
@@ -217,6 +224,8 @@ class EnergyCorrection:
     _SAMPLER_CORRECTION_FACTORS = {
         SamplerType.STANDARD: 1.00,
         SamplerType.NON_STANDARD: 1.20,
+        SamplerType.LINER_4_DENSE_SAND_AND_CLAY: 0.8,
+        SamplerType.LINER_4_LOOSE_SAND: 0.9,
     }
 
     def __init__(
@@ -382,7 +391,7 @@ class EnergyCorrection:
         return self.correction() * self.recorded_spt_n_value
 
 
-class OPC:
+class OPC(ABC):
     """Base class for Overburden Pressure Correction (OPC)."""
 
     def __init__(self, std_spt_n_value: float, eop: float):
@@ -550,10 +559,35 @@ class DilatancyCorrection:
 
     @round_(ndigits=1)
     def corrected_spt_n_value(self) -> float:
-        r"""Corrected SPT N-value."""
+        r"""Corrected SPT N-value for presence of water."""
         if self.corr_spt_n_value <= 15.0:
             return self.corr_spt_n_value
         return 15.0 + 0.5 * (self.corr_spt_n_value - 15.0)
+
+
+class DilatancyCorrection2(DilatancyCorrection):
+    """Correction factor for groundwater level."""
+
+    def __init__(self, corr_spt_n_value: float, foundation_size: Foundation):
+        super().__init__(corr_spt_n_value)
+        self.foundation_size = foundation_size
+
+    def correction(self) -> float:
+        water_lvl = self.foundation_size.ground_water_level
+        f_width = self.foundation_size.width
+        f_depth = self.foundation_size.depth
+        correction = 1.0
+
+        if not isinf(water_lvl):
+            if (d1 := water_lvl - f_depth) <= f_width or water_lvl < f_width:
+                correction = 0.5 + (d1 / (2 * (f_depth + f_width)))
+
+        return correction
+
+    def corrected_spt_n_value(self) -> float:
+        """Corrected SPT N-value for presence of water."""
+        correction = min(self.correction(), 2.0)
+        return correction * self.corr_spt_n_value
 
 
 class OPCType(AbstractStrEnum):
@@ -579,7 +613,12 @@ class OPCType(AbstractStrEnum):
     """Skempton method for overburden pressure correction."""
 
 
-_opctypes = {
+class DilatancyCorrType(AbstractStrEnum):
+    NON_WATER_AWARE = enum.auto()
+    WATER_AWARE = enum.auto()
+
+
+_opc_methods: Final = {
     OPCType.GIBBS: GibbsHoltzOPC,
     OPCType.BAZARAA: BazaraaPeckOPC,
     OPCType.PECK: PeckOPC,
@@ -589,10 +628,73 @@ _opctypes = {
 
 
 @validate_params
+def correct_spt_n_value(
+        recorded_spt_n_value: int,
+        *,
+        eop,
+        energy_percentage=0.6,
+        borehole_diameter=65.0,
+        rod_length=3.0,
+        hammer_type=HammerType.DONUT_1,
+        sampler_type=SamplerType.STANDARD,
+        opc_method: OPCType = "gibbs",
+        dilatancy_corr_method: Annotated[
+            Optional[DilatancyCorrType], MustBeMemberOf(DilatancyCorrType)
+        ] = None,
+        foundation_size: Annotated[
+            Foundation,
+            DependsOn(dilatancy_corr_method=DilatancyCorrType.WATER_AWARE),
+        ] = None,
+) -> float:
+    """SPT N-value correction for overburden pressure and groundwater
+    level.
+
+    :param recorded_spt_n_value: Recorded SPT N-value from field.
+    :param eop: Effective overburden pressure ($kPa$).
+    :param energy_percentage: Energy percentage reaching the tip of
+                              the sampler.
+    :param borehole_diameter: Borehole diameter (mm).
+    :param rod_length: Length of SPT rod, defaults to 3.0 (m).
+    :param hammer_type: Hammer type.
+    :param sampler_type: Sampler type.
+    :param opc_method: Overburden pressure correction method.
+    :param dilatancy_corr_method: Dilatancy correction method.
+    :param foundation_size: Foundation size.
+    """
+    energy_correction = EnergyCorrection(
+        recorded_spt_n_value,
+        energy_percentage=energy_percentage,
+        borehole_diameter=borehole_diameter,
+        rod_length=rod_length,
+        hammer_type=hammer_type,
+        sampler_type=sampler_type,
+    )
+    std_spt_n_value = energy_correction.standardized_spt_n_value()
+    opc_corr = create_overburden_pressure_correction(
+        std_spt_n_value=std_spt_n_value, eop=eop, opc_method=opc_method
+    )
+    corr_spt_n_value = opc_corr.corrected_spt_n_value()
+
+    if dilatancy_corr_method is not None:
+        if dilatancy_corr_method == DilatancyCorrType.NON_WATER_AWARE:
+            dil_corr = DilatancyCorrection(corr_spt_n_value=corr_spt_n_value)
+            corr_spt_n_value = dil_corr.corrected_spt_n_value()
+        else:
+            dil_corr = DilatancyCorrection2(
+                corr_spt_n_value=corr_spt_n_value,
+                foundation_size=foundation_size,
+            )
+            corr_spt_n_value = dil_corr.corrected_spt_n_value()
+
+    return corr_spt_n_value
+
+
+@validate_params
 def create_overburden_pressure_correction(
         std_spt_n_value: float,
         eop: float,
-        opc_type: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
+        opc_method: Annotated[
+            OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
 ):
     """A factory function that encapsulates the creation of overburden
     pressure correction.
@@ -600,9 +702,9 @@ def create_overburden_pressure_correction(
     :param std_spt_n_value: SPT N-value standardized for field
                             procedures.
     :param eop: Effective overburden pressure ($kPa$).
-    :param opc_type: Overburden Pressure Correction type to apply.
+    :param opc_method: Overburden Pressure Correction type to apply.
     """
-    opc_type = OPCType(opc_type)
-    opc_class = _opctypes[opc_type]
+    opc_method = OPCType(opc_method)
+    opc_class = _opc_methods[opc_method]
     opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)
     return opc_corr

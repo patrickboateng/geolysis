@@ -14,7 +14,7 @@ from geolysis.spt import (
 def test_create_spt_correction_errors():
     with pytest.raises(ValidationError):
         create_overburden_pressure_correction(
-            std_spt_n_value=34, eop=100, opc_type="TERZAGHI"
+            std_spt_n_value=34, eop=100, opc_method="TERZAGHI"
         )
 
 
@@ -65,22 +65,20 @@ class TestEnergyCorrection:
         ],
         [
             (30, 0.6, 65.0, 3, HammerType.DONUT_1, SamplerType.STANDARD, 22.5),
-            (30, 0.6, 120.0, 5, HammerType.AUTOMATIC, SamplerType.NON_STANDARD,
-             37.5),
-            (
-            30, 0.6, 170.0, 7, HammerType.DONUT_2, SamplerType.STANDARD, 27.3),
+            (30, 0.6, 120.0, 5, HammerType.AUTOMATIC, SamplerType.NON_STANDARD, 37.5),
+            (30, 0.6, 170.0, 7, HammerType.DONUT_2, SamplerType.STANDARD, 27.3),
             (30, 0.6, 65.0, 12, HammerType.SAFETY, SamplerType.STANDARD, 27.5),
         ],
     )
     def test_energy_correction(
-            self,
-            rec_spt_n_val,
-            energy_percentage,
-            borehole_diameter,
-            rod_len,
-            hammer_type,
-            sampler_type,
-            expected,
+        self,
+        rec_spt_n_val,
+        energy_percentage,
+        borehole_diameter,
+        rod_len,
+        hammer_type,
+        sampler_type,
+        expected,
     ):
         energy_corr = EnergyCorrection(
             recorded_spt_n_value=rec_spt_n_val,
@@ -91,8 +89,7 @@ class TestEnergyCorrection:
             sampler_type=sampler_type,
         )
 
-        assert energy_corr.standardized_spt_n_value() == pytest.approx(
-            expected)
+        assert energy_corr.standardized_spt_n_value() == pytest.approx(expected)
 
     def test_errors(self):
         # Provided an invalid value for hammer_type
@@ -111,7 +108,7 @@ class TestGibbsHoltzOPC:
     )
     def test_correction(self, std_spt_n_value, eop, expected):
         opc_corr = create_overburden_pressure_correction(
-            std_spt_n_value=std_spt_n_value, eop=eop, opc_type="gibbs"
+            std_spt_n_value=std_spt_n_value, eop=eop, opc_method="gibbs"
         )
         assert opc_corr.corrected_spt_n_value() == pytest.approx(expected)
 
@@ -124,7 +121,7 @@ class TestBazaraaPeckOPC:
     )
     def test_correction(self, std_spt_n_value, eop, expected):
         opc_corr = create_overburden_pressure_correction(
-            std_spt_n_value=std_spt_n_value, eop=eop, opc_type="bazaraa"
+            std_spt_n_value=std_spt_n_value, eop=eop, opc_method="bazaraa"
         )
         assert opc_corr.corrected_spt_n_value() == pytest.approx(expected)
 
@@ -136,7 +133,7 @@ class TestPeckOPC:
     )
     def test_correction(self, std_spt_n_value, eop, expected):
         opc_corr = create_overburden_pressure_correction(
-            std_spt_n_value=std_spt_n_value, eop=eop, opc_type="peck"
+            std_spt_n_value=std_spt_n_value, eop=eop, opc_method="peck"
         )
         assert opc_corr.corrected_spt_n_value() == pytest.approx(expected)
 
@@ -148,7 +145,7 @@ class TestLiaoWhitmanOPC:
     )
     def test_correction(self, std_spt_n_value, eop, expected):
         opc_corr = create_overburden_pressure_correction(
-            std_spt_n_value=std_spt_n_value, eop=eop, opc_type="liao"
+            std_spt_n_value=std_spt_n_value, eop=eop, opc_method="liao"
         )
         assert opc_corr.corrected_spt_n_value() == pytest.approx(expected)
 
@@ -159,7 +156,7 @@ class TestSkemptonOPC:
     )
     def test_correction(self, std_spt_n_value, eop, expected):
         opc_corr = create_overburden_pressure_correction(
-            std_spt_n_value=std_spt_n_value, eop=eop, opc_type="skempton"
+            std_spt_n_value=std_spt_n_value, eop=eop, opc_method="skempton"
         )
         assert opc_corr.corrected_spt_n_value() == pytest.approx(expected)
 

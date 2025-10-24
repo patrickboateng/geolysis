@@ -38,7 +38,7 @@
 >>> from geolysis.spt import create_overburden_pressure_correction
 >>> opc_corr = create_overburden_pressure_correction(std_spt_n_value=23,
 ...                                                  eop=100, 
-...                                                  opc_type="gibbs")
+...                                                  opc_method="gibbs")
 >>> opc_corr.corrected_spt_n_value()
 23.7
 
@@ -54,5 +54,22 @@ Other available `opc_type` can be found in [OPCType][geolysis.spt.OPCType].
 >>> dil_corr = DilatancyCorrection(corr_spt_n_value=17.7)
 >>> dil_corr.corrected_spt_n_value()
 16.4
+
+```
+
+## Performing all corrections together
+
+```python   
+
+>>> from geolysis.spt import correct_spt_n_value
+>>> corrected_n = correct_spt_n_value(recorded_spt_n_value=30,
+...                                   energy_percentage=0.6,
+...                                   borehole_diameter=65.0,
+...                                   rod_length=3.0,
+...                                   eop=100,
+...                                   opc_method="gibbs",
+...                                   dilatancy_corr_method="non_water_aware")
+>>> corrected_n
+19.1
 
 ```
