@@ -113,6 +113,10 @@ plugins:
       repository: patrickboateng/geolysis
       branch: main
 
+  - gen-files:
+      scripts:
+        - scripts/gen_excel_func_docs.py
+
 markdown_extensions:
   - admonition
   - pymdownx.superfences
