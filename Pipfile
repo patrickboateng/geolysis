@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-mkdocs-gen-files = "*"
 func-validator = "*"
 
 [dev-packages]
@@ -19,6 +18,7 @@ mkdocs-git-committers-plugin-2 = "==2.5.0"
 mktestdocs = "==0.2.5"
 pytest-doctestplus = "==1.4.0"
 black = "25.9.0"
+mkdocs-gen-files = "*"
 
 [requires]
 python_version = "3.13"
