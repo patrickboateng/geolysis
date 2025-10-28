@@ -29,7 +29,7 @@ provided [here](https://github.com/geolysis-dev).
 > Microsoft AppSource Store using this installer
 > link: [https://appsource.microsoft.com/en-us/product/Office365/WA200009428](https://appsource.microsoft.com/en-us/product/Office365/WA200009428)
 
-![geolysis-excel-appsource](./geolysis-installer-appsource.png)
+[![geolysis-excel-appsource](./geolysis-installer-appsource.png)](https://appsource.microsoft.com/en-us/product/Office365/WA200009428)
 
 `geolysis` has only one project dependency which
 is [func-validator](https://github.com/patrickboateng/func-validator/)
