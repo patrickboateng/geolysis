@@ -24,6 +24,11 @@ The `geolysis` python package is among three other projects, `geolysis.excel`,
 `geolysis.gui`, and `geolysis.ai`. More details about these projects are
 provided [here](https://github.com/geolysis-dev).
 
+> [!IMPORTANT]
+> The `geolysis.excel` (an Excel Add-in), is available to install from the
+> Microsoft AppSource Store using this installer
+> link: [https://appsource.microsoft.com/en-us/product/Office365/WA200009428](https://appsource.microsoft.com/en-us/product/Office365/WA200009428)
+
 `geolysis` has only one project dependency which
 is [func-validator](https://github.com/patrickboateng/func-validator/)
 for validating `function` (and `method`) arguments.
