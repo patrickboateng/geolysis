@@ -9,38 +9,6 @@ repo_name: geolysis
 repo_url: https://github.com/patrickboateng/geolysis/
 edit_uri: edit/main/docs
 
-nav:
-  - Home: index.md
-  - User Guide:
-      - user_guide/index.md
-      - Allowable Bearing Capacity: user_guide/allowable-bearing-capacity.md
-      - Ultimate Bearing Capacity: user_guide/ultimate-bearing-capacity.md
-      - Soil Classification: user_guide/soil-classifier.md
-      - SPT: user_guide/spt.md
-  - API Reference:
-      - reference/index.md
-      - Allowable Bearing Capacity: reference/allowable-bearing-capacity.md
-      - Ultimate Bearing Capacity: reference/ultimate-bearing-capacity.md
-      - Foundation: reference/foundation.md
-      - Soil Classification: reference/soil-classifier.md
-      - SPT: reference/spt.md
-      - Utils: reference/utils.md
-  - Excel Functions Reference:
-      - excel/functions/index.md
-      - AASHTO: excel/functions/aashto.md
-      - USCS: excel/functions/uscs.md
-      - ALLOWABLE_BEARING_CAPACITY: excel/functions/allowable-bearing-capacity.md
-      - ULTIMATE_BEARING_CAPACITY: excel/functions/ultimate-bearing-capacity.md
-      - SPT_N_DESIGN: excel/functions/spt-n-design.md
-      - SPT_ENERGY_CORRECTION: excel/functions/spt-energy-correction.md
-      - SPT_OVERBURDEN_PRESSURE_CORRECTION: excel/functions/spt-overburden-pressure-correction.md
-      - SPT_DILATANCY_CORRECTION: excel/functions/spt-dilatancy-correction.md
-  - Formula Explanations:
-      - formulas/index.md
-      - Allowable Bearing Capacity: formulas/allowable-bearing-capacity.md
-      - Ultimate Bearing Capacity: formulas/ultimate-bearing-capacity.md
-      - SPT: formulas/spt.md
-
 theme:
   name: material
   custom_dir: docs/overrides
@@ -89,6 +57,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
+          paths: [ "." ]
           options:
             preload_modules: [ "geolysis" ]
             docstring_style: sphinx
@@ -112,10 +81,12 @@ plugins:
   - git-committers:
       repository: patrickboateng/geolysis
       branch: main
+  - awesome-nav
 
   - gen-files:
       scripts:
-        - scripts/gen_excel_func_docs.py
+        - scripts/docs/gen_api_docs.py
+        - scripts/docs/gen_excel_func_docs.py
 
 markdown_extensions:
   - admonition
