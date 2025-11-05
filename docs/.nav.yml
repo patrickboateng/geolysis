@@ -1,0 +1,6 @@
+nav:
+  - Home: index.md
+  - User Guide: user_guide
+  - Reference: reference
+  - Excel Functions Reference: excel/functions
+  - Formula Explanations: formulas
