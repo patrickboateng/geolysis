@@ -55,15 +55,6 @@ python -c "import geolysis; print(geolysis.__version__)" # python3 for unix syst
 You'll see the version number if ``geolysis`` is installed and an error message
 otherwise.
 
-## Python API
-
-- [allowable_bearing_capacity](reference/allowable-bearing-capacity.md)
-- [ultimate_bearing_capacity](reference/ultimate-bearing-capacity.md)
-- [foundation](reference/foundation.md)
-- [soil_classifier](reference/soil-classifier.md)
-- [spt](reference/spt.md)
-- [utils](reference/utils.md)
-
 ## Imports
 
 ### Bearing Capacity
