@@ -28,8 +28,10 @@ __all__ = [
     "LiaoWhitmanOPC",
     "SkemptonOPC",
     "DilatancyCorrection",
+    "DilatancyCorrection2",
     "OPCType",
     "create_overburden_pressure_correction",
+    "correct_spt_n_value",
 ]
 
 
