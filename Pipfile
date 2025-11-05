@@ -19,6 +19,8 @@ mktestdocs = "==0.2.5"
 pytest-doctestplus = "==1.4.0"
 black = "25.9.0"
 mkdocs-gen-files = "*"
+mkdocs-awesome-nav = "*"
+mkdocs-autoapi = { extras = ["python"], version = "*" }
 
 [requires]
 python_version = "3.13"
