@@ -1,5 +1,5 @@
 import math
-from math import exp, inf, isclose, log10, pi, sqrt, isinf, atan, nan, isnan
+from math import atan, exp, inf, isclose, isinf, isnan, log10, nan, pi, sqrt
 from statistics import fmean as mean
 
 __all__ = [

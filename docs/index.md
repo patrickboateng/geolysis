@@ -68,7 +68,7 @@ from geolysis.bearing_capacity.abc import create_abc_4_cohesionless_soils
 #### Ultimate Bearing Capacity (UBC)
 
 ```python
-from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
+from geolysis.bearing_capacity.ubc import create_ubc_4_all_soils
 ```
 
 ### Foundation

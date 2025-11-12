@@ -1,6 +1,6 @@
 import pytest
 
-from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
+from geolysis.bearing_capacity.ubc import create_ubc_4_all_soils
 from geolysis.utils import inf
 
 
@@ -71,7 +71,7 @@ class TestTerzaghiUBC4SquareFooting:
         apply_loc_shear,
         expected,
     ):
-        ubc = create_ubc_4_all_soil_types(
+        ubc = create_ubc_4_all_soils(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,
@@ -112,7 +112,7 @@ class TestTerzaghiUBC4CircFooting:
         apply_loc_shear,
         expected,
     ):
-        ubc = create_ubc_4_all_soil_types(
+        ubc = create_ubc_4_all_soils(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,
@@ -155,7 +155,7 @@ class TestTerzaghiUBC4RectFooting:
         apply_loc_shear,
         expected,
     ):
-        ubc = create_ubc_4_all_soil_types(
+        ubc = create_ubc_4_all_soils(
             friction_angle=friction_angle,
             cohesion=cohesion,
             moist_unit_wgt=moist_unit_wgt,

@@ -1,5 +1,5 @@
 from geolysis.foundation import Foundation
-from geolysis.utils import round_, isinf
+from geolysis.utils import isinf, round_
 
 from ._core import AllowableBearingCapacity, AllowableBearingCapacityResult
 

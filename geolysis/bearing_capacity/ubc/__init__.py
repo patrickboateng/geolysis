@@ -1,5 +1,5 @@
 import enum
-from typing import Optional, Annotated
+from typing import Annotated, Optional
 
 from func_validator import MustBeMemberOf, validate_params
 
@@ -22,7 +22,7 @@ __all__ = [
     "TerzaghiUBC4SquareFooting",
     "VesicUltimateBearingCapacity",
     "UBCType",
-    "create_ubc_4_all_soil_types",
+    "create_ubc_4_all_soils",
 ]
 
 
@@ -52,7 +52,7 @@ ubc_classes = {
 
 
 @validate_params
-def create_ubc_4_all_soil_types(
+def create_ubc_4_all_soils(
     friction_angle: float,
     cohesion: float,
     moist_unit_wgt: float,
@@ -98,6 +98,7 @@ def create_ubc_4_all_soil_types(
     :raises ValidationError: Raised when length is not provided for a
                              rectangular footing.
     """
+
     ubc_type = UBCType(ubc_type)
 
     # exception from create_foundation will automatically propagate

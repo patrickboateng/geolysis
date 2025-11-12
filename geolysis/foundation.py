@@ -1,17 +1,17 @@
 import enum
 from abc import ABC, abstractmethod
-from typing import Optional, TypeVar, Annotated
+from typing import Annotated, Optional, TypeVar
 
 from func_validator import (
-    validate_params,
-    MustBePositive,
-    MustBeNonNegative,
+    DependsOn,
     MustBeBetween,
     MustBeMemberOf,
-    DependsOn,
+    MustBeNonNegative,
+    MustBePositive,
+    validate_params,
 )
 
-from .utils import AbstractStrEnum, inf, isclose, pi, round_, isinf
+from .utils import AbstractStrEnum, inf, isclose, isinf, pi, round_
 
 __all__ = [
     "create_foundation",

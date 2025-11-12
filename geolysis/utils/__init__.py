@@ -2,8 +2,8 @@ import enum
 import functools
 from typing import Callable
 
-from .math import *
 from . import math as m
+from .math import *
 
 __all__ = ["AbstractStrEnum", "round_"] + m.__all__
 

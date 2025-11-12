@@ -1,13 +1,13 @@
 import enum
 from dataclasses import dataclass
-from typing import Annotated, Sequence, Optional
+from typing import Annotated, Optional, Sequence
 
 from func_validator import (
-    validate_params,
-    MustBeNonNegative,
-    MustBePositive,
     DependsOn,
     MustBeLessThanOrEqual,
+    MustBeNonNegative,
+    MustBePositive,
+    validate_params,
 )
 
 from .utils import isclose, round_

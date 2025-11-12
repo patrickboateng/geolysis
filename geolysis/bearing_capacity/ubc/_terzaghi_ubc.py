@@ -1,13 +1,5 @@
-from geolysis.utils import (
-    cosdeg,
-    cotdeg,
-    deg2rad,
-    exp,
-    isclose,
-    pi,
-    round_,
-    tandeg,
-)
+from geolysis.utils import cosdeg, cotdeg, deg2rad, exp, isclose, pi, round_, tandeg
+
 from ._core import UltimateBearingCapacity
 
 __all__ = [
@@ -26,7 +18,7 @@ class TerzaghiBearingCapacityFactors:
         if isclose(friction_angle, 0.0):
             return 5.7
         return cotdeg(friction_angle) * (
-                TerzaghiBearingCapacityFactors.n_q(friction_angle) - 1.0
+            TerzaghiBearingCapacityFactors.n_q(friction_angle) - 1.0
         )
 
     @staticmethod
@@ -39,8 +31,7 @@ class TerzaghiBearingCapacityFactors:
     @staticmethod
     @round_(ndigits=2)
     def n_gamma(friction_angle: float) -> float:
-        return (TerzaghiBearingCapacityFactors.n_q(
-            friction_angle) - 1.0) * tandeg(
+        return (TerzaghiBearingCapacityFactors.n_q(friction_angle) - 1.0) * tandeg(
             1.4 * friction_angle
         )
 
@@ -75,9 +66,9 @@ class TerzaghiUBC4StripFooting(TerzaghiUltimateBearingCapacity):
     def _bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for strip footing."""
         return (
-                self._cohesion_term(1.0)
-                + self._surcharge_term()
-                + self._embedment_term(0.5)
+            self._cohesion_term(1.0)
+            + self._surcharge_term()
+            + self._embedment_term(0.5)
         )
 
 
@@ -93,9 +84,9 @@ class TerzaghiUBC4CircularFooting(TerzaghiUltimateBearingCapacity):
     def _bearing_capacity(self) -> float:
         """Calculates ultimate bearing capacity for circular footing."""
         return (
-                self._cohesion_term(1.3)
-                + self._surcharge_term()
-                + self._embedment_term(0.3)
+            self._cohesion_term(1.3)
+            + self._surcharge_term()
+            + self._embedment_term(0.3)
         )
 
 
@@ -110,9 +101,9 @@ class TerzaghiUBC4SquareFooting(TerzaghiUltimateBearingCapacity):
     def _bearing_capacity(self):
         """Calcalates ultimate bearing capacity for square footing."""
         return (
-                self._cohesion_term(1.3)
-                + self._surcharge_term()
-                + self._embedment_term(0.4)
+            self._cohesion_term(1.3)
+            + self._surcharge_term()
+            + self._embedment_term(0.4)
         )
 
 
@@ -133,7 +124,7 @@ class TerzaghiUBC4RectangularFooting(TerzaghiUltimateBearingCapacity):
         emb_coef = (1.0 - 0.2 * (width / length)) / 2.0
 
         return (
-                self._cohesion_term(coh_coef)
-                + self._surcharge_term()
-                + self._embedment_term(emb_coef)
+            self._cohesion_term(coh_coef)
+            + self._surcharge_term()
+            + self._embedment_term(emb_coef)
         )

@@ -2,14 +2,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Annotated
 
-from func_validator import (
-    validate_params,
-    MustBeNonNegative,
-    MustBePositive,
-)
+from func_validator import MustBeNonNegative, MustBePositive, validate_params
 
 from geolysis.foundation import Foundation
-from geolysis.utils import arctandeg, round_, tandeg, isinf
+from geolysis.utils import arctandeg, isinf, round_, tandeg
 
 
 @dataclass(frozen=True, slots=True)
@@ -181,6 +177,7 @@ class UltimateBearingCapacity(ABC):
         if not isinf(water_level):
             if water_level < depth:
                 d_1 = water_level
+                # d2 is the distance from the footing base to water level
                 d_2 = depth - d_1
                 unit_wgt = self.saturated_unit_wgt - 9.81
                 eop = self.moist_unit_wgt * d_1 + unit_wgt * d_2
@@ -199,6 +196,7 @@ class UltimateBearingCapacity(ABC):
             if water_level < depth:
                 unit_wgt = wgt
             else:
+                # d is the distance from the footing base to water level
                 d = water_level - depth
                 if d <= width:
                     unit_wgt = wgt + (d / width) * (self.moist_unit_wgt - wgt)

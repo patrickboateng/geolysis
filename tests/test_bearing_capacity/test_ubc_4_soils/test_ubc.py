@@ -2,13 +2,13 @@ import pytest
 
 from geolysis.exceptions import ValidationError
 
-from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
+from geolysis.bearing_capacity.ubc import create_ubc_4_all_soils
 
 
 def test_create_ultimate_bearing_capacity_errors():
     # Invalid ubc_type
     with pytest.raises(ValidationError):
-        create_ubc_4_all_soil_types(
+        create_ubc_4_all_soils(
             friction_angle=20.0,
             cohesion=20.0,
             moist_unit_wgt=18.0,

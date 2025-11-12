@@ -85,7 +85,7 @@ $ pip install geolysis
 - **Ultimate Bearing Capacity (UBC)**
 
   ```python
-  from geolysis.bearing_capacity.ubc import create_ubc_4_all_soil_types
+  from geolysis.bearing_capacity.ubc import create_ubc_4_all_soils
   ```
 
 ### Foundation

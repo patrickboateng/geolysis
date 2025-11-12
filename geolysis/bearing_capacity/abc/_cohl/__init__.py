@@ -1,5 +1,5 @@
 import enum
-from typing import Optional, Annotated
+from typing import Annotated, Optional
 
 from func_validator import MustBeMemberOf, validate_params
 

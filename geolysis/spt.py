@@ -1,21 +1,21 @@
 import enum
 from abc import ABC, abstractmethod
-from typing import Annotated, Final, Sequence, Optional, Final
+from typing import Annotated, Final, Optional, Sequence
 
 from func_validator import (
-    validate_params,
+    DependsOn,
     MustBeBetween,
-    MustBePositive,
+    MustBeGreaterThanOrEqual,
     MustBeMemberOf,
     MustBeNonNegative,
-    MustBeGreaterThanOrEqual,
+    MustBePositive,
     MustHaveLengthGreaterThan,
     MustHaveValuesBetween,
-    DependsOn,
+    validate_params,
 )
 
-from .utils import AbstractStrEnum, isclose, log10, mean, round_, sqrt, isinf
 from .foundation import Foundation
+from .utils import AbstractStrEnum, isclose, isinf, log10, mean, round_, sqrt
 
 __all__ = [
     "SPT",
@@ -65,9 +65,9 @@ class SPT:
     """
 
     def __init__(
-            self,
-            corrected_spt_n_values: Sequence[float],
-            method: SPTDesignMethod = "wgt",
+        self,
+        corrected_spt_n_values: Sequence[float],
+        method: SPTDesignMethod = "wgt",
     ):
         """
         :param corrected_spt_n_values: Corrected SPT N-values within the
@@ -86,12 +86,12 @@ class SPT:
     @corrected_spt_n_values.setter
     @validate_params
     def corrected_spt_n_values(
-            self,
-            corrected_spt_n_values: Annotated[
-                Sequence[float],
-                MustHaveLengthGreaterThan(1),
-                MustHaveValuesBetween(min_value=1.0, max_value=100.0),
-            ],
+        self,
+        corrected_spt_n_values: Annotated[
+            Sequence[float],
+            MustHaveLengthGreaterThan(1),
+            MustHaveValuesBetween(min_value=1.0, max_value=100.0),
+        ],
     ) -> None:
         self._corrected_spt_n_values = corrected_spt_n_values
 
@@ -119,7 +119,7 @@ class SPT:
         total_wgt = 0.0
 
         for i, corr_spt_n_val in enumerate(vals, start=1):
-            wgt = 1 / i ** 2
+            wgt = 1 / i**2
             total_wgted_spt += wgt * corr_spt_n_val
             total_wgt += wgt
 
@@ -231,14 +231,14 @@ class EnergyCorrection:
     }
 
     def __init__(
-            self,
-            recorded_spt_n_value: int,
-            *,
-            energy_percentage=0.6,
-            borehole_diameter=65.0,
-            rod_length=3.0,
-            hammer_type=HammerType.DONUT_1,
-            sampler_type=SamplerType.STANDARD,
+        self,
+        recorded_spt_n_value: int,
+        *,
+        energy_percentage=0.6,
+        borehole_diameter=65.0,
+        rod_length=3.0,
+        hammer_type=HammerType.DONUT_1,
+        sampler_type=SamplerType.STANDARD,
     ):
         """
         :param recorded_spt_n_value: Recorded SPT N-value from field.
@@ -265,9 +265,8 @@ class EnergyCorrection:
     @recorded_spt_n_value.setter
     @validate_params
     def recorded_spt_n_value(
-            self,
-            recorded_spt_n_value: Annotated[
-                int, MustBeBetween(min_value=0, max_value=100)],
+        self,
+        recorded_spt_n_value: Annotated[int, MustBeBetween(min_value=0, max_value=100)],
     ) -> None:
         self._recorded_spt_value = recorded_spt_n_value
 
@@ -279,10 +278,10 @@ class EnergyCorrection:
     @energy_percentage.setter
     @validate_params
     def energy_percentage(
-            self,
-            energy_percentage: Annotated[
-                float, MustBeBetween(min_value=0.0, max_value=1.0)
-            ],
+        self,
+        energy_percentage: Annotated[
+            float, MustBeBetween(min_value=0.0, max_value=1.0)
+        ],
     ) -> None:
         self._energy_percentage = energy_percentage
 
@@ -294,10 +293,10 @@ class EnergyCorrection:
     @borehole_diameter.setter
     @validate_params
     def borehole_diameter(
-            self,
-            borehole_diameter: Annotated[
-                float, MustBeBetween(min_value=65.0, max_value=200.0)
-            ],
+        self,
+        borehole_diameter: Annotated[
+            float, MustBeBetween(min_value=65.0, max_value=200.0)
+        ],
     ) -> None:
         self._borehole_diameter = borehole_diameter
 
@@ -318,8 +317,8 @@ class EnergyCorrection:
     @hammer_type.setter
     @validate_params
     def hammer_type(
-            self,
-            hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)],
+        self,
+        hammer_type: Annotated[HammerType, MustBeMemberOf(HammerType)],
     ):
         self._hammer_type = hammer_type
 
@@ -330,8 +329,7 @@ class EnergyCorrection:
     @sampler_type.setter
     @validate_params
     def sampler_type(
-            self,
-            sampler_type: Annotated[SamplerType, MustBeMemberOf(SamplerType)]
+        self, sampler_type: Annotated[SamplerType, MustBeMemberOf(SamplerType)]
     ):
         self._sampler_type = sampler_type
 
@@ -380,10 +378,10 @@ class EnergyCorrection:
         `ENERGY`: 0.6, 0.55, etc
         """
         numerator = (
-                self.hammer_efficiency
-                * self.borehole_diameter_correction
-                * self.sampler_correction
-                * self.rod_length_correction
+            self.hammer_efficiency
+            * self.borehole_diameter_correction
+            * self.sampler_correction
+            * self.rod_length_correction
         )
         return numerator / self.energy_percentage
 
@@ -424,10 +422,10 @@ class OPC(ABC):
     @std_spt_n_value.setter
     @validate_params
     def std_spt_n_value(
-            self,
-            std_spt_n_value: Annotated[
-                float, MustBeBetween(min_value=0.0, max_value=100.0)
-            ],
+        self,
+        std_spt_n_value: Annotated[
+            float, MustBeBetween(min_value=0.0, max_value=100.0)
+        ],
     ):
         self._std_spt_n_value = std_spt_n_value
 
@@ -457,9 +455,8 @@ class GibbsHoltzOPC(OPC):
     @eop.setter
     @validate_params
     def eop(
-            self,
-            eop: Annotated[
-                float, MustBeBetween(min_value=0.0, max_value=280.0)],
+        self,
+        eop: Annotated[float, MustBeBetween(min_value=0.0, max_value=280.0)],
     ):
         self._eop = eop
 
@@ -552,10 +549,10 @@ class DilatancyCorrection:
     @corr_spt_n_value.setter
     @validate_params
     def corr_spt_n_value(
-            self,
-            corr_spt_n_value: Annotated[
-                float, MustBeBetween(min_value=0.0, max_value=100.0)
-            ],
+        self,
+        corr_spt_n_value: Annotated[
+            float, MustBeBetween(min_value=0.0, max_value=100.0)
+        ],
     ):
         self._corr_spt_n_value = corr_spt_n_value
 
@@ -631,22 +628,22 @@ _opc_methods: Final = {
 
 @validate_params
 def correct_spt_n_value(
-        recorded_spt_n_value: int,
-        *,
-        eop,
-        energy_percentage=0.6,
-        borehole_diameter=65.0,
-        rod_length=3.0,
-        hammer_type=HammerType.DONUT_1,
-        sampler_type=SamplerType.STANDARD,
-        opc_method: OPCType = "gibbs",
-        dilatancy_corr_method: Annotated[
-            Optional[DilatancyCorrType], MustBeMemberOf(DilatancyCorrType)
-        ] = None,
-        foundation_size: Annotated[
-            Foundation,
-            DependsOn(dilatancy_corr_method=DilatancyCorrType.WATER_AWARE),
-        ] = None,
+    recorded_spt_n_value: int,
+    *,
+    eop,
+    energy_percentage=0.6,
+    borehole_diameter=65.0,
+    rod_length=3.0,
+    hammer_type=HammerType.DONUT_1,
+    sampler_type=SamplerType.STANDARD,
+    opc_method: OPCType = "gibbs",
+    dilatancy_corr_method: Annotated[
+        Optional[DilatancyCorrType], MustBeMemberOf(DilatancyCorrType)
+    ] = None,
+    foundation_size: Annotated[
+        Foundation,
+        DependsOn(dilatancy_corr_method=DilatancyCorrType.WATER_AWARE),
+    ] = None,
 ) -> float:
     """SPT N-value correction for overburden pressure and groundwater
     level.
@@ -693,10 +690,9 @@ def correct_spt_n_value(
 
 @validate_params
 def create_overburden_pressure_correction(
-        std_spt_n_value: float,
-        eop: float,
-        opc_method: Annotated[
-            OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
+    std_spt_n_value: float,
+    eop: float,
+    opc_method: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
 ):
     """A factory function that encapsulates the creation of overburden
     pressure correction.
