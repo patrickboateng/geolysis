@@ -630,12 +630,12 @@ _opc_methods: Final = {
 def correct_spt_n_value(
     recorded_spt_n_value: int,
     *,
-    eop,
-    energy_percentage=0.6,
-    borehole_diameter=65.0,
-    rod_length=3.0,
-    hammer_type=HammerType.DONUT_1,
-    sampler_type=SamplerType.STANDARD,
+    eop: float,
+    energy_percentage: float = 0.6,
+    borehole_diameter: float = 65.0,
+    rod_length: float = 3.0,
+    hammer_type: HammerType = HammerType.DONUT_1,
+    sampler_type: SamplerType = SamplerType.STANDARD,
     opc_method: OPCType = "gibbs",
     dilatancy_corr_method: Annotated[
         Optional[DilatancyCorrType], MustBeMemberOf(DilatancyCorrType)
