@@ -29,7 +29,7 @@ __all__ = [
     "SkemptonOPC",
     "DilatancyCorrection",
     "DilatancyCorrection2",
-    "OPCType",
+    "OPCMethod",
     "create_overburden_pressure_correction",
     "correct_spt_n_value",
 ]
@@ -234,11 +234,11 @@ class EnergyCorrection:
         self,
         recorded_spt_n_value: int,
         *,
-        energy_percentage=0.6,
-        borehole_diameter=65.0,
-        rod_length=3.0,
-        hammer_type=HammerType.DONUT_1,
-        sampler_type=SamplerType.STANDARD,
+        energy_percentage: float = 0.6,
+        borehole_diameter: float = 65.0,
+        rod_length: float = 3.0,
+        hammer_type: HammerType = HammerType.DONUT_1,
+        sampler_type: SamplerType = SamplerType.STANDARD,
     ):
         """
         :param recorded_spt_n_value: Recorded SPT N-value from field.
@@ -589,7 +589,7 @@ class DilatancyCorrection2(DilatancyCorrection):
         return correction * self.corr_spt_n_value
 
 
-class OPCType(AbstractStrEnum):
+class OPCMethod(AbstractStrEnum):
     """Enumeration of overburden pressure correction (OPC) methods.
 
     Each member represents a method used to correct SPT results
@@ -612,17 +612,17 @@ class OPCType(AbstractStrEnum):
     """Skempton method for overburden pressure correction."""
 
 
-class DilatancyCorrType(AbstractStrEnum):
+class DilatancyCorrectionMethod(AbstractStrEnum):
     NON_WATER_AWARE = enum.auto()
     WATER_AWARE = enum.auto()
 
 
 _opc_methods: Final = {
-    OPCType.GIBBS: GibbsHoltzOPC,
-    OPCType.BAZARAA: BazaraaPeckOPC,
-    OPCType.PECK: PeckOPC,
-    OPCType.LIAO: LiaoWhitmanOPC,
-    OPCType.SKEMPTON: SkemptonOPC,
+    OPCMethod.GIBBS: GibbsHoltzOPC,
+    OPCMethod.BAZARAA: BazaraaPeckOPC,
+    OPCMethod.PECK: PeckOPC,
+    OPCMethod.LIAO: LiaoWhitmanOPC,
+    OPCMethod.SKEMPTON: SkemptonOPC,
 }
 
 
@@ -636,13 +636,13 @@ def correct_spt_n_value(
     rod_length: float = 3.0,
     hammer_type: HammerType = HammerType.DONUT_1,
     sampler_type: SamplerType = SamplerType.STANDARD,
-    opc_method: OPCType = "gibbs",
+    opc_method: OPCMethod = "gibbs",
     dilatancy_corr_method: Annotated[
-        Optional[DilatancyCorrType], MustBeMemberOf(DilatancyCorrType)
+        Optional[DilatancyCorrectionMethod], MustBeMemberOf(DilatancyCorrectionMethod)
     ] = None,
     foundation_size: Annotated[
         Foundation,
-        DependsOn(dilatancy_corr_method=DilatancyCorrType.WATER_AWARE),
+        DependsOn(dilatancy_corr_method=DilatancyCorrectionMethod.WATER_AWARE),
     ] = None,
 ) -> float:
     """SPT N-value correction for overburden pressure and groundwater
@@ -675,7 +675,7 @@ def correct_spt_n_value(
     corr_spt_n_value = opc_corr.corrected_spt_n_value()
 
     if dilatancy_corr_method is not None:
-        if dilatancy_corr_method == DilatancyCorrType.NON_WATER_AWARE:
+        if dilatancy_corr_method == DilatancyCorrectionMethod.NON_WATER_AWARE:
             dil_corr = DilatancyCorrection(corr_spt_n_value=corr_spt_n_value)
             corr_spt_n_value = dil_corr.corrected_spt_n_value()
         else:
@@ -692,7 +692,7 @@ def correct_spt_n_value(
 def create_overburden_pressure_correction(
     std_spt_n_value: float,
     eop: float,
-    opc_method: Annotated[OPCType | str, MustBeMemberOf(OPCType)] = "gibbs",
+    opc_method: Annotated[OPCMethod | str, MustBeMemberOf(OPCMethod)] = "gibbs",
 ):
     """A factory function that encapsulates the creation of overburden
     pressure correction.
@@ -702,7 +702,7 @@ def create_overburden_pressure_correction(
     :param eop: Effective overburden pressure ($kPa$).
     :param opc_method: Overburden Pressure Correction type to apply.
     """
-    opc_method = OPCType(opc_method)
+    opc_method = OPCMethod(opc_method)
     opc_class = _opc_methods[opc_method]
     opc_corr = opc_class(std_spt_n_value=std_spt_n_value, eop=eop)
     return opc_corr
