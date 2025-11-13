@@ -80,7 +80,7 @@ class TestTerzaghiUBC4SquareFooting:
             ground_water_level=water_level,
             shape="square",
             apply_local_shear=apply_loc_shear,
-            ubc_type="terzaghi",
+            ubc_method="terzaghi",
         )
         actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)
@@ -121,7 +121,7 @@ class TestTerzaghiUBC4CircFooting:
             ground_water_level=water_level,
             shape="circle",
             apply_local_shear=apply_loc_shear,
-            ubc_type="terzaghi",
+            ubc_method="terzaghi",
         )
         actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)
@@ -165,7 +165,7 @@ class TestTerzaghiUBC4RectFooting:
             ground_water_level=water_level,
             shape="rectangle",
             apply_local_shear=apply_loc_shear,
-            ubc_type="terzaghi",
+            ubc_method="terzaghi",
         )
         actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)

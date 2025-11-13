@@ -21,12 +21,12 @@ __all__ = [
     "TerzaghiUBC4RectangularFooting",
     "TerzaghiUBC4SquareFooting",
     "VesicUltimateBearingCapacity",
-    "UBCType",
+    "UBCMethod",
     "create_ubc_4_all_soils",
 ]
 
 
-class UBCType(AbstractStrEnum):
+class UBCMethod(AbstractStrEnum):
     """Enumeration of available ultimate bearing capacity methods.
 
     Each member represents a different method for determining
@@ -41,13 +41,13 @@ class UBCType(AbstractStrEnum):
 
 
 ubc_classes = {
-    UBCType.TERZAGHI: {
+    UBCMethod.TERZAGHI: {
         Shape.STRIP: TerzaghiUBC4StripFooting,
         Shape.CIRCLE: TerzaghiUBC4CircularFooting,
         Shape.SQUARE: TerzaghiUBC4SquareFooting,
         Shape.RECTANGLE: TerzaghiUBC4RectangularFooting,
     },
-    UBCType.VESIC: VesicUltimateBearingCapacity,
+    UBCMethod.VESIC: VesicUltimateBearingCapacity,
 }
 
 
@@ -66,7 +66,7 @@ def create_ubc_4_all_soils(
     load_angle: float = 0.0,
     apply_local_shear: bool = False,
     shape: Shape | str = "square",
-    ubc_type: Annotated[UBCType | str, MustBeMemberOf(UBCType)] = "vesic",
+    ubc_method: Annotated[UBCMethod | str, MustBeMemberOf(UBCMethod)] = "vesic",
 ) -> UltimateBearingCapacity:
     r"""A factory function that encapsulate the creation of ultimate
     bearing capacity.
@@ -89,7 +89,7 @@ def create_ubc_4_all_soils(
     :param apply_local_shear: Indicate whether bearing capacity failure
                               is general or local shear failure.
     :param shape: Shape of foundation footing.
-    :param ubc_type: Type of allowable bearing capacity calculation to
+    :param ubc_method: Type of allowable bearing capacity calculation to
                      apply.
 
     :raises ValidationError: Raised if ubc_type is not supported.
@@ -99,7 +99,7 @@ def create_ubc_4_all_soils(
                              rectangular footing.
     """
 
-    ubc_type = UBCType(ubc_type)
+    ubc_method = UBCMethod(ubc_method)
 
     # exception from create_foundation will automatically propagate
     # no need to catch and handle it.
@@ -112,10 +112,10 @@ def create_ubc_4_all_soils(
         ground_water_level=ground_water_level,
         shape=shape,
     )
-    ubc_class = ubc_classes[ubc_type]
+    ubc_class = ubc_classes[ubc_method]
 
-    if ubc_type == UBCType.TERZAGHI:
-        ubc_class = ubc_classes[ubc_type][fnd_size.footing_shape]
+    if ubc_method == UBCMethod.TERZAGHI:
+        ubc_class = ubc_classes[ubc_method][fnd_size.footing_shape]
 
     return ubc_class(
         friction_angle=friction_angle,

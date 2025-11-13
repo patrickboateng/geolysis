@@ -15,5 +15,5 @@ def test_create_ultimate_bearing_capacity_errors():
             depth=1.5,
             width=2.0,
             shape="square",
-            ubc_type="BOWLES",
+            ubc_method="BOWLES",
         )

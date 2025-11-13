@@ -12,7 +12,7 @@ def test_create_allowable_bearing_capacity_errors():
             tol_settlement=20,
             depth=1.5,
             width=1.2,
-            abc_type="HANSEN",
+            abc_method="HANSEN",
         )
 
     # Invalid foundation_type provided
@@ -22,6 +22,6 @@ def test_create_allowable_bearing_capacity_errors():
             tol_settlement=20,
             depth=1.5,
             width=1.2,
-            abc_type="BOWLES",
+            abc_method="BOWLES",
             foundation_type="COMBINED",
         )

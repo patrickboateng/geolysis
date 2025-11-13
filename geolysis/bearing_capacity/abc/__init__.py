@@ -1,5 +1,5 @@
 from ._cohl import (
-    ABCType,
+    ABCMethod,
     BowlesABC4MatFoundation,
     BowlesABC4PadFoundation,
     MeyerhofABC4MatFoundation,
@@ -16,6 +16,6 @@ __all__ = [
     "MeyerhofABC4MatFoundation",
     "TerzaghiABC4PadFoundation",
     "TerzaghiABC4MatFoundation",
-    "ABCType",
+    "ABCMethod",
     "create_abc_4_cohesionless_soils",
 ]

@@ -12,7 +12,7 @@ from .meyerhof_abc import MeyerhofABC4MatFoundation, MeyerhofABC4PadFoundation
 from .terzaghi_abc import TerzaghiABC4MatFoundation, TerzaghiABC4PadFoundation
 
 
-class ABCType(AbstractStrEnum):
+class ABCMethod(AbstractStrEnum):
     """Enumeration of allowable bearing capacity calculation methods.
 
     Each member represents a different method for determining
@@ -30,15 +30,15 @@ class ABCType(AbstractStrEnum):
 
 
 abc_classes = {
-    ABCType.BOWLES: {
+    ABCMethod.BOWLES: {
         FoundationType.PAD: BowlesABC4PadFoundation,
         FoundationType.MAT: BowlesABC4MatFoundation,
     },
-    ABCType.MEYERHOF: {
+    ABCMethod.MEYERHOF: {
         FoundationType.PAD: MeyerhofABC4PadFoundation,
         FoundationType.MAT: MeyerhofABC4MatFoundation,
     },
-    ABCType.TERZAGHI: {
+    ABCMethod.TERZAGHI: {
         FoundationType.PAD: TerzaghiABC4PadFoundation,
         FoundationType.MAT: TerzaghiABC4MatFoundation,
     },
@@ -56,7 +56,7 @@ def create_abc_4_cohesionless_soils(
     ground_water_level: float = inf,
     shape: Shape | str = "square",
     foundation_type: FoundationType | str = "pad",
-    abc_type: Annotated[ABCType | str, MustBeMemberOf(ABCType)] = "bowles",
+    abc_method: Annotated[ABCMethod | str, MustBeMemberOf(ABCMethod)] = "bowles",
 ) -> AllowableBearingCapacity:
     r"""A factory function that encapsulate the creation of  allowable
      bearing capacities.
@@ -71,10 +71,10 @@ def create_abc_4_cohesionless_soils(
     :param ground_water_level: Depth of water below ground level (m).
     :param shape: Shape of foundation footing
     :param foundation_type: Type of foundation.
-    :param abc_type: Type of allowable bearing capacity calculation to
+    :param abc_method: Type of allowable bearing capacity calculation to
                      apply.
     """
-    abc_type = ABCType(abc_type)
+    abc_method = ABCMethod(abc_method)
     foundation_type = FoundationType(foundation_type)
 
     # exception from create_foundation will automaatically propagate
@@ -88,7 +88,7 @@ def create_abc_4_cohesionless_soils(
         foundation_type=foundation_type,
         shape=shape,
     )
-    abc_class = abc_classes[abc_type][foundation_type]
+    abc_class = abc_classes[abc_method][foundation_type]
 
     return abc_class(
         corrected_spt_n_value=corrected_spt_n_value,

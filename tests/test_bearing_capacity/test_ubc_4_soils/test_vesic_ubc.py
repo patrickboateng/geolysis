@@ -44,7 +44,7 @@ class TestVesicUBC:
             length=length,
             eccentricity=eccentricity,
             shape=shape,
-            ubc_type="vesic",
+            ubc_method="vesic",
         )
         actual = ubc.ultimate_bearing_capacity()
         assert actual == pytest.approx(expected, 0.01)

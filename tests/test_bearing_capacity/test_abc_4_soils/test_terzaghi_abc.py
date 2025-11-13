@@ -42,7 +42,7 @@ class TestTerzaghiABC:
             ground_water_level=ground_water_level,
             shape=footing_shape,
             foundation_type=foundation_type,
-            abc_type="terzaghi",
+            abc_method="terzaghi",
         )
 
         assert terzaghi.allowable_bearing_capacity() == pytest.approx(
@@ -81,7 +81,7 @@ class TestTerzaghiABC:
             ground_water_level=ground_water_level,
             shape=footing_shape,
             foundation_type=foundation_type,
-            abc_type="terzaghi",
+            abc_method="terzaghi",
         )
 
         assert terzaghi.allowable_bearing_capacity() == pytest.approx(

@@ -12,7 +12,7 @@ correlation:
 ...                                     depth=1.5,
 ...                                     width=2.0,
 ...                                     shape="square",
-...                                     ubc_type="vesic")
+...                                     ubc_method="vesic")
 >>> hansen_ubc.ultimate_bearing_capacity()
 893.2
 
