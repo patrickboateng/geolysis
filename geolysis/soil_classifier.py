@@ -427,6 +427,22 @@ class PSD:
         self.size_dist = _SizeDistribution(d_10=d_10, d_30=d_30, d_60=d_60)
 
     @property
+    def fines(self):
+        return self._fines
+
+    @fines.setter
+    def fines(self, fines: Annotated[float, MustBeNonNegative()]):
+        self._fines = fines
+
+    @property
+    def sand(self):
+        return self._sand
+
+    @sand.setter
+    def sand(self, sand: Annotated[float, MustBeNonNegative()]):
+        self._sand = sand
+
+    @property
     def gravel(self):
         """Percentage of gravel in soil sample (%)."""
         return 100.0 - (self.fines + self.sand)
