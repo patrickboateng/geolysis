@@ -4,12 +4,6 @@ $(N_1)_{60} = C_N \cdot N_{60}$
 
 $C_N \le 2$
 
-!!! note
-
-    `60` is used in this case to represent `60%` hammer
-     efficiency and can be any percentage of hammer efficiency
-     e.g. $N_{55}$ for `55%` hammer efficiency.
-
 ## Gibbs & Holtz (1957)
 
 $C_N = \dfrac{350}{\sigma_o + 70} \, \sigma_o \le 280kN/m^2$
