@@ -43,6 +43,6 @@ $C_N = 0.77 \log \left(\dfrac{2000}{\sigma_o} \right)$
 
 $C_N = \sqrt{\dfrac{100}{\sigma_o}}$
 
-## Skemton (1986)
+## Skempton (1986)
 
 $C_N = \dfrac{2}{1 + 0.01044 \cdot \sigma_o}$
