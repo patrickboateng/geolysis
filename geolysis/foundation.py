@@ -408,7 +408,7 @@ class Foundation:
 def create_foundation(
     depth: float,
     width: float,
-    length: Annotated[float, DependsOn(shape=Shape.RECTANGLE)] = None,
+    length: Annotated[Optional[float], DependsOn(shape=Shape.RECTANGLE)] = None,
     eccentricity: float = 0.0,
     load_angle: float = 0.0,
     ground_water_level: Optional[float] = inf,
